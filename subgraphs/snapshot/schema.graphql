@@ -1,0 +1,51 @@
+type Boarded @entity {
+  id: ID!
+
+  beforeDeadline: Boolean!
+  timestamp: Int!
+  token: Token!
+}
+
+type Collection @entity {
+  id: ID!
+
+  name: String!
+  tokens: [Token!]! @derivedFrom(field: "collection")
+}
+
+type Rocket @entity {
+  id: ID!
+
+  address: String!
+  boarded: [Boarded!]!
+  deadline: Int!
+}
+
+type Staking @entity {
+  id: ID!
+
+  address: String!
+}
+
+type Token @entity {
+  id: ID!
+
+  collection: Collection!
+  owners: [UserToken!]! @derivedFrom(field: "token")
+  staked: Boolean!
+  tokenId: BigInt!
+}
+
+type User @entity {
+  id: ID!
+
+  tokens: [UserToken!]! @derivedFrom(field: "user")
+}
+
+type UserToken @entity {
+  id: ID!
+
+  quantity: BigInt!
+  token: Token!
+  user: User!
+}

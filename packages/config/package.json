@@ -1,0 +1,17 @@
+{
+  "name": "@treasure/subgraph-config",
+  "version": "1.0.0",
+  "description": "Configuration data for the subgraphs",
+  "license": "MIT",
+  "private": true,
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "build": "true",
+    "codegen": "true",
+    "deploy": "true",
+    "prepare:arbitrum": "true",
+    "prepare:arbitrum-testnet": "true"
+  }
+}

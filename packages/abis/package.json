@@ -1,0 +1,17 @@
+{
+  "name": "@treasure/subgraph-abis",
+  "version": "1.0.0",
+  "description": "Subgraph ABIs",
+  "license": "MIT",
+  "private": true,
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "build": "true",
+    "codegen": "true",
+    "deploy": "true",
+    "prepare:arbitrum": "true",
+    "prepare:arbitrum-testnet": "true"
+  }
+}

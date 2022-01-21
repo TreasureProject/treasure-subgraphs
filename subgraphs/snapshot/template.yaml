@@ -1,0 +1,204 @@
+specVersion: 0.0.4
+schema:
+  file: ./schema.graphql
+dataSources:
+  - name: Extra Life
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ extra_life_address }}"
+      abi: ERC1155
+      startBlock: {{ extra_life_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Collection
+        - Token
+        - User
+        - UserToken
+      abis:
+        - name: ERC1155
+          file: ../../node_modules/@treasure/subgraph-abis/src/1155.json
+      eventHandlers:
+        - event: TransferSingle(indexed address,indexed address,indexed address,uint256,uint256)
+          handler: handleTransferSingle
+      file: ./src/mappings/extra-life.ts
+  - name: Smol Brains
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ smol_brains_address }}"
+      abi: ERC721
+      startBlock: {{ smol_brains_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Collection
+        - Token
+        - User
+        - UserToken
+      abis:
+        - name: ERC721
+          file: ../../node_modules/@treasure/subgraph-abis/src/721.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,indexed uint256)
+          handler: handleTransfer
+      file: ./src/mappings/smol-brains.ts
+  - name: Smol Brains Land
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ smol_brains_land_address }}"
+      abi: ERC721
+      startBlock: {{ smol_brains_land_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Collection
+        - Token
+        - User
+        - UserToken
+      abis:
+        - name: ERC721
+          file: ../../node_modules/@treasure/subgraph-abis/src/721.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,indexed uint256)
+          handler: handleTransfer
+      file: ./src/mappings/smol-brains-land.ts
+  - name: Smol Brains School
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ smol_brains_school_address }}"
+      abi: School
+      startBlock: {{ smol_brains_school_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Staking
+        - Token
+      abis:
+        - name: School
+          file: ../../node_modules/@treasure/subgraph-abis/src/SmolBrainsSchool.json
+        - name: ERC721
+          file: ../../node_modules/@treasure/subgraph-abis/src/721.json
+      eventHandlers:
+        - event: DropSchool(uint256)
+          handler: handleDropSchool
+        - event: JoinSchool(uint256)
+          handler: handleJoinSchool
+        - event: SmolBrainSet(address)
+          handler: handleSmolBrainSet
+      file: ./src/mappings/smol-brains.ts
+  - name: Smol Cars
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ smol_cars_address }}"
+      abi: SmolCars
+      startBlock: {{ smol_cars_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Collection
+        - Token
+        - User
+        - UserToken
+      abis:
+        - name: SmolCars
+          file: ../../node_modules/@treasure/subgraph-abis/src/SmolCars.json
+        - name: ERC721
+          file: ../../node_modules/@treasure/subgraph-abis/src/721.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,indexed uint256)
+          handler: handleTransfer
+      file: ./src/mappings/smol-cars.ts
+  - name: Smol Bodies
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ smol_bodies_address }}"
+      abi: SmolBodies
+      startBlock: {{ smol_bodies_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Collection
+        - Token
+        - User
+        - UserToken
+      abis:
+        - name: SmolBodies
+          file: ../../node_modules/@treasure/subgraph-abis/src/SmolBodies.json
+        - name: ERC721
+          file: ../../node_modules/@treasure/subgraph-abis/src/721.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,indexed uint256)
+          handler: handleTransfer
+      file: ./src/mappings/smol-bodies.ts
+  - name: Smol Bodies Gym
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ smol_bodies_gym_address }}"
+      abi: Gym
+      startBlock: {{ smol_bodies_gym_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Staking
+        - Token
+      abis:
+        - name: Gym
+          file: ../../node_modules/@treasure/subgraph-abis/src/SmolBodiesGym.json
+        - name: ERC721
+          file: ../../node_modules/@treasure/subgraph-abis/src/721.json
+      eventHandlers:
+        - event: DropGym(uint256,uint256,uint256)
+          handler: handleDropGym
+        - event: JoinGym(uint256)
+          handler: handleJoinGym
+        - event: SmolBodiesSet(address)
+          handler: handleSmolBodiesSet
+      file: ./src/mappings/smol-bodies.ts
+  - name: Smol Rocket
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ smol_rocket_address }}"
+      abi: Rocket
+      startBlock: {{ smol_rocket_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Boarded
+        - Rocket
+      abis:
+        - name: Rocket
+          file: ../../node_modules/@treasure/subgraph-abis/src/Rocket.json
+        - name: ERC721
+          file: ../../node_modules/@treasure/subgraph-abis/src/721.json
+      eventHandlers:
+        - event: Board(uint256,uint256)
+          handler: handleBoard
+        - event: DeadlineSet(uint256)
+          handler: handleDeadlineSet
+        - event: SmolBrainSet(address)
+          handler: handleSmolBrainSet
+      file: ./src/mappings/rocket.ts

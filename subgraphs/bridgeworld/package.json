@@ -1,0 +1,13 @@
+{
+  "name": "bridgeworld",
+  "version": "1.0.0",
+  "description": "Subgraph that powers Bridgeworld",
+  "license": "MIT",
+  "scripts": {
+    "build": "graph build subgraph.yaml",
+    "codegen": "graph codegen subgraph.yaml",
+    "deploy": "graph deploy --product hosted-service treasureproject/bridgeworld",
+    "prepare:arbitrum": "mustache ../../node_modules/@treasure/subgraph-config/src/arbitrum.json template.yaml > subgraph.yaml",
+    "prepare:arbitrum-testnet": "mustache ../../node_modules/@treasure/subgraph-config/src/arbitrum-testnet.json template.yaml > subgraph.yaml"
+  }
+}

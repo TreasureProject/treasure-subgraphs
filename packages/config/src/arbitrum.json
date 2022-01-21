@@ -1,0 +1,19 @@
+{
+  "network": "arbitrum-one",
+  "extra_life_address": "0x21e1969884D477afD2Afd4Ad668864a0EebD644c",
+  "extra_life_start_block": 2416557,
+  "smol_brains_address": "0x6325439389E0797Ab35752B4F43a14C004f22A9c",
+  "smol_brains_start_block": 3163146,
+  "smol_brains_land_address": "0xd666d1CC3102cd03e07794A61E5F4333B4239F53",
+  "smol_brains_land_start_block": 3162849,
+  "smol_brains_school_address": "0x602e50Ed10A90D324b35930EC0F8E5D3b28cD509",
+  "smol_brains_school_start_block": 3162850,
+  "smol_cars_address": "0xB16966daD2B5a5282b99846B23dcDF8C47b6132C",
+  "smol_cars_start_block": 3661786,
+  "smol_bodies_address": "0x17DaCAD7975960833f374622fad08b90Ed67D1B5",
+  "smol_bodies_start_block": 3756584,
+  "smol_bodies_gym_address": "0x66299ecC614b7A1920922bBa7527819c841174BD",
+  "smol_bodies_gym_start_block": 3756579,
+  "smol_rocket_address": "0x8957A18a77451d762dE204b61EA4F858Bb3bED4d",
+  "smol_rocket_start_block": 4310278
+}

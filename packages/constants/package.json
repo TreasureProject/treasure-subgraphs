@@ -1,0 +1,15 @@
+{
+  "name": "@treasure/constants",
+  "version": "1.0.0",
+  "description": "Constants for the subgraphs",
+  "license": "MIT",
+  "private": true,
+  "main": "index.ts",
+  "scripts": {
+    "build": "true",
+    "codegen": "true",
+    "deploy": "true",
+    "prepare:arbitrum": "true",
+    "prepare:arbitrum-testnet": "mustache ../../node_modules/@treasure/subgraph-config/src/arbitrum-testnet.json src/index.template.ts > index.ts"
+  }
+}
