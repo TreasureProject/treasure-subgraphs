@@ -1,5 +1,14 @@
 import * as common from "../mapping";
-import { Address, BigInt, log } from "@graphprotocol/graph-ts";
+import { Address, BigInt, log, store } from "@graphprotocol/graph-ts";
+import {
+  Approval,
+  Constellation,
+  LegionInfo,
+  Token,
+  User,
+  UserApproval,
+} from "../../generated/schema";
+import { ApprovalForAll, Transfer } from "../../generated/Legion/ERC721";
 import { LEGION_ADDRESS } from "@treasure/constants";
 import {
   LegionConstellationRankUp,
@@ -7,37 +16,7 @@ import {
   LegionCreated,
   LegionQuestLevelUp,
 } from "../../generated/Legion Metadata Store/LegionMetadataStore";
-import { Constellation, LegionInfo, Token } from "../../generated/schema";
-import { Transfer } from "../../generated/Legion/ERC721";
-import { getImageHash, isMint } from "../helpers";
-
-enum Rarity {
-  Legendary,
-  Rare,
-  Special,
-  Uncommon,
-  Common,
-  Recruit,
-}
-
-enum Class {
-  Recruit,
-  Siege,
-  Fighter,
-  Assassin,
-  Ranged,
-  Spellcaster,
-  Riverman,
-  Numeraire,
-  AllClass,
-  Origin,
-}
-
-enum Type {
-  Genesis,
-  Auxiliary,
-  Recruit,
-}
+import { getAddressId, getImageHash, isMint } from "../helpers";
 
 const RARITY = [
   "Legendary",
@@ -63,33 +42,20 @@ const CLASS = [
 
 const TYPE = ["Genesis", "Auxiliary", "Recruit"];
 
+const BOOST_MATRIX = [
+  // GENESIS
+  // LEGENDARY,RARE,SPECIAL,UNCOMMON,COMMON,RECRUIT
+  [600e16, 200e16, 75e16, 100e16, 50e16, 0],
+  // AUXILIARY
+  // LEGENDARY,RARE,SPECIAL,UNCOMMON,COMMON,RECRUIT
+  [0, 25e16, 0, 10e16, 5e16, 0],
+  // RECRUIT
+  // LEGENDARY,RARE,SPECIAL,UNCOMMON,COMMON,RECRUIT
+  [0, 0, 0, 0, 0, 0],
+];
+
 function getLegionId(tokenId: BigInt): string {
-  return `${LEGION_ADDRESS.toHexString()}-${tokenId.toHexString()}`;
-}
-
-function getLegionName(legion: LegionInfo): string {
-  return `${legion.type} ${legion.rarity}`.replace(
-    "Recruit Recruit",
-    "Recruit"
-  );
-  // let prefix = legion.type === Type.Genesis ? "Genesis" : "Auxiliary";
-
-  // switch (legion.rarity) {
-  //   case Rarity.Legendary:
-  //     return `${prefix} Legendary`;
-  //   case Rarity.Rare:
-  //     return `${prefix} Rare`;
-  //   case Rarity.Special:
-  //     return `${prefix} Special`;
-  //   case Rarity.Uncommon:
-  //     return `${prefix} Uncommon`;
-  //   case Rarity.Common:
-  //     return `${prefix} Common`;
-  //   case Rarity.Recruit:
-  //     return "Recruit";
-  //   default:
-  //     throw new Error(`Unhandled legion rarity: ${legion.rarity.toString()}`);
-  // }
+  return getAddressId(LEGION_ADDRESS, tokenId);
 }
 
 function getConstellation(id: string): Constellation {
@@ -124,7 +90,7 @@ function getMetadata(tokenId: BigInt): LegionInfo {
 }
 
 function setMetadata(contract: Address, tokenId: BigInt): void {
-  let token = Token.load(`${contract.toHexString()}-${tokenId.toHexString()}`);
+  let token = Token.load(getAddressId(contract, tokenId));
 
   if (!token) {
     log.error("Unknown token: {}", [tokenId.toString()]);
@@ -132,13 +98,15 @@ function setMetadata(contract: Address, tokenId: BigInt): void {
     return;
   }
 
-  let metadata = new LegionInfo(token.id);
+  let metadata = new LegionInfo(`${token.id}-metadata`);
 
+  metadata.boost = `${BOOST_MATRIX[0][0] / 1e18}`;
   metadata.crafting = 1;
   metadata.questing = 1;
   metadata.rarity = "Legendary";
   metadata.role = "Origin";
   metadata.type = "Genesis";
+  metadata.summons = BigInt.zero();
 
   metadata.save();
 
@@ -146,8 +114,50 @@ function setMetadata(contract: Address, tokenId: BigInt): void {
   token.image = getImageHash(BigInt.fromI32(55), "Clocksnatcher");
   token.name = "Clocksnatcher";
   token.metadata = metadata.id;
+  token.rarity = metadata.rarity;
 
   token.save();
+}
+
+export function handleApprovalForAll(event: ApprovalForAll): void {
+  let params = event.params;
+
+  let userId = params.owner.toHexString();
+  let user = User.load(userId);
+
+  if (!user) {
+    log.error("Unknown user: {}", [userId]);
+
+    return;
+  }
+
+  let contract = event.address;
+  let operator = params.operator;
+
+  let approvalId = `${contract.toHexString()}-${operator.toHexString()}`;
+  let approval = Approval.load(approvalId);
+
+  if (!approval) {
+    approval = new Approval(approvalId);
+
+    approval.contract = contract;
+    approval.operator = operator;
+
+    approval.save();
+  }
+
+  let userApprovalId = `${user.id}-${approval.id}`;
+
+  if (params.approved) {
+    let userApproval = new UserApproval(userApprovalId);
+
+    userApproval.approval = approval.id;
+    userApproval.user = user.id;
+
+    userApproval.save();
+  } else {
+    store.remove("UserApproval", userApprovalId);
+  }
 }
 
 export function handleLegionConstellationRankUp(
@@ -158,12 +168,6 @@ export function handleLegionConstellationRankUp(
   let tokenId = params._tokenId;
 
   let constellation = getConstellation(`${getLegionId(tokenId)}-constellation`);
-
-  log.info("Leveling up constellation {} to {} for {}", [
-    params._constellation.toString(),
-    rank.toString(),
-    tokenId.toString(),
-  ]);
 
   switch (params._constellation) {
     case 0:
@@ -221,19 +225,35 @@ export function handleLegionCreated(event: LegionCreated): void {
 
   let metadata = new LegionInfo(`${token.id}-metadata`);
 
+  metadata.boost = `${BOOST_MATRIX[params._generation][params._rarity] / 1e18}`;
   metadata.crafting = 1;
   metadata.questing = 1;
   metadata.rarity = RARITY[params._rarity];
   metadata.role = CLASS[params._class];
   metadata.type = TYPE[params._generation];
+  metadata.summons = BigInt.zero();
 
   metadata.save();
 
+  let ipfs = "ipfs://QmeR9k2WJcSiiuUGY3Wvjtahzo3UUaURiPpLEapFcDe9JC";
+
   token.category = "Legion";
-  // TODO: Replace
-  token.image = getImageHash(BigInt.fromI32(55), "Clocksnatcher");
-  token.name = getLegionName(metadata);
+  token.image = `${ipfs}/${metadata.rarity}%20${metadata.role}.gif`;
+  token.name = `${metadata.type} ${metadata.rarity}`;
   token.metadata = metadata.id;
+  token.rarity = metadata.rarity.replace("Recruit", "None");
+
+  if (metadata.type == "Recruit") {
+    let user = User.load(params._owner.toHexString());
+
+    if (user) {
+      user.recruit = token.id;
+      user.save();
+    }
+
+    token.image = `${ipfs}/Recruit.gif`;
+    token.name = "Recruit";
+  }
 
   token.save();
 }
@@ -242,18 +262,12 @@ export function handleLegionQuestLevelUp(event: LegionQuestLevelUp): void {
   let params = event.params;
   let metadata = getMetadata(params._tokenId);
 
-  metadata.crafting = params._questLevel;
+  metadata.questing = params._questLevel;
   metadata.save();
 }
 
 export function handleTransfer(event: Transfer): void {
   let params = event.params;
-
-  log.info("bugggy {} {} {}", [
-    event.address.toHexString(),
-    params.tokenId.toString(),
-    params.tokenId.toHexString(),
-  ]);
 
   common.handleTransfer(
     event.address,

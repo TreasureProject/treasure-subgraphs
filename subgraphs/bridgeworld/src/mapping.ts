@@ -1,6 +1,6 @@
-import { Address, BigInt, log, store } from "@graphprotocol/graph-ts";
+import { Address, BigInt, store } from "@graphprotocol/graph-ts";
 import { Token, User, UserToken } from "../generated/schema";
-import { getImageHash, getName, getRarity } from "./helpers";
+import { getAddressId, getImageHash, getName, getRarity } from "./helpers";
 
 class Transfer {
   contract: Address;
@@ -15,7 +15,7 @@ class Transfer {
 }
 
 function getToken(data: Transfer): Token {
-  let id = `${data.contract.toHexString()}-${data.tokenId.toHexString()}`;
+  let id = getAddressId(data.contract, data.tokenId);
   let token = Token.load(id);
 
   if (!token) {
@@ -41,6 +41,8 @@ function getUser(id: string): User {
 
   if (!user) {
     user = new User(id);
+
+    user.boost = "0";
     user.save();
   }
 

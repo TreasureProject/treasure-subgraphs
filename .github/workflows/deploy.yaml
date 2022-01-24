@@ -1,0 +1,59 @@
+name: Deploy Graph
+
+on:
+  pull_request:
+    types: [opened, ready_for_review, synchronize]
+  push:
+    branches: [master]
+
+jobs:
+  deploy-dev:
+    if: github.event_name == 'pull_request' && github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14
+      - name: Install
+        run: yarn --frozen-lockfile
+      - name: Prepare
+        run: yarn prepare:rinkeby
+      - name: Codegen
+        run: yarn codegen
+      - name: Test
+        run: yarn test
+      - name: Build
+        run: yarn build
+      - name: Deploy to development
+        uses: gtaschuk/graph-deploy@v0.1.0
+        with:
+          graph_access_token: ${{secrets.GRAPH_ACCESS_TOKEN}}
+          graph_subgraph_name: treasure-marketplace-dev
+          graph_account: wyze
+  deploy-prod:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14
+      - name: Install
+        run: yarn --frozen-lockfile
+      - name: Prepare
+        run: yarn prepare:arbitrum
+      - name: Codegen
+        run: yarn codegen
+      - name: Test
+        run: yarn test
+      - name: Build
+        run: yarn build
+      - name: Deploy to production
+        uses: gtaschuk/graph-deploy@v0.1.0
+        with:
+          graph_access_token: ${{secrets.GRAPH_ACCESS_TOKEN}}
+          graph_subgraph_name: treasure-marketplace
+          graph_account: wyze

@@ -1,4 +1,8 @@
-import { Address } from "@graphprotocol/graph-ts";
+import { Address, BigInt } from "@graphprotocol/graph-ts";
+
+export function getAddressId(address: Address, tokenId: BigInt): string {
+  return `${address.toHexString()}-${tokenId.toHexString()}`;
+}
 
 export function isMint(address: Address): boolean {
   return address.equals(Address.zero());

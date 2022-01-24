@@ -2,6 +2,88 @@ specVersion: 0.0.4
 schema:
   file: ./schema.graphql
 dataSources:
+  - name: Atlas Mine
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ atlas_mine_address }}"
+      abi: AtlasMine
+      startBlock: {{ atlas_mine_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Token
+        - User
+        - UserToken
+      abis:
+        - name: AtlasMine
+          file: ../../node_modules/@treasure/subgraph-abis/src/AtlasMine.json
+      eventHandlers:
+        - event: Deposit(indexed address,indexed uint256,uint256,uint8)
+          handler: handleDeposit
+        - event: Staked(address,uint256,uint256)
+          handler: handleStaked
+        - event: Unstaked(address,uint256,uint256)
+          handler: handleUnstaked
+        - event: UtilizationRate(uint256)
+          handler: handleUtilizationRate
+        - event: Withdraw(indexed address,indexed uint256,uint256)
+          handler: handleWithdraw
+      file: ./src/mappings/atlas-mine.ts
+  - name: Consumable
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ consumable_address }}"
+      abi: ERC1155
+      startBlock: {{ consumable_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Token
+        - User
+        - UserToken
+      abis:
+        - name: ERC1155
+          file: ../../node_modules/@treasure/subgraph-abis/src/1155.json
+      eventHandlers:
+        - event: ApprovalForAll(indexed address,indexed address,bool)
+          handler: handleApprovalForAll
+        - event: TransferBatch(indexed address,indexed address,indexed address,uint256[],uint256[])
+          handler: handleTransferBatch
+        - event: TransferSingle(indexed address,indexed address,indexed address,uint256,uint256)
+          handler: handleTransferSingle
+      file: ./src/mappings/consumable.ts
+  - name: Crafting
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ crafting_address }}"
+      abi: Crafting
+      startBlock: {{ crafting_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Token
+        - User
+        - UserToken
+      abis:
+        - name: Crafting
+          file: ../../node_modules/@treasure/subgraph-abis/src/Crafting.json
+      eventHandlers:
+        - event: CraftingStarted(indexed address,indexed uint256,indexed uint256,uint256,uint256[],uint8[])
+          handler: handleCraftingStarted
+        - event: CraftingRevealed(indexed address,indexed uint256,(bool,uint256,uint256,uint256[],uint256[],uint8))
+          handler: handleCraftingRevealed
+        - event: CraftingFinished(indexed address,indexed uint256)
+          handler: handleCraftingFinished
+      file: ./src/mappings/crafting.ts
   - name: Legion
     kind: ethereum/contract
     network: {{ network }}
@@ -21,6 +103,8 @@ dataSources:
         - name: ERC721
           file: ../../node_modules/@treasure/subgraph-abis/src/721.json
       eventHandlers:
+        - event: ApprovalForAll(indexed address,indexed address,bool)
+          handler: handleApprovalForAll
         - event: Transfer(indexed address,indexed address,indexed uint256)
           handler: handleTransfer
       file: ./src/mappings/legion.ts
@@ -155,6 +239,81 @@ dataSources:
         - event: NoPilgrimagesToFinish(indexed address)
           handler: handleNoPilgrimagesToFinish
       file: ./src/mappings/pilgrimage.ts
+  - name: Questing
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ questing_address }}"
+      abi: Questing
+      startBlock: {{ questing_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Token
+        - User
+        - UserToken
+      abis:
+        - name: Questing
+          file: ../../node_modules/@treasure/subgraph-abis/src/Questing.json
+      eventHandlers:
+        - event: QuestStarted(indexed address,indexed uint256,indexed uint256,uint256)
+          handler: handleQuestStarted
+        - event: QuestRevealed(indexed address,indexed uint256,(uint8,uint8,uint8,uint256))
+          handler: handleQuestRevealed
+        - event: QuestFinished(indexed address,indexed uint256)
+          handler: handleQuestFinished
+      file: ./src/mappings/questing.ts
+  - name: Randomizer
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ randomizer_address }}"
+      abi: Randomizer
+      startBlock: {{ randomizer_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Pilgrimage
+        - Token
+        - User
+        - UserToken
+      abis:
+        - name: Randomizer
+          file: ../../node_modules/@treasure/subgraph-abis/src/Randomizer.json
+      eventHandlers:
+        - event: RandomRequest(indexed uint256,indexed uint256)
+          handler: handleRandomRequest
+        - event: RandomSeeded(indexed uint256)
+          handler: handleRandomSeeded
+      file: ./src/mappings/randomizer.ts
+  - name: Summoning
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ summoning_address }}"
+      abi: Summoning
+      startBlock: {{ summoning_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Token
+        - User
+        - UserToken
+      abis:
+        - name: Summoning
+          file: ../../node_modules/@treasure/subgraph-abis/src/Summoning.json
+      eventHandlers:
+        - event: SummoningStarted(indexed address,indexed uint256,indexed uint256,uint256)
+          handler: handleSummoningStarted
+        - event: SummoningFinished(indexed address,indexed uint256,indexed uint256,uint256)
+          handler: handleSummoningFinished
+      file: ./src/mappings/summoning.ts
   - name: Treasure
     kind: ethereum/contract
     network: {{ network }}

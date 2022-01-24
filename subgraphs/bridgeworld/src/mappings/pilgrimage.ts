@@ -1,32 +1,49 @@
 import * as common from "../mapping";
-import { Pilgrimage } from "../../generated/schema";
+import { Pilgrimage, Token } from "../../generated/schema";
 import {
   NoPilgrimagesToFinish,
   PilgrimagesFinished,
   PilgrimagesStarted,
 } from "../../generated/Pilgrimage/Pilgrimage";
 import { BigInt, log, store } from "@graphprotocol/graph-ts";
+import { getAddressId, getImageHash } from "../helpers";
+import { LEGION_ADDRESS } from "@treasure/constants";
 
-export function handleNoPilgrimagesToFinish(event: NoPilgrimagesToFinish): void {
+export function handleNoPilgrimagesToFinish(
+  event: NoPilgrimagesToFinish
+): void {
   let params = event.params;
   let user = params._user;
 
-  log.info('Nothing to do for {}', [user.toHexString()])
+  log.info("Nothing to do for {}", [user.toHexString()]);
 }
 
 export function handlePilgrimagesFinished(event: PilgrimagesFinished): void {
   let params = event.params;
 
   let pilgrimageIds = params._finishedPilgrimageIds;
+  let tokenIds = params._tokenIds;
   let user = params._user;
 
   for (let index = 0; index < pilgrimageIds.length; index++) {
     let pilgrimageId = pilgrimageIds[index];
+    let tokenId = tokenIds[index];
 
-    store.remove(
-      "Pilgrimage",
-      `${user.toHexString()}-${pilgrimageId.toHexString()}`
-    );
+    let legion = Token.load(getAddressId(LEGION_ADDRESS, tokenId));
+    let pilgrimage = Pilgrimage.load(getAddressId(user, pilgrimageId));
+
+    if (legion && pilgrimage) {
+      let token = Token.load(pilgrimage.token);
+
+      if (token) {
+        legion.image = getImageHash(token.tokenId, token.name);
+        legion.save();
+      }
+    }
+
+    if (pilgrimage) {
+      store.remove("Pilgrimage", pilgrimage.id);
+    }
   }
 }
 
@@ -41,30 +58,39 @@ export function handlePilgrimagesStarted(event: PilgrimagesStarted): void {
   let user = params._user;
   let finishTime = params._finishTime;
 
-  for (let index = 0; index < ids.length; index++) {
-    let tokenId = ids[index];
-    let amount = amounts[index];
-    let pilgrimageId = pilgrimageIds[index];
-    let id = `${contract.toHexString()}-${tokenId.toHexString()}`;
+  let pilgrimageIndex = 0;
 
-    let pilgrimage = new Pilgrimage(
-      `${user.toHexString()}-${pilgrimageId.toHexString()}`
-    );
+  for (let idIndex = 0; idIndex < ids.length; idIndex++) {
+    let tokenId = ids[idIndex];
 
-    pilgrimage.pilgrimageEndTimestamp = finishTime.times(BigInt.fromI32(1000));
-    pilgrimage.pilgrimageId = pilgrimageId;
-    pilgrimage.quantity = amount;
-    pilgrimage.token = id;
-    pilgrimage.user = user.toHexString();
+    for (
+      let amountIndex = 0;
+      amountIndex < amounts[idIndex].toI32();
+      amountIndex++
+    ) {
+      let amount = BigInt.fromI32(1);
+      let pilgrimageId = pilgrimageIds[pilgrimageIndex];
+      let id = getAddressId(contract, tokenId);
 
-    pilgrimage.save();
+      let pilgrimage = new Pilgrimage(getAddressId(user, pilgrimageId));
 
-    common.handleTransfer(
-      contract,
-      params._user,
-      event.address,
-      tokenId,
-      amount
-    );
+      pilgrimage.endTimestamp = finishTime.times(BigInt.fromI32(1000));
+      pilgrimage.pilgrimageId = pilgrimageId;
+      pilgrimage.quantity = amount;
+      pilgrimage.token = id;
+      pilgrimage.user = user.toHexString();
+
+      pilgrimage.save();
+
+      common.handleTransfer(
+        contract,
+        params._user,
+        event.address,
+        tokenId,
+        amount
+      );
+
+      pilgrimageIndex++;
+    }
   }
 }
