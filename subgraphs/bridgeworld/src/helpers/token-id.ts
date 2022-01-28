@@ -1,4 +1,7 @@
-import { BigInt } from "@graphprotocol/graph-ts";
+import { Address, BigInt, log, store } from "@graphprotocol/graph-ts";
+import { LEGION_ADDRESS } from "@treasure/constants";
+import { getAddressId } from ".";
+import { LegionInfo, Pilgrimage, Token, User } from "../../generated/schema";
 
 const TREASURE_IDS: number[] = [
   39,
@@ -57,6 +60,8 @@ export function getImageHash(tokenId: BigInt, name: string): string {
   let id = tokenId.toI32();
 
   switch (true) {
+    case id == 151:
+      return `ipfs://Qmbyy8EWMzrSTSGG1bDNsYZfvnkcjAFNM5TXJqvsbuY8Dz/Silver Penny.gif`;
     case isTreasure(id):
       return `ipfs://Qmbyy8EWMzrSTSGG1bDNsYZfvnkcjAFNM5TXJqvsbuY8Dz/${name}.gif`;
     case [45, 70, 90, 131, 150, 160].includes(id):
@@ -303,7 +308,9 @@ export function getName(tokenId: BigInt): string {
     case 164:
       return "Witches Broom";
     default:
-      throw new Error(`Name not handled: ${id}`);
+      log.error(`Name not handled: {}`, [id.toString()]);
+
+      return "";
   }
 }
 
@@ -356,7 +363,9 @@ export function getRarity(tokenId: BigInt): string {
     case 91:
     case 100:
     case 116:
-    case 164:
+    case 141:
+    case 152:
+    case 162:
       return "Rare";
     case 40:
     case 41:
@@ -408,9 +417,9 @@ export function getRarity(tokenId: BigInt): string {
     case 158:
     case 159:
     case 160:
+    case 164:
       return "Uncommon";
     case 39:
-    case 47:
     case 50:
     case 51:
     case 52:
@@ -420,21 +429,19 @@ export function getRarity(tokenId: BigInt): string {
     case 81:
     case 95:
     case 97:
-    case 98:
-    case 105:
-    case 161:
     case 163:
       return "Legendary";
     case 46:
+    case 47:
     case 53:
     case 74:
+    case 98:
     case 99:
     case 104:
+    case 105:
     case 132:
-    case 141:
-    case 152:
     case 153:
-    case 162:
+    case 161:
       return "Epic";
     case 106:
     case 107:
@@ -455,4 +462,233 @@ export function getRarity(tokenId: BigInt): string {
     default:
       return "Common";
   }
+}
+
+const RARITY = [
+  "Legendary",
+  "Rare",
+  "Special",
+  "Uncommon",
+  "Common",
+  "Recruit",
+];
+
+const CLASS = [
+  "Recruit",
+  "Siege",
+  "Fighter",
+  "Assassin",
+  "Ranged",
+  "Spellcaster",
+  "Riverman",
+  "Numeraire",
+  "All-Class",
+  "Origin",
+];
+
+const TYPE = ["Genesis", "Auxiliary", "Recruit"];
+
+const BOOST_MATRIX = [
+  // GENESIS
+  // LEGENDARY,RARE,SPECIAL,UNCOMMON,COMMON,RECRUIT
+  [600e16, 200e16, 75e16, 100e16, 50e16, 0],
+  // AUXILIARY
+  // LEGENDARY,RARE,SPECIAL,UNCOMMON,COMMON,RECRUIT
+  [0, 25e16, 0, 10e16, 5e16, 0],
+  // RECRUIT
+  // LEGENDARY,RARE,SPECIAL,UNCOMMON,COMMON,RECRUIT
+  [0, 0, 0, 0, 0, 0],
+];
+
+function getLegionId(tokenId: BigInt): string {
+  return getAddressId(LEGION_ADDRESS, tokenId);
+}
+
+export function createLegion(
+  owner: Address,
+  tokenId: BigInt,
+  generation: i32,
+  role: i32,
+  rarity: i32,
+  pilgrimageId: string
+): void {
+  // let params = event.params;
+  // let tokenId = params._tokenId;
+  let id = getLegionId(tokenId);
+  let token = Token.load(id);
+  let ipfs = "ipfs://QmeR9k2WJcSiiuUGY3Wvjtahzo3UUaURiPpLEapFcDe9JC";
+
+  let tid = tokenId.toI32();
+
+  if ([2, 659, 1358].includes(tid)) {
+    log.warning("[cheese] pid: {}, token: {}", [
+      pilgrimageId,
+      token == null ? "no" : "yes",
+    ]);
+  }
+  // let pilgrimage =
+
+  if (!token) {
+    token = new Token(id);
+
+    token.contract = LEGION_ADDRESS;
+    token.rarity = "None";
+    token.tokenId = tokenId;
+  }
+
+  if (pilgrimageId != "") {
+    // Handle setup
+    let pilgrimage = Pilgrimage.load(pilgrimageId);
+
+    if (pilgrimage) {
+      let legacy = Token.load(pilgrimage.token);
+
+      if (legacy) {
+        let legacyId = legacy.tokenId.toI32();
+
+        if ([50, 55, 78, 81, 163].includes(legacyId)) {
+          token.name = legacy.name;
+          token.rarity = "Legendary";
+        }
+
+        if (token.image == null || token.image == "") {
+          switch (legacyId) {
+            case 50:
+            case 55:
+            case 78:
+            case 81:
+            case 163:
+              token.image = getImageHash(legacy.tokenId, legacy.name)
+                .split(" ")
+                .join("%20");
+
+              break;
+            case 56:
+            case 57:
+            case 58:
+            case 59:
+            case 60:
+            case 61:
+            case 62:
+            case 63:
+            case 64:
+            case 65:
+            case 66:
+            case 67:
+            case 70:
+              token.image = "";
+
+              break;
+            default:
+              token.image = getImageHash(legacy.tokenId, legacy.name)
+                .split(" ")
+                .join("%20");
+
+              break;
+          }
+        }
+
+        if ([2, 659, 1358].includes(tid)) {
+          log.warning("[cheese] legacy: {}, image: {}", [
+            legacy.tokenId.toString(),
+            token.image,
+          ]);
+        }
+
+        // // Now see if we are a 1/1
+        // if ([].includes(legacy.tokenId.toI32())) {
+        //   // 1/1
+        //   token.image = getImageHash(legacy.tokenId, legacy.name);
+        //   token.name = legacy.name;
+        //   token.rarity = "Legendary";
+        // } else if ([])
+      }
+      // now what???
+
+      if (pilgrimage) {
+        store.remove("Pilgrimage", pilgrimage.id);
+      }
+    }
+
+    token.save();
+
+    return;
+  }
+
+  let metadataId = `${id}-metadata`;
+  let metadata = LegionInfo.load(metadataId);
+
+  if ([2, 659, 1358].includes(tid)) {
+    log.warning("[cheese] pid: {}, token: {}, meta: {}", [
+      pilgrimageId,
+      token == null ? "no" : "yes",
+      metadata == null ? "no" : "yes",
+    ]);
+  }
+
+  if (!metadata) {
+    metadata = new LegionInfo(metadataId);
+  }
+
+  // TODO: Add Crafting XP
+  // TODO: Add Questing XP
+  metadata.boost = `${BOOST_MATRIX[generation][rarity] / 1e18}`;
+  metadata.crafting = 1;
+  metadata.questing = 1;
+  metadata.rarity = RARITY[rarity];
+  metadata.role = CLASS[role];
+  metadata.type = TYPE[generation];
+  metadata.summons = BigInt.zero();
+
+  metadata.save();
+
+  /*
+    let name = getName(data.tokenId);
+
+    token.contract = data.contract;
+    token.image = getImageHash(data.tokenId, name)
+      .split(" ")
+      .join("%20");
+    token.name = name;
+    token.rarity = getRarity(data.tokenId);
+    token.tokenId = data.tokenId;
+  */
+  // let ipfs = "ipfs://QmeR9k2WJcSiiuUGY3Wvjtahzo3UUaURiPpLEapFcDe9JC";
+
+  if ([2, 659, 1358].includes(tid)) {
+    log.warning("[cheese] before-image: {}", [token.image]);
+  }
+
+  // if (metadata.rarity == "Common") {
+  if (token.image == "") {
+    // log.warning("setting legion image for: {}, image = `{}`", [
+    //   tokenId.toString(),
+    //   token.image ? token.image : "null",
+    // ]);
+    token.image = `${ipfs}/${metadata.rarity}%20${metadata.role}.gif`;
+  }
+
+  if ([2, 659, 1358].includes(tid)) {
+    log.warning("[cheese] after-image: {}", [token.image]);
+  }
+  // }
+
+  token.category = "Legion";
+  token.name = `${metadata.type} ${metadata.rarity}`;
+  token.metadata = metadata.id;
+  token.rarity = metadata.rarity.replace("Recruit", "None");
+
+  if (metadata.type == "Recruit") {
+    let user = User.load(owner.toHexString());
+
+    if (user) {
+      user.recruit = token.id;
+      user.save();
+    }
+
+    token.image = `${ipfs}/Recruit.gif`;
+    token.name = "Recruit";
+  }
+
+  token.save();
 }

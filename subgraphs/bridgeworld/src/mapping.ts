@@ -1,4 +1,5 @@
 import { Address, BigInt, store } from "@graphprotocol/graph-ts";
+import { LEGION_ADDRESS } from "@treasure/constants";
 import { Token, User, UserToken } from "../generated/schema";
 import { getAddressId, getImageHash, getName, getRarity } from "./helpers";
 
@@ -21,13 +22,19 @@ function getToken(data: Transfer): Token {
   if (!token) {
     token = new Token(id);
 
-    let name = getName(data.tokenId);
+    if (!data.contract.equals(LEGION_ADDRESS)) {
+      let name = getName(data.tokenId);
+
+      token.image = getImageHash(data.tokenId, name)
+        .split(" ")
+        .join("%20");
+      token.name = name;
+    } else {
+      token.image = "";
+      token.name = "";
+    }
 
     token.contract = data.contract;
-    token.image = getImageHash(data.tokenId, name)
-      .split(" ")
-      .join("%20");
-    token.name = name;
     token.rarity = getRarity(data.tokenId);
     token.tokenId = data.tokenId;
     token.save();

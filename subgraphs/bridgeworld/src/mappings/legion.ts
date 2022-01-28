@@ -1,5 +1,11 @@
 import * as common from "../mapping";
-import { Address, BigInt, log, store } from "@graphprotocol/graph-ts";
+import {
+  Address,
+  BigInt,
+  dataSource,
+  log,
+  store,
+} from "@graphprotocol/graph-ts";
 import {
   Approval,
   Constellation,
@@ -16,7 +22,7 @@ import {
   LegionCreated,
   LegionQuestLevelUp,
 } from "../../generated/Legion Metadata Store/LegionMetadataStore";
-import { getAddressId, getImageHash, isMint } from "../helpers";
+import { createLegion, getAddressId, getImageHash, isMint } from "../helpers";
 
 const RARITY = [
   "Legendary",
@@ -126,7 +132,7 @@ export function handleApprovalForAll(event: ApprovalForAll): void {
   let user = User.load(userId);
 
   if (!user) {
-    log.error("Unknown user: {}", [userId]);
+    log.error("[legion-approval] Unknown user: {}", [userId]);
 
     return;
   }
@@ -214,48 +220,77 @@ export function handleLegionCraftLevelUp(event: LegionCraftLevelUp): void {
 
 export function handleLegionCreated(event: LegionCreated): void {
   let params = event.params;
-  let tokenId = params._tokenId;
-  let token = Token.load(getLegionId(tokenId));
 
-  if (!token) {
-    log.error("Unknown token: {}", [tokenId.toString()]);
+  createLegion(
+    params._owner,
+    params._tokenId,
+    params._generation,
+    params._class,
+    params._rarity,
+    ""
+    // false
+  );
+  // let tokenId = params._tokenId;
+  // let id = getLegionId(tokenId);
+  // let token = Token.load(id);
+  // // let pilgrimage =
 
-    return;
-  }
+  // if (!token) {
+  //   token = new Token(id);
 
-  let metadata = new LegionInfo(`${token.id}-metadata`);
+  //   token.contract = LEGION_ADDRESS;
+  //   token.tokenId = tokenId;
+  // }
 
-  metadata.boost = `${BOOST_MATRIX[params._generation][params._rarity] / 1e18}`;
-  metadata.crafting = 1;
-  metadata.questing = 1;
-  metadata.rarity = RARITY[params._rarity];
-  metadata.role = CLASS[params._class];
-  metadata.type = TYPE[params._generation];
-  metadata.summons = BigInt.zero();
+  // let metadata = new LegionInfo(`${token.id}-metadata`);
 
-  metadata.save();
+  // // TODO: Add Crafting XP
+  // // TODO: Add Questing XP
+  // metadata.boost = `${BOOST_MATRIX[params._generation][params._rarity] / 1e18}`;
+  // metadata.crafting = 1;
+  // metadata.questing = 1;
+  // metadata.rarity = RARITY[params._rarity];
+  // metadata.role = CLASS[params._class];
+  // metadata.type = TYPE[params._generation];
+  // metadata.summons = BigInt.zero();
 
-  let ipfs = "ipfs://QmeR9k2WJcSiiuUGY3Wvjtahzo3UUaURiPpLEapFcDe9JC";
+  // metadata.save();
 
-  token.category = "Legion";
-  token.image = `${ipfs}/${metadata.rarity}%20${metadata.role}.gif`;
-  token.name = `${metadata.type} ${metadata.rarity}`;
-  token.metadata = metadata.id;
-  token.rarity = metadata.rarity.replace("Recruit", "None");
+  // /*
+  //   let name = getName(data.tokenId);
 
-  if (metadata.type == "Recruit") {
-    let user = User.load(params._owner.toHexString());
+  //   token.contract = data.contract;
+  //   token.image = getImageHash(data.tokenId, name)
+  //     .split(" ")
+  //     .join("%20");
+  //   token.name = name;
+  //   token.rarity = getRarity(data.tokenId);
+  //   token.tokenId = data.tokenId;
+  // */
+  // let ipfs = "ipfs://QmeR9k2WJcSiiuUGY3Wvjtahzo3UUaURiPpLEapFcDe9JC";
 
-    if (user) {
-      user.recruit = token.id;
-      user.save();
-    }
+  // if (metadata.rarity == "Common") {
+  //   token.image = `${ipfs}/${metadata.rarity}%20${metadata.role}.gif`;
+  // }
 
-    token.image = `${ipfs}/Recruit.gif`;
-    token.name = "Recruit";
-  }
+  // token.category = "Legion";
+  // token.name = `${metadata.type} ${metadata.rarity}`;
+  // token.metadata = metadata.id;
+  // token.rarity = metadata.rarity.replace("Recruit", "None");
 
-  token.save();
+  // if (metadata.type == "Recruit") {
+  //   let user = User.load(params._owner.toHexString());
+
+  //   if (user) {
+  //     user.recruit = token.id;
+  //     user.save();
+  //   }
+
+  //   token.image = `${ipfs}/Recruit.gif`;
+  //   token.name = "Recruit";
+  // }
+
+  // token.save();
 }
 
 export function handleLegionQuestLevelUp(event: LegionQuestLevelUp): void {
@@ -277,8 +312,11 @@ export function handleTransfer(event: Transfer): void {
     BigInt.fromI32(1)
   );
 
-  // TODO: Not needed in Prod
-  if (isMint(params.from) && params.tokenId.toI32() < 4) {
-    setMetadata(event.address, params.tokenId);
-  }
+  // if (
+  //   dataSource.network() == "arbitrum-rinkeby" &&
+  //   isMint(params.from) &&
+  //   params.tokenId.toI32() < 4
+  // ) {
+  //   setMetadata(event.address, params.tokenId);
+  // }
 }

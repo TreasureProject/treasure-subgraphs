@@ -6,7 +6,7 @@ import {
   PilgrimagesStarted,
 } from "../../generated/Pilgrimage/Pilgrimage";
 import { BigInt, log, store } from "@graphprotocol/graph-ts";
-import { getAddressId, getImageHash } from "../helpers";
+import { createLegion, getAddressId, getImageHash } from "../helpers";
 import { LEGION_ADDRESS } from "@treasure/constants";
 
 export function handleNoPilgrimagesToFinish(
@@ -28,22 +28,29 @@ export function handlePilgrimagesFinished(event: PilgrimagesFinished): void {
   for (let index = 0; index < pilgrimageIds.length; index++) {
     let pilgrimageId = pilgrimageIds[index];
     let tokenId = tokenIds[index];
+    // let legionId = getAddressId(LEGION_ADDRESS, tokenId);
 
-    let legion = Token.load(getAddressId(LEGION_ADDRESS, tokenId));
-    let pilgrimage = Pilgrimage.load(getAddressId(user, pilgrimageId));
+    // let legion = Token.load(legionId);
+    // let pilgrimage = Pilgrimage.load(getAddressId(user, pilgrimageId));
 
-    if (legion && pilgrimage) {
-      let token = Token.load(pilgrimage.token);
+    createLegion(user, tokenId, 0, 0, 0, getAddressId(user, pilgrimageId));
 
-      if (token) {
-        legion.image = getImageHash(token.tokenId, token.name);
-        legion.save();
-      }
-    }
+    // if (!legion) {
+    //   legion = new Token(legionId)
+    // }
 
-    if (pilgrimage) {
-      store.remove("Pilgrimage", pilgrimage.id);
-    }
+    // if (legion && pilgrimage) {
+    //   let token = Token.load(pilgrimage.token);
+
+    //   if (token) {
+    //     legion.image = getImageHash(token.tokenId, token.name);
+    //     legion.save();
+    //   }
+    // }
+
+    // if (pilgrimage) {
+    //   store.remove("Pilgrimage", pilgrimage.id);
+    // }
   }
 }
 
