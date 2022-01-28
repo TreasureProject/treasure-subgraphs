@@ -1,0 +1,33 @@
+specVersion: 0.0.4
+schema:
+  file: ./schema.graphql
+dataSources:
+  - name: Pilgrimage
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ pilgrimage_address }}"
+      abi: Pilgrimage
+      startBlock: {{ pilgrimage_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Pilgrimage
+        - Token
+        - User
+        - UserToken
+      abis:
+        - name: Pilgrimage
+          file: ../../node_modules/@treasure/subgraph-abis/src/Pilgrimage.json
+        - name: ERC1155
+          file: ../../node_modules/@treasure/subgraph-abis/src/1155.json
+      eventHandlers:
+        - event: PilgrimagesStarted(indexed address,indexed address,indexed uint256,uint256[],uint256[],uint256[])
+          handler: handlePilgrimagesStarted
+        - event: PilgrimagesFinished(indexed address,uint256[],uint256[])
+          handler: handlePilgrimagesFinished
+        - event: NoPilgrimagesToFinish(indexed address)
+          handler: handleNoPilgrimagesToFinish
+      file: ./src/mappings/pilgrimage.ts

@@ -1,0 +1,267 @@
+# enum Category {
+#   Consumable
+#   Legion
+#   Treasure
+# }
+
+# enum Status {
+#   Idle
+#   Revealable
+#   Revealed
+#   Finished
+# }
+
+# enum Size {
+#   Small
+#   Medium
+#   Large
+# }
+
+# enum Rarity {
+#   Common
+#   Epic
+#   Legendary
+#   Rare
+#   Special
+#   Uncommon
+#   None
+# }
+
+# enum TreasureCategory {
+#   Alchemy
+#   Arcana
+#   Brewing
+#   Enchanter
+#   Leatherworking
+#   Smithing
+# }
+
+# interface Metadata {
+#   id: ID!
+# }
+
+# type Constellation implements Metadata @entity {
+#   id: ID!
+
+#   dark: Int!
+#   earth: Int!
+#   fire: Int!
+#   light: Int!
+#   water: Int!
+#   wind: Int!
+# }
+
+# type ConsumableInfo implements Metadata @entity {
+#   id: ID!
+
+#   type: String!
+#   size: Size
+# }
+
+# type LegionInfo implements Metadata @entity {
+#   id: ID!
+
+#   boost: String!
+#   cooldown: BigInt
+#   crafting: Int!
+#   questing: Int!
+#   rarity: String!
+#   "This is `class`, but we can't use that word"
+#   role: String!
+#   type: String!
+#   summons: BigInt!
+# }
+
+# type TreasureInfo implements Metadata @entity {
+#   id: ID!
+
+#   boost: String!
+#   category: TreasureCategory!
+#   tier: Int!
+# }
+
+# type Approval @entity {
+#   id: ID!
+
+#   contract: Bytes!
+#   operator: Bytes!
+#   users: [UserApproval!]! @derivedFrom(field: "approval")
+# }
+
+# type AtlasMine @entity {
+#   id: ID!
+
+#   deposits: [Deposit!]! @derivedFrom(field: "mine")
+#   utilization: BigInt!
+#   withdrawals: [Withdraw!]! @derivedFrom(field: "mine")
+# }
+
+# type Deposit @entity {
+#   id: ID!
+
+#   amount: BigInt!
+#   depositId: BigInt!
+#   endTimestamp: BigInt!
+#   lock: Int!
+#   mine: AtlasMine!
+#   user: User!
+#   withdrawal: Withdraw
+# }
+
+# type Withdraw @entity {
+#   id: ID!
+
+#   amount: BigInt!
+#   deposit: Deposit!
+#   mine: AtlasMine!
+#   user: User!
+# }
+
+# type Random @entity {
+#   id: ID!
+
+#   "Set for crafting"
+#   craft: Craft
+#   "Set for questing"
+#   quest: Quest
+#   "Set for summoning"
+#   summon: Summon
+
+#   requestId: BigInt!
+#   seeded: Seeded
+# }
+
+# type Seeded @entity {
+#   id: ID!
+
+#   random: Random!
+# }
+
+# type Broken @entity {
+#   id: ID!
+
+#   outcome: Outcome!
+#   quantity: BigInt!
+#   token: Token!
+# }
+
+# type Outcome @entity {
+#   id: ID!
+
+#   broken: [Broken!]! @derivedFrom(field: "outcome")
+#   magicReturned: BigInt!
+#   rewardAmount: Int!
+#   reward: Token
+#   success: Boolean!
+# }
+
+# type Craft @entity {
+#   id: ID!
+
+#   endTimestamp: BigInt!
+#   outcome: Outcome
+#   random: Random!
+#   status: Status!
+#   token: Token!
+#   user: User!
+# }
+
+# type Reward @entity {
+#   id: ID!
+
+#   crystalShards: Int!
+#   starlights: Int!
+#   treasure: Token
+#   universalLocks: Int!
+# }
+
+# type Quest @entity {
+#   id: ID!
+
+#   endTimestamp: BigInt!
+#   random: Random!
+#   reward: Reward
+#   status: Status!
+#   token: Token!
+#   user: User!
+# }
+
+# type StakedToken @entity {
+#   id: ID!
+
+#   quantity: BigInt!
+#   token: Token!
+#   user: User!
+# }
+
+# type Summon @entity {
+#   id: ID!
+
+#   endTimestamp: BigInt!
+#   random: Random!
+#   status: Status!
+#   token: Token!
+#   user: User!
+# }
+
+# type Token @entity {
+#   id: ID!
+
+#   category: Category
+#   contract: Bytes!
+#   "0 = Genesis, 1 = Auxiliary, 2 = Recruit"
+#   generation: Int
+#   image: String!
+#   metadata: Metadata
+#   name: String!
+#   owners: [UserToken!]! @derivedFrom(field: "token")
+#   rarity: Rarity!
+#   tokenId: BigInt!
+# }
+
+# type User @entity {
+#   id: ID!
+
+#   approvals: [UserApproval!]! @derivedFrom(field: "user")
+#   crafts: [Craft!]! @derivedFrom(field: "user")
+#   deposits: [Deposit!]! @derivedFrom(field: "user")
+#   pilgrimaging: [Pilgrimage!] @derivedFrom(field: "user")
+#   quests: [Quest!]! @derivedFrom(field: "user")
+#   staked: [StakedToken!]! @derivedFrom(field: "user")
+#   tokens: [UserToken!]! @derivedFrom(field: "user")
+#   summons: [Summon!]! @derivedFrom(field: "user")
+#   withdrawals: [Withdraw!]! @derivedFrom(field: "user")
+
+#   boost: String!
+#   boosts: Int!
+#   deposited: BigInt!
+#   recruit: Token
+# }
+
+type Pilgrimage @entity {
+  id: ID!
+
+  current: Int!
+  total: Int!
+
+  # endTimestamp: BigInt!
+  # pilgrimageId: BigInt!
+  # quantity: BigInt!
+  # token: Token!
+  # user: User!
+}
+
+# type UserApproval @entity {
+#   id: ID!
+
+#   approval: Approval!
+#   user: User!
+# }
+
+# type UserToken @entity {
+#   id: ID!
+
+#   quantity: BigInt!
+#   token: Token!
+#   user: User!
+# }
