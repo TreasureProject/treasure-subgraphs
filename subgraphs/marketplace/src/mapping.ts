@@ -1,31 +1,74 @@
 import { Address, BigInt, log, store } from "@graphprotocol/graph-ts";
 import { EXPLORER } from "@treasure/constants";
-import { Listing, User } from "../generated/schema";
 import {
   ItemCanceled,
   ItemListed,
   ItemSold,
   ItemUpdated,
 } from "../generated/TreasureMarketplace/TreasureMarketplace";
+import { Listing, Token, User, UserToken } from "../generated/schema";
+import {
+  TransferBatch,
+  TransferSingle,
+} from "../generated/TreasureMarketplace/ERC1155";
 import { removeIfExist } from "./helpers";
+
+export function getAddressId(address: Address, tokenId: BigInt): string {
+  return `${address.toHexString()}-${tokenId.toHexString()}`;
+}
+
+function getListingId(
+  seller: Address,
+  contract: Address,
+  tokenId: BigInt
+): string {
+  return [
+    seller.toHexString(),
+    contract.toHexString(),
+    tokenId.toString(),
+  ].join("-");
+}
 
 function getListing(
   seller: Address,
   contract: Address,
   tokenId: BigInt
 ): Listing {
-  let id = `${seller.toHexString()}-${contract.toHexString()}-${tokenId.toString()}`;
+  let id = getListingId(seller, contract, tokenId);
   let listing = Listing.load(id);
 
   if (!listing) {
     listing = new Listing(id);
 
+    listing.contract = contract;
     listing.seller = getUser(seller).id;
     // TODO: Might be Inactive based on if it was staked or not??
     listing.status = "Active";
   }
 
   return listing;
+}
+
+function getToken(contract: Address, tokenId: BigInt): Token {
+  let id = getAddressId(contract, tokenId);
+  let token = Token.load(id);
+
+  if (!token) {
+    token = new Token(id);
+
+    // let name = getName(data.tokenId);
+
+    token.contract = contract;
+    // token.image = getImageHash(data.tokenId, name)
+    //   .split(" ")
+    //   .join("%20");
+    // token.name = name;
+    // token.rarity = getRarity(data.tokenId);
+    token.tokenId = tokenId;
+    token.save();
+  }
+
+  return token;
 }
 
 function getUser(address: Address): User {
@@ -37,6 +80,45 @@ function getUser(address: Address): User {
   }
 
   return user;
+}
+
+/**
+ * This is a generic function that can handle both ERC1155s and ERC721s
+ */
+function handleTransfer(
+  contract: Address,
+  from: Address,
+  to: Address,
+  tokenId: BigInt,
+  quantity: i32
+): void {
+  // let data = new Transfer(contract, to, tokenId);
+  let user = getUser(to);
+  let token = getToken(contract, tokenId);
+
+  let fromUserToken = UserToken.load(`${from.toHexString()}-${token.id}`);
+
+  if (fromUserToken) {
+    fromUserToken.quantity = fromUserToken.quantity - quantity;
+    fromUserToken.save();
+
+    if (fromUserToken.quantity == 0) {
+      removeIfExist("UserToken", fromUserToken.id);
+    }
+  }
+
+  let id = `${user.id}-${token.id}`;
+  let toUserToken = UserToken.load(id);
+
+  if (!toUserToken) {
+    toUserToken = new UserToken(id);
+
+    toUserToken.token = token.id;
+    toUserToken.user = user.id;
+  }
+
+  toUserToken.quantity = toUserToken.quantity + quantity;
+  toUserToken.save();
 }
 
 export function handleItemCanceled(event: ItemCanceled): void {
@@ -60,6 +142,7 @@ export function handleItemListed(event: ItemListed): void {
   listing.expires = params.expirationTime;
   listing.pricePerItem = pricePerItem;
   listing.quantity = quantity;
+  listing.token = getAddressId(tokenAddress, tokenId);
 
   listing.save();
 }
@@ -111,4 +194,55 @@ export function handleItemUpdated(event: ItemUpdated): void {
   listing.pricePerItem = params.pricePerItem;
 
   listing.save();
+}
+
+export function handleTransferBatch(event: TransferBatch): void {
+  let params = event.params;
+  let ids = params.ids;
+  let amounts = params.values;
+  let length = ids.length;
+
+  for (let index = 0; index < length; index++) {
+    let tokenId = ids[index];
+    let listing = Listing.load(
+      getListingId(params.from, event.address, tokenId)
+    );
+
+    // For now, we will just set them inactive
+    // TODO: Handle if they had non-listed ones first...
+    if (listing) {
+      listing.status = "Inactive";
+      listing.save();
+    }
+
+    handleTransfer(
+      event.address,
+      params.from,
+      params.to,
+      tokenId,
+      amounts[index].toI32()
+    );
+  }
+}
+
+export function handleTransferSingle(event: TransferSingle): void {
+  let params = event.params;
+  let listing = Listing.load(
+    getListingId(params.from, event.address, params.id)
+  );
+
+  // For now, we will just set them inactive
+  // TODO: Handle if they had non-listed ones first...
+  if (listing) {
+    listing.status = "Inactive";
+    listing.save();
+  }
+
+  handleTransfer(
+    event.address,
+    params.from,
+    params.to,
+    params.id,
+    params.value.toI32()
+  );
 }
