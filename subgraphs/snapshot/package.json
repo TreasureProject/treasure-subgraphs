@@ -8,6 +8,8 @@
     "codegen": "graph codegen subgraph.yaml",
     "deploy": "graph deploy --product hosted-service treasureproject/snapshot",
     "prepare:arbitrum": "mustache ../../node_modules/@treasure/subgraph-config/src/arbitrum.json template.yaml > subgraph.yaml",
-    "prepare:arbitrum-testnet": "true"
+    "prepare:arbitrum-testnet": "true",
+    "prepare:mainnet": "true",
+    "test": "true"
   }
 }

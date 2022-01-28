@@ -11,7 +11,9 @@
     "codegen": "yarn workspaces run codegen",
     "deploy": "yarn workspaces run deploy",
     "prepare:arbitrum": "yarn workspaces run prepare:arbitrum",
-    "prepare:arbitrum-testnet": "yarn workspaces run prepare:arbitrum-testnet"
+    "prepare:arbitrum-testnet": "yarn workspaces run prepare:arbitrum-testnet",
+    "prepare:mainnet": "yarn workspaces run prepare:mainnet",
+    "test": "graph test"
   },
   "devDependencies": {
     "@graphprotocol/graph-cli": "0.26.0",

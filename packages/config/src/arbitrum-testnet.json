@@ -1,7 +1,12 @@
 {
   "network": "arbitrum-rinkeby",
-  "atlas_mine_address": "0xe31bD18692A8dBE5D8623Df094E6Bc271C779765",
-  "atlas_mine_start_block": 8829778,
+
+  "abis": "../../node_modules/@treasure/subgraph-abis/src",
+  "burner_address": "0x0000000000000000000000000000000000000000",
+  "explorer": "testnet.arbiscan.io",
+
+  "atlas_mine_address": "0x34919698cD91aaF30a3ce5B2FF4EE5Ccb59fdc88",
+  "atlas_mine_start_block": 8952193,
   "consumable_address": "0x906369481B258Ca3C21A6737Bce052d85572a8F3",
   "consumable_start_block": 8568830,
   "crafting_address": "0xd5Ea0A9C24f8271927B13588E265F6A62C3bfBA4",

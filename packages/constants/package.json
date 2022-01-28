@@ -9,7 +9,9 @@
     "build": "true",
     "codegen": "true",
     "deploy": "true",
-    "prepare:arbitrum": "true",
-    "prepare:arbitrum-testnet": "mustache ../../node_modules/@treasure/subgraph-config/src/arbitrum-testnet.json src/index.template.ts > index.ts"
+    "prepare:arbitrum": "mustache ../../node_modules/@treasure/subgraph-config/src/arbitrum.json src/index.template.ts > index.ts",
+    "prepare:arbitrum-testnet": "mustache ../../node_modules/@treasure/subgraph-config/src/arbitrum-testnet.json src/index.template.ts > index.ts",
+    "prepare:mainnet": "mustache ../../node_modules/@treasure/subgraph-config/src/mainnet.json src/index.template.ts > index.ts",
+    "test": "true"
   }
 }

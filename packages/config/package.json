@@ -12,6 +12,7 @@
     "codegen": "true",
     "deploy": "true",
     "prepare:arbitrum": "true",
-    "prepare:arbitrum-testnet": "true"
+    "prepare:arbitrum-testnet": "true",
+    "prepare:mainnet": "true"
   }
 }

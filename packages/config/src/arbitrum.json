@@ -1,8 +1,12 @@
 {
   "network": "arbitrum-one",
 
-  "atlas_mine_address": "0x0000000000000000000000000000000000000000",
-  "atlas_mine_start_block": 2416540,
+  "abis": "../../node_modules/@treasure/subgraph-abis/src",
+  "burner_address": "0x0000000000000000000000000000000000000000",
+  "explorer": "arbiscan.io",
+
+  "atlas_mine_address": "0xA0A89db1C899c49F98E6326b764BAFcf167fC2CE",
+  "atlas_mine_start_block": 5004790,
   "consumable_address": "0xF3d00A2559d84De7aC093443bcaAdA5f4eE4165C",
   "consumable_start_block": 2416540,
   "crafting_address": "0xB9c9eD651Eb173Ca7fbC3A094da9Ce33ec145a29",
@@ -12,13 +16,13 @@
   "legacy_legion_genesis_address": "0xE83c0200E93Cb1496054e387BDdaE590C07f0194",
   "legacy_legion_genesis_start_block": 2416548,
   "legion_address": "0xfE8c1ac365bA6780AEc5a985D989b327C27670A1",
-  "legion_start_block": 2416540,
+  "legion_start_block": 4955997,
   "legion_metadata_store_address": "0x99193EE9229b833d2aA4DbBdA697C6600b944286",
-  "legion_metadata_store_start_block": 2416540,
+  "legion_metadata_store_start_block": 4956057,
   "magic_address": "0x539bdE0d7Dbd336b79148AA742883198BBF60342",
   "magic_start_block": 2416540,
   "pilgrimage_address": "0xD661A18E824c8d2EDf3BADF75aeDDa5B7D142448",
-  "pilgrimage_start_block": 2416540,
+  "pilgrimage_start_block": 4956132,
   "questing_address": "0xDA3caD5e4F40062CECa6c1B979766BC0BAed8e33",
   "questing_start_block": 2416540,
   "randomizer_address": "0x8e79c8607a28fe1EC3527991C89F1d9E36D1bAd9",
@@ -43,5 +47,8 @@
   "smol_bodies_gym_address": "0x66299ecC614b7A1920922bBa7527819c841174BD",
   "smol_bodies_gym_start_block": 3756579,
   "smol_rocket_address": "0x8957A18a77451d762dE204b61EA4F858Bb3bED4d",
-  "smol_rocket_start_block": 4310278
+  "smol_rocket_start_block": 4310278,
+
+  "treasure_marketplace_address": "0x2E3b85F85628301a0Bce300Dee3A6B04195A15Ee",
+  "treasure_marketplace_start_block": 2983469
 }
