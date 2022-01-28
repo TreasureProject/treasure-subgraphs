@@ -233,6 +233,8 @@ type User @entity {
   withdrawals: [Withdraw!]! @derivedFrom(field: "user")
 
   boost: String!
+  boosts: Int!
+  deposited: BigInt!
   recruit: Token
 }
 

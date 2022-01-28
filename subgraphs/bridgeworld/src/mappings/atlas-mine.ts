@@ -1,11 +1,11 @@
 import {
   AtlasMine,
   Deposit,
-  LegionInfo,
   StakedToken,
   User,
   Withdraw,
 } from "../../generated/schema";
+import { BigDecimal, BigInt, log, store } from "@graphprotocol/graph-ts";
 import {
   Deposit as DepositEvent,
   Staked,
@@ -14,7 +14,8 @@ import {
   Withdraw as WithdrawEvent,
 } from "../../generated/Atlas Mine/AtlasMine";
 import { getAddressId } from "../helpers/utils";
-import { BigInt, log, store } from "@graphprotocol/graph-ts";
+
+const ONE = BigDecimal.fromString((1e18).toString());
 
 const DAY = 86_400;
 const ONE_WEEK = DAY * 7;
@@ -35,9 +36,16 @@ const TIMESTAMPS = [
 export function handleDeposit(event: DepositEvent): void {
   let mine = event.address.toHexString();
   let params = event.params;
-  let user = params.user;
+  let userId = params.user;
   let lock = params.lock;
-  let deposit = new Deposit(getAddressId(user, params.index));
+
+  let deposit = new Deposit(getAddressId(userId, params.index));
+  let user = User.load(userId.toHexString());
+
+  if (user) {
+    user.deposited = user.deposited.plus(params.amount);
+    user.save();
+  }
 
   deposit.amount = params.amount;
   deposit.depositId = params.index;
@@ -46,7 +54,7 @@ export function handleDeposit(event: DepositEvent): void {
     .times(BigInt.fromI32(1000));
   deposit.lock = lock;
   deposit.mine = mine;
-  deposit.user = user.toHexString();
+  deposit.user = userId.toHexString();
   deposit.save();
 }
 
@@ -54,7 +62,8 @@ export function handleStaked(event: Staked): void {
   let params = event.params;
   let nft = params.nft;
   let tokenId = params.tokenId;
-  let quantity = BigInt.fromI32(1);
+  let quantity = params.amount;
+  let boost = params.currentBoost;
   let addressId = getAddressId(nft, tokenId);
   let userId = event.transaction.from.toHexString();
   let stakedTokenId = `${userId}-${addressId}`;
@@ -62,14 +71,9 @@ export function handleStaked(event: Staked): void {
   let user = User.load(userId);
 
   if (user) {
-    let metadata = LegionInfo.load(`${addressId}-metadata`);
-
-    if (metadata) {
-      user.boost = (
-        parseFloat(user.boost) + parseFloat(metadata.boost)
-      ).toString();
-      user.save();
-    }
+    user.boosts = user.boosts + quantity.toI32();
+    user.boost = boost.divDecimal(ONE).toString();
+    user.save();
   }
 
   let stakedToken = StakedToken.load(stakedTokenId);
@@ -89,7 +93,8 @@ export function handleUnstaked(event: Unstaked): void {
   let params = event.params;
   let nft = params.nft;
   let tokenId = params.tokenId;
-  let quantity = BigInt.fromI32(1);
+  let quantity = params.amount;
+  let boost = params.currentBoost;
   let addressId = getAddressId(nft, tokenId);
   let userId = event.transaction.from.toHexString();
   let stakedTokenId = `${userId}-${addressId}`;
@@ -97,14 +102,9 @@ export function handleUnstaked(event: Unstaked): void {
   let user = User.load(userId);
 
   if (user) {
-    let metadata = LegionInfo.load(`${addressId}-metadata`);
-
-    if (metadata) {
-      user.boost = (
-        parseFloat(user.boost) - parseFloat(metadata.boost)
-      ).toString();
-      user.save();
-    }
+    user.boosts = user.boosts - quantity.toI32();
+    user.boost = boost.divDecimal(ONE).toString();
+    user.save();
   }
 
   let stakedToken = StakedToken.load(stakedTokenId);
@@ -114,7 +114,7 @@ export function handleUnstaked(event: Unstaked): void {
     stakedToken.save();
 
     if (stakedToken.quantity.toI32() == 0) {
-      store.remove("UserToken", stakedToken.id);
+      store.remove("StakedToken", stakedToken.id);
     }
   }
 }
@@ -134,8 +134,8 @@ export function handleUtilizationRate(event: UtilizationRate): void {
 export function handleWithdraw(event: WithdrawEvent): void {
   let mine = event.address.toHexString();
   let params = event.params;
-  let user = params.user;
-  let id = getAddressId(user, params.index);
+  let userId = params.user;
+  let id = getAddressId(userId, params.index);
   let withdraw = new Withdraw(id);
   let deposit = Deposit.load(id);
 
@@ -145,12 +145,19 @@ export function handleWithdraw(event: WithdrawEvent): void {
     return;
   }
 
+  let user = User.load(userId.toHexString());
+
+  if (user) {
+    user.deposited = user.deposited.minus(params.amount);
+    user.save();
+  }
+
   deposit.withdrawal = id;
   deposit.save();
 
   withdraw.amount = params.amount;
   withdraw.deposit = id;
   withdraw.mine = mine;
-  withdraw.user = user.toHexString();
+  withdraw.user = userId.toHexString();
   withdraw.save();
 }
