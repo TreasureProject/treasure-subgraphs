@@ -1,0 +1,37 @@
+specVersion: 0.0.4
+schema:
+  file: ./schema.graphql
+dataSources:
+  - name: TreasureMarketplace
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ treasure_marketplace_address }}"
+      abi: TreasureMarketplace
+      startBlock: {{ treasure_marketplace_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - ItemCanceled
+        - ItemListed
+        - ItemSold
+        - ItemUpdated
+      abis:
+        - name: ERC721
+          file: {{{ abis }}}/721.json
+        - name: ERC1155
+          file: {{{ abis }}}/1155.json
+        - name: TreasureMarketplace
+          file: {{{ abis }}}/TreasureMarketplace.json
+      eventHandlers:
+        - event: ItemCanceled(address,address,uint256)
+          handler: handleItemCanceled
+        - event: ItemListed(address,address,uint256,uint256,uint256,uint256)
+          handler: handleItemListed
+        - event: ItemSold(address,address,address,uint256,uint256,uint256)
+          handler: handleItemSold
+        - event: ItemUpdated(address,address,uint256,uint256,uint256,uint256)
+          handler: handleItemUpdated
+      file: ./src/mapping.ts
