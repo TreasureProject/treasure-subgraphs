@@ -28,6 +28,7 @@ export function handleCraftingStarted(event: CraftingStarted): void {
     return;
   }
 
+  // TODO: Add treasures sent in for craft
   craft.endTimestamp = finishTime.times(BigInt.fromI32(1000));
   craft.token = getAddressId(LEGION_ADDRESS, tokenId);
   craft.random = random.id;

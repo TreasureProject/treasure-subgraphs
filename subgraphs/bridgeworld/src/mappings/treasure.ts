@@ -160,7 +160,7 @@ function setMetadata(contract: Address, tokenId: BigInt): void {
   let token = Token.load(getAddressId(contract, tokenId));
 
   if (!token) {
-    log.error("Unknown token: {}", [tokenId.toString()]);
+    log.error("[treasure-metadata] Unknown token: {}", [tokenId.toString()]);
 
     return;
   }
@@ -190,7 +190,7 @@ export function handleApprovalForAll(event: ApprovalForAll): void {
   let user = User.load(userId);
 
   if (!user) {
-    log.error("Unknown user: {}", [userId]);
+    log.error("[treasure-approval] Unknown user: {}", [userId]);
 
     return;
   }
