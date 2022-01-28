@@ -7,14 +7,23 @@ import { log } from "@graphprotocol/graph-ts";
 
 export function handleRandomRequest(event: RandomRequest): void {
   let params = event.params;
-  let commitId = params._commitId;
+  let commitId = params._commitId.toHexString();
   let requestId = params._requestId.toHexString();
 
-  new Random(requestId).save();
+  let random = new Random(requestId);
 
-  let seeded = new Seeded(commitId.toHexString());
+  random.seeded = commitId;
+  random.save();
 
-  seeded.random = requestId;
+  let seeded = Seeded.load(commitId);
+
+  if (!seeded) {
+    seeded = new Seeded(commitId);
+
+    seeded.randoms = [];
+  }
+
+  seeded.randoms = seeded.randoms.concat([requestId]);
   seeded.save();
 }
 
@@ -30,62 +39,55 @@ export function handleRandomSeeded(event: RandomSeeded): void {
     return;
   }
 
-  let random = Random.load(seeded.random);
+  let randoms = seeded.randoms;
 
-  if (!random) {
-    log.error("[seeded] Unknown random: {}", [seeded.random]);
+  for (let index = 0; index < randoms.length; index++) {
+    let id = randoms[index];
+    let random = Random.load(id);
 
-    return;
-  }
-
-  let craftId = random.craft;
-  let questId = random.quest;
-  let summonId = random.summon;
-
-  log.info(
-    "[seeded] commitId: {}, seeded.random: {}, craftId: {}, questId: {}, summonId: {}, tx: {}",
-    [
-      commitId.toString(),
-      seeded.random,
-      craftId ? craftId : "null",
-      questId ? questId : "null",
-      summonId ? summonId : "null",
-      event.transaction.hash.toHexString()
-    ]
-  );
-
-  if (craftId !== null) {
-    let craft = Craft.load(craftId);
-
-    if (craft) {
-      craft.status = "Revealable";
-      craft.save();
+    if (!random) {
+      log.error("[seeded] Unknown random: {}", [id]);
 
       return;
     }
-  }
 
-  if (questId !== null) {
-    let quest = Quest.load(questId);
+    let craftId = random.craft;
+    let questId = random.quest;
+    let summonId = random.summon;
 
-    if (quest) {
-      quest.status = "Revealable";
-      quest.save();
+    if (craftId !== null) {
+      let craft = Craft.load(craftId);
 
-      return;
+      if (craft) {
+        craft.status = "Revealable";
+        craft.save();
+
+        continue;
+      }
     }
-  }
 
-  if (summonId !== null) {
-    let summon = Summon.load(summonId);
+    if (questId !== null) {
+      let quest = Quest.load(questId);
 
-    if (summon) {
-      summon.status = "Revealable";
-      summon.save();
+      if (quest) {
+        quest.status = "Revealable";
+        quest.save();
 
-      return;
+        continue;
+      }
     }
-  }
 
-  log.error("Unhandled seeded: {}", [commitId.toString()]);
+    if (summonId !== null) {
+      let summon = Summon.load(summonId);
+
+      if (summon) {
+        summon.status = "Revealable";
+        summon.save();
+
+        continue;
+      }
+    }
+
+    log.error("Unhandled seeded: {}", [commitId.toString()]);
+  }
 }

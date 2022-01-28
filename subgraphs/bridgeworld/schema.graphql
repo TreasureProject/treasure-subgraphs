@@ -134,7 +134,7 @@ type Random @entity {
 type Seeded @entity {
   id: ID!
 
-  random: Random!
+  randoms: [Random!]!
 }
 
 type Broken @entity {

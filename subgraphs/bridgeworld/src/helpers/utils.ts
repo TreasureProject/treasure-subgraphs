@@ -8,7 +8,6 @@ export function isMint(address: Address): boolean {
   return address.equals(Address.zero());
 }
 
-// @ts-ignore - i32 is correct
 function removeAtIndex<T>(array: T[], index: i32): T[] {
   return index == -1
     ? array
