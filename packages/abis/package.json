@@ -10,9 +10,12 @@
   "scripts": {
     "build": "true",
     "codegen": "true",
-    "deploy": "true",
-    "prepare:arbitrum": "true",
-    "prepare:arbitrum-testnet": "true",
-    "prepare:mainnet": "true"
+    "deploy:dev": "true",
+    "deploy:staging": "true",
+    "deploy:prod": "true",
+    "prepare:dev": "true",
+    "prepare:staging": "true",
+    "prepare:prod": "true",
+    "test": "true"
   }
 }

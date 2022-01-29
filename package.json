@@ -9,11 +9,13 @@
   "scripts": {
     "build": "yarn workspaces run build",
     "codegen": "yarn workspaces run codegen",
-    "deploy": "yarn workspaces run deploy",
-    "prepare:arbitrum": "yarn workspaces run prepare:arbitrum",
-    "prepare:arbitrum-testnet": "yarn workspaces run prepare:arbitrum-testnet",
-    "prepare:mainnet": "yarn workspaces run prepare:mainnet",
-    "test": "graph test"
+    "deploy:dev": "yarn workspaces run deploy:dev",
+    "deploy:staging": "yarn workspaces run deploy:staging",
+    "deploy:prod": "yarn workspaces run deploy:prod",
+    "prepare:dev": "yarn workspaces run prepare:dev",
+    "prepare:staging": "yarn workspaces run prepare:staging",
+    "prepare:prod": "yarn workspaces run prepare:prod",
+    "test": "yarn workspaces run test"
   },
   "devDependencies": {
     "@graphprotocol/graph-cli": "0.26.0",

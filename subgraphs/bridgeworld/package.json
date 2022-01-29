@@ -6,12 +6,12 @@
   "scripts": {
     "build": "graph build subgraph.yaml",
     "codegen": "graph codegen subgraph.yaml",
+    "test": "graph test",
     "deploy:dev": "graph deploy --product hosted-service treasureproject/bridgeworld-dev",
-    "deploy:prod": "graph deploy --product hosted-service treasureproject/bridgeworld",
     "deploy:staging": "graph deploy --product hosted-service treasureproject/bridgeworld-next",
-    "prepare:arbitrum": "mustache ../../node_modules/@treasure/subgraph-config/src/arbitrum.json template.yaml > subgraph.yaml",
-    "prepare:arbitrum-testnet": "mustache ../../node_modules/@treasure/subgraph-config/src/arbitrum-testnet.json template.yaml > subgraph.yaml",
-    "prepare:mainnet": "true",
-    "test": "graph test"
+    "deploy:prod": "graph deploy --product hosted-service treasureproject/bridgeworld",
+    "prepare:dev": "mustache ../../node_modules/@treasure/subgraph-config/src/arbitrum-testnet.json template.yaml > subgraph.yaml",
+    "prepare:staging": "true",
+    "prepare:prod": "mustache ../../node_modules/@treasure/subgraph-config/src/arbitrum.json template.yaml > subgraph.yaml"
   }
 }

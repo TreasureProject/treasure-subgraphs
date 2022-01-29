@@ -1,6 +1,11 @@
 specVersion: 0.0.4
 schema:
   file: ./schema.graphql
+features:
+  - grafting
+graft:
+  base: QmRBFCC4LWVFqD6Edv84bmHcJf4vntbTqRKG87tWD929kV
+  block: 4955997
 dataSources:
   - name: Atlas Mine
     kind: ethereum/contract
@@ -23,9 +28,9 @@ dataSources:
       eventHandlers:
         - event: Deposit(indexed address,indexed uint256,uint256,uint8)
           handler: handleDeposit
-        - event: Staked(address,uint256,uint256)
+        - event: Staked(address,uint256,uint256,uint256)
           handler: handleStaked
-        - event: Unstaked(address,uint256,uint256)
+        - event: Unstaked(address,uint256,uint256,uint256)
           handler: handleUnstaked
         - event: UtilizationRate(uint256)
           handler: handleUtilizationRate

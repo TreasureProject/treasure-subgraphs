@@ -8,10 +8,15 @@
   "scripts": {
     "build": "true",
     "codegen": "true",
-    "deploy": "true",
+    "deploy:dev": "true",
+    "deploy:staging": "true",
+    "deploy:prod": "true",
     "prepare:arbitrum": "mustache ../../node_modules/@treasure/subgraph-config/src/arbitrum.json src/index.template.ts > index.ts",
     "prepare:arbitrum-testnet": "mustache ../../node_modules/@treasure/subgraph-config/src/arbitrum-testnet.json src/index.template.ts > index.ts",
     "prepare:mainnet": "mustache ../../node_modules/@treasure/subgraph-config/src/mainnet.json src/index.template.ts > index.ts",
+    "prepare:dev": "yarn prepare:arbitrum-testnet",
+    "prepare:staging": "true",
+    "prepare:prod": "yarn prepare:arbitrum && yarn prepare:mainnet",
     "test": "true"
   }
 }
