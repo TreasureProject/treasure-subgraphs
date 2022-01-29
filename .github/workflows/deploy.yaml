@@ -21,11 +21,11 @@ jobs:
       - name: Prepare
         run: yarn prepare:dev
       - name: Codegen
-        run: yarn codegen
+        run: yarn codegen:dev
       # - name: Test
       #   run: yarn test
       - name: Build
-        run: yarn build
+        run: yarn build:dev
       - name: Authenticate
         env:
           GRAPH_ACCESS_TOKEN: ${{ secrets.GRAPH_ACCESS_TOKEN }}

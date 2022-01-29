@@ -8,8 +8,12 @@
     "src"
   ],
   "scripts": {
-    "build": "true",
-    "codegen": "true",
+    "build:dev": "true",
+    "build:staging": "true",
+    "build:prod": "true",
+    "codegen:dev": "true",
+    "codegen:staging": "true",
+    "codegen:prod": "true",
     "deploy:dev": "true",
     "deploy:staging": "true",
     "deploy:prod": "true",
