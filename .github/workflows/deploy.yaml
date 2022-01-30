@@ -10,6 +10,10 @@ jobs:
   deploy-dev:
     if: github.event_name == 'pull_request' && github.event.pull_request.draft == false
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - network: arbtrium-testnet
     steps:
       - uses: actions/checkout@v2
       - name: Install node
@@ -19,13 +23,19 @@ jobs:
       - name: Install
         run: yarn --frozen-lockfile
       - name: Prepare
-        run: yarn prepare:dev
+        env:
+          NETWORK: ${{ matrix.network }}
+        run: yarn prepare:$NETWORK
       - name: Codegen
-        run: yarn codegen:dev
+        env:
+          NETWORK: ${{ matrix.network }}
+        run: yarn codegen:$NETWORK
       # - name: Test
       #   run: yarn test
       - name: Build
-        run: yarn build:dev
+        env:
+          NETWORK: ${{ matrix.network }}
+        run: yarn build:$NETWORK
       - name: Authenticate
         env:
           GRAPH_ACCESS_TOKEN: ${{ secrets.GRAPH_ACCESS_TOKEN }}
@@ -35,6 +45,11 @@ jobs:
   deploy-prod:
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - network: arbtrium
+          - network: mainnet
     steps:
       - uses: actions/checkout@v2
       - name: Install node
@@ -44,13 +59,19 @@ jobs:
       - name: Install
         run: yarn --frozen-lockfile
       - name: Prepare
-        run: yarn prepare:prod
+        env:
+          NETWORK: ${{ matrix.network }}
+        run: yarn prepare:$NETWORK
       - name: Codegen
-        run: yarn codegen
+        env:
+          NETWORK: ${{ matrix.network }}
+        run: yarn codegen:$NETWORK
       # - name: Test
       #   run: yarn test
       - name: Build
-        run: yarn build
+        env:
+          NETWORK: ${{ matrix.network }}
+        run: yarn build:$NETWORK
       - name: Authenticate
         env:
           GRAPH_ACCESS_TOKEN: ${{ secrets.GRAPH_ACCESS_TOKEN }}

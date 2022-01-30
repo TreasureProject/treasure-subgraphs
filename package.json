@@ -7,18 +7,18 @@
     "subgraphs/*"
   ],
   "scripts": {
-    "build:dev": "yarn workspaces run build:dev",
-    "build:staging": "yarn workspaces run build:staging",
-    "build:prod": "yarn workspaces run build:prod",
-    "codegen:dev": "yarn workspaces run codegen:dev",
-    "codegen:staging": "yarn workspaces run codegen:staging",
-    "codegen:prod": "yarn workspaces run codegen:prod",
+    "build:arbitrum-testnet": "yarn workspaces run build:arbitrum-testnet",
+    "build:arbitrum": "yarn workspaces run build:arbitrum",
+    "build:mainnet": "yarn workspaces run build:mainnet",
+    "codegen:arbitrum-testnet": "yarn workspaces run codegen:arbitrum-testnet",
+    "codegen:arbitrum": "yarn workspaces run codegen:arbitrum",
+    "codegen:mainnet": "yarn workspaces run codegen:mainnet",
     "deploy:dev": "yarn workspaces run deploy:dev",
     "deploy:staging": "yarn workspaces run deploy:staging",
     "deploy:prod": "yarn workspaces run deploy:prod",
-    "prepare:dev": "yarn workspaces run prepare:dev",
-    "prepare:staging": "yarn workspaces run prepare:staging",
-    "prepare:prod": "yarn workspaces run prepare:prod",
+    "prepare:arbitrum-testnet": "yarn workspaces run prepare:arbitrum-testnet",
+    "prepare:arbitrum": "yarn workspaces run prepare:arbitrum",
+    "prepare:mainnet": "yarn workspaces run prepare:mainnet",
     "test": "yarn workspaces run test"
   },
   "devDependencies": {

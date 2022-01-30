@@ -4,18 +4,18 @@
   "description": "Subgraph that powers Bridgeworld",
   "license": "MIT",
   "scripts": {
-    "build:dev": "true",
-    "build:staging": "true",
-    "build:prod": "graph build",
-    "codegen:dev": "true",
-    "codegen:staging": "true",
-    "codegen:prod": "graph codegen",
+    "build:arbitrum-testnet": "true",
+    "build:arbitrum": "true",
+    "build:mainnet": "graph build",
+    "codegen:arbitrum-testnet": "true",
+    "codegen:arbitrum": "true",
+    "codegen:mainnet": "graph codegen",
     "deploy:dev": "true",
     "deploy:staging": "true",
     "deploy:prod": "graph deploy --product hosted-service treasureproject/migration",
-    "prepare:dev": "true",
-    "prepare:staging": "true",
-    "prepare:prod": "mustache ../../node_modules/@treasure/subgraph-config/src/mainnet.json template.yaml > subgraph.yaml",
+    "prepare:arbitrum-testnet": "true",
+    "prepare:arbitrum": "true",
+    "prepare:mainnet": "mustache ../../node_modules/@treasure/subgraph-config/src/mainnet.json template.yaml > subgraph.yaml",
     "test": "graph test"
   }
 }

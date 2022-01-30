@@ -4,18 +4,19 @@
   "description": "Subgraph that powers Bridgeworld Statistics",
   "license": "MIT",
   "scripts": {
-    "build:dev": "graph build",
-    "build:staging": "true",
-    "build:prod": "graph build",
-    "codegen:dev": "graph codegen",
-    "codegen:staging": "true",
-    "codegen:prod": "graph codegen",
+    "build:arbitrum-testnet": "graph build",
+    "build:arbitrum": "graph build",
+    "build:mainnet": "true",
+    "codegen:arbitrum-testnet": "graph codegen",
+    "codegen:arbitrum": "graph codegen",
+    "codegen:mainnet": "true",
     "deploy:dev": "graph deploy --product hosted-service treasureproject/bridgeworld-stats-dev",
     "deploy:staging": "true",
     "deploy:prod": "graph deploy --product hosted-service treasureproject/bridgeworld-stats",
-    "prepare:dev": "mustache ../../node_modules/@treasure/subgraph-config/src/arbitrum.json template.yaml > subgraph.yaml",
-    "prepare:staging": "true",
-    "prepare:prod": "mustache ../../node_modules/@treasure/subgraph-config/src/arbitrum-testnet.json template.yaml > subgraph.yaml",
+    "prepare:arbitrum-testnet": "mustache ../../node_modules/@treasure/subgraph-config/src/arbitrum-testnet.json template.yaml > subgraph.yaml",
+    "prepare:arbitrum": "mustache ../../node_modules/@treasure/subgraph-config/src/arbitrum.json template.yaml > subgraph.yaml",
+    "prepare:rinkey": "true",
+    "prepare:mainnet": "true",
     "test": "graph test"
   }
 }
