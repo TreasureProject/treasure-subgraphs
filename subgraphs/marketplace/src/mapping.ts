@@ -1,4 +1,11 @@
-import { Address, BigInt, log, store } from "@graphprotocol/graph-ts";
+import { Address, BigInt, TypedMap } from "@graphprotocol/graph-ts";
+import {
+  Listing,
+  StakedToken,
+  Token,
+  User,
+  UserToken,
+} from "../generated/schema";
 import { EXPLORER } from "@treasure/constants";
 import {
   ItemCanceled,
@@ -6,44 +13,55 @@ import {
   ItemSold,
   ItemUpdated,
 } from "../generated/TreasureMarketplace/TreasureMarketplace";
-import { Listing, Token, User, UserToken } from "../generated/schema";
 import {
   TransferBatch,
   TransferSingle,
 } from "../generated/TreasureMarketplace/ERC1155";
-import { removeIfExist } from "./helpers";
+import { Transfer } from "../generated/TreasureMarketplace/ERC721";
+import {
+  exists,
+  getAddressId,
+  getCollection,
+  getName,
+  getUserAddressId,
+  removeFromArray,
+  removeIfExists,
+} from "./helpers";
+import { DropGym, JoinGym } from "../generated/Smol Bodies Gym/Gym";
+import { DropSchool, JoinSchool } from "../generated/Smol Brains School/School";
 
-export function getAddressId(address: Address, tokenId: BigInt): string {
-  return `${address.toHexString()}-${tokenId.toHexString()}`;
-}
+const MARKETPLACE_BUYER = Address.fromString(
+  "0x812cda2181ed7c45a35a691e0c85e231d218e273"
+);
 
-function getListingId(
-  seller: Address,
-  contract: Address,
-  tokenId: BigInt
-): string {
-  return [
-    seller.toHexString(),
-    contract.toHexString(),
-    tokenId.toString(),
-  ].join("-");
-}
+let stakers = new TypedMap<string, string>();
+
+// Smol Bodies
+stakers.set(
+  "0x66299ecc614b7a1920922bba7527819c841174bd",
+  "0x17dacad7975960833f374622fad08b90ed67d1b5"
+);
+
+// Smol Brains
+stakers.set(
+  "0x602e50ed10a90d324b35930ec0f8e5d3b28cd509",
+  "0x6325439389e0797ab35752b4f43a14c004f22a9c"
+);
 
 function getListing(
   seller: Address,
   contract: Address,
   tokenId: BigInt
 ): Listing {
-  let id = getListingId(seller, contract, tokenId);
+  let id = getUserAddressId(seller, contract, tokenId);
   let listing = Listing.load(id);
 
   if (!listing) {
     listing = new Listing(id);
 
-    listing.contract = contract;
+    listing.collection = contract.toHexString();
     listing.seller = getUser(seller).id;
-    // TODO: Might be Inactive based on if it was staked or not??
-    listing.status = "Active";
+    listing.status = exists("StakedToken", id) ? "Inactive" : "Active";
   }
 
   return listing;
@@ -54,21 +72,45 @@ function getToken(contract: Address, tokenId: BigInt): Token {
   let token = Token.load(id);
 
   if (!token) {
+    let collection = getCollection(contract);
+
     token = new Token(id);
 
     // let name = getName(data.tokenId);
 
-    token.contract = contract;
+    token.collection = collection.id;
     // token.image = getImageHash(data.tokenId, name)
     //   .split(" ")
     //   .join("%20");
-    // token.name = name;
+
+    // TODO: Get dynamic names for Legions?
+    if (collection.standard == "ERC721") {
+      token.name = `${collection.name} #${tokenId.toString()}`;
+    } else {
+      token.name = getName(tokenId);
+    }
+
     // token.rarity = getRarity(data.tokenId);
     token.tokenId = tokenId;
     token.save();
   }
 
   return token;
+}
+
+function getStakedTokenId(
+  user: Address,
+  contract: Address,
+  tokenId: BigInt
+): string {
+  let token = stakers.get(contract.toHexString());
+  let id = getUserAddressId(
+    user,
+    token ? Address.fromString(token) : contract,
+    tokenId
+  );
+
+  return id;
 }
 
 function getUser(address: Address): User {
@@ -82,9 +124,53 @@ function getUser(address: Address): User {
   return user;
 }
 
+function handleStake(user: Address, contract: Address, tokenId: BigInt): void {
+  let id = getStakedTokenId(user, contract, tokenId);
+  let stakedToken = StakedToken.load(id);
+
+  if (!stakedToken) {
+    stakedToken = new StakedToken(id);
+
+    let token = stakers.get(contract.toHexString());
+
+    // TODO: Is it necessary? Or will it be ok to just use the staked token id
+    if (token) {
+      let tokenAddress = Address.fromString(token);
+
+      stakedToken.token = getAddressId(tokenAddress, tokenId);
+
+      // TODO: Handle ERC1155s?
+      let listing = Listing.load(getUserAddressId(user, tokenAddress, tokenId));
+
+      if (listing) {
+        listing.status = "Inactive";
+        listing.save();
+
+        updateCollectionFloorAndTotal(listing.collection);
+      }
+    }
+
+    stakedToken.user = user.toHexString();
+  }
+
+  // TODO: Support multiple for ERC1155s
+  stakedToken.quantity = stakedToken.quantity + 1;
+  stakedToken.save();
+}
+
+function handleUnstake(
+  user: Address,
+  contract: Address,
+  tokenId: BigInt
+): void {
+  // TODO: Handle ERC1155s with multiple quantities
+  removeIfExists("StakedToken", getStakedTokenId(user, contract, tokenId));
+}
+
 /**
  * This is a generic function that can handle both ERC1155s and ERC721s
  */
+// TODO: Handle staking contracts and bridgeworld staking
 function handleTransfer(
   contract: Address,
   from: Address,
@@ -92,9 +178,17 @@ function handleTransfer(
   tokenId: BigInt,
   quantity: i32
 ): void {
-  // let data = new Transfer(contract, to, tokenId);
   let user = getUser(to);
   let token = getToken(contract, tokenId);
+
+  let listing = Listing.load(getUserAddressId(from, contract, tokenId));
+
+  if (listing) {
+    listing.status = "Inactive";
+    listing.save();
+
+    updateCollectionFloorAndTotal(listing.collection);
+  }
 
   let fromUserToken = UserToken.load(`${from.toHexString()}-${token.id}`);
 
@@ -103,7 +197,7 @@ function handleTransfer(
     fromUserToken.save();
 
     if (fromUserToken.quantity == 0) {
-      removeIfExist("UserToken", fromUserToken.id);
+      removeIfExists("UserToken", fromUserToken.id);
     }
   }
 
@@ -121,11 +215,74 @@ function handleTransfer(
   toUserToken.save();
 }
 
+function updateCollectionFloorAndTotal(id: string): void {
+  let collection = getCollection(Address.fromString(id));
+  let floorPrices = new TypedMap<string, BigInt>();
+  let listings = collection.listings;
+  let length = listings.length;
+
+  collection.floorPrice = BigInt.zero();
+  collection.totalListings = 0;
+
+  for (let index = 0; index < length; index++) {
+    let id = listings[index];
+    let listing = Listing.load(id);
+
+    if (!listing) {
+      collection.listings = removeFromArray(listings, id);
+    } else {
+      if (listing.status == "Active") {
+        let floorPrice = collection.floorPrice;
+        let pricePerItem = listing.pricePerItem;
+
+        if (collection.standard == "ERC1155") {
+          let tokenFloorPrice = floorPrices.get(listing.token);
+
+          if (
+            !tokenFloorPrice ||
+            (tokenFloorPrice && tokenFloorPrice.gt(pricePerItem))
+          ) {
+            floorPrices.set(listing.token, pricePerItem);
+          }
+        }
+
+        if (floorPrice.isZero() || floorPrice.gt(pricePerItem)) {
+          collection.floorPrice = pricePerItem;
+        }
+
+        collection.totalListings += listing.quantity;
+      }
+    }
+  }
+
+  let entries = floorPrices.entries;
+
+  for (let index = 0; index < entries.length; index++) {
+    let entry = entries[index];
+    let token = Token.load(entry.key);
+
+    if (token) {
+      token.floorPrice = entry.value;
+      token.save();
+    }
+  }
+
+  collection.save();
+}
+
 export function handleItemCanceled(event: ItemCanceled): void {
   let params = event.params;
-  let listing = getListing(params.seller, params.nftAddress, params.tokenId);
+  let address = params.nftAddress;
+  let listing = getListing(params.seller, address, params.tokenId);
 
-  removeIfExist("Listing", listing.id);
+  removeIfExists("Listing", listing.id);
+
+  // let collection = getCollection(address);
+
+  // collection.totalListings -= listing.quantity;
+  // collection.save();
+
+  updateCollectionFloorAndTotal(listing.collection);
 }
 
 export function handleItemListed(event: ItemListed): void {
@@ -141,27 +298,41 @@ export function handleItemListed(event: ItemListed): void {
   listing.blockTimestamp = event.block.timestamp;
   listing.expires = params.expirationTime;
   listing.pricePerItem = pricePerItem;
-  listing.quantity = quantity;
+  listing.quantity = quantity.toI32();
   listing.token = getAddressId(tokenAddress, tokenId);
 
   listing.save();
+
+  let collection = getCollection(tokenAddress);
+  // let floorPrice = collection.floorPrice;
+
+  // if (!floorPrice || floorPrice.gt(pricePerItem)) {
+  //   collection.floorPrice = pricePerItem;
+  // }
+  collection.listings = collection.listings.concat([listing.id]);
+  // collection.totalListings += quantity.toI32();
+  collection.save();
+
+  updateCollectionFloorAndTotal(collection.id);
 }
 
 export function handleItemSold(event: ItemSold): void {
   let params = event.params;
-  let quantity = params.quantity;
+  let quantity = params.quantity.toI32();
   let seller = params.seller;
-  let buyer = params.buyer;
   let address = params.nftAddress;
   let tokenId = params.tokenId;
+  let buyer = params.buyer.equals(MARKETPLACE_BUYER)
+    ? event.transaction.from
+    : params.buyer;
 
   let listing = getListing(seller, address, tokenId);
 
-  if (listing.quantity.equals(quantity)) {
+  if (listing.quantity == quantity) {
     // Remove sold listing.
-    removeIfExist("Listing", listing.id);
+    removeIfExists("Listing", listing.id);
   } else {
-    listing.quantity = listing.quantity.minus(quantity);
+    listing.quantity = listing.quantity - quantity;
     listing.save();
   }
 
@@ -176,8 +347,23 @@ export function handleItemSold(event: ItemSold): void {
   sold.quantity = listing.quantity;
   sold.status = "Sold";
   sold.transactionLink = `https://${EXPLORER}/tx/${hash}`;
+  sold.token = listing.token;
 
   sold.save();
+
+  let collection = getCollection(address);
+
+  collection.totalSales = collection.totalSales.plus(BigInt.fromI32(1));
+  collection.totalVolume = collection.totalVolume.plus(
+    listing.pricePerItem.times(BigInt.fromI32(quantity))
+  );
+
+  // TODO: Not sure if this is needeed, but put it in for now.
+  collection.listings = removeFromArray(collection.listings, listing.id);
+  // collection.totalListings -= quantity;
+  collection.save();
+
+  updateCollectionFloorAndTotal(collection.id);
 }
 
 export function handleItemUpdated(event: ItemUpdated): void {
@@ -189,11 +375,27 @@ export function handleItemUpdated(event: ItemUpdated): void {
   }
 
   listing.expires = params.expirationTime;
-  listing.status = "Active";
-  listing.quantity = params.quantity;
+  listing.status = exists("StakedToken", listing.id) ? "Inactive" : "Active";
+  listing.quantity = params.quantity.toI32();
   listing.pricePerItem = params.pricePerItem;
 
   listing.save();
+
+  updateCollectionFloorAndTotal(listing.collection);
+}
+
+export function handleTransfer721(event: Transfer): void {
+  let params = event.params;
+  // let listing = Listing.load(
+  //   getListingId(params.from, event.address, params.tokenId)
+  // );
+
+  // if (listing) {
+  //   listing.status = "Inactive";
+  //   listing.save();
+  // }
+
+  handleTransfer(event.address, params.from, params.to, params.tokenId, 1);
 }
 
 export function handleTransferBatch(event: TransferBatch): void {
@@ -203,23 +405,21 @@ export function handleTransferBatch(event: TransferBatch): void {
   let length = ids.length;
 
   for (let index = 0; index < length; index++) {
-    let tokenId = ids[index];
-    let listing = Listing.load(
-      getListingId(params.from, event.address, tokenId)
-    );
+    // let tokenId = ids[index];
+    // let listing = Listing.load(
+    //   getListingId(params.from, event.address, tokenId)
+    // );
 
-    // For now, we will just set them inactive
-    // TODO: Handle if they had non-listed ones first...
-    if (listing) {
-      listing.status = "Inactive";
-      listing.save();
-    }
+    // if (listing) {
+    //   listing.status = "Inactive";
+    //   listing.save();
+    // }
 
     handleTransfer(
       event.address,
       params.from,
       params.to,
-      tokenId,
+      ids[index],
       amounts[index].toI32()
     );
   }
@@ -227,16 +427,14 @@ export function handleTransferBatch(event: TransferBatch): void {
 
 export function handleTransferSingle(event: TransferSingle): void {
   let params = event.params;
-  let listing = Listing.load(
-    getListingId(params.from, event.address, params.id)
-  );
+  // let listing = Listing.load(
+  //   getListingId(params.from, event.address, params.id)
+  // );
 
-  // For now, we will just set them inactive
-  // TODO: Handle if they had non-listed ones first...
-  if (listing) {
-    listing.status = "Inactive";
-    listing.save();
-  }
+  // if (listing) {
+  //   listing.status = "Inactive";
+  //   listing.save();
+  // }
 
   handleTransfer(
     event.address,
@@ -245,4 +443,24 @@ export function handleTransferSingle(event: TransferSingle): void {
     params.id,
     params.value.toI32()
   );
+}
+
+// Smol Bodies
+
+export function handleDropGym(event: DropGym): void {
+  handleUnstake(event.transaction.from, event.address, event.params.tokenId);
+}
+
+export function handleJoinGym(event: JoinGym): void {
+  handleStake(event.transaction.from, event.address, event.params.tokenId);
+}
+
+// Smol Brains
+
+export function handleDropSchool(event: DropSchool): void {
+  handleUnstake(event.transaction.from, event.address, event.params.tokenId);
+}
+
+export function handleJoinSchool(event: JoinSchool): void {
+  handleStake(event.transaction.from, event.address, event.params.tokenId);
 }
