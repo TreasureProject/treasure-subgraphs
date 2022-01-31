@@ -1,7 +1,7 @@
-import { Address, BigInt, store } from "@graphprotocol/graph-ts";
+import { Address, store } from "@graphprotocol/graph-ts";
 
-export function getAddressId(address: Address, tokenId: BigInt): string {
-  return `${address.toHexString()}-${tokenId.toHexString()}`;
+export function exists(entity: string, id: string): boolean {
+  return store.get(entity, id) != null;
 }
 
 export function isMint(address: Address): boolean {
@@ -18,8 +18,8 @@ export function removeFromArray<T>(array: T[], item: T): T[] {
   return removeAtIndex(array, array.indexOf(item));
 }
 
-export function removeIfExist(entity: string, id: string): void {
-  if (store.get(entity, id)) {
+export function removeIfExists(entity: string, id: string): void {
+  if (exists(entity, id)) {
     store.remove(entity, id);
   }
 }
