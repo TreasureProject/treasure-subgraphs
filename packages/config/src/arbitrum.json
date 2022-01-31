@@ -32,8 +32,12 @@
   "treasure_address": "0xEBba467eCB6b21239178033189CeAE27CA12EaDf",
   "treasure_start_block": 2416540,
 
+  "seed_of_life_address": "0x3956C81A51FeAed98d7A678d53F44b9166c8ed66",
+  "seed_of_life_start_block": 2416557,
   "extra_life_address": "0x21e1969884D477afD2Afd4Ad668864a0EebD644c",
   "extra_life_start_block": 2416557,
+  "keys_address": "0xf0a35bA261ECE4FC12870e5B7b9E7790202EF9B5",
+  "keys_start_block": 2416554,
   "smol_brains_address": "0x6325439389E0797Ab35752B4F43a14C004f22A9c",
   "smol_brains_start_block": 3163146,
   "smol_brains_land_address": "0xd666d1CC3102cd03e07794A61E5F4333B4239F53",

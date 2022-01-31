@@ -4,6 +4,26 @@ enum Status {
   Sold
 }
 
+enum TokenStandard {
+  ERC721
+  ERC1155
+}
+
+type Collection @entity {
+  id: ID!
+
+  contract: String!
+  floorPrice: BigInt!
+  listings: [Listing!]!
+  name: String!
+  tokens: [Token!]! @derivedFrom(field: "collection")
+  standard: TokenStandard!
+
+  totalListings: Int!
+  totalSales: BigInt!
+  totalVolume: BigInt!
+}
+
 type Listing @entity {
   id: ID!
 
@@ -12,8 +32,8 @@ type Listing @entity {
 
   blockTimestamp: BigInt!
   buyer: User
-  contract: Bytes!
-  # collection: Collection!
+  # contract: String!
+  collection: Collection!
   # collectionName: String!
   expires: BigInt!
 
@@ -22,7 +42,7 @@ type Listing @entity {
 
   # nicePrice: String
   pricePerItem: BigInt!
-  quantity: BigInt!
+  quantity: Int!
   seller: User!
   status: Status!
   token: Token!
@@ -36,8 +56,12 @@ type Listing @entity {
 type Token @entity {
   id: ID!
 
-  contract: Bytes!
+  collection: Collection!
+  # contract: String!
+  "For ERC1155s, but is it needed?"
+  floorPrice: BigInt
   listings: [Listing!] @derivedFrom(field: "token")
+  name: String
   owners: [UserToken!]! @derivedFrom(field: "token")
   tokenId: BigInt!
 }
@@ -48,9 +72,18 @@ type User @entity {
   listings: [Listing!]! @derivedFrom(field: "seller")
   purchases: [Listing!]! @derivedFrom(field: "buyer")
   tokens: [UserToken!]! @derivedFrom(field: "user")
+  staked: [StakedToken!]! @derivedFrom(field: "user")
 }
 
 type UserToken @entity {
+  id: ID!
+
+  quantity: Int!
+  token: Token!
+  user: User!
+}
+
+type StakedToken @entity {
   id: ID!
 
   quantity: Int!
