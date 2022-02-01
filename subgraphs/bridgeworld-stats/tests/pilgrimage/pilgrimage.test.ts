@@ -8,6 +8,8 @@ const USER_ADDRESS = "0x461950b159366edcd2bcbee8126d973ac49238e0";
 const LEGION_ADDRESS = "0x96f791c0c11baee97526d5a9674494805afbec1c";
 
 test("current and total pilgrimages counts are stored", () => {
+  clearStore();
+  
   const pilgrimagesStartedEvent = createPilgrimagesStartedEvent(
     USER_ADDRESS,
     LEGION_ADDRESS,
@@ -34,6 +36,4 @@ test("current and total pilgrimages counts are stored", () => {
   // Two pilgrimages have ended
   assert.fieldEquals(PILGRIMAGE_ENTITY_TYPE, PILGRIMAGE_ADDRESS, "current", "2");
   assert.fieldEquals(PILGRIMAGE_ENTITY_TYPE, PILGRIMAGE_ADDRESS, "total", "4");
-  
-  clearStore();
 });

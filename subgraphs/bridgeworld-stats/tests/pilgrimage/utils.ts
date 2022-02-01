@@ -1,5 +1,5 @@
 import { newMockEvent } from "matchstick-as/assembly/index";
-import { Address, BigInt, Bytes, ethereum, store, Value } from "@graphprotocol/graph-ts";
+import { Address, ethereum } from "@graphprotocol/graph-ts";
 
 import { PilgrimagesStarted, PilgrimagesFinished } from "../../generated/Pilgrimage/Pilgrimage";
 
