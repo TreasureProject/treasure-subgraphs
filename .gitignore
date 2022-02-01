@@ -1,5 +1,5 @@
 build
 generated
 node_modules
-tests/.bin
 subgraph.yaml
+/**/*/tests/.bin

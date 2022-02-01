@@ -30,8 +30,8 @@ jobs:
         env:
           NETWORK: ${{ matrix.network }}
         run: yarn codegen:$NETWORK
-      # - name: Test
-      #   run: yarn test
+      - name: Test
+        run: yarn test
       - name: Build
         env:
           NETWORK: ${{ matrix.network }}
@@ -66,8 +66,8 @@ jobs:
         env:
           NETWORK: ${{ matrix.network }}
         run: yarn codegen:$NETWORK
-      # - name: Test
-      #   run: yarn test
+      - name: Test
+        run: yarn test
       - name: Build
         env:
           NETWORK: ${{ matrix.network }}
