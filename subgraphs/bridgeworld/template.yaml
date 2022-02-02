@@ -1,11 +1,6 @@
 specVersion: 0.0.4
 schema:
   file: ./schema.graphql
-features:
-  - grafting
-graft:
-  base: QmRBFCC4LWVFqD6Edv84bmHcJf4vntbTqRKG87tWD929kV
-  block: 4955997
 dataSources:
   - name: Atlas Mine
     kind: ethereum/contract
