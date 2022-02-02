@@ -76,12 +76,7 @@ function getToken(contract: Address, tokenId: BigInt): Token {
 
     token = new Token(id);
 
-    // let name = getName(data.tokenId);
-
     token.collection = collection.id;
-    // token.image = getImageHash(data.tokenId, name)
-    //   .split(" ")
-    //   .join("%20");
 
     // TODO: Get dynamic names for Legions?
     if (collection.standard == "ERC721") {
@@ -90,7 +85,6 @@ function getToken(contract: Address, tokenId: BigInt): Token {
       token.name = getName(tokenId);
     }
 
-    // token.rarity = getRarity(data.tokenId);
     token.tokenId = tokenId;
     token.save();
   }
@@ -277,11 +271,6 @@ export function handleItemCanceled(event: ItemCanceled): void {
 
   removeIfExists("Listing", listing.id);
 
-  // let collection = getCollection(address);
-
-  // collection.totalListings -= listing.quantity;
-  // collection.save();
-
   updateCollectionFloorAndTotal(listing.collection);
 }
 
@@ -304,13 +293,8 @@ export function handleItemListed(event: ItemListed): void {
   listing.save();
 
   let collection = getCollection(tokenAddress);
-  // let floorPrice = collection.floorPrice;
 
-  // if (!floorPrice || floorPrice.gt(pricePerItem)) {
-  //   collection.floorPrice = pricePerItem;
-  // }
   collection.listings = collection.listings.concat([listing.id]);
-  // collection.totalListings += quantity.toI32();
   collection.save();
 
   updateCollectionFloorAndTotal(collection.id);
@@ -343,6 +327,7 @@ export function handleItemSold(event: ItemSold): void {
   sold.id = `${sold.id}-${hash}`;
   sold.blockTimestamp = event.block.timestamp;
   sold.buyer = getUser(buyer).id;
+  sold.collection = listing.collection;
   sold.expires = BigInt.zero();
   sold.pricePerItem = listing.pricePerItem;
   sold.quantity = quantity;
@@ -364,7 +349,6 @@ export function handleItemSold(event: ItemSold): void {
     collection.listings = removeFromArray(collection.listings, listing.id);
   }
 
-  // collection.totalListings -= quantity;
   collection.save();
 
   updateCollectionFloorAndTotal(collection.id);
@@ -390,14 +374,6 @@ export function handleItemUpdated(event: ItemUpdated): void {
 
 export function handleTransfer721(event: Transfer): void {
   let params = event.params;
-  // let listing = Listing.load(
-  //   getListingId(params.from, event.address, params.tokenId)
-  // );
-
-  // if (listing) {
-  //   listing.status = "Inactive";
-  //   listing.save();
-  // }
 
   handleTransfer(event.address, params.from, params.to, params.tokenId, 1);
 }
@@ -409,16 +385,6 @@ export function handleTransferBatch(event: TransferBatch): void {
   let length = ids.length;
 
   for (let index = 0; index < length; index++) {
-    // let tokenId = ids[index];
-    // let listing = Listing.load(
-    //   getListingId(params.from, event.address, tokenId)
-    // );
-
-    // if (listing) {
-    //   listing.status = "Inactive";
-    //   listing.save();
-    // }
-
     handleTransfer(
       event.address,
       params.from,
@@ -431,14 +397,6 @@ export function handleTransferBatch(event: TransferBatch): void {
 
 export function handleTransferSingle(event: TransferSingle): void {
   let params = event.params;
-  // let listing = Listing.load(
-  //   getListingId(params.from, event.address, params.id)
-  // );
-
-  // if (listing) {
-  //   listing.status = "Inactive";
-  //   listing.save();
-  // }
 
   handleTransfer(
     event.address,
