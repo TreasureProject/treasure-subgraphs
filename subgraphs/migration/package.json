@@ -16,6 +16,8 @@
     "prepare:arbitrum-testnet": "true",
     "prepare:arbitrum": "true",
     "prepare:mainnet": "mustache ../../node_modules/@treasure/subgraph-config/src/mainnet.json template.yaml > subgraph.yaml",
-    "test": "true"
+    "test:arbitrum-testnet": "true",
+    "test:arbitrum": "true",
+    "test:mainnet": "true"
   }
 }
