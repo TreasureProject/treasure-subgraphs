@@ -225,6 +225,8 @@ export function handleLegionCreated(event: LegionCreated): void {
 
   let metadata = new LegionInfo(`${token.id}-metadata`);
 
+  // TODO: Add Crafting XP
+  // TODO: Add Questing XP
   metadata.boost = `${BOOST_MATRIX[params._generation][params._rarity] / 1e18}`;
   metadata.crafting = 1;
   metadata.questing = 1;

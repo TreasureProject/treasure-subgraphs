@@ -12,6 +12,6 @@
     "prepare:arbitrum": "mustache ../../node_modules/@treasure/subgraph-config/src/arbitrum.json template.yaml > subgraph.yaml",
     "prepare:arbitrum-testnet": "mustache ../../node_modules/@treasure/subgraph-config/src/arbitrum-testnet.json template.yaml > subgraph.yaml",
     "prepare:mainnet": "true",
-    "test": "graph test"
+    "test": "graph test -- --lib=../../node_modules/"
   }
 }

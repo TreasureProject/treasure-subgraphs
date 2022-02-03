@@ -1,4 +1,4 @@
-import { BigInt } from "@graphprotocol/graph-ts";
+import { BigInt, log } from "@graphprotocol/graph-ts";
 
 const TREASURE_IDS: number[] = [
   39,
@@ -57,6 +57,8 @@ export function getImageHash(tokenId: BigInt, name: string): string {
   let id = tokenId.toI32();
 
   switch (true) {
+    case id == 151:
+      return `ipfs://Qmbyy8EWMzrSTSGG1bDNsYZfvnkcjAFNM5TXJqvsbuY8Dz/Silver Penny.gif`;
     case isTreasure(id):
       return `ipfs://Qmbyy8EWMzrSTSGG1bDNsYZfvnkcjAFNM5TXJqvsbuY8Dz/${name}.gif`;
     case [45, 70, 90, 131, 150, 160].includes(id):
@@ -303,7 +305,9 @@ export function getName(tokenId: BigInt): string {
     case 164:
       return "Witches Broom";
     default:
-      throw new Error(`Name not handled: ${id}`);
+      log.error(`Name not handled: {}`, [id.toString()]);
+
+      return "";
   }
 }
 
@@ -356,7 +360,9 @@ export function getRarity(tokenId: BigInt): string {
     case 91:
     case 100:
     case 116:
-    case 164:
+    case 141:
+    case 152:
+    case 162:
       return "Rare";
     case 40:
     case 41:
@@ -408,9 +414,9 @@ export function getRarity(tokenId: BigInt): string {
     case 158:
     case 159:
     case 160:
+    case 164:
       return "Uncommon";
     case 39:
-    case 47:
     case 50:
     case 51:
     case 52:
@@ -420,21 +426,19 @@ export function getRarity(tokenId: BigInt): string {
     case 81:
     case 95:
     case 97:
-    case 98:
-    case 105:
-    case 161:
     case 163:
       return "Legendary";
     case 46:
+    case 47:
     case 53:
     case 74:
+    case 98:
     case 99:
     case 104:
+    case 105:
     case 132:
-    case 141:
-    case 152:
     case 153:
-    case 162:
+    case 161:
       return "Epic";
     case 106:
     case 107:
