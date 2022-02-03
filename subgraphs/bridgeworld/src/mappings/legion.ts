@@ -1,5 +1,11 @@
 import * as common from "../mapping";
-import { Address, BigInt, log, store } from "@graphprotocol/graph-ts";
+import {
+  Address,
+  BigInt,
+  dataSource,
+  log,
+  store,
+} from "@graphprotocol/graph-ts";
 import {
   Approval,
   Constellation,
@@ -279,8 +285,12 @@ export function handleTransfer(event: Transfer): void {
     BigInt.fromI32(1)
   );
 
-  // TODO: Not needed in Prod
-  if (isMint(params.from) && params.tokenId.toI32() < 4) {
+  // There was an issue in testing that needs us to manually setup metadata for now.
+  if (
+    dataSource.network() == "arbitrum-rinkeby" &&
+    isMint(params.from) &&
+    params.tokenId.toI32() < 4
+  ) {
     setMetadata(event.address, params.tokenId);
   }
 }
