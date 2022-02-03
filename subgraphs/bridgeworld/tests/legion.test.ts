@@ -11,8 +11,10 @@ import {
   handlePilgrimagesFinished,
 } from "../src/mappings/pilgrimage";
 
+
 import { Address } from "@graphprotocol/graph-ts";
 import { handleLegionCreated, handleTransfer } from "../src/mappings/legion";
+import { LEGION_ADDRESS } from "@treasure/constants";
 
 const LEGION_INFO_ENTITY_TYPE = "LegionInfo";
 const TOKEN_ENTITY_TYPE = "Token";
@@ -55,7 +57,7 @@ test("legion metadata is correct for pilgrimaged riverman", () => {
 
   handlePilgrimagesFinished(pilgrimagesFinishedEvent);
 
-  const id = "0xfe8c1ac365ba6780aec5a985d989b327c27670a1-0x7";
+  const id = `${LEGION_ADDRESS.toHexString()}-0x7`;
 
   assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "category", "Legion");
   assert.fieldEquals(
@@ -113,7 +115,7 @@ test("legion metadata is correct for pilgrimaged common legion", () => {
 
   handlePilgrimagesFinished(pilgrimagesFinishedEvent);
 
-  const id = "0xfe8c1ac365ba6780aec5a985d989b327c27670a1-0x1";
+  const id = `${LEGION_ADDRESS.toHexString()}-0x1`;
 
   assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "category", "Legion");
   assert.fieldEquals(
@@ -171,7 +173,7 @@ test("legion metadata is correct for pilgrimaged common 5", () => {
 
   handlePilgrimagesFinished(pilgrimagesFinishedEvent);
 
-  const id = "0xfe8c1ac365ba6780aec5a985d989b327c27670a1-0x1";
+  const id = `${LEGION_ADDRESS.toHexString()}-0x1`;
 
   assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "category", "Legion");
   assert.fieldEquals(
@@ -235,7 +237,7 @@ test("legion metadata is correct for pilgrimaged clocksnatcher", () => {
 
   handlePilgrimagesFinished(pilgrimagesFinishedEvent);
 
-  const id = "0xfe8c1ac365ba6780aec5a985d989b327c27670a1-0xd94";
+  const id = `${LEGION_ADDRESS.toHexString()}-0xd94`;
 
   assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "category", "Legion");
   assert.fieldEquals(

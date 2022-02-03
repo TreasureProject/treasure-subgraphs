@@ -7,13 +7,19 @@
     "subgraphs/*"
   ],
   "scripts": {
-    "build": "yarn workspaces run build",
-    "codegen": "yarn workspaces run codegen",
-    "deploy": "yarn workspaces run deploy",
-    "prepare:arbitrum": "yarn workspaces run prepare:arbitrum",
+    "build:arbitrum-testnet": "yarn workspaces run build:arbitrum-testnet",
+    "build:arbitrum": "yarn workspaces run build:arbitrum",
+    "build:mainnet": "yarn workspaces run build:mainnet",
+    "codegen:arbitrum-testnet": "yarn workspaces run codegen:arbitrum-testnet",
+    "codegen:arbitrum": "yarn workspaces run codegen:arbitrum",
+    "codegen:mainnet": "yarn workspaces run codegen:mainnet",
+    "deploy:dev": "yarn workspaces run deploy:dev",
+    "deploy:staging": "yarn workspaces run deploy:staging",
+    "deploy:prod": "yarn workspaces run deploy:prod",
     "prepare:arbitrum-testnet": "yarn workspaces run prepare:arbitrum-testnet",
+    "prepare:arbitrum": "yarn workspaces run prepare:arbitrum",
     "prepare:mainnet": "yarn workspaces run prepare:mainnet",
-    "test": "graph test"
+    "test": "yarn workspaces run test"
   },
   "devDependencies": {
     "@graphprotocol/graph-cli": "0.26.0",

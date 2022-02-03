@@ -4,14 +4,18 @@
   "description": "Subgraph that powers the Treasure Marketplace",
   "license": "MIT",
   "scripts": {
-    "build": "graph build subgraph.yaml",
-    "codegen": "graph codegen subgraph.yaml",
-    "deploy:dev": "graphx deploy --product hosted-service treasureproject/bridgeworld-dev",
-    "deploy:prod": "graph deploy --product hosted-service treasureproject/marketplace",
+    "build:arbitrum-testnet": "true",
+    "build:arbitrum": "graph build",
+    "build:mainnet": "true",
+    "codegen:arbitrum-testnet": "true",
+    "codegen:arbitrum": "graph codegen",
+    "codegen:mainnet": "true",
+    "deploy:dev": "true",
     "deploy:staging": "graph deploy --product hosted-service treasureproject/marketplace-next",
+    "deploy:prod": "graph deploy --product hosted-service treasureproject/marketplace",
+    "prepare:arbitrum-testnet": "true",
     "prepare:arbitrum": "mustache ../../node_modules/@treasure/subgraph-config/src/arbitrum.json template.yaml > subgraph.yaml",
-    "prepare:arbitrum-testnet": "mustache ../../node_modules/@treasure/subgraph-config/src/arbitrum-testnet.json template.yaml > subgraph.yaml",
     "prepare:mainnet": "true",
-    "test": "graph test"
+    "test": "true"
   }
 }

@@ -8,11 +8,18 @@
     "src"
   ],
   "scripts": {
-    "build": "true",
-    "codegen": "true",
-    "deploy": "true",
-    "prepare:arbitrum": "true",
+    "build:arbitrum-testnet": "true",
+    "build:arbitrum": "true",
+    "build:mainnet": "true",
+    "codegen:arbitrum-testnet": "true",
+    "codegen:arbitrum": "true",
+    "codegen:mainnet": "true",
+    "deploy:dev": "true",
+    "deploy:staging": "true",
+    "deploy:prod": "true",
     "prepare:arbitrum-testnet": "true",
-    "prepare:mainnet": "true"
+    "prepare:arbitrum": "true",
+    "prepare:mainnet": "true",
+    "test": "true"
   }
 }

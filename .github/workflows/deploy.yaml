@@ -10,6 +10,10 @@ jobs:
   deploy-dev:
     if: github.event_name == 'pull_request' && github.event.pull_request.draft == false
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - network: arbitrum-testnet
     steps:
       - uses: actions/checkout@v2
       - name: Install node
@@ -19,22 +23,33 @@ jobs:
       - name: Install
         run: yarn --frozen-lockfile
       - name: Prepare
-        run: yarn prepare:rinkeby
+        env:
+          NETWORK: ${{ matrix.network }}
+        run: yarn prepare:$NETWORK
       - name: Codegen
-        run: yarn codegen
+        env:
+          NETWORK: ${{ matrix.network }}
+        run: yarn codegen:$NETWORK
       - name: Test
         run: yarn test
       - name: Build
-        run: yarn build
+        env:
+          NETWORK: ${{ matrix.network }}
+        run: yarn build:$NETWORK
+      - name: Authenticate
+        env:
+          GRAPH_ACCESS_TOKEN: ${{ secrets.GRAPH_ACCESS_TOKEN }}
+        run: yarn graph auth --product hosted-service "$GRAPH_ACCESS_TOKEN"
       - name: Deploy to development
-        uses: gtaschuk/graph-deploy@v0.1.0
-        with:
-          graph_access_token: ${{secrets.GRAPH_ACCESS_TOKEN}}
-          graph_subgraph_name: treasure-marketplace-dev
-          graph_account: wyze
+        run: yarn deploy:dev
   deploy-prod:
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - network: arbitrum
+          - network: mainnet
     steps:
       - uses: actions/checkout@v2
       - name: Install node
@@ -44,16 +59,22 @@ jobs:
       - name: Install
         run: yarn --frozen-lockfile
       - name: Prepare
-        run: yarn prepare:arbitrum
+        env:
+          NETWORK: ${{ matrix.network }}
+        run: yarn prepare:$NETWORK
       - name: Codegen
-        run: yarn codegen
+        env:
+          NETWORK: ${{ matrix.network }}
+        run: yarn codegen:$NETWORK
       - name: Test
         run: yarn test
       - name: Build
-        run: yarn build
+        env:
+          NETWORK: ${{ matrix.network }}
+        run: yarn build:$NETWORK
+      - name: Authenticate
+        env:
+          GRAPH_ACCESS_TOKEN: ${{ secrets.GRAPH_ACCESS_TOKEN }}
+        run: yarn graph auth --product hosted-service "$GRAPH_ACCESS_TOKEN"
       - name: Deploy to production
-        uses: gtaschuk/graph-deploy@v0.1.0
-        with:
-          graph_access_token: ${{secrets.GRAPH_ACCESS_TOKEN}}
-          graph_subgraph_name: treasure-marketplace
-          graph_account: wyze
+        run: yarn deploy:prod
