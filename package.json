@@ -19,7 +19,9 @@
     "prepare:arbitrum-testnet": "yarn workspaces run prepare:arbitrum-testnet",
     "prepare:arbitrum": "yarn workspaces run prepare:arbitrum",
     "prepare:mainnet": "yarn workspaces run prepare:mainnet",
-    "test": "yarn workspaces run test"
+    "test:arbitrum-testnet": "yarn workspaces run build:arbitrum-testnet",
+    "test:arbitrum": "yarn workspaces run build:arbitrum",
+    "test:mainnet": "yarn workspaces run build:mainnet"
   },
   "devDependencies": {
     "@graphprotocol/graph-cli": "0.26.0",

@@ -20,6 +20,8 @@
     "prepare:arbitrum-testnet": "true",
     "prepare:arbitrum": "true",
     "prepare:mainnet": "true",
-    "test": "true"
+    "test:arbitrum-testnet": "true",
+    "test:arbitrum": "true",
+    "test:mainnet": "true"
   }
 }
