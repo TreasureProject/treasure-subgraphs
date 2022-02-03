@@ -7,8 +7,8 @@ import {
 } from "../generated/Pilgrimage/Pilgrimage";
 import { Transfer } from "../generated/Legion/ERC721";
 import { LegionCreated } from "../generated/Legion Metadata Store/LegionMetadataStore";
+import { LEGION_ADDRESS } from "@treasure/constants";
 
-export const LEGION_ADDRESS = "0xfE8c1ac365bA6780AEc5a985D989b327C27670A1";
 export const LEGION_METADATA_STORE_ADDRESS =
   "0x99193EE9229b833d2aA4DbBdA697C6600b944286";
 export const PILGRIMAGE_ADDRESS = "0x088613c6bbb951c9796ba3bb42a1f310fb209fbd";
@@ -98,7 +98,7 @@ export const createTransferEvent = (
   tokenId: i32
 ): Transfer => {
   const newEvent = changetype<Transfer>(newMockEvent());
-  newEvent.address = Address.fromString(LEGION_ADDRESS);
+  newEvent.address = LEGION_ADDRESS;
   newEvent.parameters = [
     new ethereum.EventParam(
       "from",
