@@ -4,10 +4,10 @@
   "description": "Subgraph that powers Bridgeworld Statistics",
   "license": "MIT",
   "scripts": {
-    "build:arbitrum-testnet": "true",
+    "build:arbitrum-testnet": "graph build",
     "build:arbitrum": "graph build",
     "build:mainnet": "true",
-    "codegen:arbitrum-testnet": "true",
+    "codegen:arbitrum-testnet": "graph codegen",
     "codegen:arbitrum": "graph codegen",
     "codegen:mainnet": "true",
     "deploy:dev": "true",
