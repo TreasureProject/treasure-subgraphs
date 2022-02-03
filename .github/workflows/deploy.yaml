@@ -42,8 +42,10 @@ jobs:
         env:
           GRAPH_ACCESS_TOKEN: ${{ secrets.GRAPH_ACCESS_TOKEN }}
         run: yarn graph auth --product hosted-service "$GRAPH_ACCESS_TOKEN"
-      - name: Deploy to development
-        run: yarn deploy:dev
+      - name: Deploy to ${{ matrix.network }}
+        env:
+          NETWORK: ${{ matrix.network }}
+        run: yarn deploy:$NETWORK
   deploy-prod:
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
@@ -80,5 +82,7 @@ jobs:
         env:
           GRAPH_ACCESS_TOKEN: ${{ secrets.GRAPH_ACCESS_TOKEN }}
         run: yarn graph auth --product hosted-service "$GRAPH_ACCESS_TOKEN"
-      - name: Deploy to production
-        run: yarn deploy:prod
+      - name: Deploy to ${{ matrix.network }}
+        env:
+          NETWORK: ${{ matrix.network }}
+        run: yarn deploy:$NETWORK
