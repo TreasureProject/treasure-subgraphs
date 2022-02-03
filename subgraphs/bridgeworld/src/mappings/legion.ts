@@ -1,5 +1,11 @@
 import * as common from "../mapping";
-import { Address, BigInt, log, store } from "@graphprotocol/graph-ts";
+import {
+  Address,
+  BigInt,
+  dataSource,
+  log,
+  store,
+} from "@graphprotocol/graph-ts";
 import {
   Approval,
   Constellation,
@@ -225,6 +231,8 @@ export function handleLegionCreated(event: LegionCreated): void {
 
   let metadata = new LegionInfo(`${token.id}-metadata`);
 
+  // TODO: Add Crafting XP
+  // TODO: Add Questing XP
   metadata.boost = `${BOOST_MATRIX[params._generation][params._rarity] / 1e18}`;
   metadata.crafting = 1;
   metadata.questing = 1;
@@ -277,8 +285,12 @@ export function handleTransfer(event: Transfer): void {
     BigInt.fromI32(1)
   );
 
-  // TODO: Not needed in Prod
-  if (isMint(params.from) && params.tokenId.toI32() < 4) {
+  // There was an issue in testing that needs us to manually setup metadata for now.
+  if (
+    dataSource.network() == "arbitrum-rinkeby" &&
+    isMint(params.from) &&
+    params.tokenId.toI32() < 4
+  ) {
     setMetadata(event.address, params.tokenId);
   }
 }

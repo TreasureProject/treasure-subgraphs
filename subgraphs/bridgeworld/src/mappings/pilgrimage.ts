@@ -1,5 +1,5 @@
 import * as common from "../mapping";
-import { Pilgrimage, Token } from "../../generated/schema";
+import { LegionInfo, Pilgrimage, Token } from "../../generated/schema";
 import {
   NoPilgrimagesToFinish,
   PilgrimagesFinished,
@@ -36,7 +36,24 @@ export function handlePilgrimagesFinished(event: PilgrimagesFinished): void {
       let token = Token.load(pilgrimage.token);
 
       if (token) {
-        legion.image = getImageHash(token.tokenId, token.name);
+        let legacyTokenId = token.tokenId.toI32();
+
+        // 1/1 names don't change
+        if ([50, 55, 78, 81, 163].includes(legacyTokenId)) {
+          legion.name = token.name;
+        }
+
+        if (70 === legacyTokenId) {
+          let metadata = LegionInfo.load(`${legion.id}-metadata`);
+
+          if (metadata) {
+            legion.image = `ipfs://QmeR9k2WJcSiiuUGY3Wvjtahzo3UUaURiPpLEapFcDe9JC/${metadata.rarity}%20${metadata.role}.gif`;
+          }
+        } else {
+          legion.image = getImageHash(token.tokenId, token.name)
+            .split(" ")
+            .join("%20");
+        }
         legion.save();
       }
     }
