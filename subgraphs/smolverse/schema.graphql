@@ -8,6 +8,7 @@ interface Token {
   collection: Collection!
   tokenId: BigInt!
   name: String!
+  attributes: [Attribute!]
 }
 
 type User @entity {
@@ -29,6 +30,7 @@ type Attribute @entity {
   collection: Collection!
   name: String!
   value: String!
+  tokens: [Token!]! @derivedFrom(field: "attributes")
 }
 
 type SmolBodiesPet implements Token @entity {
@@ -36,8 +38,8 @@ type SmolBodiesPet implements Token @entity {
   collection: Collection!
   tokenId: BigInt!
   name: String!
+  attributes: [Attribute!]
   description: String!
   image: String!
-  attributes: [Attribute!]
   owner: User!
 }

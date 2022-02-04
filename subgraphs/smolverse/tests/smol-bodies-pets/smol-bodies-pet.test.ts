@@ -4,6 +4,7 @@ import { SMOL_BODIES_PETS_ADDRESS } from "@treasure/constants";
 import { createBaseUriChangedEvent, createSmolPetMintEvent } from "./utils";
 import { handleBaseUriChanged, handleMint } from "../../src/mappings/smol-bodies-pet";
 import { Bytes, json } from "@graphprotocol/graph-ts";
+import { Collection } from "../../generated/schema";
 
 const COLLECTION_ENTITY_TYPE = "Collection";
 const ATTRIBUTE_ENTITY_TYPE = "Attribute";
@@ -56,8 +57,11 @@ test("smol bodies pet is created with owner", () => {
   );
   handleMint(smolPetMintEvent, mockTokenData.toObject());
 
-  // Assert token was created
+  // Assert collection was created
   const address = SMOL_BODIES_PETS_ADDRESS.toHexString();
+  assert.fieldEquals(COLLECTION_ENTITY_TYPE, address, "id", address);
+
+  // Assert token was created
   const id = `${address}-0x1`;
   assert.fieldEquals(SMOL_BODIES_PET_ENTITY_TYPE, id, "tokenId", "1");
   assert.fieldEquals(SMOL_BODIES_PET_ENTITY_TYPE, id, "owner", USER_ADDRESS);
