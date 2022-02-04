@@ -14,7 +14,7 @@
     "deploy:arbitrum": "graph deploy --product hosted-service treasureproject/marketplace",
     "deploy:mainnet": "true",
     "deploy:staging": "graph deploy --product hosted-service treasureproject/marketplace-next",
-    "prepare:arbitrum-testnet": "true",
+    "prepare:arbitrum-testnet": "mustache ../../node_modules/@treasure/subgraph-config/src/arbitrum-testnet.json template.yaml > subgraph.yaml",
     "prepare:arbitrum": "mustache ../../node_modules/@treasure/subgraph-config/src/arbitrum.json template.yaml > subgraph.yaml",
     "prepare:mainnet": "true",
     "test": "graph test -- --lib=../../node_modules/",

@@ -1,4 +1,5 @@
 import { Address } from "@graphprotocol/graph-ts";
+import { TREASURE_ADDRESS } from "@treasure/constants";
 import { assert, clearStore, test } from "matchstick-as/assembly";
 import { handleTransferSingle } from "../src/mappings/treasures";
 
@@ -6,9 +7,6 @@ import { createTransferSingleEvent } from "./utils";
 
 const COLLECTION_ENTITY_TYPE = "Collection";
 const TOKEN_ENTITY_TYPE = "Token";
-const TREASURE_ADDRESS = Address.fromString(
-  "0xEBba467eCB6b21239178033189CeAE27CA12EaDf"
-);
 const USER_ADDRESS = "0x461950b159366edcd2bcbee8126d973ac49238e0";
 
 test("treasures collection is setup properly", () => {
@@ -28,7 +26,12 @@ test("treasures collection is setup properly", () => {
 
   assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "collection", collectionId);
   assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "name", "Grin");
-  assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "owners", `[${USER_ADDRESS}-${id}]`);
+  assert.fieldEquals(
+    TOKEN_ENTITY_TYPE,
+    id,
+    "owners",
+    `[${USER_ADDRESS}-${id}]`
+  );
   assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "tokenId", "95");
 
   assert.fieldEquals(COLLECTION_ENTITY_TYPE, collectionId, "totalSales", "0");
