@@ -1,5 +1,13 @@
-interface Metadata {
+enum TokenStandard {
+  ERC721
+  ERC1155
+}
+
+interface Token {
   id: ID!
+  collection: Collection!
+  tokenId: BigInt!
+  name: String!
 }
 
 type User @entity {
@@ -7,12 +15,29 @@ type User @entity {
   smolBodiesPets: [SmolBodiesPet!]! @derivedFrom(field: "owner")
 }
 
-type SmolBodiesPet implements Metadata @entity {
+type Collection @entity {
   id: ID!
+  name: String!
+  standard: TokenStandard
+  baseUri: String
+  tokens: [Token!]! @derivedFrom(field: "collection")
+  attributes: [Attribute!] @derivedFrom(field: "collection")
+}
 
+type Attribute @entity {
+  id: ID!
+  collection: Collection!
+  name: String!
+  value: String!
+}
+
+type SmolBodiesPet implements Token @entity {
+  id: ID!
+  collection: Collection!
   tokenId: BigInt!
   name: String!
   description: String!
   image: String!
+  attributes: [Attribute!]
   owner: User!
 }

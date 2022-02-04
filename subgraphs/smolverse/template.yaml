@@ -20,8 +20,8 @@ dataSources:
         - name: SmolBodiesPets
           file: ../../node_modules/@treasure/subgraph-abis/src/SmolBodiesPets.json
       eventHandlers:
-        # - event: BaseURIChanged(string,string)
-        #   handler: handleBaseUriChanged
+        - event: BaseURIChanged(string,string)
+          handler: handleBaseUriChanged
         - event: SmolPetMint(indexed address,uint256,string)
           handler: handleMint
       file: ./src/mappings/smol-bodies-pet.ts

@@ -1,7 +1,20 @@
 import { newMockEvent } from "matchstick-as/assembly/index";
 import { Address, ethereum } from "@graphprotocol/graph-ts";
 
-import { SmolPetMint } from "../../generated/Smol Bodies Pets/SmolBodiesPets";
+import { BaseURIChanged, SmolPetMint } from "../../generated/Smol Bodies Pets/SmolBodiesPets";
+
+export const createBaseUriChangedEvent = (
+  from: string,
+  to: string,
+): BaseURIChanged => {
+  const newEvent = changetype<BaseURIChanged>(newMockEvent());
+  newEvent.parameters = [
+    new ethereum.EventParam("from", ethereum.Value.fromString(from)),
+    new ethereum.EventParam("to", ethereum.Value.fromString(to))
+  ];
+
+  return newEvent;
+}
 
 export const createSmolPetMintEvent = (
   to: string,
