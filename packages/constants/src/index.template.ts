@@ -6,3 +6,4 @@ export const CRAFTING_ADDRESS = Address.fromString("{{ crafting_address }}");
 export const EXPLORER = "{{ explorer }}";
 export const LEGION_ADDRESS = Address.fromString("{{ legion_address }}");
 export const TREASURE_ADDRESS = Address.fromString("{{ treasure_address }}");
+export const SMOL_BODIES_PETS_ADDRESS = Address.fromString("{{ smol_bodies_pets_address }}");

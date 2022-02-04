@@ -1,0 +1,18 @@
+interface Metadata {
+  id: ID!
+}
+
+type User @entity {
+  id: ID!
+  smolBodiesPets: [SmolBodiesPet!]! @derivedFrom(field: "owner")
+}
+
+type SmolBodiesPet implements Metadata @entity {
+  id: ID!
+
+  tokenId: BigInt!
+  name: String!
+  description: String!
+  image: String!
+  owner: User!
+}
