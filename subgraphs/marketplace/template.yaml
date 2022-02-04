@@ -219,6 +219,26 @@ dataSources:
         - event: Transfer(indexed address,indexed address,indexed uint256)
           handler: handleTransfer
       file: ./src/mappings/smol-brains-land.ts
+  - name: Smol Brains Pets
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ smol_brains_pets_address }}"
+      abi: ERC721
+      startBlock: {{ smol_brains_pets_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Transfer
+      abis:
+        - name: ERC721
+          file: {{{ abis }}}/721.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,indexed uint256)
+          handler: handleTransfer
+      file: ./src/mappings/smol-brains-pets.ts
   - name: Smol Brains School
     kind: ethereum/contract
     network: {{ network }}
@@ -283,6 +303,27 @@ dataSources:
         - event: Transfer(indexed address,indexed address,indexed uint256)
           handler: handleTransfer
       file: ./src/mappings/smol-bodies.ts
+  - name: Smol Bodies Pets
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ smol_bodies_pets_address }}"
+      abi: ERC721
+      startBlock: {{ smol_bodies_pets_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Transfer
+        - SmolBodiesMint
+      abis:
+        - name: ERC721
+          file: {{{ abis }}}/721.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,indexed uint256)
+          handler: handleTransfer
+      file: ./src/mappings/smol-bodies-pets.ts
   - name: Smol Bodies Gym
     kind: ethereum/contract
     network: {{ network }}
