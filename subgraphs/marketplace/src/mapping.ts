@@ -22,7 +22,7 @@ import {
   exists,
   getAddressId,
   getCollection,
-  getName,
+  getToken,
   getUserAddressId,
   removeFromArray,
   removeIfExists,
@@ -59,37 +59,12 @@ function getListing(
   if (!listing) {
     listing = new Listing(id);
 
-    listing.collection = contract.toHexString();
     listing.seller = getUser(seller).id;
     listing.status = exists("StakedToken", id) ? "Inactive" : "Active";
+    listing.token = getAddressId(contract, tokenId);
   }
 
   return listing;
-}
-
-function getToken(contract: Address, tokenId: BigInt): Token {
-  let id = getAddressId(contract, tokenId);
-  let token = Token.load(id);
-
-  if (!token) {
-    let collection = getCollection(contract);
-
-    token = new Token(id);
-
-    token.collection = collection.id;
-
-    // TODO: Get dynamic names for Legions?
-    if (collection.standard == "ERC721") {
-      token.name = `${collection.name} #${tokenId.toString()}`;
-    } else {
-      token.name = getName(tokenId);
-    }
-
-    token.tokenId = tokenId;
-    token.save();
-  }
-
-  return token;
 }
 
 function getStakedTokenId(
@@ -210,7 +185,7 @@ function handleTransfer(
 }
 
 function updateCollectionFloorAndTotal(id: string): void {
-  let collection = getCollection(Address.fromString(id));
+  let collection = getCollection(id);
   let floorPrices = new TypedMap<string, BigInt>();
   let listings = collection.listings;
   let length = listings.length;
@@ -269,6 +244,11 @@ export function handleItemCanceled(event: ItemCanceled): void {
   let address = params.nftAddress;
   let listing = getListing(params.seller, address, params.tokenId);
 
+  // Was invalid listing, likely a Recruit.
+  if (listing.quantity == 0) {
+    return;
+  }
+
   removeIfExists("Listing", listing.id);
 
   updateCollectionFloorAndTotal(listing.collection);
@@ -282,17 +262,24 @@ export function handleItemListed(event: ItemListed): void {
   let tokenId = params.tokenId;
   let seller = params.seller;
 
+  let token = getToken(tokenAddress, tokenId);
+
+  // We don't allow listing Recruits on the marketplace
+  if (token.name == "Recruit") {
+    return;
+  }
+
   let listing = getListing(seller, tokenAddress, tokenId);
 
   listing.blockTimestamp = event.block.timestamp;
+  listing.collection = token.collection;
   listing.expires = params.expirationTime;
   listing.pricePerItem = pricePerItem;
   listing.quantity = quantity.toI32();
-  listing.token = getAddressId(tokenAddress, tokenId);
 
   listing.save();
 
-  let collection = getCollection(tokenAddress);
+  let collection = getCollection(token.collection);
 
   collection.listings = collection.listings.concat([listing.id]);
   collection.save();
@@ -311,6 +298,11 @@ export function handleItemSold(event: ItemSold): void {
     : params.buyer;
 
   let listing = getListing(seller, address, tokenId);
+
+  // Was invalid listing, likely a Recruit. Should never happen as contract would revert the transfer anyways.
+  if (listing.quantity == 0) {
+    return;
+  }
 
   listing.quantity = listing.quantity - quantity;
 
@@ -337,7 +329,7 @@ export function handleItemSold(event: ItemSold): void {
 
   sold.save();
 
-  let collection = getCollection(address);
+  let collection = getCollection(listing.collection);
 
   collection.totalSales = collection.totalSales.plus(BigInt.fromI32(1));
   collection.totalVolume = collection.totalVolume.plus(
@@ -357,6 +349,11 @@ export function handleItemSold(event: ItemSold): void {
 export function handleItemUpdated(event: ItemUpdated): void {
   let params = event.params;
   let listing = getListing(params.seller, params.nftAddress, params.tokenId);
+
+  // Was invalid listing, likely a Recruit
+  if (listing.quantity == 0) {
+    return;
+  }
 
   if (!listing.pricePerItem.equals(params.pricePerItem)) {
     listing.blockTimestamp = event.block.timestamp;
