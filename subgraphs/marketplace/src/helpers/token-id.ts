@@ -1,7 +1,46 @@
-import { BigInt, log } from "@graphprotocol/graph-ts";
+import { Address, BigInt, log } from "@graphprotocol/graph-ts";
+import { CONSUMABLE_ADDRESS } from "@treasure/constants";
 
-export function getName(tokenId: BigInt): string {
+
+function getConsumableName(tokenId: i32): string {
+  switch (tokenId) {
+    case 1:
+      return "Small Prism";
+    case 2:
+      return "Medium Prism";
+    case 3:
+      return "Large Prism";
+    case 4:
+      return "Small Extractor";
+    case 5:
+      return "Medium Extractor";
+    case 6:
+      return "Large Extractor";
+    case 7:
+      return "Harvestor";
+    case 8:
+      return "Essence of Starlight";
+    case 9:
+      return "Prism Shards";
+    case 10:
+      return "Universal Lock";
+    case 11:
+      return "Azurite Dust";
+    case 12:
+      return "Essence of Honeycomb";
+    case 13:
+      return "Essence of Grin";
+    default:
+      return "";
+  }
+}
+
+export function getName(contract: Address, tokenId: BigInt): string {
   let id = tokenId.toI32();
+
+  if (contract.equals(CONSUMABLE_ADDRESS)) {
+    return getConsumableName(id)
+  }
 
   switch (id) {
     case 1:
@@ -237,8 +276,6 @@ export function getName(tokenId: BigInt): string {
     case 164:
       return "Witches Broom";
     default:
-      // log.warning(`Name not handled: ${id}`, [id]);
-
       return "";
   }
 }

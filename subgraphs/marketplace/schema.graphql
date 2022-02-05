@@ -27,27 +27,16 @@ type Collection @entity {
 type Listing @entity {
   id: ID!
 
-  # "Track originally listed quantity, needed when staking Treasures"
-  # _listedQuantity: BigInt!
-
   blockTimestamp: BigInt!
   buyer: User
-  # contract: String!
   collection: Collection!
-  # collectionName: String!
   expires: BigInt!
 
-  # "Used to support multiple filters with metadata attributes"
-  # filters: [String!]
-
-  # nicePrice: String
   pricePerItem: BigInt!
   quantity: Int!
   seller: User!
   status: Status!
   token: Token!
-  # tokenName: String
-  # totalPrice: String
 
   # Sold listing
   transactionLink: String
@@ -57,7 +46,6 @@ type Token @entity {
   id: ID!
 
   collection: Collection!
-  # contract: String!
   "For ERC1155s, but is it needed?"
   floorPrice: BigInt
   listings: [Listing!] @derivedFrom(field: "token")
