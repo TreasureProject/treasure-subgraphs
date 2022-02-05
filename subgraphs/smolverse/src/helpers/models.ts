@@ -79,6 +79,7 @@ export function getOrCreateToken(collection: Collection, tokenId: BigInt): Token
     token.save();
 
     collection._tokenIds = collection._tokenIds.concat([tokenId.toString()]);
+    collection.save();
   }
 
   return token;
