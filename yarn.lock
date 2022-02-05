@@ -1813,10 +1813,10 @@ mafmt@^7.0.0:
   dependencies:
     multiaddr "^7.3.0"
 
-matchstick-as@0.2.3:
-  version "0.2.3"
-  resolved "https://registry.yarnpkg.com/matchstick-as/-/matchstick-as-0.2.3.tgz#d2c68f204fdc19f5927cd263ad628864aeeae7b8"
-  integrity sha512-Eg/GFoIGSVj4pNJZJwV7azDOIoiADkOyM3VChQlaEbS0NmjsOnREcNT0za0Qyh2RgFbMH/JBPVo+vbHvm2+thg==
+matchstick-as@0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/matchstick-as/-/matchstick-as-0.3.0.tgz#fb23b9bf7c797363a40c23f098d3101831d088dc"
+  integrity sha512-+nxHlchVHzvcJzcNc8WxCV5FpADVqVJwEBuaq3IvZjp29xVoe/RWpodmTvQw+Pk6bRMAPI5grdmTPjR4hGgrcw==
   dependencies:
     "@graphprotocol/graph-ts" "^0.24.1"
     assemblyscript "^0.19.20"
