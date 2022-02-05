@@ -69,7 +69,7 @@ export function getToken(contract: Address, tokenId: BigInt): Token {
       if (collection.standard == "ERC721") {
         token.name = `${collection.name} #${tokenId.toString()}`;
       } else {
-        token.name = getName(tokenId);
+        token.name = getName(contract, tokenId);
       }
     }
 

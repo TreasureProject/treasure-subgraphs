@@ -9,7 +9,7 @@ import {
 } from "../generated/TreasureMarketplace/TreasureMarketplace";
 import { LegionCreated } from "../generated/Legion Metadata Store/LegionMetadataStore";
 import { Transfer } from "../generated/TreasureMarketplace/ERC721";
-import { TransferSingle } from "../generated/TreasureMarketplace/ERC1155";
+import { TransferBatch, TransferSingle } from "../generated/TreasureMarketplace/ERC1155";
 
 export const LEGION_METADATA_STORE_ADDRESS =
   "0x99193EE9229b833d2aA4DbBdA697C6600b944286";
@@ -154,6 +154,33 @@ export const createTransferEvent = (
       ethereum.Value.fromAddress(Address.fromString(to))
     ),
     new ethereum.EventParam("tokenId", ethereum.Value.fromI32(tokenId)),
+  ];
+
+  return newEvent;
+};
+
+export const createTransferBatchEvent = (
+  contract: Address,
+  from: string,
+  to: string,
+  tokenIds: i32[],
+  quantities: i32[],
+  operator: Address = contract
+): TransferBatch => {
+  const newEvent = changetype<TransferBatch>(newMockEvent());
+  newEvent.address = contract;
+  newEvent.parameters = [
+    new ethereum.EventParam("operator", ethereum.Value.fromAddress(operator)),
+    new ethereum.EventParam(
+      "from",
+      ethereum.Value.fromAddress(Address.fromString(from))
+    ),
+    new ethereum.EventParam(
+      "to",
+      ethereum.Value.fromAddress(Address.fromString(to))
+    ),
+    new ethereum.EventParam("ids", ethereum.Value.fromI32Array(tokenIds)),
+    new ethereum.EventParam("values", ethereum.Value.fromI32Array(quantities)),
   ];
 
   return newEvent;
