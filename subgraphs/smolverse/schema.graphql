@@ -3,17 +3,9 @@ enum TokenStandard {
   ERC1155
 }
 
-interface Token {
-  id: ID!
-  collection: Collection!
-  tokenId: BigInt!
-  name: String!
-  attributes: [Attribute!]
-}
-
 type User @entity {
   id: ID!
-  smolBodiesPets: [SmolBodiesPet!]! @derivedFrom(field: "owner")
+  tokens: [Token!]! @derivedFrom(field: "owner")
 }
 
 type Collection @entity {
@@ -33,13 +25,13 @@ type Attribute @entity {
   tokens: [Token!]! @derivedFrom(field: "attributes")
 }
 
-type SmolBodiesPet implements Token @entity {
+type Token @entity {
   id: ID!
   collection: Collection!
   tokenId: BigInt!
   name: String!
   attributes: [Attribute!]
-  description: String!
-  image: String!
-  owner: User!
+  description: String
+  image: String
+  owner: User
 }

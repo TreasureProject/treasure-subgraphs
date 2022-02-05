@@ -1,7 +1,6 @@
-import { BigInt } from "@graphprotocol/graph-ts";
-import { SMOL_BODIES_PETS_ADDRESS } from "@treasure/constants";
+import { Address, BigInt } from "@graphprotocol/graph-ts";
 
-import { Attribute, Collection, SmolBodiesPet, User } from "../../generated/schema";
+import { Attribute, Collection, Token, User } from "../../generated/schema";
 import { getAttributeId, getTokenId } from "./ids";
 
 export function getOrCreateUser(id: string): User {
@@ -29,27 +28,26 @@ export function getOrCreateAttribute(collection: Collection, name: string, value
   return attribute;
 }
 
-export function getOrCreateSmolBodiesCollection(): Collection {
-  const id = SMOL_BODIES_PETS_ADDRESS.toHexString();
+export function getOrCreateCollection(address: Address, name: string, standard: string): Collection {
+  const id = address.toHexString();
   let collection = Collection.load(id);
 
   if (!collection) {
     collection = new Collection(id);
-    collection.name = "Smol Bodies Pets";
-    collection.standard = "ERC721";
+    collection.name = name;
+    collection.standard = standard;
     collection.save();
   }
 
   return collection;
 }
 
-export function getOrCreateSmolBodiesPet(tokenId: BigInt): SmolBodiesPet {
-  const collection = getOrCreateSmolBodiesCollection();
+export function getOrCreateToken(collection: Collection, tokenId: BigInt): Token {
   const id = getTokenId(collection, tokenId);
-  let token = SmolBodiesPet.load(id);
+  let token = Token.load(id);
   
   if (!token) {
-    token = new SmolBodiesPet(id);
+    token = new Token(id);
     token.collection = collection.id;
     token.tokenId = tokenId;
   }

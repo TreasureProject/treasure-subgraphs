@@ -16,7 +16,10 @@ dataSources:
       apiVersion: 0.0.6
       language: wasm/assemblyscript
       entities:
-        - SmolBodiesPet
+        - Attribute
+        - Collection
+        - Token
+        - Transfer
         - User
       abis:
         - name: SmolBodiesPets
@@ -26,4 +29,6 @@ dataSources:
           handler: handleBaseUriChanged
         - event: SmolPetMint(indexed address,uint256,string)
           handler: handleMint
+        - event: Transfer(indexed address,indexed address,indexed uint256)
+          handler: handleTransfer
       file: ./src/mappings/smol-bodies-pet.ts

@@ -1,27 +1,30 @@
 import { log } from "matchstick-as";
 import { Attribute } from "../../generated/schema";
 
-import { BaseURIChanged, SmolPetMint } from "../../generated/Smol Bodies Pets/SmolBodiesPets";
-import { JSON, getCollectionJson, getJsonStringValue } from "../helpers/json";
-import { getOrCreateAttribute, getOrCreateSmolBodiesCollection, getOrCreateSmolBodiesPet, getOrCreateUser } from "../helpers/models";
+import { BaseURIChanged, SmolPetMint, Transfer } from "../../generated/Smol Bodies Pets/SmolBodiesPets";
+import { SMOL_BODIES_PETS_COLLECTION_NAME, TOKEN_STANDARD_ERC721 } from "../helpers/constants";
+import { getCollectionJson, getJsonStringValue, JSON } from "../helpers/json";
+import { getOrCreateAttribute, getOrCreateCollection, getOrCreateToken, getOrCreateUser } from "../helpers/models";
 
 export function handleBaseUriChanged(event: BaseURIChanged): void {
   const params = event.params;
 
-  const collection = getOrCreateSmolBodiesCollection();
+  const collection = getOrCreateCollection(event.address, SMOL_BODIES_PETS_COLLECTION_NAME, TOKEN_STANDARD_ERC721);
   collection.baseUri = params.to;
   collection.save();
 }
 
-export function handleMint(event: SmolPetMint, ipfsData: JSON | null = null): void {
+// export function handleMint(event: SmolPetMint, ipfsData: JSON | null = null): void {
+export function handleMint(event: SmolPetMint): void {
   const params = event.params;
 
   const owner = getOrCreateUser(params.to.toHexString());
-  const collection = getOrCreateSmolBodiesCollection();
-  const token = getOrCreateSmolBodiesPet(params.tokenId);
+  const collection = getOrCreateCollection(event.address, SMOL_BODIES_PETS_COLLECTION_NAME, TOKEN_STANDARD_ERC721);
+  const token = getOrCreateToken(collection, params.tokenId);
   token.owner = owner.id;
 
-  const data = ipfsData ? ipfsData : getCollectionJson(collection, `${token.tokenId}.json`);
+  // const data = ipfsData || getCollectionJson(collection, `${token.tokenId}.json`);
+  const data = getCollectionJson(collection, `${token.tokenId}.json`);
   if (!data) {
     return;
   }
@@ -53,11 +56,21 @@ export function handleMint(event: SmolPetMint, ipfsData: JSON | null = null): vo
         continue;
       }
 
-      attributes.push(getOrCreateAttribute(collection, nameData.toString(), valueData.toString()));
+      attributes.push(
+        getOrCreateAttribute(collection, nameData.toString(), valueData.toString())
+      );
     }
     
     token.attributes = attributes.map<string>((attribute) => attribute.id);
   }
 
+  token.save();
+}
+
+export function handleTransfer(event: Transfer): void {
+  const collection = getOrCreateCollection(event.address, SMOL_BODIES_PETS_COLLECTION_NAME, TOKEN_STANDARD_ERC721);
+
+  const token = getOrCreateToken(collection, event.params.tokenId);
+  token.owner = event.params.to.toHexString();
   token.save();
 }

@@ -1,13 +1,15 @@
 import { newMockEvent } from "matchstick-as/assembly/index";
 import { Address, ethereum } from "@graphprotocol/graph-ts";
 
-import { BaseURIChanged, SmolPetMint } from "../../generated/Smol Bodies Pets/SmolBodiesPets";
+import { BaseURIChanged, SmolPetMint, Transfer } from "../../generated/Smol Bodies Pets/SmolBodiesPets";
+import { SMOL_BODIES_PETS_ADDRESS } from "@treasure/constants";
 
 export const createBaseUriChangedEvent = (
   from: string,
   to: string,
 ): BaseURIChanged => {
   const newEvent = changetype<BaseURIChanged>(newMockEvent());
+  newEvent.address = SMOL_BODIES_PETS_ADDRESS;
   newEvent.parameters = [
     new ethereum.EventParam("from", ethereum.Value.fromString(from)),
     new ethereum.EventParam("to", ethereum.Value.fromString(to))
@@ -22,6 +24,7 @@ export const createSmolPetMintEvent = (
   tokenUri: string
 ): SmolPetMint => {
   const newEvent = changetype<SmolPetMint>(newMockEvent());
+  newEvent.address = SMOL_BODIES_PETS_ADDRESS;
   newEvent.parameters = [
     new ethereum.EventParam("to", ethereum.Value.fromAddress(Address.fromString(to))),
     new ethereum.EventParam("tokenId", ethereum.Value.fromI32(tokenId)),
@@ -30,3 +33,19 @@ export const createSmolPetMintEvent = (
 
   return newEvent;
 };
+
+export const createTransferEvent = (
+  from: string,
+  to: string,
+  tokenId: i32
+): Transfer => {
+  const newEvent = changetype<Transfer>(newMockEvent());
+  newEvent.address = SMOL_BODIES_PETS_ADDRESS;
+  newEvent.parameters = [
+    new ethereum.EventParam("from", ethereum.Value.fromAddress(Address.fromString(from))),
+    new ethereum.EventParam("to", ethereum.Value.fromAddress(Address.fromString(to))),
+    new ethereum.EventParam("tokenId", ethereum.Value.fromI32(tokenId))
+  ];
+
+  return newEvent;
+}
