@@ -9,10 +9,10 @@ import { toBigDecimal } from "./number";
 const ATTRIBUTE_PERCENTAGE_THRESHOLDS = new TypedMap<string, number>();
 ATTRIBUTE_PERCENTAGE_THRESHOLDS.set(SMOL_BODIES_PETS_ADDRESS.toHexString(), 5_500);
 
-const shouldUpdateAttributePercentages = (address: string, count: number): boolean => {
-  const threshold = ATTRIBUTE_PERCENTAGE_THRESHOLDS.getEntry(address);
+const shouldUpdateAttributePercentages = (collection: Collection): boolean => {
+  const threshold = ATTRIBUTE_PERCENTAGE_THRESHOLDS.getEntry(collection.id);
   const thresholdValue = threshold ? threshold.value : 0;
-  return count >= thresholdValue;
+  return collection._tokenIds.length >= thresholdValue;
 };
 
 export function getOrCreateUser(id: string): User {
@@ -86,14 +86,14 @@ export function getOrCreateToken(collection: Collection, tokenId: BigInt): Token
 }
 
 export function updateAttributePercentages(collection: Collection): void {
-  const attributeIds = collection._attributeIds;
-  const totalAttributes = attributeIds.length;
-  if (!shouldUpdateAttributePercentages(collection.id, totalAttributes)) {
+  if (!shouldUpdateAttributePercentages(collection)) {
     log.info("Skipping attribute percentages update for collection: {}", [collection.id]);
     return;
   }
 
+  const attributeIds = collection._attributeIds;
   const totalTokens = collection._tokenIds.length;
+  const totalAttributes = attributeIds.length;
   for (let i = 0; i < totalAttributes; i++) {
     const attribute = Attribute.load(attributeIds[i]);
     if (!attribute) {
