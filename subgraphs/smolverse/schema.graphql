@@ -10,6 +10,13 @@ type User @entity {
 
 type Collection @entity {
   id: ID!
+
+  "Internal for tracking attributes for a collection"
+  _attributeIds: [String!]!
+
+  "Internal for tracking tokenIds minted for a collection"
+  _tokenIds: [String!]!
+
   name: String!
   standard: TokenStandard
   baseUri: String
@@ -19,9 +26,14 @@ type Collection @entity {
 
 type Attribute @entity {
   id: ID!
+
+  "Internal for tracking tokenIds calculated"
+  _tokenIds: [String!]!
+
   collection: Collection!
   name: String!
   value: String!
+  percentage: BigDecimal
   tokens: [Token!]! @derivedFrom(field: "attributes")
 }
 

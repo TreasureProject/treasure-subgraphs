@@ -1,19 +1,37 @@
-import { Address, BigInt } from "@graphprotocol/graph-ts";
+import { Address, BigDecimal, BigInt, TypedMap } from "@graphprotocol/graph-ts";
+import { SMOL_BODIES_PETS_ADDRESS } from "@treasure/constants";
+import { log } from "matchstick-as";
 
 import { Attribute, Collection, Token, User } from "../../generated/schema";
 import { getAttributeId, getTokenId } from "./ids";
+import { toBigDecimal } from "./number";
+
+const ATTRIBUTE_PERCENTAGE_THRESHOLDS = new TypedMap<string, number>();
+ATTRIBUTE_PERCENTAGE_THRESHOLDS.set(SMOL_BODIES_PETS_ADDRESS.toHexString(), 5_500);
+
+const shouldUpdateAttributePercentages = (address: string, count: number): boolean => {
+  const threshold = ATTRIBUTE_PERCENTAGE_THRESHOLDS.getEntry(address);
+  const thresholdValue = threshold ? threshold.value : 0;
+  return count >= thresholdValue;
+};
 
 export function getOrCreateUser(id: string): User {
   let user = User.load(id);
 
   if (!user) {
     user = new User(id);
+    user.save();
   }
 
   return user;
 }
 
-export function getOrCreateAttribute(collection: Collection, name: string, value: string): Attribute {
+export function getOrCreateAttribute(
+  collection: Collection,
+  token: Token,
+  name: string,
+  value: string
+): Attribute {
   const id = getAttributeId(collection, name, value);
   let attribute = Attribute.load(id);
 
@@ -22,8 +40,14 @@ export function getOrCreateAttribute(collection: Collection, name: string, value
     attribute.collection = collection.id;
     attribute.name = name;
     attribute.value = value;
-    attribute.save();
+    attribute._tokenIds = [];
+
+    collection._attributeIds = collection._attributeIds.concat([id]);
+    collection.save();
   }
+
+  attribute._tokenIds = attribute._tokenIds.concat([token.tokenId.toString()]);
+  attribute.save();
 
   return attribute;
 }
@@ -36,6 +60,8 @@ export function getOrCreateCollection(address: Address, name: string, standard: 
     collection = new Collection(id);
     collection.name = name;
     collection.standard = standard;
+    collection._attributeIds = [];
+    collection._tokenIds = [];
     collection.save();
   }
 
@@ -50,7 +76,34 @@ export function getOrCreateToken(collection: Collection, tokenId: BigInt): Token
     token = new Token(id);
     token.collection = collection.id;
     token.tokenId = tokenId;
+    token.save();
+
+    collection._tokenIds = collection._tokenIds.concat([tokenId.toString()]);
   }
 
   return token;
+}
+
+export function updateAttributePercentages(collection: Collection): void {
+  const attributeIds = collection._attributeIds;
+  const totalAttributes = attributeIds.length;
+  if (!shouldUpdateAttributePercentages(collection.id, totalAttributes)) {
+    log.info("Skipping attribute percentages update for collection: {}", [collection.id]);
+    return;
+  }
+
+  const totalTokens = collection._tokenIds.length;
+  for (let i = 0; i < totalAttributes; i++) {
+    const attribute = Attribute.load(attributeIds[i]);
+    if (!attribute) {
+      log.warning("Unknown attribute in collection: {}", [attributeIds[i]]);
+      continue;
+    }
+
+    attribute.percentage =
+      toBigDecimal(attribute._tokenIds.length)
+        .div(toBigDecimal(totalTokens))
+        .truncate(4);
+    attribute.save();
+  }
 }

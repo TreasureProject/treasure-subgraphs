@@ -4,7 +4,7 @@ import { Attribute } from "../../generated/schema";
 import { BaseURIChanged, SmolPetMint, Transfer } from "../../generated/Smol Bodies Pets/SmolBodiesPets";
 import { SMOL_BODIES_PETS_COLLECTION_NAME, TOKEN_STANDARD_ERC721 } from "../helpers/constants";
 import { getCollectionJson, getJsonStringValue, JSON } from "../helpers/json";
-import { getOrCreateAttribute, getOrCreateCollection, getOrCreateToken, getOrCreateUser } from "../helpers/models";
+import { getOrCreateAttribute, getOrCreateCollection, getOrCreateToken, getOrCreateUser, updateAttributePercentages } from "../helpers/models";
 
 export function handleBaseUriChanged(event: BaseURIChanged): void {
   const params = event.params;
@@ -57,11 +57,14 @@ export function handleMint(event: SmolPetMint): void {
       }
 
       attributes.push(
-        getOrCreateAttribute(collection, nameData.toString(), valueData.toString())
+        getOrCreateAttribute(collection, token, nameData.toString(), valueData.toString())
       );
     }
     
     token.attributes = attributes.map<string>((attribute) => attribute.id);
+
+    // Update attribute percentages
+    updateAttributePercentages(collection);
   }
 
   token.save();
