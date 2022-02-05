@@ -3,7 +3,7 @@ import { Transfer } from "../../generated/TreasureMarketplace/ERC721";
 import { LegionCreated } from "../../generated/Legion Metadata Store/LegionMetadataStore";
 import { createLegionsCollection, getAddressId } from "../helpers";
 import { Token } from "../../generated/schema";
-import { BigInt, log, store } from "@graphprotocol/graph-ts";
+import { BigInt, log } from "@graphprotocol/graph-ts";
 import { LEGION_ADDRESS } from "@treasure/constants";
 
 const RARITY = [
@@ -19,6 +19,27 @@ const TYPE = ["Genesis", "Auxiliary", "Recruit"];
 
 function getLegionId(tokenId: BigInt): string {
   return getAddressId(LEGION_ADDRESS, tokenId);
+}
+
+function getLegionName(tokenId: BigInt, generation: i32): string | null {
+  if (generation == 2) {
+    return "Recruit";
+  }
+
+  switch (tokenId.toI32()) {
+    case 523:
+      return "Bombmaker";
+    case 1629:
+      return "Warlock";
+    case 1744:
+      return "Fallen";
+    case 2239:
+      return "Dreamwinder";
+    case 3476:
+      return "Clocksnatcher";
+    default:
+      return null;
+  }
 }
 
 export function handleLegionCreated(event: LegionCreated): void {
@@ -37,9 +58,9 @@ export function handleLegionCreated(event: LegionCreated): void {
   // Update to faux collection
   token.collection = `${LEGION_ADDRESS.toHexString()}-${generation}`;
   token.name =
-    generation == 2
-      ? "Recruit"
-      : `${TYPE[generation]} ${RARITY[params._rarity]}`;
+    getLegionName(tokenId, generation) ||
+    `${TYPE[generation]} ${RARITY[params._rarity]}`;
+
   token.save();
 }
 
