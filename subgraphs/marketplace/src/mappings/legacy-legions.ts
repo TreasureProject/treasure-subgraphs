@@ -6,13 +6,13 @@ import {
 import { createErc1155Collection } from "../helpers";
 
 export function handleTransferSingle(event: TransferSingle): void {
-  createErc1155Collection(event.address, "Legacy Legions");
+  createErc1155Collection(event.address, "Unpilgrimaged Legion Auxiliary");
 
   common.handleTransferSingle(event);
 }
 
 export function handleTransferBatch(event: TransferBatch): void {
-  createErc1155Collection(event.address, "Legacy Legions");
+  createErc1155Collection(event.address, "Unpilgrimaged Legion Auxiliary");
 
   common.handleTransferBatch(event);
 }

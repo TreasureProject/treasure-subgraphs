@@ -10,7 +10,7 @@ const TOKEN_ENTITY_TYPE = "Token";
 const USER_TOKEN_ENTITY_TYPE = "UserToken";
 const USER_ADDRESS = "0x461950b159366edcd2bcbee8126d973ac49238e0";
 
-test("legions genesis collection is setup properly", () => {
+test("legion genesis collection is setup properly", () => {
   clearStore();
 
   const mintEvent = createTransferEvent(
@@ -55,7 +55,7 @@ test("legions genesis collection is setup properly", () => {
     COLLECTION_ENTITY_TYPE,
     collectionId,
     "name",
-    "Legions Genesis"
+    "Legion Genesis"
   );
   assert.fieldEquals(
     COLLECTION_ENTITY_TYPE,
@@ -71,7 +71,7 @@ test("legions genesis collection is setup properly", () => {
   );
 });
 
-test("legions auxiliary collection is setup properly", () => {
+test("legion auxiliary collection is setup properly", () => {
   clearStore();
 
   const mintEvent = createTransferEvent(
@@ -116,7 +116,7 @@ test("legions auxiliary collection is setup properly", () => {
     COLLECTION_ENTITY_TYPE,
     collectionId,
     "name",
-    "Legions Auxiliary"
+    "Legion Auxiliary"
   );
   assert.fieldEquals(
     COLLECTION_ENTITY_TYPE,
@@ -132,7 +132,7 @@ test("legions auxiliary collection is setup properly", () => {
   );
 });
 
-test("recruit legions are not added to users inventory", () => {
+test("recruits are setup correctly", () => {
   clearStore();
 
   const mintEvent = createTransferEvent(
@@ -149,11 +149,17 @@ test("recruit legions are not added to users inventory", () => {
   handleLegionCreated(legionCreatedEvent);
 
   const contract = LEGION_ADDRESS.toHexString();
+  const collectionId = `${contract}-2`;
   const id = `${contract}-0x1`;
 
-  assert.notInStore(USER_TOKEN_ENTITY_TYPE, `${USER_ADDRESS}-${id}`);
+  assert.fieldEquals(
+    USER_TOKEN_ENTITY_TYPE,
+    `${USER_ADDRESS}-${id}`,
+    "id",
+    `${USER_ADDRESS}-${id}`
+  );
 
-  assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "collection", `${contract}-1`);
+  assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "collection", collectionId);
   assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "name", "Recruit");
   assert.fieldEquals(
     TOKEN_ENTITY_TYPE,
@@ -162,4 +168,18 @@ test("recruit legions are not added to users inventory", () => {
     `[${USER_ADDRESS}-${id}]`
   );
   assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "tokenId", "1");
+
+  assert.fieldEquals(COLLECTION_ENTITY_TYPE, collectionId, "name", "Legions");
+  assert.fieldEquals(
+    COLLECTION_ENTITY_TYPE,
+    collectionId,
+    "contract",
+    contract
+  );
+  assert.fieldEquals(
+    COLLECTION_ENTITY_TYPE,
+    collectionId,
+    "standard",
+    "ERC721"
+  );
 });

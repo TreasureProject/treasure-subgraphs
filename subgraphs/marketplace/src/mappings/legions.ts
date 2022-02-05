@@ -34,26 +34,19 @@ export function handleLegionCreated(event: LegionCreated): void {
 
   let generation = params._generation;
 
-  // Recruits won't be in the marketplace or user's inventory
-  if (generation == 2) {
-    store.remove("UserToken", `${params._owner.toHexString()}-${token.id}`);
-
-    token.collection = `${LEGION_ADDRESS.toHexString()}-1`;
-    token.name = "Recruit";
-    token.save();
-
-    return;
-  }
-
   // Update to faux collection
   token.collection = `${LEGION_ADDRESS.toHexString()}-${generation}`;
-  token.name = `${TYPE[generation]} ${RARITY[params._rarity]}`;
+  token.name =
+    generation == 2
+      ? "Recruit"
+      : `${TYPE[generation]} ${RARITY[params._rarity]}`;
   token.save();
 }
 
 export function handleTransfer(event: Transfer): void {
-  createLegionsCollection(event.address, "Legions Genesis", 0);
-  createLegionsCollection(event.address, "Legions Auxiliary", 1);
+  createLegionsCollection(event.address, "Legion Genesis", 0);
+  createLegionsCollection(event.address, "Legion Auxiliary", 1);
+  createLegionsCollection(event.address, "Legions", 2);
 
   common.handleTransfer721(event);
 }

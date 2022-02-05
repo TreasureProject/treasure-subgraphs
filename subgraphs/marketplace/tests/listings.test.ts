@@ -7,7 +7,10 @@ import {
   handleItemSold,
   handleItemUpdated,
 } from "../src/mapping";
-import { handleLegionCreated, handleTransfer as handleLegionTransfer } from "../src/mappings/legions";
+import {
+  handleLegionCreated,
+  handleTransfer as handleLegionTransfer,
+} from "../src/mappings/legions";
 import { handleTransfer as handleSmolBrainsTransfer } from "../src/mappings/smol-brains";
 
 import {
@@ -78,9 +81,15 @@ test("recruit legions via marketplace contract are not added", () => {
   const contract = LEGION_ADDRESS.toHexString();
   const id = `${contract}-0x1`;
 
-  assert.notInStore(USER_TOKEN_ENTITY_TYPE, `${USER_ADDRESS}-${id}`);
   assert.notInStore(COLLECTION_ENTITY_TYPE, contract);
   assert.notInStore(LISTING_ENTITY_TYPE, `${USER_ADDRESS}-${id}`);
+
+  assert.fieldEquals(
+    USER_TOKEN_ENTITY_TYPE,
+    `${USER_ADDRESS}-${id}`,
+    "id",
+    `${USER_ADDRESS}-${id}`
+  );
 
   assert.fieldEquals(
     COLLECTION_ENTITY_TYPE,
@@ -96,6 +105,13 @@ test("recruit legions via marketplace contract are not added", () => {
     "0"
   );
   assert.fieldEquals(COLLECTION_ENTITY_TYPE, `${contract}-1`, "listings", "[]");
+  assert.fieldEquals(
+    COLLECTION_ENTITY_TYPE,
+    `${contract}-2`,
+    "totalListings",
+    "0"
+  );
+  assert.fieldEquals(COLLECTION_ENTITY_TYPE, `${contract}-2`, "listings", "[]");
 });
 
 test("legions genesis work via marketplace", () => {
