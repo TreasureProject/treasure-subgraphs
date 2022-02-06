@@ -6,7 +6,11 @@ import {
   User,
   UserToken,
 } from "../generated/schema";
-import { EXPLORER } from "@treasure/constants";
+import {
+  EXPLORER,
+  MARKETPLACE_ADDRESS,
+  MARKETPLACE_BUYER_ADDRESS,
+} from "@treasure/constants";
 import {
   ItemCanceled,
   ItemListed,
@@ -29,10 +33,6 @@ import {
 } from "./helpers";
 import { DropGym, JoinGym } from "../generated/Smol Bodies Gym/Gym";
 import { DropSchool, JoinSchool } from "../generated/Smol Brains School/School";
-
-const MARKETPLACE_BUYER = Address.fromString(
-  "0x812cda2181ed7c45a35a691e0c85e231d218e273"
-);
 
 let stakers = new TypedMap<string, string>();
 
@@ -142,6 +142,7 @@ function handleUnstake(
 // TODO: Handle staking contracts and bridgeworld staking
 function handleTransfer(
   contract: Address,
+  operator: Address,
   from: Address,
   to: Address,
   tokenId: BigInt,
@@ -149,14 +150,20 @@ function handleTransfer(
 ): void {
   let user = getUser(to);
   let token = getToken(contract, tokenId);
+  let isMarketplace = [
+    MARKETPLACE_ADDRESS.toHexString(),
+    MARKETPLACE_BUYER_ADDRESS.toHexString(),
+  ].includes(operator.toHexString());
 
-  let listing = Listing.load(getUserAddressId(from, contract, tokenId));
+  if (!isMarketplace) {
+    let listing = Listing.load(getUserAddressId(from, contract, tokenId));
 
-  if (listing) {
-    listing.status = "Inactive";
-    listing.save();
+    if (listing) {
+      listing.status = "Inactive";
+      listing.save();
 
-    updateCollectionFloorAndTotal(listing.collection);
+      updateCollectionFloorAndTotal(listing.collection);
+    }
   }
 
   let fromUserToken = UserToken.load(`${from.toHexString()}-${token.id}`);
@@ -293,7 +300,7 @@ export function handleItemSold(event: ItemSold): void {
   let seller = params.seller;
   let address = params.nftAddress;
   let tokenId = params.tokenId;
-  let buyer = params.buyer.equals(MARKETPLACE_BUYER)
+  let buyer = params.buyer.equals(MARKETPLACE_BUYER_ADDRESS)
     ? event.transaction.from
     : params.buyer;
 
@@ -372,7 +379,14 @@ export function handleItemUpdated(event: ItemUpdated): void {
 export function handleTransfer721(event: Transfer): void {
   let params = event.params;
 
-  handleTransfer(event.address, params.from, params.to, params.tokenId, 1);
+  handleTransfer(
+    event.address,
+    Address.zero(),
+    params.from,
+    params.to,
+    params.tokenId,
+    1
+  );
 }
 
 export function handleTransferBatch(event: TransferBatch): void {
@@ -384,6 +398,7 @@ export function handleTransferBatch(event: TransferBatch): void {
   for (let index = 0; index < length; index++) {
     handleTransfer(
       event.address,
+      params.operator,
       params.from,
       params.to,
       ids[index],
@@ -397,6 +412,7 @@ export function handleTransferSingle(event: TransferSingle): void {
 
   handleTransfer(
     event.address,
+    params.operator,
     params.from,
     params.to,
     params.id,

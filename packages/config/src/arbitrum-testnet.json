@@ -57,6 +57,7 @@
   "smol_rocket_address": "0x0000000000000000000000000000000000000000",
   "smol_rocket_start_block": 9265867,
 
+  "treasure_marketplace_buyer_address": "0x24b7377Bf073E54eC42ec6CC8F4CDA6e3deB32A8",
   "treasure_marketplace_address": "0x2426acC898C5E1241904fCEf6E5643241192272D",
   "treasure_marketplace_start_block": 9264815
 }

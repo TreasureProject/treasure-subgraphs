@@ -1,12 +1,27 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts";
-import { CONSUMABLE_ADDRESS } from "@treasure/constants";
+import {
+  CONSUMABLE_ADDRESS,
+  MARKETPLACE_ADDRESS,
+  MARKETPLACE_BUYER_ADDRESS,
+} from "@treasure/constants";
 import { assert, clearStore, test } from "matchstick-as/assembly";
-import { handleTransferBatch } from "../src/mappings/consumables";
+import { handleItemListed, handleItemSold } from "../src/mapping";
+import {
+  handleTransferBatch,
+  handleTransferSingle,
+} from "../src/mappings/consumables";
 
-import { createTransferBatchEvent } from "./utils";
+import {
+  createItemListedEvent,
+  createItemSoldEvent,
+  createTransferBatchEvent,
+  createTransferSingleEvent,
+} from "./utils";
 
 const COLLECTION_ENTITY_TYPE = "Collection";
+const LISTING_ENTITY_TYPE = "Listing";
 const TOKEN_ENTITY_TYPE = "Token";
+const BUYER_ADDRESS = "0x999950b159366edcd2bcbee8126d973ac4923111";
 const USER_ADDRESS = "0x461950b159366edcd2bcbee8126d973ac49238e0";
 
 test("consumables have correct names", () => {
@@ -101,5 +116,106 @@ test("consumables have correct names", () => {
     collectionId,
     "standard",
     "ERC1155"
+  );
+});
+
+test("consumables work via marketplace", () => {
+  clearStore();
+
+  const mintEvent = createTransferBatchEvent(
+    CONSUMABLE_ADDRESS,
+    Address.zero().toHexString(),
+    USER_ADDRESS,
+    [8],
+    [3]
+  );
+
+  handleTransferBatch(mintEvent);
+
+  const itemListedEvent = createItemListedEvent(
+    USER_ADDRESS,
+    CONSUMABLE_ADDRESS,
+    8,
+    3,
+    50
+  );
+
+  handleItemListed(itemListedEvent);
+
+  const collectionId = CONSUMABLE_ADDRESS.toHexString();
+  const id = `${collectionId}-0x8`;
+  const listingId = `${USER_ADDRESS}-${id}`;
+
+  assert.fieldEquals(LISTING_ENTITY_TYPE, listingId, "status", "Active");
+  assert.fieldEquals(LISTING_ENTITY_TYPE, listingId, "token", id);
+  assert.fieldEquals(LISTING_ENTITY_TYPE, listingId, "quantity", "3");
+  assert.fieldEquals(LISTING_ENTITY_TYPE, listingId, "pricePerItem", "50");
+  assert.fieldEquals(
+    LISTING_ENTITY_TYPE,
+    listingId,
+    "collection",
+    collectionId
+  );
+  assert.fieldEquals(LISTING_ENTITY_TYPE, listingId, "seller", USER_ADDRESS);
+
+  // Transfer from seller to marketplace buyer
+  const sellerTransfer = createTransferSingleEvent(
+    CONSUMABLE_ADDRESS,
+    USER_ADDRESS,
+    MARKETPLACE_BUYER_ADDRESS.toHexString(),
+    8,
+    1,
+    MARKETPLACE_ADDRESS
+  );
+
+  handleTransferSingle(sellerTransfer);
+
+  const itemSoldEvent = createItemSoldEvent(
+    USER_ADDRESS,
+    BUYER_ADDRESS,
+    CONSUMABLE_ADDRESS,
+    8,
+    1,
+    50
+  );
+
+  handleItemSold(itemSoldEvent);
+
+  // Transfer from marketplace buyer to actual buyer
+  const buyerTransfer = createTransferSingleEvent(
+    CONSUMABLE_ADDRESS,
+    MARKETPLACE_BUYER_ADDRESS.toHexString(),
+    BUYER_ADDRESS,
+    8,
+    1,
+    MARKETPLACE_BUYER_ADDRESS
+  );
+
+  handleTransferSingle(buyerTransfer);
+
+  const soldId = `${listingId}-0xa16081f360e3847006db660bae1c6d1b2e17ec2a`;
+
+  assert.fieldEquals(LISTING_ENTITY_TYPE, listingId, "status", "Active");
+  assert.fieldEquals(LISTING_ENTITY_TYPE, listingId, "quantity", "2");
+
+  assert.fieldEquals(LISTING_ENTITY_TYPE, soldId, "status", "Sold");
+  assert.fieldEquals(LISTING_ENTITY_TYPE, soldId, "token", id);
+  assert.fieldEquals(LISTING_ENTITY_TYPE, soldId, "quantity", "1");
+  assert.fieldEquals(LISTING_ENTITY_TYPE, soldId, "pricePerItem", "50");
+  assert.fieldEquals(LISTING_ENTITY_TYPE, soldId, "collection", collectionId);
+  assert.fieldEquals(LISTING_ENTITY_TYPE, soldId, "seller", USER_ADDRESS);
+  assert.fieldEquals(LISTING_ENTITY_TYPE, soldId, "buyer", BUYER_ADDRESS);
+
+  assert.fieldEquals(
+    COLLECTION_ENTITY_TYPE,
+    collectionId,
+    "totalListings",
+    "2"
+  );
+  assert.fieldEquals(
+    COLLECTION_ENTITY_TYPE,
+    collectionId,
+    "listings",
+    `[${listingId}]`
   );
 });

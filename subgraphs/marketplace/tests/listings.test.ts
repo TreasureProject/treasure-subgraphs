@@ -1,5 +1,5 @@
 import { Address } from "@graphprotocol/graph-ts";
-import { LEGION_ADDRESS } from "@treasure/constants";
+import { LEGION_ADDRESS, MARKETPLACE_BUYER_ADDRESS } from "@treasure/constants";
 import { assert, clearStore, test } from "matchstick-as/assembly";
 import {
   handleItemCanceled,
@@ -20,7 +20,6 @@ import {
   createItemUpdatedEvent,
   createLegionCreatedEvent,
   createTransferEvent,
-  MARKETPLACE_BUYER_ADDRESS,
 } from "./utils";
 
 const COLLECTION_ENTITY_TYPE = "Collection";
@@ -186,7 +185,7 @@ test("legions genesis work via marketplace", () => {
   const sellerTransfer = createTransferEvent(
     LEGION_ADDRESS,
     USER_ADDRESS,
-    MARKETPLACE_BUYER_ADDRESS,
+    MARKETPLACE_BUYER_ADDRESS.toHexString(),
     1
   );
 
@@ -206,7 +205,7 @@ test("legions genesis work via marketplace", () => {
   // Transfer from marketplace buyer to actual buyer
   const buyerTransfer = createTransferEvent(
     LEGION_ADDRESS,
-    MARKETPLACE_BUYER_ADDRESS,
+    MARKETPLACE_BUYER_ADDRESS.toHexString(),
     BUYER_ADDRESS,
     1
   );
@@ -301,7 +300,7 @@ test("smol brains work via marketplace", () => {
   const sellerTransfer = createTransferEvent(
     SMOL_BRAINS_ADDRESS,
     USER_ADDRESS,
-    MARKETPLACE_BUYER_ADDRESS,
+    MARKETPLACE_BUYER_ADDRESS.toHexString(),
     1
   );
 
@@ -321,7 +320,7 @@ test("smol brains work via marketplace", () => {
   // Transfer from marketplace buyer to actual buyer
   const buyerTransfer = createTransferEvent(
     SMOL_BRAINS_ADDRESS,
-    MARKETPLACE_BUYER_ADDRESS,
+    MARKETPLACE_BUYER_ADDRESS.toHexString(),
     BUYER_ADDRESS,
     1
   );

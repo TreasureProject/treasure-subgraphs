@@ -8,14 +8,12 @@ import {
   ItemUpdated,
 } from "../generated/TreasureMarketplace/TreasureMarketplace";
 import { LegionCreated } from "../generated/Legion Metadata Store/LegionMetadataStore";
+import { MARKETPLACE_ADDRESS, MARKETPLACE_BUYER_ADDRESS } from "@treasure/constants";
 import { Transfer } from "../generated/TreasureMarketplace/ERC721";
 import { TransferBatch, TransferSingle } from "../generated/TreasureMarketplace/ERC1155";
 
 export const LEGION_METADATA_STORE_ADDRESS =
   "0x99193EE9229b833d2aA4DbBdA697C6600b944286";
-export const MARKETPLACE_ADDRESS = "0x2E3b85F85628301a0Bce300Dee3A6B04195A15Ee";
-export const MARKETPLACE_BUYER_ADDRESS =
-  "0x812cda2181ed7c45a35a691e0c85e231d218e273";
 
 export const createItemCanceledEvent = (
   user: string,
@@ -23,7 +21,7 @@ export const createItemCanceledEvent = (
   tokenId: i32
 ): ItemCanceled => {
   const newEvent = changetype<ItemCanceled>(newMockEvent());
-  newEvent.address = Address.fromString(MARKETPLACE_ADDRESS);
+  newEvent.address = MARKETPLACE_ADDRESS;
   newEvent.parameters = [
     new ethereum.EventParam(
       "seller",
@@ -44,7 +42,7 @@ export const createItemListedEvent = (
   price: i32
 ): ItemListed => {
   const newEvent = changetype<ItemListed>(newMockEvent());
-  newEvent.address = Address.fromString(MARKETPLACE_ADDRESS);
+  newEvent.address = MARKETPLACE_ADDRESS;
   newEvent.parameters = [
     new ethereum.EventParam(
       "seller",
@@ -69,7 +67,7 @@ export const createItemSoldEvent = (
   price: i32
 ): ItemSold => {
   const newEvent = changetype<ItemSold>(newMockEvent());
-  newEvent.address = Address.fromString(MARKETPLACE_ADDRESS);
+  newEvent.address = MARKETPLACE_ADDRESS;
   newEvent.transaction.from = Address.fromString(buyer);
   newEvent.parameters = [
     new ethereum.EventParam(
@@ -78,7 +76,7 @@ export const createItemSoldEvent = (
     ),
     new ethereum.EventParam(
       "buyer",
-      ethereum.Value.fromAddress(Address.fromString(MARKETPLACE_BUYER_ADDRESS))
+      ethereum.Value.fromAddress(MARKETPLACE_BUYER_ADDRESS)
     ),
     new ethereum.EventParam("nftAddress", ethereum.Value.fromAddress(contract)),
     new ethereum.EventParam("tokenId", ethereum.Value.fromI32(tokenId)),
@@ -97,7 +95,7 @@ export const createItemUpdatedEvent = (
   price: i32
 ): ItemUpdated => {
   const newEvent = changetype<ItemUpdated>(newMockEvent());
-  newEvent.address = Address.fromString(MARKETPLACE_ADDRESS);
+  newEvent.address = MARKETPLACE_ADDRESS;
   newEvent.parameters = [
     new ethereum.EventParam(
       "seller",
