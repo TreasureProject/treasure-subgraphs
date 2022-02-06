@@ -6,7 +6,11 @@ import {
   User,
   UserToken,
 } from "../generated/schema";
-import { EXPLORER } from "@treasure/constants";
+import {
+  EXPLORER,
+  MARKETPLACE_ADDRESS,
+  MARKETPLACE_BUYER_ADDRESS,
+} from "@treasure/constants";
 import {
   ItemCanceled,
   ItemListed,
@@ -22,17 +26,13 @@ import {
   exists,
   getAddressId,
   getCollection,
-  getName,
+  getToken,
   getUserAddressId,
   removeFromArray,
   removeIfExists,
 } from "./helpers";
 import { DropGym, JoinGym } from "../generated/Smol Bodies Gym/Gym";
 import { DropSchool, JoinSchool } from "../generated/Smol Brains School/School";
-
-const MARKETPLACE_BUYER = Address.fromString(
-  "0x812cda2181ed7c45a35a691e0c85e231d218e273"
-);
 
 let stakers = new TypedMap<string, string>();
 
@@ -59,37 +59,12 @@ function getListing(
   if (!listing) {
     listing = new Listing(id);
 
-    listing.collection = contract.toHexString();
     listing.seller = getUser(seller).id;
     listing.status = exists("StakedToken", id) ? "Inactive" : "Active";
+    listing.token = getAddressId(contract, tokenId);
   }
 
   return listing;
-}
-
-function getToken(contract: Address, tokenId: BigInt): Token {
-  let id = getAddressId(contract, tokenId);
-  let token = Token.load(id);
-
-  if (!token) {
-    let collection = getCollection(contract);
-
-    token = new Token(id);
-
-    token.collection = collection.id;
-
-    // TODO: Get dynamic names for Legions?
-    if (collection.standard == "ERC721") {
-      token.name = `${collection.name} #${tokenId.toString()}`;
-    } else {
-      token.name = getName(tokenId);
-    }
-
-    token.tokenId = tokenId;
-    token.save();
-  }
-
-  return token;
 }
 
 function getStakedTokenId(
@@ -167,6 +142,7 @@ function handleUnstake(
 // TODO: Handle staking contracts and bridgeworld staking
 function handleTransfer(
   contract: Address,
+  operator: Address,
   from: Address,
   to: Address,
   tokenId: BigInt,
@@ -174,14 +150,20 @@ function handleTransfer(
 ): void {
   let user = getUser(to);
   let token = getToken(contract, tokenId);
+  let isMarketplace = [
+    MARKETPLACE_ADDRESS.toHexString(),
+    MARKETPLACE_BUYER_ADDRESS.toHexString(),
+  ].includes(operator.toHexString());
 
-  let listing = Listing.load(getUserAddressId(from, contract, tokenId));
+  if (!isMarketplace) {
+    let listing = Listing.load(getUserAddressId(from, contract, tokenId));
 
-  if (listing) {
-    listing.status = "Inactive";
-    listing.save();
+    if (listing) {
+      listing.status = "Inactive";
+      listing.save();
 
-    updateCollectionFloorAndTotal(listing.collection);
+      updateCollectionFloorAndTotal(listing.collection);
+    }
   }
 
   let fromUserToken = UserToken.load(`${from.toHexString()}-${token.id}`);
@@ -210,7 +192,7 @@ function handleTransfer(
 }
 
 function updateCollectionFloorAndTotal(id: string): void {
-  let collection = getCollection(Address.fromString(id));
+  let collection = getCollection(id);
   let floorPrices = new TypedMap<string, BigInt>();
   let listings = collection.listings;
   let length = listings.length;
@@ -269,6 +251,11 @@ export function handleItemCanceled(event: ItemCanceled): void {
   let address = params.nftAddress;
   let listing = getListing(params.seller, address, params.tokenId);
 
+  // Was invalid listing, likely a Recruit.
+  if (listing.quantity == 0) {
+    return;
+  }
+
   removeIfExists("Listing", listing.id);
 
   updateCollectionFloorAndTotal(listing.collection);
@@ -282,17 +269,24 @@ export function handleItemListed(event: ItemListed): void {
   let tokenId = params.tokenId;
   let seller = params.seller;
 
+  let token = getToken(tokenAddress, tokenId);
+
+  // We don't allow listing Recruits on the marketplace
+  if (token.name == "Recruit") {
+    return;
+  }
+
   let listing = getListing(seller, tokenAddress, tokenId);
 
   listing.blockTimestamp = event.block.timestamp;
+  listing.collection = token.collection;
   listing.expires = params.expirationTime;
   listing.pricePerItem = pricePerItem;
   listing.quantity = quantity.toI32();
-  listing.token = getAddressId(tokenAddress, tokenId);
 
   listing.save();
 
-  let collection = getCollection(tokenAddress);
+  let collection = getCollection(token.collection);
 
   collection.listings = collection.listings.concat([listing.id]);
   collection.save();
@@ -306,11 +300,16 @@ export function handleItemSold(event: ItemSold): void {
   let seller = params.seller;
   let address = params.nftAddress;
   let tokenId = params.tokenId;
-  let buyer = params.buyer.equals(MARKETPLACE_BUYER)
+  let buyer = params.buyer.equals(MARKETPLACE_BUYER_ADDRESS)
     ? event.transaction.from
     : params.buyer;
 
   let listing = getListing(seller, address, tokenId);
+
+  // Was invalid listing, likely a Recruit. Should never happen as contract would revert the transfer anyways.
+  if (listing.quantity == 0) {
+    return;
+  }
 
   listing.quantity = listing.quantity - quantity;
 
@@ -337,7 +336,7 @@ export function handleItemSold(event: ItemSold): void {
 
   sold.save();
 
-  let collection = getCollection(address);
+  let collection = getCollection(listing.collection);
 
   collection.totalSales = collection.totalSales.plus(BigInt.fromI32(1));
   collection.totalVolume = collection.totalVolume.plus(
@@ -358,6 +357,11 @@ export function handleItemUpdated(event: ItemUpdated): void {
   let params = event.params;
   let listing = getListing(params.seller, params.nftAddress, params.tokenId);
 
+  // Was invalid listing, likely a Recruit
+  if (listing.quantity == 0) {
+    return;
+  }
+
   if (!listing.pricePerItem.equals(params.pricePerItem)) {
     listing.blockTimestamp = event.block.timestamp;
   }
@@ -375,7 +379,14 @@ export function handleItemUpdated(event: ItemUpdated): void {
 export function handleTransfer721(event: Transfer): void {
   let params = event.params;
 
-  handleTransfer(event.address, params.from, params.to, params.tokenId, 1);
+  handleTransfer(
+    event.address,
+    Address.zero(),
+    params.from,
+    params.to,
+    params.tokenId,
+    1
+  );
 }
 
 export function handleTransferBatch(event: TransferBatch): void {
@@ -387,6 +398,7 @@ export function handleTransferBatch(event: TransferBatch): void {
   for (let index = 0; index < length; index++) {
     handleTransfer(
       event.address,
+      params.operator,
       params.from,
       params.to,
       ids[index],
@@ -400,6 +412,7 @@ export function handleTransferSingle(event: TransferSingle): void {
 
   handleTransfer(
     event.address,
+    params.operator,
     params.from,
     params.to,
     params.id,
