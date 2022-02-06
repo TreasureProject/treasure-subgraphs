@@ -1,4 +1,4 @@
-import { Address, BigDecimal, BigInt, TypedMap } from "@graphprotocol/graph-ts";
+import { Address, BigInt, TypedMap } from "@graphprotocol/graph-ts";
 import { SMOL_BODIES_PETS_ADDRESS } from "@treasure/constants";
 import { log } from "matchstick-as";
 
@@ -104,7 +104,7 @@ export function updateAttributePercentages(collection: Collection): void {
     attribute.percentage =
       toBigDecimal(attribute._tokenIds.length)
         .div(toBigDecimal(totalTokens))
-        .truncate(4);
+        .truncate(10);
     attribute.save();
   }
 }

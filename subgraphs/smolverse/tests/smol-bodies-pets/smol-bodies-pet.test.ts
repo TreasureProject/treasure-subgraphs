@@ -179,8 +179,8 @@ test("collection base uri is changed", () => {
 //   // 2/3 have color black
 //   const address = baseUriChangedEvent.address.toHexString();
 //   assert.fieldEquals(ATTRIBUTE_ENTITY_TYPE, `${address}-background-green`, "percentage", "1");
-//   assert.fieldEquals(ATTRIBUTE_ENTITY_TYPE, `${address}-color-grey`, "percentage", "0.3333");
-//   assert.fieldEquals(ATTRIBUTE_ENTITY_TYPE, `${address}-color-black`, "percentage", "0.6666");
+//   assert.fieldEquals(ATTRIBUTE_ENTITY_TYPE, `${address}-color-grey`, "percentage", "0.3333333333");
+//   assert.fieldEquals(ATTRIBUTE_ENTITY_TYPE, `${address}-color-black`, "percentage", "0.6666666666");
 // });
 
 // test("attribute percentages not updated until threshold is met", () => {
