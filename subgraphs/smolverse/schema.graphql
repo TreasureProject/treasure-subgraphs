@@ -71,7 +71,7 @@ type Random @entity {
   id: ID!
 
   "Internal for tracking associated claim"
-  _claimId: String!
+  _claimId: String
 }
 
 type Seeded @entity {

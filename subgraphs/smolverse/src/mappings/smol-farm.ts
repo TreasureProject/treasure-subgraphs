@@ -27,7 +27,11 @@ export function handleSmolStaked(event: SmolStaked): void {
 export function handleStartClaiming(event: StartClaiming): void {
   const params = event.params;
 
-  const stakedTokenId = `${SMOL_BRAINS_ADDRESS.toHexString()}-${params._tokenId.toHexString()}-${getFarmId(event.address)}`;
+  const stakedTokenId = [
+    SMOL_BRAINS_ADDRESS.toHexString(),
+    params._tokenId.toHexString(),
+    getFarmId(event.address)
+  ].join("-");
   const stakedToken = StakedToken.load(stakedTokenId);
   if (!stakedToken) {
     log.error("[smol-farm] Unknown staked token: {}", [stakedTokenId]);

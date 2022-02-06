@@ -38,16 +38,19 @@ export function handleRandomSeeded(event: RandomSeeded): void {
     }
 
     const claimId = random._claimId;
-    const claim = Claim.load(claimId);
+    if (!claimId) {
+      log.error("[randomizer] Unknown claim ID for random: {}", [randomId]);
+      continue;
+    }
+
+    const claim = Claim.load(claimId as string);
     if (!claim) {
-      log.error("[seeded] Unknown claim: {}", [claimId]);
+      log.error("[randomizer] Unknown claim: {}", [claimId as string]);
       continue;
     }
 
     claim.status = "Revealable";
     claim.save();
-
-    store.remove("Random", randomId);
   }
 
   store.remove("Seeded", seededId);

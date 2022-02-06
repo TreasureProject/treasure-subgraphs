@@ -10,6 +10,7 @@ export const LEGION_ADDRESS = Address.fromString("{{ legion_address }}");
 export const TREASURE_ADDRESS = Address.fromString("{{ treasure_address }}");
 export const SMOL_BRAINS_ADDRESS = Address.fromString("{{ smol_brains_address }}");
 export const SMOL_BODIES_PETS_ADDRESS = Address.fromString("{{ smol_bodies_pets_address }}");
+export const SMOL_FARM_ADDRESS = Address.fromString("{{ smol_farm_address }}")
 export const MARKETPLACE_ADDRESS = Address.fromString(
   "{{ treasure_marketplace_address }}"
 );
