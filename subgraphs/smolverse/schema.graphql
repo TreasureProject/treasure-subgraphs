@@ -47,3 +47,48 @@ type Token @entity {
   image: String
   owner: User
 }
+
+type Farm @entity {
+  id: ID!
+  name: String!
+  stakedTokens: [StakedToken!]! @derivedFrom(field: "farm")
+}
+
+type StakedToken @entity {
+  id: ID!
+
+  "Internal for tracking pending claims"
+  _pendingClaimId: String
+
+  token: Token!
+  farm: Farm!
+  owner: User!
+  stakeTime: BigInt!
+  claims: [Claim!]!
+}
+
+type Random @entity {
+  id: ID!
+
+  "Internal for tracking associated claim"
+  _claimId: String!
+}
+
+type Seeded @entity {
+  id: ID!
+
+  "Internal for tracking associated random requests"
+  _randomIds: [String!]!
+}
+
+enum ClaimStatus {
+  Started
+  Revealable
+  Claimed
+}
+
+type Claim @entity {
+  id: ID!
+  status: ClaimStatus!
+  random: Random!
+}
