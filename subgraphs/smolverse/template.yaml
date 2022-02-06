@@ -31,4 +31,4 @@ dataSources:
           handler: handleMint
         - event: Transfer(indexed address,indexed address,indexed uint256)
           handler: handleTransfer
-      file: ./src/mappings/smol-bodies-pet.ts
+      file: ./src/mappings/smol-bodies-pets.ts
