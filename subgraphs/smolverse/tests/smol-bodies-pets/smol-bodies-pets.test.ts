@@ -1,7 +1,7 @@
 import { assert, clearStore, test } from "matchstick-as/assembly/index";
 
 import { createBaseUriChangedEvent, createSmolPetMintEvent, createTransferEvent } from "./utils";
-import { handleBaseUriChanged, handleMint, handleTransfer } from "../../src/mappings/smol-bodies-pet";
+import { handleBaseUriChanged, handleMint, handleTransfer } from "../../src/mappings/smol-bodies-pets";
 import { BigDecimal, Bytes, json } from "@graphprotocol/graph-ts";
 import { SMOL_BODIES_PETS_ADDRESS } from "@treasure/constants";
 import { Attribute } from "../../generated/schema";
