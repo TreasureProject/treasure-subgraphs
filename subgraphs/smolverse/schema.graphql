@@ -1,3 +1,9 @@
+enum ClaimStatus {
+  Started
+  Revealable
+  Claimed
+}
+
 enum TokenStandard {
   ERC721
   ERC1155
@@ -6,6 +12,7 @@ enum TokenStandard {
 type User @entity {
   id: ID!
   tokens: [Token!]! @derivedFrom(field: "owner")
+  stakedTokens: [StakedToken!]! @derivedFrom(field: "owner")
 }
 
 type Collection @entity {
@@ -46,4 +53,42 @@ type Token @entity {
   description: String
   image: String
   owner: User
+}
+
+type Farm @entity {
+  id: ID!
+  name: String!
+  stakedTokens: [StakedToken!]! @derivedFrom(field: "farm")
+}
+
+type StakedToken @entity {
+  id: ID!
+
+  "Internal for tracking pending claims"
+  _pendingClaimId: String
+
+  token: Token!
+  farm: Farm!
+  owner: User!
+  stakeTime: BigInt!
+  claims: [Claim!]!
+}
+
+type Random @entity {
+  id: ID!
+
+  "Internal for tracking associated claim"
+  _claimId: String
+}
+
+type Seeded @entity {
+  id: ID!
+
+  "Internal for tracking associated random requests"
+  _randomIds: [String!]!
+}
+
+type Claim @entity {
+  id: ID!
+  status: ClaimStatus!
 }
