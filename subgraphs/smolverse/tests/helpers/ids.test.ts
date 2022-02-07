@@ -1,8 +1,13 @@
-import { BigInt } from "@graphprotocol/graph-ts";
+import { Address, BigInt } from "@graphprotocol/graph-ts";
 import { assert, clearStore, test } from "matchstick-as/assembly/index";
 
 import { Collection } from "../../generated/schema";
-import { getAttributeId, getTokenId } from "../../src/helpers/ids";
+import { getAttributeId, getCollectionId, getFarmId, getRandomId, getSeededId, getStakedTokenId, getTokenId } from "../../src/helpers/ids";
+
+test("collection unique id is generated", () => {
+  const id = getCollectionId(Address.zero());
+  assert.stringEquals(id, "0x0000000000000000000000000000000000000000");
+});
 
 test("token unique id is generated", () => {
   const collection = new Collection("test-collection");
@@ -14,4 +19,24 @@ test("attribute unique id is generated", () => {
   const collection = new Collection("test-collection");
   const id = getAttributeId(collection, "Test Name", "Value");
   assert.stringEquals(id, "test-collection-test-name-value");
+});
+
+test("farm unique id is generated", () => {
+  const id = getFarmId(Address.zero());
+  assert.stringEquals(id, "0x0000000000000000000000000000000000000000");
+});
+
+test("staked token unique id is generated", () => {
+  const id = getStakedTokenId("collection", BigInt.fromI32(1), "farm");
+  assert.stringEquals(id, "collection-0x1-farm");
+});
+
+test("random unique id is generated", () => {
+  const id = getRandomId(BigInt.fromI32(1234));
+  assert.stringEquals(id, "0x4d2");
+});
+
+test("seeded unique id is generated", () => {
+  const id = getSeededId(BigInt.fromI32(1234));
+  assert.stringEquals(id, "0x4d2");
 });
