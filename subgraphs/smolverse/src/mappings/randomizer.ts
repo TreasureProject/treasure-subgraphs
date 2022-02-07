@@ -51,6 +51,8 @@ export function handleRandomSeeded(event: RandomSeeded): void {
 
     claim.status = "Revealable";
     claim.save();
+
+    store.remove("Random", randomId);
   }
 
   store.remove("Seeded", seededId);
