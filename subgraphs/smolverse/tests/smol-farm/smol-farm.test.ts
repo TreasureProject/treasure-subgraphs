@@ -1,12 +1,12 @@
 import { BigInt } from "@graphprotocol/graph-ts";
 import { SMOL_BRAINS_ADDRESS } from "@treasure/constants";
 import { assert, test } from "matchstick-as";
-import { Collection, Farm, Token, User } from "../../generated/schema";
+import { Collection, Farm, StakedToken, Token, User } from "../../generated/schema";
 
 import { SMOL_BRAINS_COLLECTION_NAME, SMOL_FARM_NAME } from "../../src/helpers/constants";
 import { getFarmId, getStakedTokenId, getTokenId } from "../../src/helpers/ids";
-import { handleSmolStaked } from "../../src/mappings/smol-farm";
-import { createSmolStakedEvent } from "./utils";
+import { handleSmolStaked, handleSmolUnstaked } from "../../src/mappings/smol-farm";
+import { createSmolStakedEvent, createSmolUnstakedEvent } from "./utils";
 
 const COLLECTION_ENTITY_TYPE = "Collection";
 const FARM_ENTITY_TYPE = "Farm";
@@ -45,4 +45,25 @@ test("staked token is created", () => {
   assert.fieldEquals(STAKED_TOKEN_ENTITY_TYPE, stakedTokenId, "owner", USER_ADDRESS);
   assert.fieldEquals(STAKED_TOKEN_ENTITY_TYPE, stakedTokenId, "stakeTime", "1644190714");
   assert.fieldEquals(STAKED_TOKEN_ENTITY_TYPE, stakedTokenId, "claims", "[]");
+});
+
+test("unstaked token is removed", () => {
+  const tokenId = 1;
+
+  const smolStakedEvent = createSmolStakedEvent(USER_ADDRESS, tokenId, 1644190714);
+  handleSmolStaked(smolStakedEvent);
+
+  // Assert staked token was created
+  const stakedTokenId = [
+    SMOL_BRAINS_ADDRESS.toHexString(),
+    BigInt.fromI32(tokenId).toHexString(),
+    smolStakedEvent.address.toHexString()
+  ].join("-");
+  assert.assertNotNull(StakedToken.load(stakedTokenId));
+
+  const smolUnstakedEvent = createSmolUnstakedEvent(USER_ADDRESS, tokenId);
+  handleSmolUnstaked(smolUnstakedEvent);
+
+  // Assert staked token was removed
+  assert.assertNull(StakedToken.load(stakedTokenId));
 });
