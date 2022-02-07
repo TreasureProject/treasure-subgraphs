@@ -6,6 +6,7 @@ enum TokenStandard {
 type User @entity {
   id: ID!
   tokens: [Token!]! @derivedFrom(field: "owner")
+  stakedTokens: [StakedToken!]! @derivedFrom(field: "owner")
 }
 
 type Collection @entity {
