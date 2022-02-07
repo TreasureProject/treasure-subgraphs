@@ -33,7 +33,7 @@ dataSources:
     network: {{ network }}
     source:
       address: "{{ smol_bodies_pets_address }}"
-      abi: SmolBodiesPets
+      abi: SmolPets
       startBlock: {{ smol_bodies_pets_start_block }}
     mapping:
       kind: ethereum/events
@@ -46,8 +46,8 @@ dataSources:
         - Transfer
         - User
       abis:
-        - name: SmolBodiesPets
-          file: ../../node_modules/@treasure/subgraph-abis/src/SmolBodiesPets.json
+        - name: SmolPets
+          file: ../../node_modules/@treasure/subgraph-abis/src/SmolPets.json
       eventHandlers:
         - event: BaseURIChanged(string,string)
           handler: handleBaseUriChanged
@@ -55,7 +55,35 @@ dataSources:
           handler: handleMint
         - event: Transfer(indexed address,indexed address,indexed uint256)
           handler: handleTransfer
-      file: ./src/mappings/smol-bodies-pets.ts
+      file: ./src/mappings/smol-pets.ts
+  - name: Smol Brains Pets
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ smol_brains_pets_address }}"
+      abi: SmolPets
+      startBlock: {{ smol_brains_pets_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Attribute
+        - Collection
+        - Token
+        - Transfer
+        - User
+      abis:
+        - name: SmolPets
+          file: ../../node_modules/@treasure/subgraph-abis/src/SmolPets.json
+      eventHandlers:
+        - event: BaseURIChanged(string,string)
+          handler: handleBaseUriChanged
+        - event: SmolPetMint(indexed address,uint256,string)
+          handler: handleMint
+        - event: Transfer(indexed address,indexed address,indexed uint256)
+          handler: handleTransfer
+      file: ./src/mappings/smol-pets.ts
   - name: Smol Farm
     kind: ethereum/contract
     network: {{ network }}

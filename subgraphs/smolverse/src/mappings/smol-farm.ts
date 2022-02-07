@@ -4,7 +4,7 @@ import { log } from "matchstick-as";
 
 import { Claim, Random, StakedToken } from "../../generated/schema";
 import { RewardClaimed, SmolStaked, SmolUnstaked, StartClaiming } from "../../generated/Smol Farm/SmolFarm";
-import { SMOL_BRAINS_COLLECTION_NAME, SMOL_FARM_NAME, TOKEN_STANDARD_ERC721 } from "../helpers/constants";
+import { SMOL_FARM_NAME } from "../helpers/constants";
 import { getCollectionId, getFarmId, getRandomId, getStakedTokenId } from "../helpers/ids";
 import { getOrCreateCollection, getOrCreateFarm, getOrCreateToken, getOrCreateUser } from "../helpers/models";
 
@@ -13,7 +13,7 @@ export function handleSmolStaked(event: SmolStaked): void {
 
   const farm = getOrCreateFarm(event.address, SMOL_FARM_NAME);
   const owner = getOrCreateUser(params._owner.toHexString());
-  const collection = getOrCreateCollection(SMOL_BRAINS_ADDRESS, SMOL_BRAINS_COLLECTION_NAME, TOKEN_STANDARD_ERC721);
+  const collection = getOrCreateCollection(SMOL_BRAINS_ADDRESS);
   const token = getOrCreateToken(collection, params._tokenId);
 
   const stakedTokenid = getStakedTokenId(

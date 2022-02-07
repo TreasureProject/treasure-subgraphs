@@ -32,7 +32,7 @@ test("staked token is created", () => {
 
   // Assert collection was created
   const collection = Collection.load(SMOL_BRAINS_ADDRESS.toHexString()) as Collection;
-  assert.stringEquals(collection.name, SMOL_BRAINS_COLLECTION_NAME);
+  assert.assertNotNull(collection);
 
   // Assert token was created
   const token = Token.load(getTokenId(collection, BigInt.fromI32(tokenId))) as Token;
