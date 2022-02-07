@@ -2,8 +2,8 @@ import { Address, BigInt, TypedMap } from "@graphprotocol/graph-ts";
 import { SMOL_BODIES_PETS_ADDRESS } from "@treasure/constants";
 import { log } from "matchstick-as";
 
-import { Attribute, Collection, Token, User } from "../../generated/schema";
-import { getAttributeId, getTokenId } from "./ids";
+import { Attribute, Collection, Farm, Random, Seeded, Token, User } from "../../generated/schema";
+import { getAttributeId, getCollectionId, getFarmId, getRandomId, getSeededId, getTokenId } from "./ids";
 import { toBigDecimal } from "./number";
 
 const ATTRIBUTE_PERCENTAGE_THRESHOLDS = new TypedMap<string, number>();
@@ -53,7 +53,7 @@ export function getOrCreateAttribute(
 }
 
 export function getOrCreateCollection(address: Address, name: string, standard: string): Collection {
-  const id = address.toHexString();
+  const id = getCollectionId(address);
   let collection = Collection.load(id);
 
   if (!collection) {
@@ -83,6 +83,44 @@ export function getOrCreateToken(collection: Collection, tokenId: BigInt): Token
   }
 
   return token;
+}
+
+export function getOrCreateFarm(address: Address, name: string): Farm {
+  const id = getFarmId(address);
+  let farm = Farm.load(id);
+
+  if (!farm) {
+    farm = new Farm(id);
+    farm.name = name;
+    farm.save();
+  }
+
+  return farm;
+}
+
+export function getOrCreateRandom(requestId: BigInt): Random {
+  const id = getRandomId(requestId);
+  let random = Random.load(id);
+
+  if (!random) {
+    random = new Random(id);
+    random.save();
+  }
+
+  return random;
+}
+
+export function getOrCreateSeeded(commitId: BigInt): Seeded {
+  const id = getSeededId(commitId);
+  let seeded = Seeded.load(id);
+
+  if (!seeded) {
+    seeded = new Seeded(id);
+    seeded._randomIds = [];
+    seeded.save();
+  }
+
+  return seeded;
 }
 
 export function updateAttributePercentages(collection: Collection): void {
