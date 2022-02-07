@@ -2,7 +2,7 @@ import { store } from "@graphprotocol/graph-ts";
 import { SMOL_BRAINS_ADDRESS } from "@treasure/constants";
 import { log } from "matchstick-as";
 
-import { Claim, Farm, Random, StakedToken } from "../../generated/schema";
+import { Claim, Random, StakedToken } from "../../generated/schema";
 import { RewardClaimed, SmolStaked, SmolUnstaked, StartClaiming } from "../../generated/Smol Farm/SmolFarm";
 import { SMOL_BRAINS_COLLECTION_NAME, SMOL_FARM_NAME, TOKEN_STANDARD_ERC721 } from "../helpers/constants";
 import { getFarmId, getRandomId, getStakedTokenId } from "../helpers/ids";

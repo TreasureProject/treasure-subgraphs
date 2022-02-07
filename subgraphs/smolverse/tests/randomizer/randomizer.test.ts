@@ -1,6 +1,7 @@
 import { BigInt } from "@graphprotocol/graph-ts";
 import { SMOL_BRAINS_ADDRESS } from "@treasure/constants";
 import { assert, clearStore, test } from "matchstick-as";
+
 import { Random, Seeded } from "../../generated/schema";
 import { getFarmId, getRandomId, getSeededId } from "../../src/helpers/ids";
 import { handleRandomRequest, handleRandomSeeded } from "../../src/mappings/randomizer";

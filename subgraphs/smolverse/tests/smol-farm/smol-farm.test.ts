@@ -11,11 +11,7 @@ import { createRandomRequestEvent } from "../randomizer/utils";
 import { createRewardClaimedEvent, createSmolStakedEvent, createSmolUnstakedEvent, createStartClaimingEvent } from "./utils";
 
 const CLAIM_ENTITY_TYPE = "Claim";
-const COLLECTION_ENTITY_TYPE = "Collection";
-const FARM_ENTITY_TYPE = "Farm";
 const STAKED_TOKEN_ENTITY_TYPE = "StakedToken";
-const TOKEN_ENTITY_TYPE = "Token";
-const USER_ENTITY_TYPE = "User";
 const USER_ADDRESS = "0x461950b159366edcd2bcbee8126d973ac49238e0";
 
 test("staked token is created", () => {
