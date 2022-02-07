@@ -9,13 +9,12 @@ import { createSmolStakedEvent, createStartClaimingEvent } from "../smol-farm/ut
 import { createRandomRequestEvent, createRandomSeededEvent } from "./utils";
 
 const CLAIM_ENTITY_TYPE = "Claim";
-const RANDOM_ENTITY_TYPE = "Random";
 const SEEDED_ENTITY_TYPE = "Seeded";
 const USER_ADDRESS = "0x461950b159366edcd2bcbee8126d973ac49238e0";
 
 test("random and seeded are created", () => {
   clearStore();
-  
+
   const requestId = 1234;
   const commitId = 9876;
 

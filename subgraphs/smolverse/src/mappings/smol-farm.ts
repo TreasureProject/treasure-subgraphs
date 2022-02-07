@@ -1,8 +1,9 @@
+import { store } from "@graphprotocol/graph-ts";
 import { SMOL_BRAINS_ADDRESS } from "@treasure/constants";
 import { log } from "matchstick-as";
 
-import { Claim, Random, StakedToken } from "../../generated/schema";
-import { RewardClaimed, SmolStaked, StartClaiming } from "../../generated/Smol Farm/SmolFarm";
+import { Claim, Farm, Random, StakedToken } from "../../generated/schema";
+import { RewardClaimed, SmolStaked, SmolUnstaked, StartClaiming } from "../../generated/Smol Farm/SmolFarm";
 import { SMOL_BRAINS_COLLECTION_NAME, SMOL_FARM_NAME, TOKEN_STANDARD_ERC721 } from "../helpers/constants";
 import { getFarmId, getRandomId, getStakedTokenId } from "../helpers/ids";
 import { getOrCreateCollection, getOrCreateFarm, getOrCreateToken, getOrCreateUser } from "../helpers/models";
@@ -22,6 +23,27 @@ export function handleSmolStaked(event: SmolStaked): void {
   stakedToken.stakeTime = params._stakeTime;
   stakedToken.claims = [];
   stakedToken.save();
+}
+
+export function handleSmolUnstaked(event: SmolUnstaked): void {
+  const params = event.params;
+
+  const id = [
+    SMOL_BRAINS_ADDRESS.toHexString(),
+    params._tokenId.toHexString(),
+    getFarmId(event.address)
+  ].join("-");
+  const stakedToken = StakedToken.load(id);
+  if (!stakedToken) {
+    log.info("[smol-farm] Skipped already removed staked token: {}", [id]);
+    return;
+  }
+
+  for (let index = 0; index < stakedToken.claims.length; index++) {
+    store.remove("Claim", stakedToken.claims[index]);
+  }
+
+  store.remove("StakedToken", id);
 }
 
 export function handleStartClaiming(event: StartClaiming): void {
