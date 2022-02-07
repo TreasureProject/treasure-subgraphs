@@ -1,8 +1,16 @@
-import { Address, ethereum } from "@graphprotocol/graph-ts";
+import { Address, BigInt, ethereum } from "@graphprotocol/graph-ts";
 import { SMOL_FARM_ADDRESS } from "@treasure/constants";
 import { newMockEvent } from "matchstick-as";
 
 import { RewardClaimed, SmolStaked, SmolUnstaked, StartClaiming } from "../../generated/Smol Farm/SmolFarm";
+import { getRandomId, getStakedTokenId } from "../../src/helpers/ids";
+
+export function getClaimId(collectionId: string, tokenId: BigInt, farmId: string, requestId: BigInt): string {
+  return [
+    getStakedTokenId(collectionId, tokenId, farmId),
+    getRandomId(requestId)
+  ].join("-");
+}
 
 export const createSmolStakedEvent = (
   owner: string,

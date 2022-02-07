@@ -3,6 +3,10 @@ import { Address, BigInt } from "@graphprotocol/graph-ts";
 import { Collection, Farm, Random, Token } from "../../generated/schema";
 import { stringToSlug } from "./string";
 
+export function getCollectionId(address: Address): string {
+  return address.toHexString();
+}
+
 export function getTokenId(collection: Collection, tokenId: BigInt): string {
   return [collection.id, tokenId.toHexString()].join("-");
 }
@@ -15,8 +19,12 @@ export function getFarmId(address: Address): string {
   return address.toHexString();
 }
 
-export function getStakedTokenId(token: Token, farm: Farm): string {
-  return [token.id, farm.id].join("-");
+export function getStakedTokenId(collectionId: string, tokenId: BigInt, farmId: string): string {
+  return [
+    collectionId,
+    tokenId.toHexString(),
+    farmId
+  ].join("-");
 }
 
 export function getRandomId(requestId: BigInt): string {

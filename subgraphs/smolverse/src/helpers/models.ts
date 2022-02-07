@@ -3,7 +3,7 @@ import { SMOL_BODIES_PETS_ADDRESS } from "@treasure/constants";
 import { log } from "matchstick-as";
 
 import { Attribute, Collection, Farm, Random, Seeded, Token, User } from "../../generated/schema";
-import { getAttributeId, getFarmId, getRandomId, getSeededId, getTokenId } from "./ids";
+import { getAttributeId, getCollectionId, getFarmId, getRandomId, getSeededId, getTokenId } from "./ids";
 import { toBigDecimal } from "./number";
 
 const ATTRIBUTE_PERCENTAGE_THRESHOLDS = new TypedMap<string, number>();
@@ -53,7 +53,7 @@ export function getOrCreateAttribute(
 }
 
 export function getOrCreateCollection(address: Address, name: string, standard: string): Collection {
-  const id = address.toHexString();
+  const id = getCollectionId(address);
   let collection = Collection.load(id);
 
   if (!collection) {

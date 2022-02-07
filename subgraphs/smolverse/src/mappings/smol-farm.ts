@@ -5,7 +5,7 @@ import { log } from "matchstick-as";
 import { Claim, Random, StakedToken } from "../../generated/schema";
 import { RewardClaimed, SmolStaked, SmolUnstaked, StartClaiming } from "../../generated/Smol Farm/SmolFarm";
 import { SMOL_BRAINS_COLLECTION_NAME, SMOL_FARM_NAME, TOKEN_STANDARD_ERC721 } from "../helpers/constants";
-import { getFarmId, getRandomId, getStakedTokenId } from "../helpers/ids";
+import { getCollectionId, getFarmId, getRandomId, getStakedTokenId } from "../helpers/ids";
 import { getOrCreateCollection, getOrCreateFarm, getOrCreateToken, getOrCreateUser } from "../helpers/models";
 
 export function handleSmolStaked(event: SmolStaked): void {
@@ -16,7 +16,12 @@ export function handleSmolStaked(event: SmolStaked): void {
   const collection = getOrCreateCollection(SMOL_BRAINS_ADDRESS, SMOL_BRAINS_COLLECTION_NAME, TOKEN_STANDARD_ERC721);
   const token = getOrCreateToken(collection, params._tokenId);
 
-  const stakedToken = new StakedToken(getStakedTokenId(token, farm));
+  const stakedTokenid = getStakedTokenId(
+    getCollectionId(SMOL_BRAINS_ADDRESS),
+    token.tokenId,
+    farm.id
+  );
+  const stakedToken = new StakedToken(stakedTokenid);
   stakedToken.token = token.id;
   stakedToken.farm = farm.id;
   stakedToken.owner = owner.id;
@@ -49,11 +54,11 @@ export function handleSmolUnstaked(event: SmolUnstaked): void {
 export function handleStartClaiming(event: StartClaiming): void {
   const params = event.params;
 
-  const stakedTokenId = [
-    SMOL_BRAINS_ADDRESS.toHexString(),
-    params._tokenId.toHexString(),
+  const stakedTokenId = getStakedTokenId(
+    getCollectionId(SMOL_BRAINS_ADDRESS),
+    params._tokenId,
     getFarmId(event.address)
-  ].join("-");
+  );
   const stakedToken = StakedToken.load(stakedTokenId);
   if (!stakedToken) {
     log.error("[smol-farm] Unknown staked token: {}", [stakedTokenId]);
@@ -83,11 +88,11 @@ export function handleStartClaiming(event: StartClaiming): void {
 export function handleRewardClaimed(event: RewardClaimed): void {
   const params = event.params;
 
-  const stakedTokenId = [
-    SMOL_BRAINS_ADDRESS.toHexString(),
-    params._tokenId.toHexString(),
+  const stakedTokenId = getStakedTokenId(
+    getCollectionId(SMOL_BRAINS_ADDRESS),
+    params._tokenId,
     getFarmId(event.address)
-  ].join("-");
+  );
   const stakedToken = StakedToken.load(stakedTokenId);
   if (!stakedToken) {
     log.error("[smol-farm] Unknown staked token: {}", [stakedTokenId]);

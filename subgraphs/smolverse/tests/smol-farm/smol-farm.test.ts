@@ -4,11 +4,11 @@ import { assert, clearStore, test } from "matchstick-as";
 import { Collection, Farm, StakedToken, Token, User } from "../../generated/schema";
 
 import { SMOL_BRAINS_COLLECTION_NAME, SMOL_FARM_NAME } from "../../src/helpers/constants";
-import { getFarmId, getRandomId, getStakedTokenId, getTokenId } from "../../src/helpers/ids";
+import { getCollectionId, getFarmId, getStakedTokenId, getTokenId } from "../../src/helpers/ids";
 import { handleRandomRequest } from "../../src/mappings/randomizer";
 import { handleRewardClaimed, handleSmolStaked, handleSmolUnstaked, handleStartClaiming } from "../../src/mappings/smol-farm";
 import { createRandomRequestEvent } from "../randomizer/utils";
-import { createRewardClaimedEvent, createSmolStakedEvent, createSmolUnstakedEvent, createStartClaimingEvent } from "./utils";
+import { createRewardClaimedEvent, createSmolStakedEvent, createSmolUnstakedEvent, createStartClaimingEvent, getClaimId } from "./utils";
 
 const CLAIM_ENTITY_TYPE = "Claim";
 const STAKED_TOKEN_ENTITY_TYPE = "StakedToken";
@@ -40,7 +40,11 @@ test("staked token is created", () => {
   assert.bigIntEquals(token.tokenId, BigInt.fromI32(tokenId));
 
   // Assert staked token was crerated
-  const stakedTokenId = getStakedTokenId(token, farm);
+  const stakedTokenId = getStakedTokenId(
+    getCollectionId(SMOL_BRAINS_ADDRESS),
+    token.tokenId,
+    farm.id
+  );
   assert.fieldEquals(STAKED_TOKEN_ENTITY_TYPE, stakedTokenId, "token", token.id);
   assert.fieldEquals(STAKED_TOKEN_ENTITY_TYPE, stakedTokenId, "farm", farm.id);
   assert.fieldEquals(STAKED_TOKEN_ENTITY_TYPE, stakedTokenId, "owner", USER_ADDRESS);
@@ -57,11 +61,11 @@ test("unstaked token is removed", () => {
   handleSmolStaked(smolStakedEvent);
 
   // Assert staked token was created
-  const stakedTokenId = [
-    SMOL_BRAINS_ADDRESS.toHexString(),
-    BigInt.fromI32(tokenId).toHexString(),
-    smolStakedEvent.address.toHexString()
-  ].join("-");
+  const stakedTokenId = getStakedTokenId(
+    getCollectionId(SMOL_BRAINS_ADDRESS),
+    BigInt.fromI32(tokenId),
+    getFarmId(smolStakedEvent.address)
+  );
   assert.assertNotNull(StakedToken.load(stakedTokenId));
 
   const smolUnstakedEvent = createSmolUnstakedEvent(USER_ADDRESS, tokenId);
@@ -87,12 +91,12 @@ test("staked token claim is started", () => {
   handleStartClaiming(startClaimingEvent);
 
   // Assert claim was created with starting status
-  const claimId = [
-    SMOL_BRAINS_ADDRESS.toHexString(),
-    BigInt.fromI32(tokenId).toHexString(),
+  const claimId = getClaimId(
+    getCollectionId(SMOL_BRAINS_ADDRESS),
+    BigInt.fromI32(tokenId),
     getFarmId(smolStakedEvent.address),
-    getRandomId(BigInt.fromI32(requestId)),
-  ].join("-");
+    BigInt.fromI32(requestId)
+  );
   assert.fieldEquals(CLAIM_ENTITY_TYPE, claimId, "status", "Started");
 });
 
@@ -115,11 +119,11 @@ test("staked token claim is completed", () => {
   handleRewardClaimed(rewardClaimedEvent);
 
   // Assert claim was completed
-  const claimId = [
-    SMOL_BRAINS_ADDRESS.toHexString(),
-    BigInt.fromI32(tokenId).toHexString(),
+  const claimId = getClaimId(
+    getCollectionId(SMOL_BRAINS_ADDRESS),
+    BigInt.fromI32(tokenId),
     getFarmId(smolStakedEvent.address),
-    getRandomId(BigInt.fromI32(requestId)),
-  ].join("-");
+    BigInt.fromI32(requestId)
+  );
   assert.fieldEquals(CLAIM_ENTITY_TYPE, claimId, "status", "Claimed");
 });
