@@ -1,13 +1,16 @@
 import { BigInt } from "@graphprotocol/graph-ts";
 import { SMOL_BRAINS_ADDRESS } from "@treasure/constants";
-import { assert, test } from "matchstick-as";
+import { assert, clearStore, test } from "matchstick-as";
 import { Collection, Farm, StakedToken, Token, User } from "../../generated/schema";
 
 import { SMOL_BRAINS_COLLECTION_NAME, SMOL_FARM_NAME } from "../../src/helpers/constants";
-import { getFarmId, getStakedTokenId, getTokenId } from "../../src/helpers/ids";
-import { handleSmolStaked, handleSmolUnstaked } from "../../src/mappings/smol-farm";
-import { createSmolStakedEvent, createSmolUnstakedEvent } from "./utils";
+import { getFarmId, getRandomId, getStakedTokenId, getTokenId } from "../../src/helpers/ids";
+import { handleRandomRequest } from "../../src/mappings/randomizer";
+import { handleRewardClaimed, handleSmolStaked, handleSmolUnstaked, handleStartClaiming } from "../../src/mappings/smol-farm";
+import { createRandomRequestEvent } from "../randomizer/utils";
+import { createRewardClaimedEvent, createSmolStakedEvent, createSmolUnstakedEvent, createStartClaimingEvent } from "./utils";
 
+const CLAIM_ENTITY_TYPE = "Claim";
 const COLLECTION_ENTITY_TYPE = "Collection";
 const FARM_ENTITY_TYPE = "Farm";
 const STAKED_TOKEN_ENTITY_TYPE = "StakedToken";
@@ -16,6 +19,8 @@ const USER_ENTITY_TYPE = "User";
 const USER_ADDRESS = "0x461950b159366edcd2bcbee8126d973ac49238e0";
 
 test("staked token is created", () => {
+  clearStore();
+
   const tokenId = 1;
 
   const smolStakedEvent = createSmolStakedEvent(USER_ADDRESS, tokenId, 1644190714);
@@ -48,6 +53,8 @@ test("staked token is created", () => {
 });
 
 test("unstaked token is removed", () => {
+  clearStore();
+
   const tokenId = 1;
 
   const smolStakedEvent = createSmolStakedEvent(USER_ADDRESS, tokenId, 1644190714);
@@ -66,4 +73,57 @@ test("unstaked token is removed", () => {
 
   // Assert staked token was removed
   assert.assertNull(StakedToken.load(stakedTokenId));
+});
+
+test("staked token claim is started", () => {
+  clearStore();
+
+  const tokenId = 1;
+  const requestId = 1234;
+
+  const smolStakedEvent = createSmolStakedEvent(USER_ADDRESS, tokenId, 1644190714);
+  handleSmolStaked(smolStakedEvent);
+
+  const randomRequestEvent = createRandomRequestEvent(requestId, 9876);
+  handleRandomRequest(randomRequestEvent);
+
+  const startClaimingEvent = createStartClaimingEvent(USER_ADDRESS, tokenId, requestId);
+  handleStartClaiming(startClaimingEvent);
+
+  // Assert claim was created with starting status
+  const claimId = [
+    SMOL_BRAINS_ADDRESS.toHexString(),
+    BigInt.fromI32(tokenId).toHexString(),
+    getFarmId(smolStakedEvent.address),
+    getRandomId(BigInt.fromI32(requestId)),
+  ].join("-");
+  assert.fieldEquals(CLAIM_ENTITY_TYPE, claimId, "status", "Started");
+});
+
+test("staked token claim is completed", () => {
+  clearStore();
+
+  const tokenId = 1;
+  const requestId = 1234;
+
+  const smolStakedEvent = createSmolStakedEvent(USER_ADDRESS, tokenId, 1644190714);
+  handleSmolStaked(smolStakedEvent);
+
+  const randomRequestEvent = createRandomRequestEvent(requestId, 9876);
+  handleRandomRequest(randomRequestEvent);
+
+  const startClaimingEvent = createStartClaimingEvent(USER_ADDRESS, tokenId, requestId);
+  handleStartClaiming(startClaimingEvent);
+
+  const rewardClaimedEvent = createRewardClaimedEvent(USER_ADDRESS, tokenId);
+  handleRewardClaimed(rewardClaimedEvent);
+
+  // Assert claim was completed
+  const claimId = [
+    SMOL_BRAINS_ADDRESS.toHexString(),
+    BigInt.fromI32(tokenId).toHexString(),
+    getFarmId(smolStakedEvent.address),
+    getRandomId(BigInt.fromI32(requestId)),
+  ].join("-");
+  assert.fieldEquals(CLAIM_ENTITY_TYPE, claimId, "status", "Claimed");
 });

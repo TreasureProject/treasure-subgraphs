@@ -83,7 +83,11 @@ export function handleStartClaiming(event: StartClaiming): void {
 export function handleRewardClaimed(event: RewardClaimed): void {
   const params = event.params;
 
-  const stakedTokenId = `${SMOL_BRAINS_ADDRESS.toHexString()}-${params._tokenId.toHexString()}-${event.address.toHexString()}`;
+  const stakedTokenId = [
+    SMOL_BRAINS_ADDRESS.toHexString(),
+    params._tokenId.toHexString(),
+    getFarmId(event.address)
+  ].join("-");
   const stakedToken = StakedToken.load(stakedTokenId);
   if (!stakedToken) {
     log.error("[smol-farm] Unknown staked token: {}", [stakedTokenId]);
@@ -96,9 +100,9 @@ export function handleRewardClaimed(event: RewardClaimed): void {
     return;
   }
 
-  const claim = Claim.load(claimId);
+  const claim = Claim.load(claimId as string);
   if (!claim) {
-    log.error("[smol-farm] Unknown pending claim for staked token: {}", [claimId]);
+    log.error("[smol-farm] Unknown pending claim for staked token: {}", [claimId as string]);
     return;
   }
 
