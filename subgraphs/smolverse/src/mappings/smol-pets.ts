@@ -1,15 +1,14 @@
-import { log } from "matchstick-as";
+import { log } from "@graphprotocol/graph-ts";
 import { Attribute } from "../../generated/schema";
 
-import { BaseURIChanged, SmolPetMint, Transfer } from "../../generated/Smol Bodies Pets/SmolBodiesPets";
-import { SMOL_BODIES_PETS_COLLECTION_NAME, TOKEN_STANDARD_ERC721 } from "../helpers/constants";
+import { BaseURIChanged, SmolPetMint, Transfer } from "../../generated/Smol Bodies Pets/SmolPets";
 import { getCollectionJson, getJsonStringValue, JSON } from "../helpers/json";
 import { getOrCreateAttribute, getOrCreateCollection, getOrCreateToken, getOrCreateUser, updateAttributePercentages } from "../helpers/models";
 
 export function handleBaseUriChanged(event: BaseURIChanged): void {
   const params = event.params;
 
-  const collection = getOrCreateCollection(event.address, SMOL_BODIES_PETS_COLLECTION_NAME, TOKEN_STANDARD_ERC721);
+  const collection = getOrCreateCollection(event.address);
   collection.baseUri = params.to;
   collection.save();
 }
@@ -19,7 +18,7 @@ export function handleMint(event: SmolPetMint): void {
   const params = event.params;
 
   const owner = getOrCreateUser(params.to.toHexString());
-  const collection = getOrCreateCollection(event.address, SMOL_BODIES_PETS_COLLECTION_NAME, TOKEN_STANDARD_ERC721);
+  const collection = getOrCreateCollection(event.address);
   const token = getOrCreateToken(collection, params.tokenId);
   token.owner = owner.id;
 
@@ -38,7 +37,7 @@ export function handleMint(event: SmolPetMint): void {
     return;
   }
 
-  token.name = `Smol Bodies Pets ${name as string}`;
+  token.name = `${collection.name} ${name as string}`;
   token.description = description as string;
   token.image = image as string;
 
@@ -71,7 +70,7 @@ export function handleMint(event: SmolPetMint): void {
 }
 
 export function handleTransfer(event: Transfer): void {
-  const collection = getOrCreateCollection(event.address, SMOL_BODIES_PETS_COLLECTION_NAME, TOKEN_STANDARD_ERC721);
+  const collection = getOrCreateCollection(event.address);
 
   const token = getOrCreateToken(collection, event.params.tokenId);
   token.owner = event.params.to.toHexString();

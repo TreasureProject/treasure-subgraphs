@@ -1,8 +1,9 @@
-import { Address, BigInt, TypedMap } from "@graphprotocol/graph-ts";
+import { Address, BigInt, log, TypedMap } from "@graphprotocol/graph-ts";
 import { SMOL_BODIES_PETS_ADDRESS } from "@treasure/constants";
-import { log } from "matchstick-as";
 
 import { Attribute, Collection, Farm, Random, Seeded, Token, User } from "../../generated/schema";
+import { getNameForCollection } from "./collections";
+import { TOKEN_STANDARD_ERC721 } from "./constants";
 import { getAttributeId, getCollectionId, getFarmId, getRandomId, getSeededId, getTokenId } from "./ids";
 import { toBigDecimal } from "./number";
 
@@ -52,14 +53,14 @@ export function getOrCreateAttribute(
   return attribute;
 }
 
-export function getOrCreateCollection(address: Address, name: string, standard: string): Collection {
+export function getOrCreateCollection(address: Address): Collection {
   const id = getCollectionId(address);
   let collection = Collection.load(id);
 
   if (!collection) {
     collection = new Collection(id);
-    collection.name = name;
-    collection.standard = standard;
+    collection.name = getNameForCollection(address);
+    collection.standard = TOKEN_STANDARD_ERC721;
     collection._attributeIds = [];
     collection._tokenIds = [];
     collection.save();
