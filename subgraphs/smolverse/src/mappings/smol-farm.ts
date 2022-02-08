@@ -1,6 +1,5 @@
-import { store } from "@graphprotocol/graph-ts";
+import { log, store } from "@graphprotocol/graph-ts";
 import { SMOL_BRAINS_ADDRESS } from "@treasure/constants";
-import { log } from "matchstick-as";
 
 import { Claim, Random, StakedToken } from "../../generated/schema";
 import { RewardClaimed, SmolStaked, SmolUnstaked, StartClaiming } from "../../generated/Smol Farm/SmolFarm";

@@ -1,4 +1,4 @@
-import { log } from "matchstick-as";
+import { log } from "@graphprotocol/graph-ts";
 import { Attribute } from "../../generated/schema";
 
 import { BaseURIChanged, SmolPetMint, Transfer } from "../../generated/Smol Bodies Pets/SmolPets";

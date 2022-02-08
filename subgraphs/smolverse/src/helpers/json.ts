@@ -1,5 +1,4 @@
-import { Bytes, ipfs, json, JSONValue, TypedMap } from "@graphprotocol/graph-ts";
-import { log } from "matchstick-as";
+import { ipfs, json, JSONValue, log, TypedMap } from "@graphprotocol/graph-ts";
 import { Collection } from "../../generated/schema";
 
 export type JSON = TypedMap<string, JSONValue>;

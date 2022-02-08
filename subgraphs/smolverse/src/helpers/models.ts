@@ -1,6 +1,5 @@
-import { Address, BigInt, TypedMap } from "@graphprotocol/graph-ts";
+import { Address, BigInt, log, TypedMap } from "@graphprotocol/graph-ts";
 import { SMOL_BODIES_PETS_ADDRESS } from "@treasure/constants";
-import { log } from "matchstick-as";
 
 import { Attribute, Collection, Farm, Random, Seeded, Token, User } from "../../generated/schema";
 import { getNameForCollection } from "./collections";

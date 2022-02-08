@@ -1,11 +1,10 @@
-import { Address, TypedMap } from "@graphprotocol/graph-ts";
+import { Address, log, TypedMap } from "@graphprotocol/graph-ts";
 import {
   SMOL_BODIES_ADDRESS,
   SMOL_BODIES_PETS_ADDRESS,
   SMOL_BRAINS_ADDRESS,
   SMOL_BRAINS_PETS_ADDRESS
 } from "@treasure/constants";
-import { log } from "matchstick-as";
 
 import {
   SMOL_BODIES_COLLECTION_NAME,
