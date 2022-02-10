@@ -4,37 +4,8 @@ import { Address, ethereum } from "@graphprotocol/graph-ts";
 import {
   PilgrimagesStarted,
   PilgrimagesFinished,
-} from "../generated/Pilgrimage/Pilgrimage";
-import { Transfer } from "../generated/Legion/ERC721";
-import { LegionCreated } from "../generated/Legion Metadata Store/LegionMetadataStore";
-import { LEGION_ADDRESS } from "@treasure/constants";
-
-export const LEGION_METADATA_STORE_ADDRESS =
-  "0x99193EE9229b833d2aA4DbBdA697C6600b944286";
-export const PILGRIMAGE_ADDRESS = "0x088613c6bbb951c9796ba3bb42a1f310fb209fbd";
-
-export const createLegionCreatedEvent = (
-  user: string,
-  tokenId: i32,
-  generation: i32,
-  role: i32,
-  rarity: i32
-): LegionCreated => {
-  const newEvent = changetype<LegionCreated>(newMockEvent());
-  newEvent.address = Address.fromString(LEGION_METADATA_STORE_ADDRESS);
-  newEvent.parameters = [
-    new ethereum.EventParam(
-      "_owner",
-      ethereum.Value.fromAddress(Address.fromString(user))
-    ),
-    new ethereum.EventParam("_tokenId", ethereum.Value.fromI32(tokenId)),
-    new ethereum.EventParam("_generation", ethereum.Value.fromI32(generation)),
-    new ethereum.EventParam("_class", ethereum.Value.fromI32(role)),
-    new ethereum.EventParam("_rarity", ethereum.Value.fromI32(rarity)),
-  ];
-
-  return newEvent;
-};
+} from "../../generated/Pilgrimage/Pilgrimage";
+import { PILGRIMAGE_ADDRESS } from ".";
 
 export const createPilgrimagesStartedEvent = (
   user: string,
@@ -87,28 +58,6 @@ export const createPilgrimagesFinishedEvent = (
       "_finishedPilgrimageIds",
       ethereum.Value.fromI32Array(finishedPilgrimageIds)
     ),
-  ];
-
-  return newEvent;
-};
-
-export const createTransferEvent = (
-  from: string,
-  to: string,
-  tokenId: i32
-): Transfer => {
-  const newEvent = changetype<Transfer>(newMockEvent());
-  newEvent.address = LEGION_ADDRESS;
-  newEvent.parameters = [
-    new ethereum.EventParam(
-      "from",
-      ethereum.Value.fromAddress(Address.fromString(from))
-    ),
-    new ethereum.EventParam(
-      "to",
-      ethereum.Value.fromAddress(Address.fromString(to))
-    ),
-    new ethereum.EventParam("tokenId", ethereum.Value.fromI32(tokenId)),
   ];
 
   return newEvent;

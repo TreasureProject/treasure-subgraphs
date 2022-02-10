@@ -1,26 +1,23 @@
 import { assert, clearStore, test } from "matchstick-as/assembly";
 
 import {
+  LEGACY_LEGION_GENESIS_ADDRESS,
+  LEGION_INFO_ENTITY_TYPE,
+  TOKEN_ENTITY_TYPE,
+  USER_ADDRESS,
   createPilgrimagesStartedEvent,
   createPilgrimagesFinishedEvent,
-  createTransferEvent,
+  createLegionTransferEvent,
   createLegionCreatedEvent,
-} from "./utils";
+} from "./helpers/index";
 import {
   handlePilgrimagesStarted,
   handlePilgrimagesFinished,
 } from "../src/mappings/pilgrimage";
 
-
 import { Address } from "@graphprotocol/graph-ts";
 import { handleLegionCreated, handleTransfer } from "../src/mappings/legion";
 import { LEGION_ADDRESS } from "@treasure/constants";
-
-const LEGION_INFO_ENTITY_TYPE = "LegionInfo";
-const TOKEN_ENTITY_TYPE = "Token";
-const USER_ADDRESS = "0x461950b159366edcd2bcbee8126d973ac49238e0";
-const LEGACY_LEGION_GENESIS_ADDRESS =
-  "0xE83c0200E93Cb1496054e387BDdaE590C07f0194";
 
 // PilgrimageId = 7 in production
 test("legion metadata is correct for pilgrimaged riverman", () => {
@@ -37,7 +34,7 @@ test("legion metadata is correct for pilgrimaged riverman", () => {
 
   handlePilgrimagesStarted(pilgrimagesStartedEvent);
 
-  const mintEvent = createTransferEvent(
+  const mintEvent = createLegionTransferEvent(
     Address.zero().toHexString(),
     USER_ADDRESS,
     7
@@ -75,6 +72,7 @@ test("legion metadata is correct for pilgrimaged riverman", () => {
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "type", "Genesis");
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "summons", "0");
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "crafting", "1");
+  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "craftingXp", "0");
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "rarity", "Special");
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "role", "Riverman");
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "boost", "0.75");
@@ -95,7 +93,7 @@ test("legion metadata is correct for pilgrimaged common legion", () => {
 
   handlePilgrimagesStarted(pilgrimagesStartedEvent);
 
-  const mintEvent = createTransferEvent(
+  const mintEvent = createLegionTransferEvent(
     Address.zero().toHexString(),
     USER_ADDRESS,
     1
@@ -133,6 +131,7 @@ test("legion metadata is correct for pilgrimaged common legion", () => {
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "type", "Auxiliary");
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "summons", "0");
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "crafting", "1");
+  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "craftingXp", "0");
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "rarity", "Common");
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "role", "Siege");
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "boost", "0.05");
@@ -153,7 +152,7 @@ test("legion metadata is correct for pilgrimaged common 5", () => {
 
   handlePilgrimagesStarted(pilgrimagesStartedEvent);
 
-  const mintEvent = createTransferEvent(
+  const mintEvent = createLegionTransferEvent(
     Address.zero().toHexString(),
     USER_ADDRESS,
     1
@@ -191,6 +190,7 @@ test("legion metadata is correct for pilgrimaged common 5", () => {
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "type", "Genesis");
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "summons", "0");
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "crafting", "1");
+  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "craftingXp", "0");
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "rarity", "Common");
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "role", "Siege");
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "boost", "0.5");
@@ -211,7 +211,7 @@ test("legion metadata is correct for pilgrimaged clocksnatcher", () => {
 
   handlePilgrimagesStarted(pilgrimagesStartedEvent);
 
-  const mintEvent = createTransferEvent(
+  const mintEvent = createLegionTransferEvent(
     Address.zero().toHexString(),
     USER_ADDRESS,
     3476
@@ -255,6 +255,7 @@ test("legion metadata is correct for pilgrimaged clocksnatcher", () => {
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "type", "Genesis");
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "summons", "0");
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "crafting", "1");
+  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "craftingXp", "0");
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "rarity", "Legendary");
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "role", "Origin");
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "boost", "6.0");

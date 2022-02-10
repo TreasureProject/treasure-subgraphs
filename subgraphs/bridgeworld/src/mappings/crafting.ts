@@ -1,5 +1,11 @@
 import { BigInt, log, store } from "@graphprotocol/graph-ts";
-import { Broken, Craft, Outcome, Random } from "../../generated/schema";
+import {
+  Broken,
+  Craft,
+  LegionInfo,
+  Outcome,
+  Random,
+} from "../../generated/schema";
 import {
   CONSUMABLE_ADDRESS,
   LEGION_ADDRESS,
@@ -56,7 +62,7 @@ export function handleCraftingRevealed(event: CraftingRevealed): void {
     return;
   }
 
-  let craftId = `${id}-${craft.random}`
+  let craftId = `${id}-${craft.random}`;
   let amounts = result.brokenAmounts;
   let treasures = result.brokenTreasureIds;
 
@@ -80,6 +86,16 @@ export function handleCraftingRevealed(event: CraftingRevealed): void {
   outcome.success = result.wasSuccessful;
 
   outcome.save();
+
+  // Increase Xp if successfull
+  if (outcome.success == true) {
+    let metadata = LegionInfo.load(`${craft.token}-metadata`);
+
+    if (metadata && metadata.crafting != 6) {
+      metadata.craftingXp += metadata.crafting * 10;
+      metadata.save();
+    }
+  }
 
   craft.outcome = outcome.id;
   craft.status = "Revealed";
