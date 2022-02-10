@@ -77,12 +77,34 @@ dataSources:
         - name: Crafting
           file: ../../node_modules/@treasure/subgraph-abis/src/Crafting.json
       eventHandlers:
-        - event: CraftingStarted(indexed address,indexed uint256,indexed uint256,uint256,uint256[],uint8[])
-          handler: handleCraftingStarted
+        - event: CraftingStarted(indexed address,indexed uint256,indexed uint256,uint256,uint256[],uint8[],uint8)
+          handler: handleCraftingStartedWithDifficulty
         - event: CraftingRevealed(indexed address,indexed uint256,(bool,uint256,uint256,uint256[],uint256[],uint8))
           handler: handleCraftingRevealed
         - event: CraftingFinished(indexed address,indexed uint256)
           handler: handleCraftingFinished
+      file: ./src/mappings/crafting.ts
+  - name: Crafting Legacy
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ crafting_address }}"
+      abi: Crafting
+      startBlock: {{ crafting_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Token
+        - User
+        - UserToken
+      abis:
+        - name: Crafting
+          file: ../../node_modules/@treasure/subgraph-abis/src/CraftingLegacy.json
+      eventHandlers:
+        - event: CraftingStarted(indexed address,indexed uint256,indexed uint256,uint256,uint256[],uint8[])
+          handler: handleCraftingStartedWithoutDifficulty
       file: ./src/mappings/crafting.ts
   - name: Legion
     kind: ethereum/contract

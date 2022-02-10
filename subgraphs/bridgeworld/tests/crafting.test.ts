@@ -1,12 +1,16 @@
 import { assert, clearStore, test } from "matchstick-as/assembly";
 
 import {
+  CRAFT_ENTITY_TYPE,
+  CRAFTING_ADDRESS,
+  Difficulty,
   LEGION_INFO_ENTITY_TYPE,
   USER_ADDRESS,
   createLegionCreatedEvent,
   createLegionCraftLevelUpEvent,
   createLegionTransferEvent,
   createCraftingStartedEvent,
+  createCraftingStartedWithoutDifficultyEvent,
   createCraftingRevealedEvent,
   createCraftingFinishedEvent,
   createRandomRequestEvent,
@@ -23,7 +27,8 @@ import {
 import {
   handleCraftingFinished,
   handleCraftingRevealed,
-  handleCraftingStarted,
+  handleCraftingStartedWithDifficulty,
+  handleCraftingStartedWithoutDifficulty,
 } from "../src/mappings/crafting";
 import {
   handleRandomRequest,
@@ -60,13 +65,13 @@ test("crafting increases xp when completed successfully", () => {
 
     handleRandomRequest(randomRequestEvent);
 
-    const craftStartedEvent = createCraftingStartedEvent(
+    const craftStartedEvent = createCraftingStartedWithoutDifficultyEvent(
       USER_ADDRESS,
       1,
       index
     );
 
-    handleCraftingStarted(craftStartedEvent);
+    handleCraftingStartedWithoutDifficulty(craftStartedEvent);
 
     const randomSeededEvent = createRandomSeededEvent(index + 1);
 
@@ -108,13 +113,13 @@ test("crafting increases xp when completed successfully", () => {
 
     handleRandomRequest(randomRequestEvent);
 
-    const craftStartedEvent = createCraftingStartedEvent(
+    const craftStartedEvent = createCraftingStartedWithoutDifficultyEvent(
       USER_ADDRESS,
       1,
       index
     );
 
-    handleCraftingStarted(craftStartedEvent);
+    handleCraftingStartedWithoutDifficulty(craftStartedEvent);
 
     const randomSeededEvent = createRandomSeededEvent(index + 1);
 
@@ -157,13 +162,13 @@ test("crafting increases xp when completed successfully", () => {
 
     handleRandomRequest(randomRequestEvent);
 
-    const craftStartedEvent = createCraftingStartedEvent(
+    const craftStartedEvent = createCraftingStartedWithoutDifficultyEvent(
       USER_ADDRESS,
       1,
       index
     );
 
-    handleCraftingStarted(craftStartedEvent);
+    handleCraftingStartedWithoutDifficulty(craftStartedEvent);
 
     const randomSeededEvent = createRandomSeededEvent(index + 1);
 
@@ -206,13 +211,13 @@ test("crafting increases xp when completed successfully", () => {
 
     handleRandomRequest(randomRequestEvent);
 
-    const craftStartedEvent = createCraftingStartedEvent(
+    const craftStartedEvent = createCraftingStartedWithoutDifficultyEvent(
       USER_ADDRESS,
       1,
       index
     );
 
-    handleCraftingStarted(craftStartedEvent);
+    handleCraftingStartedWithoutDifficulty(craftStartedEvent);
 
     const randomSeededEvent = createRandomSeededEvent(index + 1);
 
@@ -255,13 +260,13 @@ test("crafting increases xp when completed successfully", () => {
 
     handleRandomRequest(randomRequestEvent);
 
-    const craftStartedEvent = createCraftingStartedEvent(
+    const craftStartedEvent = createCraftingStartedWithoutDifficultyEvent(
       USER_ADDRESS,
       1,
       index
     );
 
-    handleCraftingStarted(craftStartedEvent);
+    handleCraftingStartedWithoutDifficulty(craftStartedEvent);
 
     const randomSeededEvent = createRandomSeededEvent(index + 1);
 
@@ -327,9 +332,13 @@ test("crafting xp does not increase at max level (6)", () => {
 
   handleRandomRequest(randomRequestEvent);
 
-  const craftStartedEvent = createCraftingStartedEvent(USER_ADDRESS, 1, 1);
+  const craftStartedEvent = createCraftingStartedWithoutDifficultyEvent(
+    USER_ADDRESS,
+    1,
+    1
+  );
 
-  handleCraftingStarted(craftStartedEvent);
+  handleCraftingStartedWithoutDifficulty(craftStartedEvent);
 
   const randomSeededEvent = createRandomSeededEvent(2);
 
@@ -372,15 +381,23 @@ test("crafting xp does not increase on failure", () => {
 
   handleRandomRequest(randomRequestEvent);
 
-  const craftStartedEvent = createCraftingStartedEvent(USER_ADDRESS, 1, 1);
+  const craftStartedEvent = createCraftingStartedWithoutDifficultyEvent(
+    USER_ADDRESS,
+    1,
+    1
+  );
 
-  handleCraftingStarted(craftStartedEvent);
+  handleCraftingStartedWithoutDifficulty(craftStartedEvent);
 
   const randomSeededEvent = createRandomSeededEvent(2);
 
   handleRandomSeeded(randomSeededEvent);
 
-  const craftRevealedEvent = createCraftingRevealedEvent(USER_ADDRESS, 1, false);
+  const craftRevealedEvent = createCraftingRevealedEvent(
+    USER_ADDRESS,
+    1,
+    false
+  );
 
   handleCraftingRevealed(craftRevealedEvent);
 
@@ -389,4 +406,40 @@ test("crafting xp does not increase on failure", () => {
   const craftFinishedEvent = createCraftingFinishedEvent(USER_ADDRESS, 1);
 
   handleCraftingFinished(craftFinishedEvent);
+});
+
+test("crafting works with difficulty parameter", () => {
+  clearStore();
+
+  const mintEvent = createLegionTransferEvent(
+    Address.zero().toHexString(),
+    USER_ADDRESS,
+    1
+  );
+
+  handleTransfer(mintEvent);
+
+  const legionCreatedEvent = createLegionCreatedEvent(USER_ADDRESS, 1, 0, 6, 2);
+
+  handleLegionCreated(legionCreatedEvent);
+
+  const id = `${LEGION_ADDRESS.toHexString()}-0x1`;
+
+  // Perform a craft
+  const randomRequestEvent = createRandomRequestEvent(1, 2);
+
+  handleRandomRequest(randomRequestEvent);
+
+  const craftStartedEvent = createCraftingStartedEvent(
+    USER_ADDRESS,
+    1,
+    1,
+    Difficulty.Medium
+  );
+
+  handleCraftingStartedWithDifficulty(craftStartedEvent);
+
+  const craftId = `${CRAFTING_ADDRESS}-0x1`;
+
+  assert.fieldEquals(CRAFT_ENTITY_TYPE, craftId, "difficulty", "Medium");
 });

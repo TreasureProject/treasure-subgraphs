@@ -1,4 +1,5 @@
-import { BigInt, log, store } from "@graphprotocol/graph-ts";
+import * as craftingLegacy from "../../generated/Crafting Legacy/Crafting";
+import { Address, BigInt, log, store } from "@graphprotocol/graph-ts";
 import {
   Broken,
   Craft,
@@ -17,16 +18,18 @@ import {
   CraftingStarted,
 } from "../../generated/Crafting/Crafting";
 import { getAddressId } from "../helpers/utils";
+import { DIFFICULTY } from "../helpers";
 
-export function handleCraftingStarted(event: CraftingStarted): void {
-  let params = event.params;
-  let tokenId = params._tokenId;
-  let requestId = params._requestId;
-  let finishTime = params._finishTime;
-  let user = params._owner;
-
+function handleCraftingStarted(
+  address: Address,
+  user: Address,
+  tokenId: BigInt,
+  requestId: BigInt,
+  finishTime: BigInt,
+  difficulty: i32
+): void {
   let random = Random.load(requestId.toHexString());
-  let craft = new Craft(getAddressId(event.address, tokenId));
+  let craft = new Craft(getAddressId(address, tokenId));
 
   if (!random) {
     log.error("[craft-started] Unknown random: {}", [requestId.toString()]);
@@ -35,6 +38,7 @@ export function handleCraftingStarted(event: CraftingStarted): void {
   }
 
   // TODO: Add treasures sent in for craft
+  craft.difficulty = DIFFICULTY[difficulty];
   craft.endTimestamp = finishTime.times(BigInt.fromI32(1000));
   craft.token = getAddressId(LEGION_ADDRESS, tokenId);
   craft.random = random.id;
@@ -46,6 +50,36 @@ export function handleCraftingStarted(event: CraftingStarted): void {
 
   craft.save();
   random.save();
+}
+
+export function handleCraftingStartedWithDifficulty(
+  event: CraftingStarted
+): void {
+  let params = event.params;
+
+  handleCraftingStarted(
+    event.address,
+    params._owner,
+    params._tokenId,
+    params._requestId,
+    params._finishTime,
+    params._difficulty
+  );
+}
+
+export function handleCraftingStartedWithoutDifficulty(
+  event: craftingLegacy.CraftingStarted
+): void {
+  let params = event.params;
+
+  handleCraftingStarted(
+    event.address,
+    params._owner,
+    params._tokenId,
+    params._requestId,
+    params._finishTime,
+    0 // Easy difficulty
+  );
 }
 
 export function handleCraftingRevealed(event: CraftingRevealed): void {
