@@ -109,6 +109,7 @@ function setMetadata(contract: Address, tokenId: BigInt): void {
   metadata.boost = `${BOOST_MATRIX[0][0] / 1e18}`;
   metadata.constellation = token.id;
   metadata.crafting = 1;
+  metadata.craftingXp = 0;
   metadata.questing = 1;
   metadata.rarity = "Legendary";
   metadata.role = "Origin";
@@ -216,6 +217,7 @@ export function handleLegionCraftLevelUp(event: LegionCraftLevelUp): void {
   let metadata = getMetadata(params._tokenId);
 
   metadata.crafting = params._craftLevel;
+  metadata.craftingXp = metadata.crafting == 6 ? 0 : -(metadata.crafting * 10);
   metadata.save();
 }
 
@@ -232,11 +234,11 @@ export function handleLegionCreated(event: LegionCreated): void {
 
   let metadata = new LegionInfo(`${token.id}-metadata`);
 
-  // TODO: Add Crafting XP
   // TODO: Add Questing XP
   metadata.boost = `${BOOST_MATRIX[params._generation][params._rarity] / 1e18}`;
   metadata.constellation = token.id;
   metadata.crafting = 1;
+  metadata.craftingXp = 0;
   metadata.questing = 1;
   metadata.rarity = RARITY[params._rarity];
   metadata.role = CLASS[params._class];

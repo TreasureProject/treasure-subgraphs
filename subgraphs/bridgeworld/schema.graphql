@@ -65,6 +65,7 @@ type LegionInfo implements Metadata @entity {
   constellation: Constellation
   cooldown: BigInt
   crafting: Int!
+  craftingXp: Int!
   questing: Int!
   rarity: String!
   "This is `class`, but we can't use that word"
