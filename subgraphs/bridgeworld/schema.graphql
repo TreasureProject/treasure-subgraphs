@@ -4,6 +4,12 @@ enum Category {
   Treasure
 }
 
+enum Difficulty {
+  Easy
+  Medium
+  Hard
+}
+
 enum Status {
   Idle
   Revealable
@@ -181,6 +187,7 @@ type Reward @entity {
 type Quest @entity {
   id: ID!
 
+  difficulty: Difficulty!
   endTimestamp: BigInt!
   random: Random!
   reward: Reward
