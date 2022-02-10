@@ -1,13 +1,13 @@
 import * as common from "../mapping";
+import { BigInt, log, store } from "@graphprotocol/graph-ts";
+import { LEGION_ADDRESS } from "@treasure/constants";
+import { LEGION_IPFS, getAddressId, getImageHash } from "../helpers";
 import { LegionInfo, Pilgrimage, Token } from "../../generated/schema";
 import {
   NoPilgrimagesToFinish,
   PilgrimagesFinished,
   PilgrimagesStarted,
 } from "../../generated/Pilgrimage/Pilgrimage";
-import { BigInt, log, store } from "@graphprotocol/graph-ts";
-import { getAddressId, getImageHash } from "../helpers";
-import { LEGION_ADDRESS } from "@treasure/constants";
 
 export function handleNoPilgrimagesToFinish(
   event: NoPilgrimagesToFinish
@@ -47,7 +47,7 @@ export function handlePilgrimagesFinished(event: PilgrimagesFinished): void {
           let metadata = LegionInfo.load(`${legion.id}-metadata`);
 
           if (metadata) {
-            legion.image = `ipfs://QmeR9k2WJcSiiuUGY3Wvjtahzo3UUaURiPpLEapFcDe9JC/${metadata.rarity}%20${metadata.role}.gif`;
+            legion.image = `${LEGION_IPFS}/${metadata.rarity}%20${metadata.role}.gif`;
           }
         } else {
           legion.image = getImageHash(token.tokenId, token.name)

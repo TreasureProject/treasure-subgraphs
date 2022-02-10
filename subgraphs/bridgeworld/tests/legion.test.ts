@@ -18,6 +18,7 @@ import {
 import { Address } from "@graphprotocol/graph-ts";
 import { handleLegionCreated, handleTransfer } from "../src/mappings/legion";
 import { LEGION_ADDRESS } from "@treasure/constants";
+import { LEGION_IPFS } from "../src/helpers/index";
 
 // PilgrimageId = 7 in production
 test("legion metadata is correct for pilgrimaged riverman", () => {
@@ -121,7 +122,7 @@ test("legion metadata is correct for pilgrimaged common legion", () => {
     TOKEN_ENTITY_TYPE,
     id,
     "image",
-    "ipfs://QmeR9k2WJcSiiuUGY3Wvjtahzo3UUaURiPpLEapFcDe9JC/Common%20Siege.gif"
+    `${LEGION_IPFS}/Common%20Siege.gif`
   );
   assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "name", "Auxiliary Common");
   assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "rarity", "Common");
