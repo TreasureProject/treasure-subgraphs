@@ -1,5 +1,6 @@
 import { SMOL_BODIES_ADDRESS, SMOL_BRAINS_ADDRESS, SMOL_BRAINS_LAND_ADDRESS } from "@treasure/constants";
-import { assert, test } from "matchstick-as";
+import { assert, clearStore, test } from "matchstick-as";
+import { User } from "../../generated/schema";
 import { handleTransfer } from "../../src/mappings/erc721";
 
 import { createTransferEvent } from "./utils";
@@ -9,12 +10,18 @@ const TOKEN_ENTITY_TYPE = "Token";
 const USER_ADDRESS = "0x461950b159366edcd2bcbee8126d973ac49238e0";
 
 test("smol bodies token is transfered", () => {
+  clearStore();
+
   const transferEvent = createTransferEvent(SMOL_BODIES_ADDRESS, USER_ADDRESS, 1);
   handleTransfer(transferEvent);
 
   // Assert collection was created
   const collectionId = SMOL_BODIES_ADDRESS.toHexString();
   assert.fieldEquals(COLLECTION_ENTITY_TYPE, collectionId, "name", "Smol Bodies");
+
+  // Assert user was created
+  const user = User.load(USER_ADDRESS);
+  assert.assertNotNull(user);
 
   // Assert token was created
   const tokenId = `${collectionId}-0x1`;
@@ -24,12 +31,18 @@ test("smol bodies token is transfered", () => {
 });
 
 test("smol brains token is transfered", () => {
+  clearStore();
+
   const transferEvent = createTransferEvent(SMOL_BRAINS_ADDRESS, USER_ADDRESS, 1);
   handleTransfer(transferEvent);
 
   // Assert collection was created
   const collectionId = SMOL_BRAINS_ADDRESS.toHexString();
   assert.fieldEquals(COLLECTION_ENTITY_TYPE, collectionId, "name", "Smol Brains");
+
+  // Assert user was created
+  const user = User.load(USER_ADDRESS);
+  assert.assertNotNull(user);
 
   // Assert token was created
   const tokenId = `${collectionId}-0x1`;
@@ -39,12 +52,18 @@ test("smol brains token is transfered", () => {
 });
 
 test("smol brains land token is transfered", () => {
+  clearStore();
+  
   const transferEvent = createTransferEvent(SMOL_BRAINS_LAND_ADDRESS, USER_ADDRESS, 1);
   handleTransfer(transferEvent);
 
   // Assert collection was created
   const collectionId = SMOL_BRAINS_LAND_ADDRESS.toHexString();
   assert.fieldEquals(COLLECTION_ENTITY_TYPE, collectionId, "name", "Smol Brains Land");
+
+  // Assert user was created
+  const user = User.load(USER_ADDRESS);
+  assert.assertNotNull(user);
 
   // Assert token was created
   const tokenId = `${collectionId}-0x1`;
