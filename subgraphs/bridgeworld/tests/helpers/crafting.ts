@@ -1,3 +1,4 @@
+import * as craftingLegacy from "../../generated/Crafting Legacy/Crafting";
 import { newMockEvent } from "matchstick-as/assembly";
 import { Address, ethereum } from "@graphprotocol/graph-ts";
 
@@ -8,14 +9,15 @@ import {
 } from "../../generated/Crafting/Crafting";
 import { CRAFTING_ADDRESS } from ".";
 
-export const createCraftingStartedEvent = (
+const _createCraftingStartedEvent = (
   user: string,
   tokenId: i32,
   requestId: i32,
-  treasures: i32[] = [95],
-  amounts: i32[] = [1]
-): CraftingStarted => {
-  const newEvent = changetype<CraftingStarted>(newMockEvent());
+  treasures: i32[],
+  amounts: i32[],
+  difficulty: i32 = -1
+): ethereum.Event => {
+  const newEvent = newMockEvent();
   newEvent.address = Address.fromString(CRAFTING_ADDRESS);
   newEvent.parameters = [
     new ethereum.EventParam(
@@ -35,34 +37,50 @@ export const createCraftingStartedEvent = (
     ),
   ];
 
+  if (difficulty != -1) {
+    newEvent.parameters.push(
+      new ethereum.EventParam("_difficulty", ethereum.Value.fromI32(difficulty))
+    );
+  }
+
   return newEvent;
 };
 
-/*
-  get wasSuccessful(): boolean {
-    return this[0].toBoolean();
-  }
+export const createCraftingStartedEvent = (
+  user: string,
+  tokenId: i32,
+  requestId: i32,
+  difficulty: i32,
+  treasures: i32[] = [95],
+  amounts: i32[] = [1]
+): CraftingStarted => {
+  const newEvent = changetype<CraftingStarted>(
+    _createCraftingStartedEvent(
+      user,
+      tokenId,
+      requestId,
+      treasures,
+      amounts,
+      difficulty
+    )
+  );
 
-  get magicReturned(): BigInt {
-    return this[1].toBigInt();
-  }
+  return newEvent;
+};
 
-  get rewardId(): BigInt {
-    return this[2].toBigInt();
-  }
+export const createCraftingStartedWithoutDifficultyEvent = (
+  user: string,
+  tokenId: i32,
+  requestId: i32,
+  treasures: i32[] = [95],
+  amounts: i32[] = [1],
+): craftingLegacy.CraftingStarted => {
+  const newEvent = changetype<craftingLegacy.CraftingStarted>(
+    _createCraftingStartedEvent(user, tokenId, requestId, treasures, amounts)
+  );
 
-  get brokenTreasureIds(): Array<BigInt> {
-    return this[3].toBigIntArray();
-  }
-
-  get brokenAmounts(): Array<BigInt> {
-    return this[4].toBigIntArray();
-  }
-
-  get rewardAmount(): i32 {
-    return this[5].toI32();
-  }
-*/
+  return newEvent;
+};
 
 export const createCraftingRevealedEvent = (
   user: string,

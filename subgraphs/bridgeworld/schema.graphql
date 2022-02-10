@@ -167,6 +167,7 @@ type Outcome @entity {
 type Craft @entity {
   id: ID!
 
+  difficulty: Difficulty!
   endTimestamp: BigInt!
   outcome: Outcome
   random: Random!

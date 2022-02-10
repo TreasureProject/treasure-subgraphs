@@ -1,3 +1,4 @@
+import * as questingLegacy from "../../generated/Questing Legacy/Questing";
 import { newMockEvent } from "matchstick-as/assembly";
 import { Address, ethereum } from "@graphprotocol/graph-ts";
 
@@ -7,7 +8,6 @@ import {
   QuestStarted,
 } from "../../generated/Questing/Questing";
 import { QUESTING_ADDRESS } from ".";
-import { QuestStarted as QuestStartedWithoutDifficulty } from "../../generated/Questing Legacy/Questing";
 
 const _createQuestStartedEvent = (
   user: string,
@@ -53,8 +53,8 @@ export const createQuestStartedWithoutDifficultyEvent = (
   user: string,
   tokenId: i32,
   requestId: i32
-): QuestStartedWithoutDifficulty => {
-  const newEvent = changetype<QuestStartedWithoutDifficulty>(
+): questingLegacy.QuestStarted => {
+  const newEvent = changetype<questingLegacy.QuestStarted>(
     _createQuestStartedEvent(user, tokenId, requestId)
   );
 
