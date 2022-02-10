@@ -70,9 +70,10 @@ export function handleMint(event: SmolPetMint): void {
 }
 
 export function handleTransfer(event: Transfer): void {
-  const collection = getOrCreateCollection(event.address);
+  const params = event.params;
 
-  const token = getOrCreateToken(collection, event.params.tokenId);
-  token.owner = event.params.to.toHexString();
+  const collection = getOrCreateCollection(event.address);
+  const token = getOrCreateToken(collection, params.tokenId);
+  token.owner = params.to.toHexString();
   token.save();
 }

@@ -116,3 +116,64 @@ dataSources:
         - event: RewardClaimed(indexed address,indexed address,indexed uint256,uint256,uint256)
           handler: handleRewardClaimed
       file: ./src/mappings/smol-farm.ts
+  - name: Smol Brains
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ smol_brains_address }}"
+      abi: ERC721
+      startBlock: {{ smol_brains_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Transfer
+      abis:
+        - name: ERC721
+          file: {{{ abis }}}/721.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,indexed uint256)
+          handler: handleTransfer
+      file: ./src/mappings/erc721.ts
+  - name: Smol Brains Land
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ smol_brains_land_address }}"
+      abi: ERC721
+      startBlock: {{ smol_brains_land_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Transfer
+      abis:
+        - name: ERC721
+          file: {{{ abis }}}/721.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,indexed uint256)
+          handler: handleTransfer
+      file: ./src/mappings/erc721.ts
+  - name: Smol Bodies
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ smol_bodies_address }}"
+      abi: ERC721
+      startBlock: {{ smol_bodies_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Transfer
+        - SmolBodiesMint
+      abis:
+        - name: ERC721
+          file: {{{ abis }}}/721.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,indexed uint256)
+          handler: handleTransfer
+      file: ./src/mappings/erc721.ts
