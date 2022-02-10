@@ -49,12 +49,6 @@ function getUser(id: string): User {
   return user;
 }
 
-function removeIfExist(entity: string, id: string): void {
-  if (store.get(entity, id)) {
-    store.remove(entity, id);
-  }
-}
-
 /**
  * This is a generic function that can handle both ERC1155s and ERC721s
  */

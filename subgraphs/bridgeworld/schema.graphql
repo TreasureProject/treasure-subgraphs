@@ -40,7 +40,7 @@ interface Metadata {
   id: ID!
 }
 
-type Constellation implements Metadata @entity {
+type Constellation @entity {
   id: ID!
 
   dark: Int!
@@ -62,6 +62,7 @@ type LegionInfo implements Metadata @entity {
   id: ID!
 
   boost: String!
+  constellation: Constellation
   cooldown: BigInt
   crafting: Int!
   questing: Int!
