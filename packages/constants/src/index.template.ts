@@ -13,6 +13,7 @@ export const SMOL_BODIES_PETS_ADDRESS = Address.fromString("{{ smol_bodies_pets_
 export const SMOL_BRAINS_ADDRESS = Address.fromString("{{ smol_brains_address }}");
 export const SMOL_BRAINS_PETS_ADDRESS = Address.fromString("{{ smol_brains_pets_address }}");
 export const SMOL_FARM_ADDRESS = Address.fromString("{{ smol_farm_address }}")
+export const SMOL_TREASURES_ADDRESS = Address.fromString("{{ smol_treasures_address }}");
 export const MARKETPLACE_ADDRESS = Address.fromString(
   "{{ treasure_marketplace_address }}"
 );

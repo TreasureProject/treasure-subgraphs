@@ -60,6 +60,8 @@
   "smol_bodies_pets_start_block": 9265867,
   "smol_rocket_address": "0x0000000000000000000000000000000000000000",
   "smol_rocket_start_block": 9265867,
+  "smol_treasures_address": "0x8e79c8607a28fe1EC3527991C89F1d9E36D1bAd9",
+  "smol_treasures_start_block": 9141902,
 
   "treasure_marketplace_buyer_address": "0x24b7377Bf073E54eC42ec6CC8F4CDA6e3deB32A8",
   "treasure_marketplace_address": "0x2426acC898C5E1241904fCEf6E5643241192272D",

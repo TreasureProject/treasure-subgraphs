@@ -63,14 +63,16 @@ export const createStartClaimingEvent = (
 
 export const createRewardClaimedEvent = (
   owner: string,
-  tokenId: i32
+  tokenId: i32,
+  rewardTokenId: i32
 ): RewardClaimed => {
   const event = changetype<RewardClaimed>(newMockEvent());
   event.address = SMOL_FARM_ADDRESS;
   event.parameters = [
     new ethereum.EventParam("_owner", ethereum.Value.fromAddress(Address.fromString(owner))),
     new ethereum.EventParam("_smolAddress", ethereum.Value.fromAddress(SMOL_BODIES_ADDRESS)),
-    new ethereum.EventParam("_tokenid", ethereum.Value.fromI32(tokenId))
+    new ethereum.EventParam("_tokenId", ethereum.Value.fromI32(tokenId)),
+    new ethereum.EventParam("_claimedRewardId", ethereum.Value.fromI32(rewardTokenId))
   ];
 
   return event;

@@ -1,6 +1,6 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts";
 
-import { Collection, Farm, Random, Token } from "../../generated/schema";
+import { Collection } from "../../generated/schema";
 import { stringToSlug } from "./string";
 
 export function getCollectionId(address: Address): string {

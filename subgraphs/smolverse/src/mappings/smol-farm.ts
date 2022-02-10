@@ -1,10 +1,12 @@
 import { log, store } from "@graphprotocol/graph-ts";
+import { SMOL_TREASURES_ADDRESS } from "@treasure/constants";
 
 import { Claim, Random, StakedToken } from "../../generated/schema";
 import { RewardClaimed, SmolStaked, SmolUnstaked, StartClaiming } from "../../generated/Smol Farm/SmolFarm";
 import { SMOL_FARM_NAME } from "../helpers/constants";
 import { getCollectionId, getFarmId, getRandomId, getStakedTokenId } from "../helpers/ids";
 import { getOrCreateCollection, getOrCreateFarm, getOrCreateToken, getOrCreateUser } from "../helpers/models";
+import { getTokenName } from "../helpers/token-id";
 
 export function handleSmolStaked(event: SmolStaked): void {
   const params = event.params;
@@ -109,7 +111,13 @@ export function handleRewardClaimed(event: RewardClaimed): void {
     return;
   }
 
+  const collection = getOrCreateCollection(SMOL_TREASURES_ADDRESS);
+  const reward = getOrCreateToken(collection, params._claimedRewardId);
+  reward.name = getTokenName(params._claimedRewardId);
+  reward.save();
+
   claim.status = "Claimed";
+  claim.reward = reward.id;
   claim.save();
 
   stakedToken._pendingClaimId = null;
