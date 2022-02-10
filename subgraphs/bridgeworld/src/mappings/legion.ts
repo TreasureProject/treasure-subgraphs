@@ -23,6 +23,7 @@ import {
   LegionQuestLevelUp,
 } from "../../generated/Legion Metadata Store/LegionMetadataStore";
 import { getAddressId, getImageHash, isMint } from "../helpers";
+import { getXpPerLevel as getQuestingXpPerLevel } from "./questing";
 
 const RARITY = [
   "Legendary",
@@ -111,6 +112,7 @@ function setMetadata(contract: Address, tokenId: BigInt): void {
   metadata.crafting = 1;
   metadata.craftingXp = 0;
   metadata.questing = 1;
+  metadata.questingXp = 0;
   metadata.rarity = "Legendary";
   metadata.role = "Origin";
   metadata.type = "Genesis";
@@ -234,12 +236,12 @@ export function handleLegionCreated(event: LegionCreated): void {
 
   let metadata = new LegionInfo(`${token.id}-metadata`);
 
-  // TODO: Add Questing XP
   metadata.boost = `${BOOST_MATRIX[params._generation][params._rarity] / 1e18}`;
   metadata.constellation = token.id;
   metadata.crafting = 1;
   metadata.craftingXp = 0;
   metadata.questing = 1;
+  metadata.questingXp = 0;
   metadata.rarity = RARITY[params._rarity];
   metadata.role = CLASS[params._class];
   metadata.type = TYPE[params._generation];
@@ -275,6 +277,7 @@ export function handleLegionQuestLevelUp(event: LegionQuestLevelUp): void {
   let metadata = getMetadata(params._tokenId);
 
   metadata.questing = params._questLevel;
+  metadata.questingXp = -getQuestingXpPerLevel(metadata.questing);
   metadata.save();
 }
 

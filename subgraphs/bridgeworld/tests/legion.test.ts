@@ -69,6 +69,7 @@ test("legion metadata is correct for pilgrimaged riverman", () => {
   const metadata = `${id}-metadata`;
 
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "questing", "1");
+  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "questingXp", "0");
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "type", "Genesis");
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "summons", "0");
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "crafting", "1");
@@ -128,6 +129,7 @@ test("legion metadata is correct for pilgrimaged common legion", () => {
   const metadata = `${id}-metadata`;
 
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "questing", "1");
+  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "questingXp", "0");
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "type", "Auxiliary");
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "summons", "0");
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "crafting", "1");
@@ -187,6 +189,7 @@ test("legion metadata is correct for pilgrimaged common 5", () => {
   const metadata = `${id}-metadata`;
 
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "questing", "1");
+  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "questingXp", "0");
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "type", "Genesis");
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "summons", "0");
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "crafting", "1");
@@ -252,6 +255,7 @@ test("legion metadata is correct for pilgrimaged clocksnatcher", () => {
   const metadata = `${id}-metadata`;
 
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "questing", "1");
+  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "questingXp", "0");
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "type", "Genesis");
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "summons", "0");
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "crafting", "1");
