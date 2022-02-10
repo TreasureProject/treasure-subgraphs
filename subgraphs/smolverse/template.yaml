@@ -107,12 +107,12 @@ dataSources:
         - name: SmolFarm
           file: ../../node_modules/@treasure/subgraph-abis/src/SmolFarm.json
       eventHandlers:
-        - event: SmolStaked(indexed address,indexed uint256,uint256)
+        - event: SmolStaked(indexed address,indexed address,indexed uint256,uint256)
           handler: handleSmolStaked
-        - event: SmolUnstaked(indexed address,indexed uint256)
+        - event: SmolUnstaked(indexed address,indexed address,indexed uint256)
           handler: handleSmolUnstaked
-        - event: StartClaiming(indexed address,indexed uint256,indexed uint256,uint256)
+        - event: StartClaiming(indexed address,indexed address,indexed uint256,uint256,uint256)
           handler: handleStartClaiming
-        - event: RewardClaimed(indexed address,indexed uint256,uint256,uint256)
+        - event: RewardClaimed(indexed address,indexed address,indexed uint256,uint256,uint256)
           handler: handleRewardClaimed
       file: ./src/mappings/smol-farm.ts

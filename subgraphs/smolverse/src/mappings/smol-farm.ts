@@ -1,5 +1,4 @@
 import { log, store } from "@graphprotocol/graph-ts";
-import { SMOL_BRAINS_ADDRESS } from "@treasure/constants";
 
 import { Claim, Random, StakedToken } from "../../generated/schema";
 import { RewardClaimed, SmolStaked, SmolUnstaked, StartClaiming } from "../../generated/Smol Farm/SmolFarm";
@@ -12,11 +11,11 @@ export function handleSmolStaked(event: SmolStaked): void {
 
   const farm = getOrCreateFarm(event.address, SMOL_FARM_NAME);
   const owner = getOrCreateUser(params._owner.toHexString());
-  const collection = getOrCreateCollection(SMOL_BRAINS_ADDRESS);
+  const collection = getOrCreateCollection(params._smolAddress);
   const token = getOrCreateToken(collection, params._tokenId);
 
   const stakedTokenid = getStakedTokenId(
-    getCollectionId(SMOL_BRAINS_ADDRESS),
+    collection.id,
     token.tokenId,
     farm.id
   );
@@ -33,7 +32,7 @@ export function handleSmolUnstaked(event: SmolUnstaked): void {
   const params = event.params;
 
   const id = [
-    SMOL_BRAINS_ADDRESS.toHexString(),
+    params._smolAddress.toHexString(),
     params._tokenId.toHexString(),
     getFarmId(event.address)
   ].join("-");
@@ -54,7 +53,7 @@ export function handleStartClaiming(event: StartClaiming): void {
   const params = event.params;
 
   const stakedTokenId = getStakedTokenId(
-    getCollectionId(SMOL_BRAINS_ADDRESS),
+    getCollectionId(params._smolAddress),
     params._tokenId,
     getFarmId(event.address)
   );
@@ -88,7 +87,7 @@ export function handleRewardClaimed(event: RewardClaimed): void {
   const params = event.params;
 
   const stakedTokenId = getStakedTokenId(
-    getCollectionId(SMOL_BRAINS_ADDRESS),
+    getCollectionId(params._smolAddress),
     params._tokenId,
     getFarmId(event.address)
   );

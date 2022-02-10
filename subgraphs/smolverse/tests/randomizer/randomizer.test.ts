@@ -1,5 +1,4 @@
 import { BigInt } from "@graphprotocol/graph-ts";
-import { SMOL_BRAINS_ADDRESS } from "@treasure/constants";
 import { assert, clearStore, test } from "matchstick-as";
 
 import { Random, Seeded } from "../../generated/schema";
@@ -58,7 +57,7 @@ test("random request is seeded and claim marked revealable", () => {
 
   // Assert claim was created with starting status
   const claimId = [
-    SMOL_BRAINS_ADDRESS.toHexString(),
+    smolStakedEvent.params._smolAddress.toHexString(),
     BigInt.fromI32(tokenId).toHexString(),
     getFarmId(smolStakedEvent.address),
     getRandomId(BigInt.fromI32(requestId)),

@@ -1,9 +1,8 @@
 import { BigInt } from "@graphprotocol/graph-ts";
-import { SMOL_BRAINS_ADDRESS } from "@treasure/constants";
 import { assert, clearStore, test } from "matchstick-as";
 import { Collection, Farm, StakedToken, Token, User } from "../../generated/schema";
 
-import { SMOL_BRAINS_COLLECTION_NAME, SMOL_FARM_NAME } from "../../src/helpers/constants";
+import { SMOL_FARM_NAME } from "../../src/helpers/constants";
 import { getCollectionId, getFarmId, getStakedTokenId, getTokenId } from "../../src/helpers/ids";
 import { handleRandomRequest } from "../../src/mappings/randomizer";
 import { handleRewardClaimed, handleSmolStaked, handleSmolUnstaked, handleStartClaiming } from "../../src/mappings/smol-farm";
@@ -31,7 +30,7 @@ test("staked token is created", () => {
   assert.assertNotNull(user);
 
   // Assert collection was created
-  const collection = Collection.load(SMOL_BRAINS_ADDRESS.toHexString()) as Collection;
+  const collection = Collection.load(smolStakedEvent.params._smolAddress.toHexString()) as Collection;
   assert.assertNotNull(collection);
 
   // Assert token was created
@@ -41,7 +40,7 @@ test("staked token is created", () => {
 
   // Assert staked token was crerated
   const stakedTokenId = getStakedTokenId(
-    getCollectionId(SMOL_BRAINS_ADDRESS),
+    getCollectionId(smolStakedEvent.params._smolAddress),
     token.tokenId,
     farm.id
   );
@@ -62,7 +61,7 @@ test("unstaked token is removed", () => {
 
   // Assert staked token was created
   const stakedTokenId = getStakedTokenId(
-    getCollectionId(SMOL_BRAINS_ADDRESS),
+    getCollectionId(smolStakedEvent.params._smolAddress),
     BigInt.fromI32(tokenId),
     getFarmId(smolStakedEvent.address)
   );
@@ -92,7 +91,7 @@ test("staked token claim is started", () => {
 
   // Assert claim was created with starting status
   const claimId = getClaimId(
-    getCollectionId(SMOL_BRAINS_ADDRESS),
+    getCollectionId(smolStakedEvent.params._smolAddress),
     BigInt.fromI32(tokenId),
     getFarmId(smolStakedEvent.address),
     BigInt.fromI32(requestId)
@@ -120,7 +119,7 @@ test("staked token claim is completed", () => {
 
   // Assert claim was completed
   const claimId = getClaimId(
-    getCollectionId(SMOL_BRAINS_ADDRESS),
+    getCollectionId(smolStakedEvent.params._smolAddress),
     BigInt.fromI32(tokenId),
     getFarmId(smolStakedEvent.address),
     BigInt.fromI32(requestId)
