@@ -103,6 +103,11 @@ export function handleCraftingRevealed(event: CraftingRevealed): void {
   for (let index = 0; index < amounts.length; index++) {
     let amount = amounts[index];
     let treasure = treasures[index];
+
+    if (amount.isZero() || treasure.isZero()) {
+      continue;
+    }
+
     let broken = new Broken(craftId);
 
     broken.outcome = craftId;

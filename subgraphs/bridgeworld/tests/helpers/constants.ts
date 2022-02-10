@@ -9,6 +9,7 @@ export const QUESTING_ADDRESS = "0xda3cad5e4f40062ceca6c1b979766bc0baed8e33";
 export const USER_ADDRESS = "0x461950b159366edcd2bcbee8126d973ac49238e0";
 
 // Entity names
+export const BROKEN_ENTITY_TYPE = "Broken";
 export const CRAFT_ENTITY_TYPE = "Craft";
 export const LEGION_INFO_ENTITY_TYPE = "LegionInfo";
 export const QUEST_ENTITY_TYPE = "Quest";
