@@ -16,13 +16,13 @@ import {
 } from "../../generated/schema";
 import { ApprovalForAll, Transfer } from "../../generated/Legion/ERC721";
 import { LEGION_ADDRESS } from "@treasure/constants";
+import { LEGION_IPFS, getAddressId, getImageHash, isMint } from "../helpers";
 import {
   LegionConstellationRankUp,
   LegionCraftLevelUp,
   LegionCreated,
   LegionQuestLevelUp,
 } from "../../generated/Legion Metadata Store/LegionMetadataStore";
-import { getAddressId, getImageHash, isMint } from "../helpers";
 import { getXpPerLevel as getQuestingXpPerLevel } from "./questing";
 
 const RARITY = [
@@ -86,7 +86,7 @@ function getConstellation(id: string): Constellation {
 
 function getMetadata(tokenId: BigInt): LegionInfo {
   let metadata = LegionInfo.load(
-    `${LEGION_ADDRESS.toHexString()}-${tokenId.toHexString()}-metadata`
+    `${getAddressId(LEGION_ADDRESS, tokenId)}-metadata`
   );
 
   if (!metadata) {
@@ -249,10 +249,8 @@ export function handleLegionCreated(event: LegionCreated): void {
 
   metadata.save();
 
-  let ipfs = "ipfs://QmeR9k2WJcSiiuUGY3Wvjtahzo3UUaURiPpLEapFcDe9JC";
-
   token.category = "Legion";
-  token.image = `${ipfs}/${metadata.rarity}%20${metadata.role}.gif`;
+  token.image = `${LEGION_IPFS}/${metadata.rarity}%20${metadata.role}.gif`;
   token.name = `${metadata.type} ${metadata.rarity}`;
   token.metadata = metadata.id;
   token.rarity = metadata.rarity.replace("Recruit", "None");
@@ -265,7 +263,7 @@ export function handleLegionCreated(event: LegionCreated): void {
       user.save();
     }
 
-    token.image = `${ipfs}/Recruit.gif`;
+    token.image = `${LEGION_IPFS}/Recruit.gif`;
     token.name = "Recruit";
   }
 
