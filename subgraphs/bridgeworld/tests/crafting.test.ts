@@ -57,10 +57,9 @@ test("crafting increases xp when completed successfully", () => {
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "crafting", "1");
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "craftingXp", "0");
 
-  let craftsToLevelUp = 10;
-  let craftingLevel = 1;
+  let craftsToLevelUp = 14;
 
-  // Lets do 10 crafts, then level up to level 2
+  // Lets do 14 crafts, then level up to level 2
   for (let index = 1; index < craftsToLevelUp + 1; index++) {
     const randomRequestEvent = createRandomRequestEvent(index, index + 1);
 
@@ -97,7 +96,7 @@ test("crafting increases xp when completed successfully", () => {
         LEGION_INFO_ENTITY_TYPE,
         metadata,
         "craftingXp",
-        `${10 * craftingLevel * index}`
+        `${10 * index}`
       );
     }
 
@@ -106,9 +105,9 @@ test("crafting increases xp when completed successfully", () => {
     handleCraftingFinished(craftFinishedEvent);
   }
 
-  craftingLevel = 2;
+  craftsToLevelUp = 16;
 
-  // Lets do 10 crafts, then level up to level 3
+  // Lets do 16 crafts, then level up to level 3
   for (let index = 1; index < craftsToLevelUp + 1; index++) {
     const randomRequestEvent = createRandomRequestEvent(index, index + 1);
 
@@ -145,7 +144,7 @@ test("crafting increases xp when completed successfully", () => {
         LEGION_INFO_ENTITY_TYPE,
         metadata,
         "craftingXp",
-        `${10 * craftingLevel * index}`
+        `${10 * index}`
       );
     }
 
@@ -154,10 +153,9 @@ test("crafting increases xp when completed successfully", () => {
     handleCraftingFinished(craftFinishedEvent);
   }
 
-  craftsToLevelUp = 14;
-  craftingLevel = 3;
+  craftsToLevelUp = 8;
 
-  // Lets do 14 crafts, then level up to level 4
+  // Lets do 8 crafts, then level up to level 4
   for (let index = 1; index < craftsToLevelUp + 1; index++) {
     const randomRequestEvent = createRandomRequestEvent(index, index + 1);
 
@@ -194,7 +192,7 @@ test("crafting increases xp when completed successfully", () => {
         LEGION_INFO_ENTITY_TYPE,
         metadata,
         "craftingXp",
-        `${10 * craftingLevel * index}`
+        `${20 * index}`
       );
     }
 
@@ -203,10 +201,7 @@ test("crafting increases xp when completed successfully", () => {
     handleCraftingFinished(craftFinishedEvent);
   }
 
-  craftsToLevelUp = 38;
-  craftingLevel = 4;
-
-  // Lets do 38 crafts, then level up to level 5
+  // Lets do 8 crafts, then level up to level 5
   for (let index = 1; index < craftsToLevelUp + 1; index++) {
     const randomRequestEvent = createRandomRequestEvent(index, index + 1);
 
@@ -243,7 +238,7 @@ test("crafting increases xp when completed successfully", () => {
         LEGION_INFO_ENTITY_TYPE,
         metadata,
         "craftingXp",
-        `${10 * craftingLevel * index}`
+        `${20 * index}`
       );
     }
 
@@ -252,10 +247,9 @@ test("crafting increases xp when completed successfully", () => {
     handleCraftingFinished(craftFinishedEvent);
   }
 
-  craftsToLevelUp = 50;
-  craftingLevel = 5;
+  craftsToLevelUp = 12;
 
-  // Lets do 50 crafts, then level up to level 6 (max)
+  // Lets do 12 crafts, then level up to level 6 (max)
   for (let index = 1; index < craftsToLevelUp + 1; index++) {
     const randomRequestEvent = createRandomRequestEvent(index, index + 1);
 
@@ -292,7 +286,7 @@ test("crafting increases xp when completed successfully", () => {
         LEGION_INFO_ENTITY_TYPE,
         metadata,
         "craftingXp",
-        `${10 * craftingLevel * index}`
+        `${40 * index}`
       );
     }
 
