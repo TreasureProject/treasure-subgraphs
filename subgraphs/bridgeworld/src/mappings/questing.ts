@@ -8,6 +8,21 @@ import {
 import { LEGION_ADDRESS, TREASURE_ADDRESS } from "@treasure/constants";
 import { getAddressId } from "../helpers/utils";
 
+export function getXpPerLevel(level: i32): i32 {
+  switch (level) {
+    case 1:
+    case 2:
+      return 10;
+    case 3:
+    case 4:
+      return 20;
+    case 5:
+      return 40;
+    default:
+      return 0;
+  }
+}
+
 export function handleQuestStarted(event: QuestStarted): void {
   let params = event.params;
   let tokenId = params._tokenId;
@@ -49,6 +64,14 @@ export function handleQuestRevealed(event: QuestRevealed): void {
     log.error("Unknown craft: {}", [id]);
 
     return;
+  }
+
+  // Increase Xp
+  let metadata = LegionInfo.load(`${quest.token}-metadata`);
+
+  if (metadata && metadata.type != "Recruit" && metadata.questing != 6) {
+    metadata.questingXp += getXpPerLevel(metadata.questing);
+    metadata.save();
   }
 
   let reward = new Reward(`${id}-${quest.random}`);

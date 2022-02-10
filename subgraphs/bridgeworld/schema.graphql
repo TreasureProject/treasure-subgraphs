@@ -67,6 +67,7 @@ type LegionInfo implements Metadata @entity {
   crafting: Int!
   craftingXp: Int!
   questing: Int!
+  questingXp: Int!
   rarity: String!
   "This is `class`, but we can't use that word"
   role: String!
