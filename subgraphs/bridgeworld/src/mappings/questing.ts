@@ -1,6 +1,6 @@
 import * as questingLegacy from "../../generated/Questing Legacy/Questing";
 import { Address, BigInt, log, store } from "@graphprotocol/graph-ts";
-import { DIFFICULTY, getAddressId } from "../helpers";
+import { DIFFICULTY, getAddressId, getXpPerLevel } from "../helpers";
 import { LEGION_ADDRESS, TREASURE_ADDRESS } from "@treasure/constants";
 import { LegionInfo, Quest, Random, Reward } from "../../generated/schema";
 import {
@@ -8,21 +8,6 @@ import {
   QuestRevealed,
   QuestStarted,
 } from "../../generated/Questing/Questing";
-
-export function getXpPerLevel(level: i32): i32 {
-  switch (level) {
-    case 1:
-    case 2:
-      return 10;
-    case 3:
-    case 4:
-      return 20;
-    case 5:
-      return 40;
-    default:
-      return 0;
-  }
-}
 
 function handleQuestStarted(
   address: Address,

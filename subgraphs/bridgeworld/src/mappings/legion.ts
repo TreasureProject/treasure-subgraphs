@@ -16,14 +16,19 @@ import {
 } from "../../generated/schema";
 import { ApprovalForAll, Transfer } from "../../generated/Legion/ERC721";
 import { LEGION_ADDRESS } from "@treasure/constants";
-import { LEGION_IPFS, getAddressId, getImageHash, isMint } from "../helpers";
+import {
+  LEGION_IPFS,
+  getAddressId,
+  getImageHash,
+  getXpPerLevel,
+  isMint,
+} from "../helpers";
 import {
   LegionConstellationRankUp,
   LegionCraftLevelUp,
   LegionCreated,
   LegionQuestLevelUp,
 } from "../../generated/Legion Metadata Store/LegionMetadataStore";
-import { getXpPerLevel as getQuestingXpPerLevel } from "./questing";
 
 const RARITY = [
   "Legendary",
@@ -219,7 +224,7 @@ export function handleLegionCraftLevelUp(event: LegionCraftLevelUp): void {
   let metadata = getMetadata(params._tokenId);
 
   metadata.crafting = params._craftLevel;
-  metadata.craftingXp = metadata.crafting == 6 ? 0 : -(metadata.crafting * 10);
+  metadata.craftingXp = -getXpPerLevel(metadata.crafting);
   metadata.save();
 }
 
@@ -275,7 +280,7 @@ export function handleLegionQuestLevelUp(event: LegionQuestLevelUp): void {
   let metadata = getMetadata(params._tokenId);
 
   metadata.questing = params._questLevel;
-  metadata.questingXp = -getQuestingXpPerLevel(metadata.questing);
+  metadata.questingXp = -getXpPerLevel(metadata.questing);
   metadata.save();
 }
 

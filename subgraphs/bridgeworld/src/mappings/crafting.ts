@@ -12,13 +12,12 @@ import {
   LEGION_ADDRESS,
   TREASURE_ADDRESS,
 } from "@treasure/constants";
+import { DIFFICULTY, getAddressId, getXpPerLevel } from "../helpers";
 import {
   CraftingFinished,
   CraftingRevealed,
   CraftingStarted,
 } from "../../generated/Crafting/Crafting";
-import { getAddressId } from "../helpers/utils";
-import { DIFFICULTY } from "../helpers";
 
 function handleCraftingStarted(
   address: Address,
@@ -131,7 +130,7 @@ export function handleCraftingRevealed(event: CraftingRevealed): void {
     let metadata = LegionInfo.load(`${craft.token}-metadata`);
 
     if (metadata && metadata.crafting != 6) {
-      metadata.craftingXp += metadata.crafting * 10;
+      metadata.craftingXp += getXpPerLevel(metadata.crafting);
       metadata.save();
     }
   }
