@@ -1,12 +1,13 @@
-import { BigInt, log, store } from "@graphprotocol/graph-ts";
-import { Quest, Random, Reward } from "../../generated/schema";
+import * as questingLegacy from "../../generated/Questing Legacy/Questing";
+import { Address, BigInt, log, store } from "@graphprotocol/graph-ts";
+import { DIFFICULTY, getAddressId } from "../helpers";
+import { LEGION_ADDRESS, TREASURE_ADDRESS } from "@treasure/constants";
+import { LegionInfo, Quest, Random, Reward } from "../../generated/schema";
 import {
   QuestFinished,
   QuestRevealed,
   QuestStarted,
 } from "../../generated/Questing/Questing";
-import { LEGION_ADDRESS, TREASURE_ADDRESS } from "@treasure/constants";
-import { getAddressId } from "../helpers/utils";
 
 export function getXpPerLevel(level: i32): i32 {
   switch (level) {
@@ -23,15 +24,16 @@ export function getXpPerLevel(level: i32): i32 {
   }
 }
 
-export function handleQuestStarted(event: QuestStarted): void {
-  let params = event.params;
-  let tokenId = params._tokenId;
-  let requestId = params._requestId;
-  let finishTime = params._finishTime;
-  let user = params._owner;
-
+function handleQuestStarted(
+  address: Address,
+  user: Address,
+  tokenId: BigInt,
+  requestId: BigInt,
+  finishTime: BigInt,
+  difficulty: i32
+): void {
   let random = Random.load(requestId.toHexString());
-  let quest = new Quest(getAddressId(event.address, tokenId));
+  let quest = new Quest(getAddressId(address, tokenId));
 
   if (!random) {
     log.error("[quest-started] Unknown random: {}", [requestId.toString()]);
@@ -39,6 +41,7 @@ export function handleQuestStarted(event: QuestStarted): void {
     return;
   }
 
+  quest.difficulty = DIFFICULTY[difficulty];
   quest.endTimestamp = finishTime.times(BigInt.fromI32(1000));
   quest.token = getAddressId(LEGION_ADDRESS, tokenId);
   quest.random = random.id;
@@ -52,6 +55,34 @@ export function handleQuestStarted(event: QuestStarted): void {
   random.save();
 }
 
+export function handleQuestStartedWithDifficulty(event: QuestStarted): void {
+  let params = event.params;
+
+  handleQuestStarted(
+    event.address,
+    params._owner,
+    params._tokenId,
+    params._requestId,
+    params._finishTime,
+    params._difficulty
+  );
+}
+
+export function handleQuestStartedWithoutDifficulty(
+  event: questingLegacy.QuestStarted
+): void {
+  let params = event.params;
+
+  handleQuestStarted(
+    event.address,
+    params._owner,
+    params._tokenId,
+    params._requestId,
+    params._finishTime,
+    0 // Easy difficulty
+  );
+}
+
 export function handleQuestRevealed(event: QuestRevealed): void {
   let params = event.params;
   let result = params._reward;
@@ -61,7 +92,7 @@ export function handleQuestRevealed(event: QuestRevealed): void {
   let quest = Quest.load(id);
 
   if (!quest) {
-    log.error("Unknown craft: {}", [id]);
+    log.error("[revealed] Unknown quest: {}", [id]);
 
     return;
   }
@@ -99,7 +130,7 @@ export function handleQuestFinished(event: QuestFinished): void {
   let quest = Quest.load(id);
 
   if (!quest) {
-    log.error("Unknown quest: {}", [id]);
+    log.error("[finished] Unknown quest: {}", [id]);
 
     return;
   }

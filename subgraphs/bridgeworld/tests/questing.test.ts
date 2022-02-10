@@ -1,6 +1,7 @@
 import { assert, clearStore, test } from "matchstick-as/assembly";
 
 import {
+  Difficulty,
   LEGION_INFO_ENTITY_TYPE,
   QUEST_ENTITY_TYPE,
   QUESTING_ADDRESS,
@@ -8,6 +9,7 @@ import {
   createLegionCreatedEvent,
   createLegionQuestLevelUpEvent,
   createLegionTransferEvent,
+  createQuestStartedEvent,
   createQuestStartedWithoutDifficultyEvent,
   createQuestRevealedEvent,
   createQuestFinishedEvent,
@@ -25,6 +27,7 @@ import {
 import {
   handleQuestFinished,
   handleQuestRevealed,
+  handleQuestStartedWithDifficulty,
   handleQuestStartedWithoutDifficulty,
 } from "../src/mappings/questing";
 import {
@@ -348,4 +351,43 @@ test("questing xp does not increase at max level (6)", () => {
   const questFinishedEvent = createQuestFinishedEvent(USER_ADDRESS, 1);
 
   handleQuestFinished(questFinishedEvent);
+});
+
+test("questing works with difficulty parameter", () => {
+  clearStore();
+
+  const mintEvent = createLegionTransferEvent(
+    Address.zero().toHexString(),
+    USER_ADDRESS,
+    1
+  );
+
+  handleTransfer(mintEvent);
+
+  const legionCreatedEvent = createLegionCreatedEvent(USER_ADDRESS, 1, 0, 6, 2);
+
+  handleLegionCreated(legionCreatedEvent);
+
+  const id = `${LEGION_ADDRESS.toHexString()}-0x1`;
+  const metadata = `${id}-metadata`;
+
+  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "questing", "1");
+  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "questingXp", "0");
+
+  const randomRequestEvent = createRandomRequestEvent(1, 2);
+
+  handleRandomRequest(randomRequestEvent);
+
+  const questStartedEvent = createQuestStartedEvent(
+    USER_ADDRESS,
+    1,
+    1,
+    Difficulty.Medium
+  );
+
+  handleQuestStartedWithDifficulty(questStartedEvent);
+
+  const questId = `${QUESTING_ADDRESS}-0x1`;
+
+  assert.fieldEquals(QUEST_ENTITY_TYPE, questId, "difficulty", "Medium");
 });
