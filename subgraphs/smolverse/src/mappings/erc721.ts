@@ -16,13 +16,12 @@ export function handleTransfer(event: Transfer): void {
   const collection = getOrCreateCollection(address);
   const owner = getOrCreateUser(params.to.toHexString());
   const token = getOrCreateToken(collection, tokenId);
-
-  const contract = ERC721.bind(address);
-  const tokenUri = contract.try_tokenURI(tokenId);
   token.owner = owner.id;
 
   if (isMint(params.from)) {
     token.name = `${collection.name} #${tokenIdString}`;
+    const contract = ERC721.bind(address);
+    const tokenUri = contract.try_tokenURI(tokenId);
     if (!tokenUri.reverted) {
       // const data = ipfsData || getIpfsJson(tokenUri.value);
       const data = getIpfsJson(tokenUri.value);
