@@ -1,5 +1,5 @@
 import { Address, ethereum } from "@graphprotocol/graph-ts";
-import { newMockEvent } from "matchstick-as";
+import { createMockedFunction, newMockEvent } from "matchstick-as";
 
 import { Transfer } from "../../generated/Smol Brains/ERC721";
 
@@ -17,4 +17,10 @@ export function createTransferEvent(
   ];
 
   return event;
+}
+
+export function createMockedTokenUriFunction(collectionAddress: Address): void {
+  createMockedFunction(collectionAddress, "tokenURI", "tokenURI(uint256):(string)")
+    .withArgs([ethereum.Value.fromI32(1)])
+    .returns([ethereum.Value.fromString("https://treasure-marketplace.mypinata.cloud/ipfs/QmZg7bqH36fnKUcmKDhqGm65j5hbFeDZcogoxxiFMLeybE/1/5")]);
 }
