@@ -36,7 +36,7 @@ test("staked token is created", () => {
   assert.stringEquals(token.collection, collection.id);
   assert.bigIntEquals(token.tokenId, BigInt.fromI32(tokenId));
 
-  // Assert staked token was crerated
+  // Assert staked token was created
   const stakedTokenId = getStakedTokenId(
     getCollectionId(smolStakedEvent.params._smolAddress),
     token.tokenId,

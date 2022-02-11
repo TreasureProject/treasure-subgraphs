@@ -29,7 +29,7 @@ test("smol bodies joining gym creates staked token", () => {
   assert.stringEquals(token.collection, collection.id);
   assert.bigIntEquals(token.tokenId, BigInt.fromI32(1));
 
-  // Assert staked token was crerated
+  // Assert staked token was created
   const stakedTokenId = `${tokenId}-gym`;
   assert.fieldEquals(STAKED_TOKEN_ENTITY_TYPE, stakedTokenId, "token", token.id);
   assert.fieldEquals(STAKED_TOKEN_ENTITY_TYPE, stakedTokenId, "location", "Gym");
@@ -42,7 +42,7 @@ test("smol bodies dropping gym removes staked token", () => {
   const joinEvent = createJoinGymEvent(USER_ADDRESS, 1);
   handleJoinGym(joinEvent);
 
-  // Assert staked token was crerated
+  // Assert staked token was created
   const tokenId = `${SMOL_BODIES_ADDRESS.toHexString()}-0x1`;
   const stakedTokenId = `${tokenId}-gym`;
   let stakedToken = StakedToken.load(stakedTokenId);
