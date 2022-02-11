@@ -77,18 +77,16 @@ test("crafting increases xp when completed successfully", () => {
 
     handleRandomSeeded(randomSeededEvent);
 
-    if (index === craftsToLevelUp) {
-      // Level up on reveal
-      const craftLevelUp = createLegionCraftLevelUpEvent(1, 2);
-
-      handleLegionCraftLevelUp(craftLevelUp);
-    }
-
     const craftRevealedEvent = createCraftingRevealedEvent(USER_ADDRESS, 1);
 
     handleCraftingRevealed(craftRevealedEvent);
 
     if (index === craftsToLevelUp) {
+      // Level up on reveal
+      const craftLevelUp = createLegionCraftLevelUpEvent(1, 2);
+
+      handleLegionCraftLevelUp(craftLevelUp);
+
       assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "crafting", "2");
       assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "craftingXp", "0");
     } else {
@@ -125,18 +123,16 @@ test("crafting increases xp when completed successfully", () => {
 
     handleRandomSeeded(randomSeededEvent);
 
-    if (index === craftsToLevelUp) {
-      // Level up on reveal
-      const craftLevelUp = createLegionCraftLevelUpEvent(1, 3);
-
-      handleLegionCraftLevelUp(craftLevelUp);
-    }
-
     const craftRevealedEvent = createCraftingRevealedEvent(USER_ADDRESS, 1);
 
     handleCraftingRevealed(craftRevealedEvent);
 
     if (index === craftsToLevelUp) {
+      // Level up on reveal
+      const craftLevelUp = createLegionCraftLevelUpEvent(1, 3);
+
+      handleLegionCraftLevelUp(craftLevelUp);
+
       assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "crafting", "3");
       assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "craftingXp", "0");
     } else {
@@ -173,18 +169,16 @@ test("crafting increases xp when completed successfully", () => {
 
     handleRandomSeeded(randomSeededEvent);
 
-    if (index === craftsToLevelUp) {
-      // Level up on reveal
-      const craftLevelUp = createLegionCraftLevelUpEvent(1, 4);
-
-      handleLegionCraftLevelUp(craftLevelUp);
-    }
-
     const craftRevealedEvent = createCraftingRevealedEvent(USER_ADDRESS, 1);
 
     handleCraftingRevealed(craftRevealedEvent);
 
     if (index === craftsToLevelUp) {
+      // Level up on reveal
+      const craftLevelUp = createLegionCraftLevelUpEvent(1, 4);
+
+      handleLegionCraftLevelUp(craftLevelUp);
+
       assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "crafting", "4");
       assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "craftingXp", "0");
     } else {
@@ -219,18 +213,16 @@ test("crafting increases xp when completed successfully", () => {
 
     handleRandomSeeded(randomSeededEvent);
 
-    if (index === craftsToLevelUp) {
-      // Level up on reveal
-      const craftLevelUp = createLegionCraftLevelUpEvent(1, 5);
-
-      handleLegionCraftLevelUp(craftLevelUp);
-    }
-
     const craftRevealedEvent = createCraftingRevealedEvent(USER_ADDRESS, 1);
 
     handleCraftingRevealed(craftRevealedEvent);
 
     if (index === craftsToLevelUp) {
+      // Level up on reveal
+      const craftLevelUp = createLegionCraftLevelUpEvent(1, 5);
+
+      handleLegionCraftLevelUp(craftLevelUp);
+
       assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "crafting", "5");
       assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "craftingXp", "0");
     } else {
@@ -267,18 +259,16 @@ test("crafting increases xp when completed successfully", () => {
 
     handleRandomSeeded(randomSeededEvent);
 
-    if (index === craftsToLevelUp) {
-      // Level up on reveal
-      const craftLevelUp = createLegionCraftLevelUpEvent(1, 6);
-
-      handleLegionCraftLevelUp(craftLevelUp);
-    }
-
     const craftRevealedEvent = createCraftingRevealedEvent(USER_ADDRESS, 1);
 
     handleCraftingRevealed(craftRevealedEvent);
 
     if (index === craftsToLevelUp) {
+      // Level up on reveal
+      const craftLevelUp = createLegionCraftLevelUpEvent(1, 6);
+
+      handleLegionCraftLevelUp(craftLevelUp);
+
       assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "crafting", "6");
       assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "craftingXp", "0");
     } else {

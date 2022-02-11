@@ -16,13 +16,7 @@ import {
 } from "../../generated/schema";
 import { ApprovalForAll, Transfer } from "../../generated/Legion/ERC721";
 import { LEGION_ADDRESS } from "@treasure/constants";
-import {
-  LEGION_IPFS,
-  getAddressId,
-  getImageHash,
-  getXpPerLevel,
-  isMint,
-} from "../helpers";
+import { LEGION_IPFS, getAddressId, getImageHash, isMint } from "../helpers";
 import {
   LegionConstellationRankUp,
   LegionCraftLevelUp,
@@ -224,7 +218,7 @@ export function handleLegionCraftLevelUp(event: LegionCraftLevelUp): void {
   let metadata = getMetadata(params._tokenId);
 
   metadata.crafting = params._craftLevel;
-  metadata.craftingXp = -getXpPerLevel(metadata.crafting);
+  metadata.craftingXp = 0;
   metadata.save();
 }
 
@@ -280,7 +274,7 @@ export function handleLegionQuestLevelUp(event: LegionQuestLevelUp): void {
   let metadata = getMetadata(params._tokenId);
 
   metadata.questing = params._questLevel;
-  metadata.questingXp = -getXpPerLevel(metadata.questing);
+  metadata.questingXp = 0;
   metadata.save();
 }
 
