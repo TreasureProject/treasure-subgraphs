@@ -1,10 +1,9 @@
 import { BigInt } from "@graphprotocol/graph-ts";
 import { SMOL_TREASURES_ADDRESS } from "@treasure/constants";
 import { assert, clearStore, test } from "matchstick-as";
-import { Collection, Farm, StakedToken, Token, User } from "../../generated/schema";
+import { Collection, StakedToken, Token, User } from "../../generated/schema";
 
-import { SMOL_FARM_NAME } from "../../src/helpers/constants";
-import { getCollectionId, getFarmId, getStakedTokenId, getTokenId } from "../../src/helpers/ids";
+import { getCollectionId, getStakedTokenId, getTokenId } from "../../src/helpers/ids";
 import { handleRandomRequest } from "../../src/mappings/randomizer";
 import { handleRewardClaimed, handleSmolStaked, handleSmolUnstaked, handleStartClaiming } from "../../src/mappings/smol-farm";
 import { createRandomRequestEvent } from "../randomizer/utils";
@@ -24,10 +23,6 @@ test("staked token is created", () => {
   const smolStakedEvent = createSmolStakedEvent(USER_ADDRESS, tokenId, 1644190714);
   handleSmolStaked(smolStakedEvent);
 
-  // Assert farm was created
-  const farm = Farm.load(getFarmId(smolStakedEvent.address)) as Farm;
-  assert.stringEquals(farm.name, SMOL_FARM_NAME);
-
   // Assert user was created
   const user = User.load(USER_ADDRESS);
   assert.assertNotNull(user);
@@ -45,13 +40,12 @@ test("staked token is created", () => {
   const stakedTokenId = getStakedTokenId(
     getCollectionId(smolStakedEvent.params._smolAddress),
     token.tokenId,
-    farm.id
+    "Farm"
   );
   assert.fieldEquals(STAKED_TOKEN_ENTITY_TYPE, stakedTokenId, "token", token.id);
-  assert.fieldEquals(STAKED_TOKEN_ENTITY_TYPE, stakedTokenId, "farm", farm.id);
+  assert.fieldEquals(STAKED_TOKEN_ENTITY_TYPE, stakedTokenId, "location", "Farm");
   assert.fieldEquals(STAKED_TOKEN_ENTITY_TYPE, stakedTokenId, "owner", USER_ADDRESS);
   assert.fieldEquals(STAKED_TOKEN_ENTITY_TYPE, stakedTokenId, "stakeTime", "1644190714");
-  assert.fieldEquals(STAKED_TOKEN_ENTITY_TYPE, stakedTokenId, "claims", "[]");
 });
 
 test("unstaked token is removed", () => {
@@ -66,7 +60,7 @@ test("unstaked token is removed", () => {
   const stakedTokenId = getStakedTokenId(
     getCollectionId(smolStakedEvent.params._smolAddress),
     BigInt.fromI32(tokenId),
-    getFarmId(smolStakedEvent.address)
+    "Farm"
   );
   assert.assertNotNull(StakedToken.load(stakedTokenId));
 
@@ -96,7 +90,7 @@ test("staked token claim is started", () => {
   const claimId = getClaimId(
     getCollectionId(smolStakedEvent.params._smolAddress),
     BigInt.fromI32(tokenId),
-    getFarmId(smolStakedEvent.address),
+    "Farm",
     BigInt.fromI32(requestId)
   );
   assert.fieldEquals(CLAIM_ENTITY_TYPE, claimId, "status", "Started");
@@ -131,7 +125,7 @@ test("staked token claim is completed", () => {
   const claimId = getClaimId(
     getCollectionId(smolStakedEvent.params._smolAddress),
     BigInt.fromI32(tokenId),
-    getFarmId(smolStakedEvent.address),
+    "Farm",
     BigInt.fromI32(requestId)
   );
   assert.fieldEquals(CLAIM_ENTITY_TYPE, claimId, "status", "Claimed");

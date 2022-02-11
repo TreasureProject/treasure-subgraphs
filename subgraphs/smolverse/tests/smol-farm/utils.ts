@@ -5,9 +5,9 @@ import { newMockEvent } from "matchstick-as";
 import { RewardClaimed, SmolStaked, SmolUnstaked, StartClaiming } from "../../generated/Smol Farm/SmolFarm";
 import { getRandomId, getStakedTokenId } from "../../src/helpers/ids";
 
-export function getClaimId(collectionId: string, tokenId: BigInt, farmId: string, requestId: BigInt): string {
+export function getClaimId(collectionId: string, tokenId: BigInt, location: string, requestId: BigInt): string {
   return [
-    getStakedTokenId(collectionId, tokenId, farmId),
+    getStakedTokenId(collectionId, tokenId, location),
     getRandomId(requestId)
   ].join("-");
 }

@@ -156,6 +156,28 @@ dataSources:
         - event: Transfer(indexed address,indexed address,indexed uint256)
           handler: handleTransfer
       file: ./src/mappings/erc721.ts
+  - name: Smol Brains School
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ smol_brains_school_address }}"
+      abi: School
+      startBlock: {{ smol_brains_school_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Transfer
+      abis:
+        - name: School
+          file: {{{ abis }}}/SmolBrainsSchool.json
+      eventHandlers:
+        - event: DropSchool(uint256)
+          handler: handleDropSchool
+        - event: JoinSchool(uint256)
+          handler: handleJoinSchool
+      file: ./src/mappings/smol-brains-school.ts
   - name: Smol Bodies
     kind: ethereum/contract
     network: {{ network }}
@@ -177,3 +199,25 @@ dataSources:
         - event: Transfer(indexed address,indexed address,indexed uint256)
           handler: handleTransfer
       file: ./src/mappings/erc721.ts
+  - name: Smol Bodies Gym
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ smol_bodies_gym_address }}"
+      abi: Gym
+      startBlock: {{ smol_bodies_gym_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Transfer
+      abis:
+        - name: Gym
+          file: {{{ abis }}}/SmolBodiesGym.json
+      eventHandlers:
+        - event: DropGym(uint256,uint256,uint256)
+          handler: handleDropGym
+        - event: JoinGym(uint256)
+          handler: handleJoinGym
+      file: ./src/mappings/smol-bodies-gym.ts

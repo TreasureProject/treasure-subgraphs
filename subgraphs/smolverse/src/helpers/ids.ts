@@ -15,15 +15,11 @@ export function getAttributeId(collection: Collection, name: string, value: stri
   return [collection.id, stringToSlug(name), stringToSlug(value)].join("-");
 }
 
-export function getFarmId(address: Address): string {
-  return address.toHexString();
-}
-
-export function getStakedTokenId(collectionId: string, tokenId: BigInt, farmId: string): string {
+export function getStakedTokenId(collectionId: string, tokenId: BigInt, location: string): string {
   return [
     collectionId,
     tokenId.toHexString(),
-    farmId
+    location.toLowerCase()
   ].join("-");
 }
 

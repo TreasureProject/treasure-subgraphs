@@ -1,9 +1,9 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts";
 
-import { Attribute, Collection, Farm, Random, Seeded, Token, User } from "../../generated/schema";
+import { Attribute, Collection, Random, Seeded, Token, User } from "../../generated/schema";
 import { getNameForCollection } from "./collections";
 import { TOKEN_STANDARD_ERC721 } from "./constants";
-import { getAttributeId, getCollectionId, getFarmId, getRandomId, getSeededId, getTokenId } from "./ids";
+import { getAttributeId, getCollectionId, getRandomId, getSeededId, getTokenId } from "./ids";
 
 export function getOrCreateUser(id: string): User {
   let user = User.load(id);
@@ -73,19 +73,6 @@ export function getOrCreateToken(collection: Collection, tokenId: BigInt): Token
   }
 
   return token;
-}
-
-export function getOrCreateFarm(address: Address, name: string): Farm {
-  const id = getFarmId(address);
-  let farm = Farm.load(id);
-
-  if (!farm) {
-    farm = new Farm(id);
-    farm.name = name;
-    farm.save();
-  }
-
-  return farm;
 }
 
 export function getOrCreateRandom(requestId: BigInt): Random {

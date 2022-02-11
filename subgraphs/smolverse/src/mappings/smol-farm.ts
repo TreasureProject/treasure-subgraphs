@@ -1,54 +1,32 @@
-import { log, store } from "@graphprotocol/graph-ts";
+import { log } from "@graphprotocol/graph-ts";
 import { SMOL_TREASURES_ADDRESS } from "@treasure/constants";
 
 import { Claim, Random, StakedToken } from "../../generated/schema";
 import { RewardClaimed, SmolStaked, SmolUnstaked, StartClaiming } from "../../generated/Smol Farm/SmolFarm";
-import { SMOL_FARM_NAME } from "../helpers/constants";
-import { getCollectionId, getFarmId, getRandomId, getStakedTokenId } from "../helpers/ids";
-import { getOrCreateCollection, getOrCreateFarm, getOrCreateToken, getOrCreateUser } from "../helpers/models";
+import { LOCATION_FARM } from "../helpers/constants";
+import { getCollectionId, getRandomId, getStakedTokenId } from "../helpers/ids";
+import { getOrCreateCollection, getOrCreateToken } from "../helpers/models";
 import { getTokenName } from "../helpers/token-id";
+import { handleStake, handleUnstake } from "./common";
 
 export function handleSmolStaked(event: SmolStaked): void {
   const params = event.params;
-
-  const farm = getOrCreateFarm(event.address, SMOL_FARM_NAME);
-  const owner = getOrCreateUser(params._owner.toHexString());
-  const collection = getOrCreateCollection(params._smolAddress);
-  const token = getOrCreateToken(collection, params._tokenId);
-
-  const stakedTokenid = getStakedTokenId(
-    collection.id,
-    token.tokenId,
-    farm.id
+  handleStake(
+    params._owner,
+    params._smolAddress,
+    params._tokenId,
+    LOCATION_FARM,
+    params._stakeTime
   );
-  const stakedToken = new StakedToken(stakedTokenid);
-  stakedToken.token = token.id;
-  stakedToken.farm = farm.id;
-  stakedToken.owner = owner.id;
-  stakedToken.stakeTime = params._stakeTime;
-  stakedToken.claims = [];
-  stakedToken.save();
 }
 
 export function handleSmolUnstaked(event: SmolUnstaked): void {
   const params = event.params;
-
-  const id = [
-    params._smolAddress.toHexString(),
-    params._tokenId.toHexString(),
-    getFarmId(event.address)
-  ].join("-");
-  const stakedToken = StakedToken.load(id);
-  if (!stakedToken) {
-    log.info("[smol-farm] Skipped already removed staked token: {}", [id]);
-    return;
-  }
-
-  for (let index = 0; index < stakedToken.claims.length; index++) {
-    store.remove("Claim", stakedToken.claims[index]);
-  }
-
-  store.remove("StakedToken", id);
+  handleUnstake(
+    params._smolAddress,
+    params._tokenId,
+    LOCATION_FARM
+  );
 }
 
 export function handleStartClaiming(event: StartClaiming): void {
@@ -57,7 +35,7 @@ export function handleStartClaiming(event: StartClaiming): void {
   const stakedTokenId = getStakedTokenId(
     getCollectionId(params._smolAddress),
     params._tokenId,
-    getFarmId(event.address)
+    LOCATION_FARM
   );
   const stakedToken = StakedToken.load(stakedTokenId);
   if (!stakedToken) {
@@ -80,7 +58,8 @@ export function handleStartClaiming(event: StartClaiming): void {
   random._claimId = claim.id;
   random.save();
 
-  stakedToken.claims = stakedToken.claims.concat([claim.id]);
+  const claims = (stakedToken.claims || []) as string[];
+  stakedToken.claims = claims.concat([claim.id]);
   stakedToken._pendingClaimId = claim.id;
   stakedToken.save();
 }
@@ -91,7 +70,7 @@ export function handleRewardClaimed(event: RewardClaimed): void {
   const stakedTokenId = getStakedTokenId(
     getCollectionId(params._smolAddress),
     params._tokenId,
-    getFarmId(event.address)
+    LOCATION_FARM
   );
   const stakedToken = StakedToken.load(stakedTokenId);
   if (!stakedToken) {

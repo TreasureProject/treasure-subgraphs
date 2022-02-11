@@ -4,6 +4,12 @@ enum ClaimStatus {
   Claimed
 }
 
+enum Location {
+  Farm
+  Gym
+  School
+}
+
 enum TokenStandard {
   ERC721
   ERC1155
@@ -53,12 +59,7 @@ type Token @entity {
   description: String
   image: String
   owner: User
-}
-
-type Farm @entity {
-  id: ID!
-  name: String!
-  stakedTokens: [StakedToken!]! @derivedFrom(field: "farm")
+  stakedTokens: [StakedToken!] @derivedFrom(field: "token")
 }
 
 type StakedToken @entity {
@@ -68,10 +69,10 @@ type StakedToken @entity {
   _pendingClaimId: String
 
   token: Token!
-  farm: Farm!
+  location: Location!
   owner: User!
-  stakeTime: BigInt!
-  claims: [Claim!]!
+  stakeTime: BigInt
+  claims: [Claim!]
 }
 
 type Random @entity {

@@ -2,7 +2,7 @@ import { BigInt } from "@graphprotocol/graph-ts";
 import { assert, clearStore, test } from "matchstick-as";
 
 import { Random, Seeded } from "../../generated/schema";
-import { getFarmId, getRandomId, getSeededId } from "../../src/helpers/ids";
+import { getRandomId, getSeededId } from "../../src/helpers/ids";
 import { handleRandomRequest, handleRandomSeeded } from "../../src/mappings/randomizer";
 import { handleSmolStaked, handleStartClaiming } from "../../src/mappings/smol-farm";
 import { createSmolStakedEvent, createStartClaimingEvent } from "../smol-farm/utils";
@@ -59,7 +59,7 @@ test("random request is seeded and claim marked revealable", () => {
   const claimId = [
     smolStakedEvent.params._smolAddress.toHexString(),
     BigInt.fromI32(tokenId).toHexString(),
-    getFarmId(smolStakedEvent.address),
+    "farm",
     getRandomId(BigInt.fromI32(requestId)),
   ].join("-");
   assert.fieldEquals(CLAIM_ENTITY_TYPE, claimId, "status", "Started");
