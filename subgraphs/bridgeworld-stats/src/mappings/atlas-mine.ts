@@ -1,6 +1,7 @@
 import {
-  Deposit as DepositEvent,
-  Withdraw as WithdrawEvent,
+  Deposit,
+  Harvest,
+  Withdraw,
 } from "../../generated/Atlas Mine/AtlasMine";
 import {
   getOrCreateAtlasMineLockStat,
@@ -8,7 +9,7 @@ import {
   getTimeIntervalAtlasMineStats,
 } from "../helpers/models";
 
-export function handleDeposit(event: DepositEvent): void {
+export function handleDeposit(event: Deposit): void {
   const params = event.params;
 
   const user = getOrCreateUser(params.user);
@@ -36,7 +37,7 @@ export function handleDeposit(event: DepositEvent): void {
   }
 }
 
-export function handleWithdraw(event: WithdrawEvent): void {
+export function handleWithdraw(event: Withdraw): void {
   const params = event.params;
 
   const user = getOrCreateUser(params.user);
@@ -59,6 +60,23 @@ export function handleWithdraw(event: WithdrawEvent): void {
         stat.activeAddressesCount = addresses.length;
       }
     }
+    stat.save();
+  }
+}
+
+export function handleHarvest(event: Harvest): void {
+  const params = event.params;
+
+  const user = getOrCreateUser(params.user);
+  user.magicHarvestCount += 1;
+  user.magicHarvested = user.magicHarvested.plus(params.amount);
+  user.save();
+
+  const stats = getTimeIntervalAtlasMineStats(event.block.timestamp);
+  for (let i = 0; i < stats.length; i++) {
+    const stat = stats[i];
+    stat.magicHarvestCount += 1;
+    stat.magicHarvested = stat.magicHarvested.plus(params.amount);
     stat.save();
   }
 }

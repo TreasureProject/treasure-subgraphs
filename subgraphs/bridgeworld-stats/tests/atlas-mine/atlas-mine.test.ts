@@ -1,10 +1,11 @@
 import { assert, clearStore, test } from "matchstick-as";
 
-import { handleDeposit, handleWithdraw } from "../../src/mappings/atlas-mine";
-import { createDepositEvent, createWithdrawEvent } from "./utils";
+import { handleDeposit, handleHarvest, handleWithdraw } from "../../src/mappings/atlas-mine";
+import { createDepositEvent, createHarvestEvent, createWithdrawEvent } from "./utils";
 
 const ATLAS_MINE_STAT_ENTITY_TYPE = "AtlasMineStat";
 const ATLAS_MIN_LOCK_STAT_ENTITY_TYPE = "AtlasMineLockStat";
+const USER_ENTITY_TYPE = "User";
 const USER_ADDRESS = "0x461950b159366edcd2bcbee8126d973ac49238e0";
 const USER_ADDRESS2 = "0x461950b159366edcd2bcbee8126d973ac49238e1";
 
@@ -88,4 +89,21 @@ test("atlas mine stats updates unique addresses on withdrawals", () => {
 
   assert.fieldEquals(ATLAS_MINE_STAT_ENTITY_TYPE, "202201-monthly", "activeAddressesCount", "1");
   assert.fieldEquals(ATLAS_MINE_STAT_ENTITY_TYPE, "all-time", "activeAddressesCount", "0");
+});
+
+test("atlas mine stats count harvests", () => {
+  clearStore();
+
+  const harvestEvent = createHarvestEvent(timestamp, USER_ADDRESS, 10);
+  handleHarvest(harvestEvent);
+
+  // Assert user was created
+  assert.fieldEquals(USER_ENTITY_TYPE, USER_ADDRESS, "magicHarvestCount", "1");
+  assert.fieldEquals(USER_ENTITY_TYPE, USER_ADDRESS, "magicHarvested", "10");
+
+  for (let i = 0; i < statIds.length; i++) {
+    // Assert all time intervals are created
+    assert.fieldEquals(ATLAS_MINE_STAT_ENTITY_TYPE, statIds[i], "magicHarvestCount", "1");
+    assert.fieldEquals(ATLAS_MINE_STAT_ENTITY_TYPE, statIds[i], "magicHarvested", "10");
+  }
 });
