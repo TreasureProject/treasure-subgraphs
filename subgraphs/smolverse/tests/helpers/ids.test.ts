@@ -1,8 +1,15 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts";
-import { assert, clearStore, test } from "matchstick-as/assembly/index";
+import { assert, test } from "matchstick-as/assembly/index";
 
 import { Collection } from "../../generated/schema";
-import { getAttributeId, getCollectionId, getFarmId, getRandomId, getSeededId, getStakedTokenId, getTokenId } from "../../src/helpers/ids";
+import {
+  getAttributeId,
+  getCollectionId,
+  getRandomId,
+  getSeededId,
+  getStakedTokenId,
+  getTokenId
+} from "../../src/helpers/ids";
 
 test("collection unique id is generated", () => {
   const id = getCollectionId(Address.zero());
@@ -21,13 +28,8 @@ test("attribute unique id is generated", () => {
   assert.stringEquals(id, "test-collection-test-name-value");
 });
 
-test("farm unique id is generated", () => {
-  const id = getFarmId(Address.zero());
-  assert.stringEquals(id, "0x0000000000000000000000000000000000000000");
-});
-
 test("staked token unique id is generated", () => {
-  const id = getStakedTokenId("collection", BigInt.fromI32(1), "farm");
+  const id = getStakedTokenId("collection", BigInt.fromI32(1), "Farm");
   assert.stringEquals(id, "collection-0x1-farm");
 });
 

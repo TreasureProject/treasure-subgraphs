@@ -8,6 +8,16 @@ export function getJsonStringValue(json: JSON, attribute: string): string | null
   return value ? value.toString() : null;
 }
 
+export function getIpfsJson(path: string): JSON | null {
+  const data = ipfs.cat(path);
+  if (!data) {
+    log.error("Missing IPFS data at path: {}", [path]);
+    return null;
+  }
+
+  return json.fromBytes(data).toObject();
+}
+
 export function getCollectionJson(collection: Collection, path: string): JSON | null {
   const baseUri = collection.baseUri;
   if (!baseUri) {
@@ -15,12 +25,5 @@ export function getCollectionJson(collection: Collection, path: string): JSON | 
     return null;
   }
 
-  const ipfsPath = `${(baseUri as string).replace("ipfs://", "")}${path}`;
-  const data = ipfs.cat(ipfsPath);
-  if (!data) {
-    log.error("Missing IPFS data at path: {}", [ipfsPath]);
-    return null;
-  }
-
-  return json.fromBytes(data).toObject();
+  return getIpfsJson(`${(baseUri as string).replace("ipfs://", "")}${path}`);
 }

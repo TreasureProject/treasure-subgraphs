@@ -1,20 +1,9 @@
-import { Address, BigInt, log, TypedMap } from "@graphprotocol/graph-ts";
-import { SMOL_BODIES_PETS_ADDRESS } from "@treasure/constants";
+import { Address, BigInt } from "@graphprotocol/graph-ts";
 
-import { Attribute, Collection, Farm, Random, Seeded, Token, User } from "../../generated/schema";
+import { Attribute, Collection, Random, Seeded, Token, User } from "../../generated/schema";
 import { getNameForCollection } from "./collections";
 import { TOKEN_STANDARD_ERC721 } from "./constants";
-import { getAttributeId, getCollectionId, getFarmId, getRandomId, getSeededId, getTokenId } from "./ids";
-import { toBigDecimal } from "./number";
-
-const ATTRIBUTE_PERCENTAGE_THRESHOLDS = new TypedMap<string, number>();
-ATTRIBUTE_PERCENTAGE_THRESHOLDS.set(SMOL_BODIES_PETS_ADDRESS.toHexString(), 5_500);
-
-const shouldUpdateAttributePercentages = (collection: Collection): boolean => {
-  const threshold = ATTRIBUTE_PERCENTAGE_THRESHOLDS.getEntry(collection.id);
-  const thresholdValue = threshold ? threshold.value : 0;
-  return collection._tokenIds.length >= thresholdValue;
-};
+import { getAttributeId, getCollectionId, getRandomId, getSeededId, getTokenId } from "./ids";
 
 export function getOrCreateUser(id: string): User {
   let user = User.load(id);
@@ -86,19 +75,6 @@ export function getOrCreateToken(collection: Collection, tokenId: BigInt): Token
   return token;
 }
 
-export function getOrCreateFarm(address: Address, name: string): Farm {
-  const id = getFarmId(address);
-  let farm = Farm.load(id);
-
-  if (!farm) {
-    farm = new Farm(id);
-    farm.name = name;
-    farm.save();
-  }
-
-  return farm;
-}
-
 export function getOrCreateRandom(requestId: BigInt): Random {
   const id = getRandomId(requestId);
   let random = Random.load(id);
@@ -122,28 +98,4 @@ export function getOrCreateSeeded(commitId: BigInt): Seeded {
   }
 
   return seeded;
-}
-
-export function updateAttributePercentages(collection: Collection): void {
-  if (!shouldUpdateAttributePercentages(collection)) {
-    log.info("Skipping attribute percentages update for collection: {}", [collection.id]);
-    return;
-  }
-
-  const attributeIds = collection._attributeIds;
-  const totalTokens = collection._tokenIds.length;
-  const totalAttributes = attributeIds.length;
-  for (let i = 0; i < totalAttributes; i++) {
-    const attribute = Attribute.load(attributeIds[i]);
-    if (!attribute) {
-      log.warning("Unknown attribute in collection: {}", [attributeIds[i]]);
-      continue;
-    }
-
-    attribute.percentage =
-      toBigDecimal(attribute._tokenIds.length)
-        .div(toBigDecimal(totalTokens))
-        .truncate(10);
-    attribute.save();
-  }
 }

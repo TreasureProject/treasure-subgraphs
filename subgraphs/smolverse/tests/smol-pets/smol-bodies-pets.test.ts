@@ -2,7 +2,7 @@ import { assert, clearStore, test } from "matchstick-as/assembly/index";
 
 import { createBaseUriChangedEvent, createSmolPetMintEvent, createTransferEvent } from "./utils";
 import { handleBaseUriChanged, handleMint, handleTransfer } from "../../src/mappings/smol-pets";
-import { BigDecimal, Bytes, json } from "@graphprotocol/graph-ts";
+import { Address, BigDecimal, Bytes, json } from "@graphprotocol/graph-ts";
 import { SMOL_BODIES_PETS_ADDRESS } from "@treasure/constants";
 import { Attribute } from "../../generated/schema";
 
@@ -122,13 +122,17 @@ test("collection base uri is changed", () => {
 //   const baseUriChangedEvent = createBaseUriChangedEvent("", "ipfs://QmdEC7rjy2WZaTQSXtFtMEN2AvS8ARFvnMhRDcFHvhaohH/");
 //   handleBaseUriChanged(baseUriChangedEvent);
 
+//   const mint1Event = createSmolPetMintEvent(USER_ADDRESS, 1, "");
+//   mint1Event.address = baseUriChangedEvent.address;
 //   handleMint(
-//     createSmolPetMintEvent(USER_ADDRESS, 1, ""),
+//     mint1Event,
 //     mockTokenData.toObject()
 //   );
 
+//   const mint2Event = createSmolPetMintEvent(USER_ADDRESS, 2, "");
+//   mint2Event.address = baseUriChangedEvent.address;
 //   handleMint(
-//     createSmolPetMintEvent(USER_ADDRESS, 2, ""),
+//     mint2Event,
 //     json.fromBytes(
 //       Bytes.fromUTF8(`
 //         {
@@ -150,8 +154,10 @@ test("collection base uri is changed", () => {
 //     ).toObject()
 //   );
 
+//   const mint3Event = createSmolPetMintEvent(USER_ADDRESS, 3, "");
+//   mint3Event.address = baseUriChangedEvent.address;
 //   handleMint(
-//     createSmolPetMintEvent(USER_ADDRESS, 3, ""),
+//     mint3Event,
 //     json.fromBytes(
 //       Bytes.fromUTF8(`
 //         {
