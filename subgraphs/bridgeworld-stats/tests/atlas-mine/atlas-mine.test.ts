@@ -14,6 +14,7 @@ const timestamp = 1644390900;
 const statIds = [
   "20220209-0700-hourly",
   "20220209-daily",
+  "20220206-weekly",
   "202202-monthly",
   "2022-yearly",
   "all-time"
@@ -28,6 +29,7 @@ test("atlas mine stats count deposits", () => {
   const intervals = [
     "Hourly",
     "Daily",
+    "Weekly",
     "Monthly",
     "Yearly",
     "AllTime"
@@ -44,6 +46,18 @@ test("atlas mine stats count deposits", () => {
     assert.fieldEquals(ATLAS_MIN_LOCK_STAT_ENTITY_TYPE, `${statIds[i]}-lock0`, "magicDepositCount", "1");
     assert.fieldEquals(ATLAS_MIN_LOCK_STAT_ENTITY_TYPE, `${statIds[i]}-lock0`, "magicDeposited", "500");
   }
+
+  // Assert start and end times are correct
+  assert.fieldEquals(ATLAS_MINE_STAT_ENTITY_TYPE, statIds[0], "startTimestamp", "1644390000");
+  assert.fieldEquals(ATLAS_MINE_STAT_ENTITY_TYPE, statIds[0], "endTimestamp", "1644393599");
+  assert.fieldEquals(ATLAS_MINE_STAT_ENTITY_TYPE, statIds[1], "startTimestamp", "1644364800");
+  assert.fieldEquals(ATLAS_MINE_STAT_ENTITY_TYPE, statIds[1], "endTimestamp", "1644451199");
+  assert.fieldEquals(ATLAS_MINE_STAT_ENTITY_TYPE, statIds[2], "startTimestamp", "1644105600");
+  assert.fieldEquals(ATLAS_MINE_STAT_ENTITY_TYPE, statIds[2], "endTimestamp", "1644710399");
+  assert.fieldEquals(ATLAS_MINE_STAT_ENTITY_TYPE, statIds[3], "startTimestamp", "1643673600");
+  assert.fieldEquals(ATLAS_MINE_STAT_ENTITY_TYPE, statIds[3], "endTimestamp", "1646092799");
+  assert.fieldEquals(ATLAS_MINE_STAT_ENTITY_TYPE, statIds[4], "startTimestamp", "1640995200");
+  assert.fieldEquals(ATLAS_MINE_STAT_ENTITY_TYPE, statIds[4], "endTimestamp", "1672531199");
   
   // Jan 20 22, 23:15
   const depositEvent2 = createDepositEvent(1642720500, USER_ADDRESS2, 100, 1);
@@ -53,6 +67,11 @@ test("atlas mine stats count deposits", () => {
   assert.fieldEquals(ATLAS_MINE_STAT_ENTITY_TYPE, statIds[0], "magicDepositCount", "1");
   assert.fieldEquals(ATLAS_MINE_STAT_ENTITY_TYPE, statIds[1], "magicDepositCount", "1");
   assert.fieldEquals(ATLAS_MINE_STAT_ENTITY_TYPE, statIds[2], "magicDepositCount", "1");
+
+  // Assert new weekly interval was created
+  assert.fieldEquals(ATLAS_MINE_STAT_ENTITY_TYPE, "20220116-weekly", "magicDepositCount", "1");
+  assert.fieldEquals(ATLAS_MINE_STAT_ENTITY_TYPE, "20220116-weekly", "magicDeposited", "100");
+  assert.fieldEquals(ATLAS_MINE_STAT_ENTITY_TYPE, "20220116-weekly", "activeAddressesCount", "1");
 
   // Assert new monthly interval was created
   assert.fieldEquals(ATLAS_MINE_STAT_ENTITY_TYPE, "202201-monthly", "magicDepositCount", "1");

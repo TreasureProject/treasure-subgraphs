@@ -38,6 +38,16 @@ export function getStartOfDay(timestamp: i64): i64 {
   return(date.getTime() / 1000) as i64;
 }
 
+export function getStartOfWeek(timestamp: i64): i64 {
+  const date = new Date(timestamp);
+  const sundayDate = new Date(timestamp - (date.getUTCDay() * SECONDS_IN_DAY * 1000));
+  sundayDate.setUTCMilliseconds(0);
+  sundayDate.setUTCSeconds(0);
+  sundayDate.setUTCMinutes(0);
+  sundayDate.setUTCHours(0);
+  return(sundayDate.getTime() / 1000) as i64;
+}
+
 export function getStartOfMonth(timestamp: i64): i64 {
   const date = new Date(timestamp);
   date.setUTCMilliseconds(0);

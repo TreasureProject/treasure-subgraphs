@@ -1,3 +1,4 @@
+import { SECONDS_IN_DAY } from "./date";
 import { toPaddedString } from "./number";
 
 export function getHourlyId(timestamp: i64): string {
@@ -15,6 +16,15 @@ export function getDailyId(timestamp: i64): string {
   const mm = toPaddedString(date.getUTCMonth() + 1);
   const dd = toPaddedString(date.getUTCDate());
   return `${year}${mm}${dd}-daily`;
+}
+
+export function getWeeklyId(timestamp: i64): string {
+  const date = new Date(timestamp);
+  const sundayDate = new Date(timestamp - (date.getUTCDay() * SECONDS_IN_DAY * 1000));
+  const year = sundayDate.getUTCFullYear();
+  const mm = toPaddedString(sundayDate.getUTCMonth() + 1);
+  const dd = toPaddedString(sundayDate.getUTCDate());
+  return `${year}${mm}${dd}-weekly`;
 }
 
 export function getMonthlyId(timestamp: i64): string {

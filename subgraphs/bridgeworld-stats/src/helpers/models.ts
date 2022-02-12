@@ -7,6 +7,7 @@ import {
   getStartOfDay,
   getStartOfHour,
   getStartOfMonth,
+  getStartOfWeek,
   getStartOfYear,
   SECONDS_IN_DAY,
   SECONDS_IN_HOUR
@@ -16,6 +17,7 @@ import {
   getDailyId,
   getHourlyId,
   getMonthlyId,
+  getWeeklyId,
   getYearlyId
 } from "./ids";
 
@@ -60,7 +62,14 @@ export function getTimeIntervalAtlasMineStats(eventTimestamp: BigInt): AtlasMine
   dailyStat.endTimestamp = BigInt.fromI64(startOfDay + SECONDS_IN_DAY - 1);
   dailyStat.save();
 
-  // TODO: Weekly
+  // Weekly
+  const weeklyId = getWeeklyId(timestamp);
+  const weeklyStat = (AtlasMineStat.load(weeklyId) || createAtlasMineStat(weeklyId)) as AtlasMineStat;
+  const startOfWeek = getStartOfWeek(timestamp);
+  weeklyStat.interval = "Weekly";
+  weeklyStat.startTimestamp = BigInt.fromI64(startOfWeek);
+  weeklyStat.endTimestamp = BigInt.fromI64(startOfWeek + (SECONDS_IN_DAY * 7) - 1);
+  weeklyStat.save();
 
   // Monthly
   const monthlyId = getMonthlyId(timestamp);
@@ -89,6 +98,7 @@ export function getTimeIntervalAtlasMineStats(eventTimestamp: BigInt): AtlasMine
   return [
     hourlyStat,
     dailyStat,
+    weeklyStat,
     monthlyStat,
     yearlyStat,
     allTimeStat
