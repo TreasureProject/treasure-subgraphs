@@ -2,6 +2,32 @@ specVersion: 0.0.4
 schema:
   file: ./schema.graphql
 dataSources:
+  - name: Atlas Mine
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ atlas_mine_address }}"
+      abi: AtlasMine
+      startBlock: {{ atlas_mine_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Token
+        - User
+        - UserToken
+      abis:
+        - name: AtlasMine
+          file: ../../node_modules/@treasure/subgraph-abis/src/AtlasMine.json
+      eventHandlers:
+        - event: Deposit(indexed address,indexed uint256,uint256,uint8)
+          handler: handleDeposit
+        - event: Withdraw(indexed address,indexed uint256,uint256)
+          handler: handleWithdraw
+        - event: Harvest(indexed address,indexed uint256,uint256)
+          handler: handleHarvest
+      file: ./src/mappings/atlas-mine.ts
   - name: Pilgrimage
     kind: ethereum/contract
     network: {{ network }}
