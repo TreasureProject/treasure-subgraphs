@@ -10,6 +10,7 @@ import {
   EXPLORER,
   MARKETPLACE_ADDRESS,
   MARKETPLACE_BUYER_ADDRESS,
+  TREASURE_ADDRESS,
 } from "@treasure/constants";
 import {
   ItemCanceled,
@@ -396,12 +397,18 @@ export function handleTransferBatch(event: TransferBatch): void {
   let length = ids.length;
 
   for (let index = 0; index < length; index++) {
+    let id = ids[index];
+
+    if (event.address.equals(TREASURE_ADDRESS) && id.isZero()) {
+      continue;
+    }
+
     handleTransfer(
       event.address,
       params.operator,
       params.from,
       params.to,
-      ids[index],
+      id,
       amounts[index].toI32()
     );
   }
@@ -409,6 +416,10 @@ export function handleTransferBatch(event: TransferBatch): void {
 
 export function handleTransferSingle(event: TransferSingle): void {
   let params = event.params;
+
+  if (event.address.equals(TREASURE_ADDRESS) && params.id.isZero()) {
+    return;
+  }
 
   handleTransfer(
     event.address,
