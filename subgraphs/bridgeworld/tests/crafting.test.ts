@@ -536,3 +536,70 @@ test("crafting does not create broken treasures with treasureId of zero", () => 
 
   assert.notInStore(BROKEN_ENTITY_TYPE, craftId);
 });
+
+test("crafting handles with multiple broken treasures", () => {
+  clearStore();
+
+  const mintEvent = createLegionTransferEvent(
+    Address.zero().toHexString(),
+    USER_ADDRESS,
+    1
+  );
+
+  handleTransfer(mintEvent);
+
+  const legionCreatedEvent = createLegionCreatedEvent(USER_ADDRESS, 1, 0, 6, 2);
+
+  handleLegionCreated(legionCreatedEvent);
+
+  const id = `${LEGION_ADDRESS.toHexString()}-0x1`;
+  const metadata = `${id}-metadata`;
+
+  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "crafting", "1");
+  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "craftingXp", "0");
+
+  // Perform a craft
+  const randomRequestEvent = createRandomRequestEvent(1, 2);
+
+  handleRandomRequest(randomRequestEvent);
+
+  const craftStartedEvent = createCraftingStartedWithoutDifficultyEvent(
+    USER_ADDRESS,
+    1,
+    1
+  );
+
+  handleCraftingStartedWithoutDifficulty(craftStartedEvent);
+
+  const randomSeededEvent = createRandomSeededEvent(2);
+
+  handleRandomSeeded(randomSeededEvent);
+
+  const craftRevealedEvent = createCraftingRevealedEvent(
+    USER_ADDRESS,
+    1,
+    false,
+    0,
+    1,
+    [68, 77],
+    [1, 1]
+  );
+
+  handleCraftingRevealed(craftRevealedEvent);
+
+  const craftId = `${CRAFTING_ADDRESS}-0x1-0x1`;
+
+  assert.fieldEquals(
+    BROKEN_ENTITY_TYPE,
+    `${craftId}-0x${(68).toString(16)}`,
+    "quantity",
+    "1"
+  );
+
+  assert.fieldEquals(
+    BROKEN_ENTITY_TYPE,
+    `${craftId}-0x${(77).toString(16)}`,
+    "quantity",
+    "1"
+  );
+});
