@@ -8,8 +8,8 @@ enum Interval {
 }
 
 interface Stat {
-  startTimestamp: BigInt!
-  endTimestamp: BigInt!
+  startTimestamp: BigInt
+  endTimestamp: BigInt
 }
 
 type User @entity {
