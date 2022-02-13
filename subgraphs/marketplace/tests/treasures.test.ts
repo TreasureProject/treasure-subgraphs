@@ -1,9 +1,12 @@
 import { Address } from "@graphprotocol/graph-ts";
 import { TREASURE_ADDRESS } from "@treasure/constants";
 import { assert, clearStore, test } from "matchstick-as/assembly";
-import { handleTransferSingle } from "../src/mappings/treasures";
+import {
+  handleTransferBatch,
+  handleTransferSingle,
+} from "../src/mappings/treasures";
 
-import { createTransferSingleEvent } from "./utils";
+import { createTransferBatchEvent, createTransferSingleEvent } from "./utils";
 
 const COLLECTION_ENTITY_TYPE = "Collection";
 const TOKEN_ENTITY_TYPE = "Token";
@@ -58,4 +61,41 @@ test("treasures collection is setup properly", () => {
     "standard",
     "ERC1155"
   );
+});
+
+test("doesnt add treasure id 0 to inventory (single)", () => {
+  clearStore();
+
+  const mintEvent = createTransferSingleEvent(
+    TREASURE_ADDRESS,
+    Address.zero().toHexString(),
+    USER_ADDRESS,
+    0
+  );
+
+  handleTransferSingle(mintEvent);
+
+  const collectionId = TREASURE_ADDRESS.toHexString();
+  const id = `${collectionId}-0x0`;
+
+  assert.notInStore(TOKEN_ENTITY_TYPE, id);
+});
+
+test("doesnt add treasure id 0 to inventory (batch)", () => {
+  clearStore();
+
+  const mintEvent = createTransferBatchEvent(
+    TREASURE_ADDRESS,
+    Address.zero().toHexString(),
+    USER_ADDRESS,
+    [0],
+    [0]
+  );
+
+  handleTransferBatch(mintEvent);
+
+  const collectionId = TREASURE_ADDRESS.toHexString();
+  const id = `${collectionId}-0x0`;
+
+  assert.notInStore(TOKEN_ENTITY_TYPE, id);
 });
