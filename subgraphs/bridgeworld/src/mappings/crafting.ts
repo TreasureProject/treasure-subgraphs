@@ -107,7 +107,7 @@ export function handleCraftingRevealed(event: CraftingRevealed): void {
       continue;
     }
 
-    let broken = new Broken(craftId);
+    let broken = new Broken(`${craftId}-${treasure.toHexString()}`);
 
     broken.outcome = craftId;
     broken.quantity = amount;
