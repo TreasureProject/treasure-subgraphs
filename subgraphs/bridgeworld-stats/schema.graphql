@@ -20,6 +20,8 @@ type User @entity {
   magicDeposited: BigInt!
   magicWithdrawn: BigInt!
   magicHarvested: BigInt!
+  summonsStarted: Int!
+  summonsFinished: Int!
 }
 
 type AtlasMineLockStat implements Stat @entity {
@@ -56,4 +58,18 @@ type Pilgrimage @entity {
 
   current: Int!
   total: Int!
+}
+
+type SummoningStat implements Stat @entity {
+  id: ID!
+
+  "Internal for tracking unique addresses"
+  _activeAddresses: [String!]!
+
+  startTimestamp: BigInt
+  endTimestamp: BigInt
+  interval: Interval!
+  summonsStarted: Int!
+  summonsFinished: Int!
+  activeAddressesCount: Int!
 }
