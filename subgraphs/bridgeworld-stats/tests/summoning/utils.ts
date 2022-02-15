@@ -5,12 +5,14 @@ import { SummoningFinished, SummoningStarted } from "../../generated/Summoning/S
 
 export function createSummoningStartedEvent(
   timestamp: i32,
-  user: string
+  user: string,
+  tokenId: i32
 ): SummoningStarted {
   const event = changetype<SummoningStarted>(newMockEvent());
   event.block.timestamp = BigInt.fromI32(timestamp);
   event.parameters = [
-    new ethereum.EventParam("_user", ethereum.Value.fromAddress(Address.fromString(user)))
+    new ethereum.EventParam("_user", ethereum.Value.fromAddress(Address.fromString(user))),
+    new ethereum.EventParam("_tokenId", ethereum.Value.fromI32(tokenId))
   ];
 
   return event;
@@ -18,12 +20,16 @@ export function createSummoningStartedEvent(
 
 export function createSummoningFinishedEvent(
   timestamp: i32,
-  user: string
+  user: string,
+  returnedId: i32,
+  newTokenId: i32
 ): SummoningFinished {
   const event = changetype<SummoningFinished>(newMockEvent());
   event.block.timestamp = BigInt.fromI32(timestamp);
   event.parameters = [
-    new ethereum.EventParam("_user", ethereum.Value.fromAddress(Address.fromString(user)))
+    new ethereum.EventParam("_user", ethereum.Value.fromAddress(Address.fromString(user))),
+    new ethereum.EventParam("_returnedId", ethereum.Value.fromI32(returnedId)),
+    new ethereum.EventParam("_newTokenId", ethereum.Value.fromI32(newTokenId))
   ];
 
   return event;

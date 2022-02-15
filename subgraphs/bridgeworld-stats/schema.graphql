@@ -7,6 +7,21 @@ enum Interval {
   AllTime
 }
 
+enum LegionGeneration {
+  Genesis
+  Auxiliary
+  Recruit
+}
+
+enum LegionRarity {
+  Legendary
+  Rare
+  Special
+  Uncommon
+  Common
+  None
+}
+
 interface Stat {
   startTimestamp: BigInt
   endTimestamp: BigInt
@@ -22,6 +37,14 @@ type User @entity {
   magicHarvested: BigInt!
   summonsStarted: Int!
   summonsFinished: Int!
+}
+
+type Legion @entity {
+  id: ID!
+  tokenId: BigInt!
+  generation: LegionGeneration!
+  rarity: LegionRarity!
+  name: String!
 }
 
 type AtlasMineLockStat implements Stat @entity {
@@ -72,4 +95,24 @@ type SummoningStat implements Stat @entity {
   summonsStarted: Int!
   summonsFinished: Int!
   activeAddressesCount: Int!
+  legionStats: [SummoningLegionStat!]! @derivedFrom(field: "summoningStat")
+}
+
+type SummoningLegionStat implements Stat @entity {
+  id: ID!
+  startTimestamp: BigInt
+  endTimestamp: BigInt
+  summoningStat: SummoningStat!
+  generation: LegionGeneration!
+  rarity: LegionRarity!
+  name: String!
+
+  "Number of Summons started by this type of Legion"
+  summonsStarted: Int!
+
+  "Number of Summons finished by this type of Legion"
+  summonsFinished: Int!
+
+  "Number of Summons that have resulted in the creation of this type of Legion"
+  summonedCount: Int!
 }

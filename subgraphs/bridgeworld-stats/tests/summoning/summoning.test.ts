@@ -1,9 +1,12 @@
 import { assert, clearStore, test } from "matchstick-as";
+import { handleLegionCreated } from "../../src/mappings/legion";
 
 import { handleSummoningFinished, handleSummoningStarted } from "../../src/mappings/summoning";
+import { createLegionCreatedEvent } from "../legion/utils";
 import { createSummoningFinishedEvent, createSummoningStartedEvent } from "./utils";
 
 const SUMMONING_STAT_ENTITY_TYPE = "SummoningStat";
+const SUMMONING_LEGION_STAT_ENTITY_TYPE = "SummoningLegionStat";
 const USER_ADDRESS = "0x461950b159366edcd2bcbee8126d973ac49238e0";
 const USER_ADDRESS2 = "0x461950b159366edcd2bcbee8126d973ac49238e1";
 
@@ -21,7 +24,10 @@ const statIds = [
 test("summoning stats count summons started", () => {
   clearStore();
 
-  const summoningStartedEvent = createSummoningStartedEvent(timestamp, USER_ADDRESS);
+  const legionCreatedEvent = createLegionCreatedEvent(1, 0, 4);
+  handleLegionCreated(legionCreatedEvent);
+
+  const summoningStartedEvent = createSummoningStartedEvent(timestamp, USER_ADDRESS, 1);
   handleSummoningStarted(summoningStartedEvent);
 
   const intervals = [
@@ -38,6 +44,9 @@ test("summoning stats count summons started", () => {
     assert.fieldEquals(SUMMONING_STAT_ENTITY_TYPE, statIds[i], "interval", intervals[i]);
     assert.fieldEquals(SUMMONING_STAT_ENTITY_TYPE, statIds[i], "summonsStarted", "1");
     assert.fieldEquals(SUMMONING_STAT_ENTITY_TYPE, statIds[i], "activeAddressesCount", "1");
+
+    // Assert all time intervals for legion type are created
+    assert.fieldEquals(SUMMONING_LEGION_STAT_ENTITY_TYPE, `${statIds[i]}-genesis-common`, "summonsStarted", "1");
   }
 
   // Assert start and end times are correct
@@ -53,7 +62,7 @@ test("summoning stats count summons started", () => {
   assert.fieldEquals(SUMMONING_STAT_ENTITY_TYPE, statIds[4], "endTimestamp", "1672531199");
   
   // Jan 20 22, 23:15
-  const summoningStartedEvent2 = createSummoningStartedEvent(1642720500, USER_ADDRESS2);
+  const summoningStartedEvent2 = createSummoningStartedEvent(1642720500, USER_ADDRESS2, 1);
   handleSummoningStarted(summoningStartedEvent2);
   
   // Assert previous intervals are unaffected
@@ -77,7 +86,13 @@ test("summoning stats count summons started", () => {
 test("summoning stats count summons finished", () => {
   clearStore();
 
-  const summoningStartedEvent = createSummoningStartedEvent(timestamp, USER_ADDRESS);
+  const legionCreatedEvent = createLegionCreatedEvent(1, 0, 4);
+  handleLegionCreated(legionCreatedEvent);
+
+  const newLegionCreatedEvent = createLegionCreatedEvent(2, 1, 4);
+  handleLegionCreated(newLegionCreatedEvent);
+
+  const summoningStartedEvent = createSummoningStartedEvent(timestamp, USER_ADDRESS, 1);
   handleSummoningStarted(summoningStartedEvent);
 
   for (let i = 0; i < statIds.length; i++) {
@@ -86,12 +101,17 @@ test("summoning stats count summons finished", () => {
     assert.fieldEquals(SUMMONING_STAT_ENTITY_TYPE, statIds[i], "activeAddressesCount", "1");
   }
 
-  const summoningFinishedEvent = createSummoningFinishedEvent(timestamp, USER_ADDRESS);
+  const summoningFinishedEvent = createSummoningFinishedEvent(timestamp, USER_ADDRESS, 1, 2);
   handleSummoningFinished(summoningFinishedEvent);
 
   for (let i = 0; i < statIds.length; i++) {
     // Assert all time intervals are created
     assert.fieldEquals(SUMMONING_STAT_ENTITY_TYPE, statIds[i], "summonsFinished", "1");
     assert.fieldEquals(SUMMONING_STAT_ENTITY_TYPE, statIds[i], "activeAddressesCount", "0");
+
+    // Assert all time intervals for legion type are created
+    assert.fieldEquals(SUMMONING_LEGION_STAT_ENTITY_TYPE, `${statIds[i]}-genesis-common`, "summonsStarted", "1");
+    assert.fieldEquals(SUMMONING_LEGION_STAT_ENTITY_TYPE, `${statIds[i]}-genesis-common`, "summonsFinished", "1");
+    assert.fieldEquals(SUMMONING_LEGION_STAT_ENTITY_TYPE, `${statIds[i]}-auxiliary-common`, "summonedCount", "1");
   }
 });

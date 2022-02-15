@@ -1,3 +1,6 @@
+import { BigInt } from "@graphprotocol/graph-ts";
+import { LEGION_ADDRESS } from "@treasure/constants";
+
 import { SECONDS_IN_DAY } from "./date";
 import { toPaddedString } from "./number";
 
@@ -41,4 +44,11 @@ export function getYearlyId(timestamp: i64): string {
 
 export function getAllTimeId(): string {
   return "all-time";
+}
+
+export function getLegionId(tokenId: BigInt): string {
+  return [
+    LEGION_ADDRESS.toHexString(),
+    tokenId.toHexString()
+  ].join("-");
 }

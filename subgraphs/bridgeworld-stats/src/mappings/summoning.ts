@@ -1,8 +1,14 @@
+import { log } from "@graphprotocol/graph-ts";
+
 import {
   SummoningFinished,
   SummoningStarted,
 } from "../../generated/Summoning/Summoning";
-import { getOrCreateUser, getTimeIntervalSummoningStats } from "../helpers/models";
+import {
+  getOrCreateSummoningLegionStat,
+  getOrCreateUser,
+  getTimeIntervalSummoningStats
+} from "../helpers/models";
 
 export function handleSummoningStarted(event: SummoningStarted): void {
   
@@ -21,6 +27,17 @@ export function handleSummoningStarted(event: SummoningStarted): void {
       stat.activeAddressesCount = stat._activeAddresses.length;
     }
     stat.save();
+
+    const legionStat = getOrCreateSummoningLegionStat(stat.id, params._tokenId);
+    if (!legionStat) {
+      log.error("Legion not found: {}", [params._tokenId.toString()]);
+      continue;
+    }
+
+    legionStat.startTimestamp = stat.startTimestamp;
+    legionStat.endTimestamp = stat.endTimestamp;
+    legionStat.summonsStarted += 1;
+    legionStat.save();
   }
 }
 
@@ -46,5 +63,27 @@ export function handleSummoningFinished(event: SummoningFinished): void {
       }
     }
     stat.save();
+
+    const legionStat = getOrCreateSummoningLegionStat(stat.id, params._returnedId);
+    if (!legionStat) {
+      log.error("Legion not found: {}", [params._returnedId.toString()]);
+      continue;
+    }
+
+    legionStat.startTimestamp = stat.startTimestamp;
+    legionStat.endTimestamp = stat.endTimestamp;
+    legionStat.summonsFinished += 1;
+    legionStat.save();
+
+    const newLegionStat = getOrCreateSummoningLegionStat(stat.id, params._newTokenId);
+    if (!newLegionStat) {
+      log.error("Legion not found: {}", [params._newTokenId.toString()]);
+      continue;
+    }
+
+    newLegionStat.startTimestamp = stat.startTimestamp;
+    newLegionStat.endTimestamp = stat.endTimestamp;
+    newLegionStat.summonedCount += 1;
+    newLegionStat.save();
   }
 }

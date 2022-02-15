@@ -28,6 +28,26 @@ dataSources:
         - event: Harvest(indexed address,indexed uint256,uint256)
           handler: handleHarvest
       file: ./src/mappings/atlas-mine.ts
+  - name: Legion Metadata Store
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ legion_metadata_store_address }}"
+      abi: LegionMetadataStore
+      startBlock: {{ legion_metadata_store_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Legion
+      abis:
+        - name: LegionMetadataStore
+          file: ../../node_modules/@treasure/subgraph-abis/src/LegionMetadataStore.json
+      eventHandlers:
+        - event: LegionCreated(indexed address,indexed uint256,uint8,uint8,uint8)
+          handler: handleLegionCreated
+      file: ./src/mappings/legion.ts
   - name: Pilgrimage
     kind: ethereum/contract
     network: {{ network }}

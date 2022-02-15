@@ -1,6 +1,7 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts";
 
-import { AtlasMineLockStat, AtlasMineStat, SummoningStat, User } from "../../generated/schema";
+import { AtlasMineLockStat, AtlasMineStat, Legion, SummoningLegionStat, SummoningStat, User } from "../../generated/schema";
+import { LEGION_GENERATIONS, LEGION_RARITIES } from "./constants";
 import {
   getDaysInMonth,
   getDaysInYear,
@@ -16,6 +17,7 @@ import {
   getAllTimeId,
   getDailyId,
   getHourlyId,
+  getLegionId,
   getMonthlyId,
   getWeeklyId,
   getYearlyId
@@ -38,6 +40,48 @@ export function getOrCreateUser(address: Address): User {
   }
 
   return user;
+}
+
+export function getLegion(tokenId: BigInt): Legion | null {
+  return Legion.load(getLegionId(tokenId));
+}
+
+export function getOrCreateLegion(tokenId: BigInt): Legion {
+  const id = getLegionId(tokenId);
+  let legion = Legion.load(id);
+  if (!legion) {
+    legion = new Legion(id);
+    legion.tokenId = tokenId;
+    legion.save();
+  }
+
+  return legion;
+}
+
+export function getCustomLegionName(tokenId: BigInt): string | null {
+  switch (tokenId.toI32()) {
+    case 523:
+      return "Bombmaker";
+    case 1629:
+      return "Warlock";
+    case 1744:
+      return "Fallen";
+    case 2239:
+      return "Dreamwinder";
+    case 3476:
+      return "Clocksnatcher";
+    default:
+      return null;
+  }
+}
+
+export function getLegionName(tokenId: BigInt, generation: i32, rarity: i32): string {
+  const customName = getCustomLegionName(tokenId);
+  if (customName) {
+    return customName;
+  }
+
+  return `${LEGION_GENERATIONS[generation]} ${LEGION_RARITIES[rarity]}`;
 }
 
 export function getTimeIntervalAtlasMineStats(eventTimestamp: BigInt): AtlasMineStat[] {
@@ -209,5 +253,28 @@ export function createSummoningStat(id: string): SummoningStat {
   stat.summonsStarted = 0;
   stat.summonsFinished = 0;
   stat.save();
+  return stat;
+}
+
+export function getOrCreateSummoningLegionStat(summoningStatId: string, tokenId: BigInt): SummoningLegionStat | null {
+  const legion = getLegion(tokenId);
+  if (!legion) {
+    return null;
+  }
+
+  const id = `${summoningStatId}-${legion.name.toLowerCase().split(" ").join("-")}`;
+  let stat = SummoningLegionStat.load(id);
+  if (!stat) {
+    stat = new SummoningLegionStat(id);
+    stat.summoningStat = summoningStatId;
+    stat.generation = legion.generation;
+    stat.rarity = legion.rarity;
+    stat.name = legion.name;
+    stat.summonsStarted = 0;
+    stat.summonsFinished = 0;
+    stat.summonedCount = 0;
+    stat.save();
+  }
+
   return stat;
 }
