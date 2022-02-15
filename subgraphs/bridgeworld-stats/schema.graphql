@@ -60,8 +60,11 @@ type AtlasMineLockStat implements Stat @entity {
 type AtlasMineStat implements Stat @entity {
   id: ID!
 
-  "Internal for tracking unique addresses"
+  "Internal for tracking active unique addresses"
   _activeAddresses: [String!]!
+
+  "Internal for tracking all unique addresses"
+  _allAddresses: [String!]!
 
   startTimestamp: BigInt
   endTimestamp: BigInt
@@ -72,7 +75,13 @@ type AtlasMineStat implements Stat @entity {
   magicDeposited: BigInt!
   magicWithdrawn: BigInt!
   magicHarvested: BigInt!
+  
+  "Number of unique addresses actively staking throughout time period"
   activeAddressesCount: Int!
+
+  "Number of unique addresses that have staked at any point"
+  allAddressesCount: Int!
+
   lockStats: [AtlasMineLockStat!]! @derivedFrom(field: "atlasMineStat")
 }
 
@@ -86,8 +95,11 @@ type Pilgrimage @entity {
 type SummoningStat implements Stat @entity {
   id: ID!
 
-  "Internal for tracking unique active addresses"
+  "Internal for tracking active unique addresses"
   _activeAddresses: [String!]!
+
+  "Internal for tracking all unique addresses"
+  _allAddresses: [String!]!
 
   startTimestamp: BigInt
   endTimestamp: BigInt
@@ -104,6 +116,9 @@ type SummoningStat implements Stat @entity {
 
   "Number of unique addresses actively summoning throughout time period"
   activeAddressesCount: Int!
+
+  "Number of unique addresses that have summoned at any point"
+  allAddressesCount: Int!
 
   legionStats: [SummoningLegionStat!]! @derivedFrom(field: "summoningStat")
 }

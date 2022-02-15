@@ -33,6 +33,11 @@ export function handleSummoningStarted(event: SummoningStarted): void {
       stat.activeAddressesCount = stat._activeAddresses.length;
     }
 
+    if (!stat._allAddresses.includes(user.id)) {
+      stat._allAddresses = stat._allAddresses.concat([user.id]);
+      stat.allAddressesCount = stat._allAddresses.length;
+    }
+
     if (legion) {
       const summonCost = getLegionSummonCost(legion.generation);
       stat.magicSpent = stat.magicSpent.plus(summonCost);

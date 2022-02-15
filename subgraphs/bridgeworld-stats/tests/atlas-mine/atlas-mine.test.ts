@@ -41,6 +41,7 @@ test("atlas mine stats count deposits", () => {
     assert.fieldEquals(ATLAS_MINE_STAT_ENTITY_TYPE, statIds[i], "magicDepositCount", "1");
     assert.fieldEquals(ATLAS_MINE_STAT_ENTITY_TYPE, statIds[i], "magicDeposited", "500");
     assert.fieldEquals(ATLAS_MINE_STAT_ENTITY_TYPE, statIds[i], "activeAddressesCount", "1");
+    assert.fieldEquals(ATLAS_MINE_STAT_ENTITY_TYPE, statIds[i], "allAddressesCount", "1");
 
     // Assert all time intervals for lock period are created
     assert.fieldEquals(ATLAS_MIN_LOCK_STAT_ENTITY_TYPE, `${statIds[i]}-lock0`, "magicDepositCount", "1");
@@ -72,16 +73,19 @@ test("atlas mine stats count deposits", () => {
   assert.fieldEquals(ATLAS_MINE_STAT_ENTITY_TYPE, "20220116-weekly", "magicDepositCount", "1");
   assert.fieldEquals(ATLAS_MINE_STAT_ENTITY_TYPE, "20220116-weekly", "magicDeposited", "100");
   assert.fieldEquals(ATLAS_MINE_STAT_ENTITY_TYPE, "20220116-weekly", "activeAddressesCount", "1");
+  assert.fieldEquals(ATLAS_MINE_STAT_ENTITY_TYPE, "20220116-weekly", "allAddressesCount", "1");
 
   // Assert new monthly interval was created
   assert.fieldEquals(ATLAS_MINE_STAT_ENTITY_TYPE, "202201-monthly", "magicDepositCount", "1");
   assert.fieldEquals(ATLAS_MINE_STAT_ENTITY_TYPE, "202201-monthly", "magicDeposited", "100");
   assert.fieldEquals(ATLAS_MINE_STAT_ENTITY_TYPE, "202201-monthly", "activeAddressesCount", "1");
+  assert.fieldEquals(ATLAS_MINE_STAT_ENTITY_TYPE, "202201-monthly", "allAddressesCount", "1");
 
   // Assert yearly interval contains both deposits
   assert.fieldEquals(ATLAS_MINE_STAT_ENTITY_TYPE, "2022-yearly", "magicDepositCount", "2");
   assert.fieldEquals(ATLAS_MINE_STAT_ENTITY_TYPE, "2022-yearly", "magicDeposited", "600");
   assert.fieldEquals(ATLAS_MINE_STAT_ENTITY_TYPE, "2022-yearly", "activeAddressesCount", "2");
+  assert.fieldEquals(ATLAS_MINE_STAT_ENTITY_TYPE, "2022-yearly", "allAddressesCount", "2");
 });
 
 test("atlas mine stats count withrawals", () => {
@@ -107,7 +111,9 @@ test("atlas mine stats updates unique addresses on withdrawals", () => {
   handleWithdraw(withdrawEvent);
 
   assert.fieldEquals(ATLAS_MINE_STAT_ENTITY_TYPE, "202201-monthly", "activeAddressesCount", "1");
+  assert.fieldEquals(ATLAS_MINE_STAT_ENTITY_TYPE, "202201-monthly", "allAddressesCount", "1");
   assert.fieldEquals(ATLAS_MINE_STAT_ENTITY_TYPE, "all-time", "activeAddressesCount", "0");
+  assert.fieldEquals(ATLAS_MINE_STAT_ENTITY_TYPE, "all-time", "allAddressesCount", "1");
 });
 
 test("atlas mine stats count harvests", () => {

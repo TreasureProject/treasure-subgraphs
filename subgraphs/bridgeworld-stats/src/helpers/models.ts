@@ -167,13 +167,13 @@ export function getTimeIntervalAtlasMineStats(eventTimestamp: BigInt): AtlasMine
 export function createAtlasMineStat(id: string): AtlasMineStat {
   const stat = new AtlasMineStat(id);
   stat._activeAddresses = [];
+  stat._allAddresses = [];
   stat.magicDepositCount = 0;
   stat.magicWithdrawCount = 0;
   stat.magicHarvestCount = 0;
   stat.magicDeposited = BigInt.fromI32(0);
   stat.magicWithdrawn = BigInt.fromI32(0);
   stat.magicHarvested = BigInt.fromI32(0);
-  stat.activeAddressesCount = 0;
   stat.save();
   return stat;
 }
@@ -263,6 +263,7 @@ export function getTimeIntervalSummoningStats(eventTimestamp: BigInt): Summoning
 export function createSummoningStat(id: string): SummoningStat {
   const stat = new SummoningStat(id);
   stat._activeAddresses = [];
+  stat._allAddresses = [];
   stat.magicSpent = BigInt.fromI32(0);
   stat.summonsStarted = 0;
   stat.summonsFinished = 0;
