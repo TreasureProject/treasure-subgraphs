@@ -22,11 +22,6 @@ enum LegionRarity {
   None
 }
 
-interface Stat {
-  startTimestamp: BigInt
-  endTimestamp: BigInt
-}
-
 type User @entity {
   id: ID!
   magicDepositCount: Int!
@@ -47,7 +42,7 @@ type Legion @entity {
   name: String!
 }
 
-type AtlasMineLockStat implements Stat @entity {
+type AtlasMineLockStat @entity {
   id: ID!
   startTimestamp: BigInt
   endTimestamp: BigInt
@@ -57,7 +52,7 @@ type AtlasMineLockStat implements Stat @entity {
   magicDeposited: BigInt!
 }
 
-type AtlasMineStat implements Stat @entity {
+type AtlasMineStat @entity {
   id: ID!
 
   "Internal for tracking active unique addresses"
@@ -92,7 +87,7 @@ type Pilgrimage @entity {
   total: Int!
 }
 
-type SummoningStat implements Stat @entity {
+type SummoningStat @entity {
   id: ID!
 
   "Internal for tracking active unique addresses"
@@ -123,7 +118,7 @@ type SummoningStat implements Stat @entity {
   legionStats: [SummoningLegionStat!]! @derivedFrom(field: "summoningStat")
 }
 
-type SummoningLegionStat implements Stat @entity {
+type SummoningLegionStat @entity {
   id: ID!
   startTimestamp: BigInt
   endTimestamp: BigInt
