@@ -50,8 +50,6 @@
   "smol_cars_start_block": 9265867,
   "smol_farm_address": "0x5b18510C5f6a00c3b8Cd5479a0b791E8950C36E8",
   "smol_farm_start_block": 9382031,
-  "smol_farm_randomizer_address": "0x9b58fc8c7B224Ae8479DA7E6eD37CA4Ac58099a9",
-  "smol_farm_randomizer_start_block": 9142077,
   "smol_bodies_address": "0x11Ff50AA78dAD7F559b997fD008722a125105F07",
   "smol_bodies_start_block": 9382075,
   "smol_bodies_gym_address": "0x0000000000000000000000000000000000000000",
