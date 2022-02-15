@@ -7,6 +7,21 @@ enum Interval {
   AllTime
 }
 
+enum LegionGeneration {
+  Genesis
+  Auxiliary
+  Recruit
+}
+
+enum LegionRarity {
+  Legendary
+  Rare
+  Special
+  Uncommon
+  Common
+  None
+}
+
 interface Stat {
   startTimestamp: BigInt
   endTimestamp: BigInt
@@ -20,6 +35,16 @@ type User @entity {
   magicDeposited: BigInt!
   magicWithdrawn: BigInt!
   magicHarvested: BigInt!
+  summonsStarted: Int!
+  summonsFinished: Int!
+}
+
+type Legion @entity {
+  id: ID!
+  tokenId: BigInt!
+  generation: LegionGeneration!
+  rarity: LegionRarity!
+  name: String!
 }
 
 type AtlasMineLockStat implements Stat @entity {
@@ -35,8 +60,11 @@ type AtlasMineLockStat implements Stat @entity {
 type AtlasMineStat implements Stat @entity {
   id: ID!
 
-  "Internal for tracking unique addresses"
+  "Internal for tracking active unique addresses"
   _activeAddresses: [String!]!
+
+  "Internal for tracking all unique addresses"
+  _allAddresses: [String!]!
 
   startTimestamp: BigInt
   endTimestamp: BigInt
@@ -47,7 +75,13 @@ type AtlasMineStat implements Stat @entity {
   magicDeposited: BigInt!
   magicWithdrawn: BigInt!
   magicHarvested: BigInt!
+  
+  "Number of unique addresses actively staking throughout time period"
   activeAddressesCount: Int!
+
+  "Number of unique addresses that have staked at any point"
+  allAddressesCount: Int!
+
   lockStats: [AtlasMineLockStat!]! @derivedFrom(field: "atlasMineStat")
 }
 
@@ -56,4 +90,57 @@ type Pilgrimage @entity {
 
   current: Int!
   total: Int!
+}
+
+type SummoningStat implements Stat @entity {
+  id: ID!
+
+  "Internal for tracking active unique addresses"
+  _activeAddresses: [String!]!
+
+  "Internal for tracking all unique addresses"
+  _allAddresses: [String!]!
+
+  startTimestamp: BigInt
+  endTimestamp: BigInt
+  interval: Interval!
+
+  "$MAGIC spent on Summons"
+  magicSpent: BigInt!
+
+  "Number of Summons started by all Legions"
+  summonsStarted: Int!
+
+  "Number of Summons finished by all Legions"
+  summonsFinished: Int!
+
+  "Number of unique addresses actively summoning throughout time period"
+  activeAddressesCount: Int!
+
+  "Number of unique addresses that have summoned at any point"
+  allAddressesCount: Int!
+
+  legionStats: [SummoningLegionStat!]! @derivedFrom(field: "summoningStat")
+}
+
+type SummoningLegionStat implements Stat @entity {
+  id: ID!
+  startTimestamp: BigInt
+  endTimestamp: BigInt
+  summoningStat: SummoningStat!
+  generation: LegionGeneration!
+  rarity: LegionRarity!
+  name: String!
+
+  "$MAGIC spent on Summons by this Legion type"
+  magicSpent: BigInt!
+
+  "Number of Summons started by this Legion type"
+  summonsStarted: Int!
+
+  "Number of Summons finished by this Legion type"
+  summonsFinished: Int!
+
+  "Number of Summons that have resulted in the creation of this Legion type"
+  summonedCount: Int!
 }

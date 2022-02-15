@@ -26,6 +26,12 @@ export function handleDeposit(event: Deposit): void {
       stat._activeAddresses = stat._activeAddresses.concat([user.id]);
       stat.activeAddressesCount = stat._activeAddresses.length;
     }
+
+    if (!stat._allAddresses.includes(user.id)) {
+      stat._allAddresses = stat._allAddresses.concat([user.id]);
+      stat.allAddressesCount = stat._allAddresses.length;
+    }
+    
     stat.save();
 
     const lockStat = getOrCreateAtlasMineLockStat(stat.id, params.lock);
