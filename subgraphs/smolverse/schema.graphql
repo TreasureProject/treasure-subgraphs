@@ -1,0 +1,96 @@
+enum ClaimStatus {
+  Started
+  Revealable
+  Claimed
+}
+
+enum Location {
+  Farm
+  Gym
+  School
+}
+
+enum TokenStandard {
+  ERC721
+  ERC1155
+}
+
+type User @entity {
+  id: ID!
+  tokens: [Token!]! @derivedFrom(field: "owner")
+  stakedTokens: [StakedToken!]! @derivedFrom(field: "owner")
+}
+
+type Collection @entity {
+  id: ID!
+
+  "Internal for tracking attributes for a collection"
+  _attributeIds: [String!]!
+
+  "Internal for tracking tokenIds minted for a collection"
+  _tokenIds: [String!]!
+
+  name: String!
+  standard: TokenStandard
+  baseUri: String
+  tokens: [Token!]! @derivedFrom(field: "collection")
+  attributes: [Attribute!] @derivedFrom(field: "collection")
+}
+
+type Attribute @entity {
+  id: ID!
+
+  "Internal for tracking tokenIds calculated"
+  _tokenIds: [String!]!
+
+  collection: Collection!
+  name: String!
+  value: String!
+  percentage: BigDecimal
+  tokens: [Token!]! @derivedFrom(field: "attributes")
+}
+
+type Token @entity {
+  id: ID!
+  collection: Collection!
+  tokenId: BigInt!
+  name: String!
+  attributes: [Attribute!]
+  description: String
+  image: String
+  owner: User
+  stakedTokens: [StakedToken!] @derivedFrom(field: "token")
+}
+
+type StakedToken @entity {
+  id: ID!
+
+  "Internal for tracking pending claims"
+  _pendingClaimId: String
+
+  token: Token!
+  location: Location!
+  owner: User!
+  stakeTime: BigInt
+  claims: [Claim!]
+}
+
+type Random @entity {
+  id: ID!
+
+  "Internal for tracking associated claim"
+  _claimId: String
+}
+
+type Seeded @entity {
+  id: ID!
+
+  "Internal for tracking associated random requests"
+  _randomIds: [String!]!
+}
+
+type Claim @entity {
+  id: ID!
+  status: ClaimStatus!
+  reward: Token
+}
