@@ -1,3 +1,5 @@
+import { BigDecimal } from "@graphprotocol/graph-ts";
+
 export const LEGION_GENERATIONS = [
   "Genesis",
   "Auxiliary",
@@ -12,3 +14,5 @@ export const LEGION_RARITIES = [
   "Common",
   "None",
 ];
+
+export const ONE_WEI = BigDecimal.fromString((1e18).toString());

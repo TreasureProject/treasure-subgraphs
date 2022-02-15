@@ -86,15 +86,25 @@ type Pilgrimage @entity {
 type SummoningStat implements Stat @entity {
   id: ID!
 
-  "Internal for tracking unique addresses"
+  "Internal for tracking unique active addresses"
   _activeAddresses: [String!]!
 
   startTimestamp: BigInt
   endTimestamp: BigInt
   interval: Interval!
+
+  "$MAGIC spent on Summons"
+  magicSpent: BigInt!
+
+  "Number of Summons started by all Legions"
   summonsStarted: Int!
+
+  "Number of Summons finished by all Legions"
   summonsFinished: Int!
+
+  "Number of unique addresses actively summoning throughout time period"
   activeAddressesCount: Int!
+
   legionStats: [SummoningLegionStat!]! @derivedFrom(field: "summoningStat")
 }
 
@@ -107,12 +117,15 @@ type SummoningLegionStat implements Stat @entity {
   rarity: LegionRarity!
   name: String!
 
-  "Number of Summons started by this type of Legion"
+  "$MAGIC spent on Summons by this Legion type"
+  magicSpent: BigInt!
+
+  "Number of Summons started by this Legion type"
   summonsStarted: Int!
 
-  "Number of Summons finished by this type of Legion"
+  "Number of Summons finished by this Legion type"
   summonsFinished: Int!
 
-  "Number of Summons that have resulted in the creation of this type of Legion"
+  "Number of Summons that have resulted in the creation of this Legion type"
   summonedCount: Int!
 }

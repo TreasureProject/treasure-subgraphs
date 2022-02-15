@@ -22,6 +22,7 @@ import {
   getWeeklyId,
   getYearlyId
 } from "./ids";
+import { etherToWei } from "./number";
 
 export function getOrCreateUser(address: Address): User {
   const id = address.toHexString();
@@ -82,6 +83,18 @@ export function getLegionName(tokenId: BigInt, generation: i32, rarity: i32): st
   }
 
   return `${LEGION_GENERATIONS[generation]} ${LEGION_RARITIES[rarity]}`;
+}
+
+export function getLegionSummonCost(generation: string): BigInt {
+  if (generation == "Auxiliary") {
+    return etherToWei(500);
+  }
+
+  if (generation == "Genesis") {
+    return etherToWei(300);
+  }
+
+  return BigInt.fromI32(0);
 }
 
 export function getTimeIntervalAtlasMineStats(eventTimestamp: BigInt): AtlasMineStat[] {
@@ -250,18 +263,14 @@ export function getTimeIntervalSummoningStats(eventTimestamp: BigInt): Summoning
 export function createSummoningStat(id: string): SummoningStat {
   const stat = new SummoningStat(id);
   stat._activeAddresses = [];
+  stat.magicSpent = BigInt.fromI32(0);
   stat.summonsStarted = 0;
   stat.summonsFinished = 0;
   stat.save();
   return stat;
 }
 
-export function getOrCreateSummoningLegionStat(summoningStatId: string, tokenId: BigInt): SummoningLegionStat | null {
-  const legion = getLegion(tokenId);
-  if (!legion) {
-    return null;
-  }
-
+export function getOrCreateSummoningLegionStat(summoningStatId: string, legion: Legion): SummoningLegionStat {
   const id = `${summoningStatId}-${legion.name.toLowerCase().split(" ").join("-")}`;
   let stat = SummoningLegionStat.load(id);
   if (!stat) {
@@ -270,6 +279,7 @@ export function getOrCreateSummoningLegionStat(summoningStatId: string, tokenId:
     stat.generation = legion.generation;
     stat.rarity = legion.rarity;
     stat.name = legion.name;
+    stat.magicSpent = BigInt.fromI32(0);
     stat.summonsStarted = 0;
     stat.summonsFinished = 0;
     stat.summonedCount = 0;

@@ -5,18 +5,24 @@ import {
   SummoningStarted,
 } from "../../generated/Summoning/Summoning";
 import {
+  getLegion,
+  getLegionSummonCost,
   getOrCreateSummoningLegionStat,
   getOrCreateUser,
   getTimeIntervalSummoningStats
 } from "../helpers/models";
 
 export function handleSummoningStarted(event: SummoningStarted): void {
-  
   const params = event.params;
 
   const user = getOrCreateUser(params._user);
   user.summonsStarted += 1;
   user.save();
+
+  const legion = getLegion(params._tokenId);
+  if (!legion) {
+    log.error("Legion not found: {}", [params._tokenId.toString()]);
+  }
 
   const stats = getTimeIntervalSummoningStats(event.block.timestamp);
   for (let i = 0; i < stats.length; i++) {
@@ -26,18 +32,25 @@ export function handleSummoningStarted(event: SummoningStarted): void {
       stat._activeAddresses = stat._activeAddresses.concat([user.id]);
       stat.activeAddressesCount = stat._activeAddresses.length;
     }
-    stat.save();
 
-    const legionStat = getOrCreateSummoningLegionStat(stat.id, params._tokenId);
-    if (!legionStat) {
-      log.error("Legion not found: {}", [params._tokenId.toString()]);
-      continue;
+    if (legion) {
+      const summonCost = getLegionSummonCost(legion.generation);
+      stat.magicSpent = stat.magicSpent.plus(summonCost);
+
+      const legionStat = getOrCreateSummoningLegionStat(stat.id, legion);
+      if (!legionStat) {
+        log.error("Legion not found: {}", [params._tokenId.toString()]);
+        continue;
+      }
+
+      legionStat.startTimestamp = stat.startTimestamp;
+      legionStat.endTimestamp = stat.endTimestamp;
+      legionStat.magicSpent = legionStat.magicSpent.plus(summonCost);
+      legionStat.summonsStarted += 1;
+      legionStat.save();
     }
 
-    legionStat.startTimestamp = stat.startTimestamp;
-    legionStat.endTimestamp = stat.endTimestamp;
-    legionStat.summonsStarted += 1;
-    legionStat.save();
+    stat.save();
   }
 }
 
@@ -48,6 +61,16 @@ export function handleSummoningFinished(event: SummoningFinished): void {
   user.summonsFinished += 1;
   user.save();
   const isUserSummoning = user.summonsStarted > user.summonsFinished;
+
+  const legion = getLegion(params._returnedId);
+  if (!legion) {
+    log.error("Legion not found: {}", [params._returnedId.toString()]);
+  }
+
+  const newLegion = getLegion(params._newTokenId);
+  if (!legion) {
+    log.error("Legion not found: {}", [params._newTokenId.toString()]);
+  }
 
   const stats = getTimeIntervalSummoningStats(event.block.timestamp);
   for (let i = 0; i < stats.length; i++) {
@@ -64,26 +87,20 @@ export function handleSummoningFinished(event: SummoningFinished): void {
     }
     stat.save();
 
-    const legionStat = getOrCreateSummoningLegionStat(stat.id, params._returnedId);
-    if (!legionStat) {
-      log.error("Legion not found: {}", [params._returnedId.toString()]);
-      continue;
+    if (legion) {
+      const legionStat = getOrCreateSummoningLegionStat(stat.id, legion);
+      legionStat.startTimestamp = stat.startTimestamp;
+      legionStat.endTimestamp = stat.endTimestamp;
+      legionStat.summonsFinished += 1;
+      legionStat.save();
     }
 
-    legionStat.startTimestamp = stat.startTimestamp;
-    legionStat.endTimestamp = stat.endTimestamp;
-    legionStat.summonsFinished += 1;
-    legionStat.save();
-
-    const newLegionStat = getOrCreateSummoningLegionStat(stat.id, params._newTokenId);
-    if (!newLegionStat) {
-      log.error("Legion not found: {}", [params._newTokenId.toString()]);
-      continue;
+    if (newLegion) {
+      const newLegionStat = getOrCreateSummoningLegionStat(stat.id, newLegion);
+      newLegionStat.startTimestamp = stat.startTimestamp;
+      newLegionStat.endTimestamp = stat.endTimestamp;
+      newLegionStat.summonedCount += 1;
+      newLegionStat.save();
     }
-
-    newLegionStat.startTimestamp = stat.startTimestamp;
-    newLegionStat.endTimestamp = stat.endTimestamp;
-    newLegionStat.summonedCount += 1;
-    newLegionStat.save();
   }
 }

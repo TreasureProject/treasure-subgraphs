@@ -42,10 +42,12 @@ test("summoning stats count summons started", () => {
   for (let i = 0; i < statIds.length; i++) {
     // Assert all time intervals are created
     assert.fieldEquals(SUMMONING_STAT_ENTITY_TYPE, statIds[i], "interval", intervals[i]);
+    assert.fieldEquals(SUMMONING_STAT_ENTITY_TYPE, statIds[i], "magicSpent", "300000000000000000000");
     assert.fieldEquals(SUMMONING_STAT_ENTITY_TYPE, statIds[i], "summonsStarted", "1");
     assert.fieldEquals(SUMMONING_STAT_ENTITY_TYPE, statIds[i], "activeAddressesCount", "1");
 
     // Assert all time intervals for legion type are created
+    assert.fieldEquals(SUMMONING_LEGION_STAT_ENTITY_TYPE, `${statIds[i]}-genesis-common`, "magicSpent", "300000000000000000000");
     assert.fieldEquals(SUMMONING_LEGION_STAT_ENTITY_TYPE, `${statIds[i]}-genesis-common`, "summonsStarted", "1");
   }
 
@@ -66,19 +68,25 @@ test("summoning stats count summons started", () => {
   handleSummoningStarted(summoningStartedEvent2);
   
   // Assert previous intervals are unaffected
+  assert.fieldEquals(SUMMONING_STAT_ENTITY_TYPE, statIds[0], "magicSpent", "300000000000000000000");
   assert.fieldEquals(SUMMONING_STAT_ENTITY_TYPE, statIds[0], "summonsStarted", "1");
+  assert.fieldEquals(SUMMONING_STAT_ENTITY_TYPE, statIds[1], "magicSpent", "300000000000000000000");
   assert.fieldEquals(SUMMONING_STAT_ENTITY_TYPE, statIds[1], "summonsStarted", "1");
+  assert.fieldEquals(SUMMONING_STAT_ENTITY_TYPE, statIds[2], "magicSpent", "300000000000000000000");
   assert.fieldEquals(SUMMONING_STAT_ENTITY_TYPE, statIds[2], "summonsStarted", "1");
 
   // Assert new weekly interval was created
+  assert.fieldEquals(SUMMONING_STAT_ENTITY_TYPE, "20220116-weekly", "magicSpent", "300000000000000000000");
   assert.fieldEquals(SUMMONING_STAT_ENTITY_TYPE, "20220116-weekly", "summonsStarted", "1");
   assert.fieldEquals(SUMMONING_STAT_ENTITY_TYPE, "20220116-weekly", "activeAddressesCount", "1");
 
   // Assert new monthly interval was created
+  assert.fieldEquals(SUMMONING_STAT_ENTITY_TYPE, "202201-monthly", "magicSpent", "300000000000000000000");
   assert.fieldEquals(SUMMONING_STAT_ENTITY_TYPE, "202201-monthly", "summonsStarted", "1");
   assert.fieldEquals(SUMMONING_STAT_ENTITY_TYPE, "202201-monthly", "activeAddressesCount", "1");
 
   // Assert yearly interval contains both deposits
+  assert.fieldEquals(SUMMONING_STAT_ENTITY_TYPE, "2022-yearly", "magicSpent", "600000000000000000000");
   assert.fieldEquals(SUMMONING_STAT_ENTITY_TYPE, "2022-yearly", "summonsStarted", "2");
   assert.fieldEquals(SUMMONING_STAT_ENTITY_TYPE, "2022-yearly", "activeAddressesCount", "2");
 });
