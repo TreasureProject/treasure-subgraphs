@@ -71,6 +71,6 @@ test("summon is started and finished with result token", () => {
   );
   handleSummoningFinished(summoningFinishedEvent);
 
-  assert.fieldEquals(SUMMON_ENTITY_TYPE, summon, "status", "Finished");
-  assert.fieldEquals(SUMMON_ENTITY_TYPE, summon, "resultToken", `${LEGION_ADDRESS.toHexString()}-0x1`);
+  assert.fieldEquals(SUMMON_ENTITY_TYPE, `${summon}-0x0`, "status", "Finished");
+  assert.fieldEquals(SUMMON_ENTITY_TYPE, `${summon}-0x0`, "resultToken", `${LEGION_ADDRESS.toHexString()}-0x1`);
 });
