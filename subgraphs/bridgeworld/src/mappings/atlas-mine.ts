@@ -136,8 +136,16 @@ export function handleWithdraw(event: WithdrawEvent): void {
   let params = event.params;
   let userId = params.user;
   let id = getAddressId(userId, params.index);
-  let withdraw = new Withdraw(id);
+  let withdraw = Withdraw.load(id);
   let deposit = Deposit.load(id);
+
+  if (!withdraw) {
+    withdraw = new Withdraw(id);
+
+    withdraw.deposit = id;
+    withdraw.mine = mine;
+    withdraw.user = userId.toHexString();
+  }
 
   if (!deposit) {
     log.error("Unknown deposit: {}", [id]);
@@ -155,9 +163,6 @@ export function handleWithdraw(event: WithdrawEvent): void {
   deposit.withdrawal = id;
   deposit.save();
 
-  withdraw.amount = params.amount;
-  withdraw.deposit = id;
-  withdraw.mine = mine;
-  withdraw.user = userId.toHexString();
+  withdraw.amount = withdraw.amount.plus(params.amount);
   withdraw.save();
 }
