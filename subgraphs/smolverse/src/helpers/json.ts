@@ -9,9 +9,12 @@ export function getJsonStringValue(json: JSON, attribute: string): string | null
 }
 
 export function getIpfsJson(path: string): JSON | null {
-  const data = ipfs.cat(path);
+  const normalizedPath = path
+    .replace("ipfs://", "")
+    .replace("https://treasure-marketplace.mypinata.cloud/ipfs/", "");
+  const data = ipfs.cat(normalizedPath);
   if (!data) {
-    log.error("Missing IPFS data at path: {}", [path]);
+    log.error("Missing IPFS data at path: {}", [normalizedPath]);
     return null;
   }
 
@@ -25,5 +28,5 @@ export function getCollectionJson(collection: Collection, path: string): JSON | 
     return null;
   }
 
-  return getIpfsJson(`${(baseUri as string).replace("ipfs://", "")}${path}`);
+  return getIpfsJson(`${baseUri as string}${path}`);
 }
