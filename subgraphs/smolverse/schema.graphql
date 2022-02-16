@@ -92,5 +92,6 @@ type Seeded @entity {
 type Claim @entity {
   id: ID!
   status: ClaimStatus!
+  startTime: BigInt!
   reward: Token
 }

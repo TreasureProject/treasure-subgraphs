@@ -25,6 +25,10 @@ const mockTokenData = json.fromBytes(
         {
           "trait_type": "Body",
           "value": "brown"
+        },
+        {
+          "trait_type": "Head Size",
+          "value": 5
         }
       ]
     }
