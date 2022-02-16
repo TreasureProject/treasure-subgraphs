@@ -212,6 +212,7 @@ type Summon @entity {
   random: Random!
   status: Status!
   token: Token!
+  resultToken: Token
   user: User!
 }
 
