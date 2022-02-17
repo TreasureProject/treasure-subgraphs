@@ -4,6 +4,7 @@ import {
   RandomSeeded,
 } from "../../generated/Randomizer/Randomizer";
 import { log } from "@graphprotocol/graph-ts";
+import { checkSummonFatigue } from "../helpers";
 
 export function handleRandomRequest(event: RandomRequest): void {
   let params = event.params;
@@ -25,6 +26,9 @@ export function handleRandomRequest(event: RandomRequest): void {
 
   seeded.randoms = seeded.randoms.concat([requestId]);
   seeded.save();
+
+  // Every random request, check about clearing summoning fatigue
+  checkSummonFatigue(event.block.timestamp.toI64() * 1000);
 }
 
 export function handleRandomSeeded(event: RandomSeeded): void {

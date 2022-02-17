@@ -1,6 +1,11 @@
 import { BigInt, log, store } from "@graphprotocol/graph-ts";
 import { LEGION_ADDRESS } from "@treasure/constants";
-import { LegionInfo, Random, Summon } from "../../generated/schema";
+import {
+  LegionInfo,
+  Random,
+  Summon,
+  SummonFatigue,
+} from "../../generated/schema";
 import {
   SummoningFinished,
   SummoningStarted,
@@ -56,7 +61,7 @@ export function handleSummoningStarted(event: SummoningStarted): void {
 export function handleSummoningFinished(event: SummoningFinished): void {
   let params = event.params;
   let tokenId = params._newTokenId;
-  let cooldown = params._newTokenSummoningCooldown;
+  let cooldown = params._newTokenSummoningCooldown.times(BigInt.fromI32(1000));
 
   let id = getAddressId(event.address, params._returnedId);
   let metadata = LegionInfo.load(getMetadataId(tokenId));
@@ -67,8 +72,21 @@ export function handleSummoningFinished(event: SummoningFinished): void {
     return;
   }
 
-  metadata.cooldown = cooldown.times(BigInt.fromI32(1000));
+  metadata.cooldown = cooldown;
   metadata.save();
+
+  // Store cooldown to clear later
+  let fatigue = SummonFatigue.load("all");
+
+  if (!fatigue) {
+    fatigue = new SummonFatigue("all");
+
+    // The first check will happen 5 minutes after the first cooldown.
+    fatigue.timestamp = cooldown.plus(BigInt.fromI32(300_000));
+  }
+
+  fatigue.data = fatigue.data.concat([`${metadata.id},${cooldown.toString()}`]);
+  fatigue.save();
 
   let summon = Summon.load(id);
 

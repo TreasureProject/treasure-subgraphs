@@ -4,3 +4,4 @@ export * from "./legion";
 export * from "./pilgrimage";
 export * from "./questing";
 export * from "./randomizer";
+export * from "./summoning";

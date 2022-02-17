@@ -14,6 +14,7 @@ export const BROKEN_ENTITY_TYPE = "Broken";
 export const CRAFT_ENTITY_TYPE = "Craft";
 export const LEGION_INFO_ENTITY_TYPE = "LegionInfo";
 export const QUEST_ENTITY_TYPE = "Quest";
+export const SUMMON_FATIGUE_ENTITY_TYPE = "SummonFatigue";
 export const SUMMON_ENTITY_TYPE = "Summon";
 export const TOKEN_ENTITY_TYPE = "Token";
 
