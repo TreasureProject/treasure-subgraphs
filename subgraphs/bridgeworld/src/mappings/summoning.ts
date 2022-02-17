@@ -80,6 +80,7 @@ export function handleSummoningFinished(event: SummoningFinished): void {
 
   summon.id = `${summon.id}-${summon.random}`;
   summon.status = "Finished";
+  summon.resultToken = metadata.id.replace("-metadata", "");
   summon.save();
 
   store.remove("Summon", id);

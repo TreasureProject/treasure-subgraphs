@@ -8,6 +8,7 @@ export const LEGION_METADATA_STORE_ADDRESS =
 export const MAGIC_ADDRESS = "0x539bde0d7dbd336b79148aa742883198bbf60342";
 export const PILGRIMAGE_ADDRESS = "0x088613c6bbb951c9796ba3bb42a1f310fb209fbd";
 export const QUESTING_ADDRESS = "0xda3cad5e4f40062ceca6c1b979766bc0baed8e33";
+export const SUMMONING_ADDRESS = "0xc8dbdc58289474ab3e01568eb5f88f440bde6b46";
 export const USER_ADDRESS = "0x461950b159366edcd2bcbee8126d973ac49238e0";
 
 // Entity names
@@ -16,6 +17,7 @@ export const CRAFT_ENTITY_TYPE = "Craft";
 export const DEPOSIT_ENTITY_TYPE = "Deposit";
 export const LEGION_INFO_ENTITY_TYPE = "LegionInfo";
 export const QUEST_ENTITY_TYPE = "Quest";
+export const SUMMON_ENTITY_TYPE = "Summon";
 export const TOKEN_ENTITY_TYPE = "Token";
 export const USER_ENTITY_TYPE = "User";
 export const WITHDRAW_ENTITY_TYPE = "Withdraw";
