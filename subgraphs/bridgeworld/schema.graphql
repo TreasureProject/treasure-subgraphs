@@ -217,7 +217,7 @@ type Summon @entity {
 }
 
 # Holds data to clear summon fatigue
-type SummonFatigue @entity {
+type _SummonFatigue @entity {
   id: ID!
 
   data: [String!]!

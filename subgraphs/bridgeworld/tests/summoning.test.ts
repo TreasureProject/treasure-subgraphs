@@ -184,7 +184,13 @@ test("summon fatigue is tracked and cleared properly", () => {
 
   handleRandomRequest(anotherRandomRequestEvent);
 
-  assert.notInStore(SUMMON_FATIGUE_ENTITY_TYPE, "all");
+  assert.fieldEquals(SUMMON_FATIGUE_ENTITY_TYPE, "all", "data", "[]");
+  assert.fieldEquals(
+    SUMMON_FATIGUE_ENTITY_TYPE,
+    "all",
+    "timestamp",
+    "1591808700000"
+  );
 
   assert.fieldEquals(
     LEGION_INFO_ENTITY_TYPE,

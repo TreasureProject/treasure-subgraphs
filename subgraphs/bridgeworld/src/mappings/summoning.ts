@@ -1,10 +1,10 @@
 import { BigInt, log, store } from "@graphprotocol/graph-ts";
 import { LEGION_ADDRESS } from "@treasure/constants";
 import {
+  _SummonFatigue,
   LegionInfo,
   Random,
   Summon,
-  SummonFatigue,
 } from "../../generated/schema";
 import {
   SummoningFinished,
@@ -76,10 +76,10 @@ export function handleSummoningFinished(event: SummoningFinished): void {
   metadata.save();
 
   // Store cooldown to clear later
-  let fatigue = SummonFatigue.load("all");
+  let fatigue = _SummonFatigue.load("all");
 
   if (!fatigue) {
-    fatigue = new SummonFatigue("all");
+    fatigue = new _SummonFatigue("all");
 
     // The first check will happen 5 minutes after the first cooldown.
     fatigue.timestamp = cooldown.plus(BigInt.fromI32(300_000));

@@ -1,15 +1,15 @@
-import { BigInt, log, store } from "@graphprotocol/graph-ts";
-import { LegionInfo, SummonFatigue } from "../../generated/schema";
+import { BigInt, log } from "@graphprotocol/graph-ts";
+import { LegionInfo, _SummonFatigue } from "../../generated/schema";
 
 class Fatigue {
   constructor(public id: string, public cooldown: BigInt) {}
 }
 
 export function checkSummonFatigue(timestamp: i64): void {
-  let fatigue = SummonFatigue.load("all");
+  let fatigue = _SummonFatigue.load("all");
 
   // No summons have finished yet.
-  if (!fatigue) {
+  if (!fatigue || fatigue.data.length == 0) {
     return;
   }
 
@@ -48,13 +48,6 @@ export function checkSummonFatigue(timestamp: i64): void {
 
   // Nothing to do
   if (index == 0) {
-    return;
-  }
-
-  if (index == fatigue.data.length) {
-    // All have been cleared.
-    store.remove("SummonFatigue", "all");
-
     return;
   }
 
