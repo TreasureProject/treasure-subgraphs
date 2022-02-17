@@ -216,6 +216,14 @@ type Summon @entity {
   user: User!
 }
 
+# Holds data to clear summon fatigue
+type _SummonFatigue @entity {
+  id: ID!
+
+  data: [String!]!
+  timestamp: BigInt!
+}
+
 type Token @entity {
   id: ID!
 

@@ -3,15 +3,11 @@ import { Token, User, UserToken } from "../generated/schema";
 import { getAddressId, getImageHash, getName, getRarity } from "./helpers";
 
 class Transfer {
-  contract: Address;
-  to: Address;
-  tokenId: BigInt;
-
-  constructor(contract: Address, to: Address, tokenId: BigInt) {
-    this.contract = contract;
-    this.to = to;
-    this.tokenId = tokenId;
-  }
+  constructor(
+    public contract: Address,
+    public to: Address,
+    public tokenId: BigInt
+  ) {}
 }
 
 function getToken(data: Transfer): Token {
