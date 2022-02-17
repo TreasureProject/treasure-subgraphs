@@ -53,6 +53,7 @@ export function handleStartClaiming(event: StartClaiming): void {
   const claimId = `${stakedTokenId}-${random.id}`;
   const claim = new Claim(claimId);
   claim.status = "Started";
+  claim.startTime = event.block.timestamp;
   claim.save();
 
   random._claimId = claim.id;

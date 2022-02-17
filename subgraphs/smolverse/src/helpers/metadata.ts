@@ -1,4 +1,4 @@
-import { log, TypedMap } from "@graphprotocol/graph-ts";
+import { JSONValueKind, log, TypedMap } from "@graphprotocol/graph-ts";
 import {
   SMOL_BODIES_ADDRESS,
   SMOL_BODIES_PETS_ADDRESS,
@@ -89,9 +89,9 @@ export function updateTokenMetadata(token: Token, data: JSON): void {
         continue;
       }
 
-      attributes.push(
-        getOrCreateAttribute(collection, token, nameData.toString(), valueData.toString())
-      );
+      const name = nameData.toString();
+      const value = valueData.kind === JSONValueKind.NUMBER ? valueData.toI64().toString() : valueData.toString();
+      attributes.push(getOrCreateAttribute(collection, token, name, value));
     }
     
     token.attributes = attributes.map<string>((attribute) => attribute.id);

@@ -8,9 +8,9 @@ dataSources:
     kind: ethereum/contract
     network: {{ network }}
     source:
-      address: "{{ smol_farm_randomizer_address }}"
+      address: "{{ randomizer_address }}"
       abi: Randomizer
-      startBlock: {{ smol_farm_randomizer_start_block }}
+      startBlock: {{ randomizer_start_block }}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
