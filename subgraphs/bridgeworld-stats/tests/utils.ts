@@ -1,4 +1,5 @@
 export const CRAFTING_STAT_ENTITY_TYPE = "CraftingStat";
+export const CRAFTING_DIFFICULTY_STAT_ENTITY_TYPE = "CraftingDifficultyStat";
 export const LEGION_STAT_ENTITY_TYPE = "LegionStat";
 export const SUMMONING_STAT_ENTITY_TYPE = "SummoningStat";
 export const USER_ENTITY_TYPE = "User";

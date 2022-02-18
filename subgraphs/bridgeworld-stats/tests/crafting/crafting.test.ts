@@ -11,6 +11,7 @@ import {
 import { handleLegionCreated } from "../../src/mappings/legion";
 import { createLegionCreatedEvent } from "../legion/utils";
 import {
+  CRAFTING_DIFFICULTY_STAT_ENTITY_TYPE,
   CRAFTING_STAT_ENTITY_TYPE,
   LEGION_STAT_ENTITY_TYPE,
   USER_ADDRESS,
@@ -39,7 +40,7 @@ test("crafting stats count crafts started", () => {
   const legionCreatedEvent = createLegionCreatedEvent(1, 0, 4);
   handleLegionCreated(legionCreatedEvent);
 
-  const craftingStartedEvent = createCraftingStartedEvent(timestamp, USER_ADDRESS, 1);
+  const craftingStartedEvent = createCraftingStartedEvent(timestamp, USER_ADDRESS, 1, 0, 2);
   handleCraftingStartedWithDifficulty(craftingStartedEvent);
 
   // Assert user data is updated
@@ -62,6 +63,9 @@ test("crafting stats count crafts started", () => {
 
     // Assert all time intervals for legion type are created
     assert.fieldEquals(LEGION_STAT_ENTITY_TYPE, `${statIds[i]}-genesis-common`, "craftsStarted", "1");
+
+    // Assert all time intervals for difficulty are created
+    assert.fieldEquals(CRAFTING_DIFFICULTY_STAT_ENTITY_TYPE, `${statIds[i]}-difficultyExtractor`, "craftsStarted", "1");
   }
 
   // Assert start and end times are correct
@@ -101,6 +105,12 @@ test("crafting stats count crafts started", () => {
 test("crafting stats count magic consumed", () => {
   clearStore();
 
+  const legionCreatedEvent = createLegionCreatedEvent(1, 0, 4);
+  handleLegionCreated(legionCreatedEvent);
+
+  const craftingStartedEvent = createCraftingStartedEvent(timestamp, USER_ADDRESS, 1);
+  handleCraftingStartedWithDifficulty(craftingStartedEvent);
+
   const craftingRevealedEvent = createCraftingRevealedEvent(
     timestamp,
     USER_ADDRESS,
@@ -112,11 +122,20 @@ test("crafting stats count magic consumed", () => {
   for (let i = 0; i < statIds.length; i++) {
     // Assert all time intervals are created
     assert.fieldEquals(CRAFTING_STAT_ENTITY_TYPE, statIds[i], "magicConsumed", "5000000000000000000");
+
+    // Assert all time intervals for difficulty are created
+    assert.fieldEquals(CRAFTING_DIFFICULTY_STAT_ENTITY_TYPE, `${statIds[i]}-difficultyPrism`, "magicConsumed", "5000000000000000000");
   }
 });
 
 test("crafting stats count magic returned", () => {
   clearStore();
+
+  const legionCreatedEvent = createLegionCreatedEvent(1, 0, 4);
+  handleLegionCreated(legionCreatedEvent);
+
+  const craftingStartedEvent = createCraftingStartedEvent(timestamp, USER_ADDRESS, 1);
+  handleCraftingStartedWithDifficulty(craftingStartedEvent);
 
   const craftingRevealedEvent = createCraftingRevealedEvent(
     timestamp,
@@ -131,6 +150,10 @@ test("crafting stats count magic returned", () => {
     // Assert all time intervals are created
     assert.fieldEquals(CRAFTING_STAT_ENTITY_TYPE, statIds[i], "magicConsumed", "500000000000000000");
     assert.fieldEquals(CRAFTING_STAT_ENTITY_TYPE, statIds[i], "magicReturned", "4500000000000000000");
+
+    // Assert all time intervals for difficulty are created
+    assert.fieldEquals(CRAFTING_DIFFICULTY_STAT_ENTITY_TYPE, `${statIds[i]}-difficultyPrism`, "magicConsumed", "500000000000000000");
+    assert.fieldEquals(CRAFTING_DIFFICULTY_STAT_ENTITY_TYPE, `${statIds[i]}-difficultyPrism`, "magicReturned", "4500000000000000000");
   }
 });
 
@@ -139,6 +162,9 @@ test("crafting stats count crafts succeeded", () => {
 
   const legionCreatedEvent = createLegionCreatedEvent(1, 0, 4);
   handleLegionCreated(legionCreatedEvent);
+
+  const craftingStartedEvent = createCraftingStartedEvent(timestamp, USER_ADDRESS, 1);
+  handleCraftingStartedWithDifficulty(craftingStartedEvent);
 
   const craftingRevealedEvent = createCraftingRevealedEvent(timestamp, USER_ADDRESS, 1, true);
   handleCraftingRevealed(craftingRevealedEvent);
@@ -152,6 +178,9 @@ test("crafting stats count crafts succeeded", () => {
 
     // Assert all time intervals for legion type are created
     assert.fieldEquals(LEGION_STAT_ENTITY_TYPE, `${statIds[i]}-genesis-common`, "craftsSucceeded", "1");
+
+    // Assert all time intervals for difficulty are created
+    assert.fieldEquals(CRAFTING_DIFFICULTY_STAT_ENTITY_TYPE, `${statIds[i]}-difficultyPrism`, "craftsSucceeded", "1");
   }
 });
 
@@ -160,6 +189,9 @@ test("crafting stats count crafts failed", () => {
 
   const legionCreatedEvent = createLegionCreatedEvent(1, 0, 4);
   handleLegionCreated(legionCreatedEvent);
+
+  const craftingStartedEvent = createCraftingStartedEvent(timestamp, USER_ADDRESS, 1);
+  handleCraftingStartedWithDifficulty(craftingStartedEvent);
 
   const craftingRevealedEvent = createCraftingRevealedEvent(timestamp, USER_ADDRESS, 1, false);
   handleCraftingRevealed(craftingRevealedEvent);
@@ -173,11 +205,20 @@ test("crafting stats count crafts failed", () => {
 
     // Assert all time intervals for legion type are created
     assert.fieldEquals(LEGION_STAT_ENTITY_TYPE, `${statIds[i]}-genesis-common`, "craftsFailed", "1");
+
+    // Assert all time intervals for difficulty are created
+    assert.fieldEquals(CRAFTING_DIFFICULTY_STAT_ENTITY_TYPE, `${statIds[i]}-difficultyPrism`, "craftsFailed", "1");
   }
 });
 
 test("crafting stats count broken treasures", () => {
   clearStore();
+
+  const legionCreatedEvent = createLegionCreatedEvent(1, 0, 4);
+  handleLegionCreated(legionCreatedEvent);
+
+  const craftingStartedEvent = createCraftingStartedEvent(timestamp, USER_ADDRESS, 1);
+  handleCraftingStartedWithDifficulty(craftingStartedEvent);
 
   const craftingRevealedEvent = createCraftingRevealedEvent(
     timestamp,
@@ -197,6 +238,9 @@ test("crafting stats count broken treasures", () => {
   for (let i = 0; i < statIds.length; i++) {
     // Assert all time intervals are created
     assert.fieldEquals(CRAFTING_STAT_ENTITY_TYPE, statIds[i], "brokenTreasuresCount", "2");
+
+    // Assert all time intervals for difficulty are created
+    assert.fieldEquals(CRAFTING_DIFFICULTY_STAT_ENTITY_TYPE, `${statIds[i]}-difficultyPrism`, "brokenTreasuresCount", "2");
   }
 });
 
@@ -216,6 +260,9 @@ test("crafting stats count crafts finished", () => {
 
     // Assert all time intervals for legion type are created
     assert.fieldEquals(LEGION_STAT_ENTITY_TYPE, `${statIds[i]}-genesis-common`, "craftsStarted", "1");
+
+    // Assert all time intervals for difficulty are created
+    assert.fieldEquals(CRAFTING_DIFFICULTY_STAT_ENTITY_TYPE, `${statIds[i]}-difficultyPrism`, "craftsStarted", "1");
   }
 
   const craftingFinishedEvent = createCraftingFinishedEvent(timestamp, USER_ADDRESS, 1);
@@ -228,5 +275,8 @@ test("crafting stats count crafts finished", () => {
 
     // Assert all time intervals for legion type are created
     assert.fieldEquals(LEGION_STAT_ENTITY_TYPE, `${statIds[i]}-genesis-common`, "craftsFinished", "1");
+
+    // Assert all time intervals for difficulty are created
+    assert.fieldEquals(CRAFTING_DIFFICULTY_STAT_ENTITY_TYPE, `${statIds[i]}-difficultyPrism`, "craftsFinished", "1");
   }
 });

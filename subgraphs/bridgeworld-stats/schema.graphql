@@ -22,6 +22,12 @@ enum LegionRarity {
   None
 }
 
+enum CraftingDifficulty {
+  Prism
+  HarvesterPart
+  Extractor
+}
+
 type User @entity {
   id: ID!
   magicDepositCount: Int!
@@ -47,10 +53,17 @@ type Legion @entity {
   name: String!
 }
 
+type _Craft @entity {
+  id: ID!
+  difficulty: CraftingDifficulty!
+}
+
 type LegionStat @entity {
   id: ID!
+
   startTimestamp: BigInt
   endTimestamp: BigInt
+
   generation: LegionGeneration!
   rarity: LegionRarity!
   name: String!
@@ -78,10 +91,13 @@ type LegionStat @entity {
 
 type AtlasMineLockStat @entity {
   id: ID!
+
   startTimestamp: BigInt
   endTimestamp: BigInt
+
   atlasMineStat: AtlasMineStat!
   lock: Int!
+
   magicDepositCount: Int!
   magicDeposited: BigInt!
 }
@@ -112,6 +128,54 @@ type AtlasMineStat @entity {
   allAddressesCount: Int!
 
   lockStats: [AtlasMineLockStat!]! @derivedFrom(field: "atlasMineStat")
+}
+
+type CraftingDifficultyStat @entity {
+  id: ID!
+
+  startTimestamp: BigInt
+  endTimestamp: BigInt
+
+  difficulty: CraftingDifficulty!
+  craftingStat: CraftingStat!
+
+  magicConsumed: BigInt!
+  magicReturned: BigInt!
+  craftsStarted: Int!
+  craftsFinished: Int!
+  craftsSucceeded: Int!
+  craftsFailed: Int!
+  brokenTreasuresCount: Int!
+}
+
+type CraftingStat @entity {
+  id: ID!
+
+  "Internal for tracking active unique addresses"
+  _activeAddresses: [String!]!
+
+  "Internal for tracking all unique addresses"
+  _allAddresses: [String!]!
+
+  startTimestamp: BigInt
+  endTimestamp: BigInt
+  interval: Interval!
+
+  magicConsumed: BigInt!
+  magicReturned: BigInt!
+  craftsStarted: Int!
+  craftsFinished: Int!
+  craftsSucceeded: Int!
+  craftsFailed: Int!
+  brokenTreasuresCount: Int!
+
+  "Number of unique addresses actively crafting throughout time period"
+  activeAddressesCount: Int!
+
+  "Number of unique addresses that have crafted at any point"
+  allAddressesCount: Int!
+
+  legionStats: [LegionStat!]! @derivedFrom(field: "craftingStat")
 }
 
 type Pilgrimage @entity {
@@ -150,34 +214,4 @@ type SummoningStat @entity {
   allAddressesCount: Int!
 
   legionStats: [LegionStat!]! @derivedFrom(field: "summoningStat")
-}
-
-type CraftingStat @entity {
-  id: ID!
-
-  "Internal for tracking active unique addresses"
-  _activeAddresses: [String!]!
-
-  "Internal for tracking all unique addresses"
-  _allAddresses: [String!]!
-
-  startTimestamp: BigInt
-  endTimestamp: BigInt
-  interval: Interval!
-
-  magicConsumed: BigInt!
-  magicReturned: BigInt!
-  craftsStarted: Int!
-  craftsFinished: Int!
-  craftsSucceeded: Int!
-  craftsFailed: Int!
-  brokenTreasuresCount: Int!
-
-  "Number of unique addresses actively crafting throughout time period"
-  activeAddressesCount: Int!
-
-  "Number of unique addresses that have crafted at any point"
-  allAddressesCount: Int!
-
-  legionStats: [LegionStat!]! @derivedFrom(field: "craftingStat")
 }

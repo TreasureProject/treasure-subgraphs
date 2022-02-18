@@ -3,6 +3,7 @@ import { Address, BigInt } from "@graphprotocol/graph-ts";
 import {
   AtlasMineLockStat,
   AtlasMineStat,
+  CraftingDifficultyStat,
   CraftingStat,
   Legion,
   LegionStat,
@@ -284,6 +285,29 @@ export function createCraftingStat(id: string): CraftingStat {
   stat.craftsSucceeded = 0;
   stat.craftsFailed = 0;
   stat.save();
+  return stat;
+}
+
+export function getOrCreateCraftingDifficultyStat(
+  craftingStatId: string,
+  difficulty: string
+): CraftingDifficultyStat {
+  const id = `${craftingStatId}-difficulty${difficulty}`;
+  let stat = CraftingDifficultyStat.load(id);
+  if (!stat) {
+    stat = new CraftingDifficultyStat(id);
+    stat.craftingStat = craftingStatId;
+    stat.difficulty = difficulty;
+    stat.magicConsumed = ZERO_BI;
+    stat.magicReturned = ZERO_BI;
+    stat.craftsStarted = 0;
+    stat.craftsFinished = 0;
+    stat.craftsSucceeded = 0;
+    stat.craftsFailed = 0;
+    stat.brokenTreasuresCount = 0;
+    stat.save();
+  }
+
   return stat;
 }
 
