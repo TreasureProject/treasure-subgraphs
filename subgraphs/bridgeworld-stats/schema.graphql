@@ -47,6 +47,30 @@ type Legion @entity {
   name: String!
 }
 
+type LegionStat @entity {
+  id: ID!
+  startTimestamp: BigInt
+  endTimestamp: BigInt
+  generation: LegionGeneration!
+  rarity: LegionRarity!
+  name: String!
+  
+  summoningStat: SummoningStat
+  craftingStat: CraftingStat
+
+  "$MAGIC spent on Summons by this Legion type"
+  summoningMagicSpent: BigInt!
+
+  "Number of Summons started by this Legion type"
+  summonsStarted: Int!
+
+  "Number of Summons finished by this Legion type"
+  summonsFinished: Int!
+
+  "Number of Summons that have resulted in the creation of this Legion type"
+  summonedCount: Int!
+}
+
 type AtlasMineLockStat @entity {
   id: ID!
   startTimestamp: BigInt
@@ -120,7 +144,7 @@ type SummoningStat @entity {
   "Number of unique addresses that have summoned at any point"
   allAddressesCount: Int!
 
-  legionStats: [SummoningLegionStat!]! @derivedFrom(field: "summoningStat")
+  legionStats: [LegionStat!]! @derivedFrom(field: "summoningStat")
 }
 
 type CraftingStat @entity {
@@ -149,26 +173,6 @@ type CraftingStat @entity {
 
   "Number of unique addresses that have crafted at any point"
   allAddressesCount: Int!
-}
 
-type SummoningLegionStat @entity {
-  id: ID!
-  startTimestamp: BigInt
-  endTimestamp: BigInt
-  summoningStat: SummoningStat!
-  generation: LegionGeneration!
-  rarity: LegionRarity!
-  name: String!
-
-  "$MAGIC spent on Summons by this Legion type"
-  magicSpent: BigInt!
-
-  "Number of Summons started by this Legion type"
-  summonsStarted: Int!
-
-  "Number of Summons finished by this Legion type"
-  summonsFinished: Int!
-
-  "Number of Summons that have resulted in the creation of this Legion type"
-  summonedCount: Int!
+  legionStats: [LegionStat!]! @derivedFrom(field: "craftingStat")
 }

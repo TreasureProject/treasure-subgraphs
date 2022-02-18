@@ -1,6 +1,14 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts";
 
-import { AtlasMineLockStat, AtlasMineStat, CraftingStat, Legion, SummoningLegionStat, SummoningStat, User } from "../../generated/schema";
+import {
+  AtlasMineLockStat,
+  AtlasMineStat,
+  CraftingStat,
+  Legion,
+  LegionStat,
+  SummoningStat,
+  User
+} from "../../generated/schema";
 import { LEGION_GENERATIONS, LEGION_RARITIES, ZERO_BI } from "./constants";
 import {
   getDaysInMonth,
@@ -357,16 +365,15 @@ export function createSummoningStat(id: string): SummoningStat {
   return stat;
 }
 
-export function getOrCreateSummoningLegionStat(summoningStatId: string, legion: Legion): SummoningLegionStat {
-  const id = `${summoningStatId}-${legion.name.toLowerCase().split(" ").join("-")}`;
-  let stat = SummoningLegionStat.load(id);
+export function getOrCreateLegionStat(statId: string, legion: Legion): LegionStat {
+  const id = `${statId}-${legion.name.toLowerCase().split(" ").join("-")}`;
+  let stat = LegionStat.load(id);
   if (!stat) {
-    stat = new SummoningLegionStat(id);
-    stat.summoningStat = summoningStatId;
+    stat = new LegionStat(id);
     stat.generation = legion.generation;
     stat.rarity = legion.rarity;
     stat.name = legion.name;
-    stat.magicSpent = ZERO_BI;
+    stat.summoningMagicSpent = ZERO_BI;
     stat.summonsStarted = 0;
     stat.summonsFinished = 0;
     stat.summonedCount = 0;
