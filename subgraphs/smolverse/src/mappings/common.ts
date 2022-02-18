@@ -29,7 +29,8 @@ export function handleTransfer(
 
     let landMetadata: _LandMetadata | null = null;
     let tokenUri: string | null = null;
-    if (collection.id == getCollectionId(SMOL_BRAINS_LAND_ADDRESS)) {
+    const isLand = collection.id == getCollectionId(SMOL_BRAINS_LAND_ADDRESS);
+    if (isLand) {
       // Check for cached Land metadata
       landMetadata = _LandMetadata.load("all");
       if (landMetadata) {
@@ -58,7 +59,7 @@ export function handleTransfer(
       }
 
       // Cache Land metadata
-      if (!landMetadata) {
+      if (isLand && !landMetadata) {
         landMetadata = new _LandMetadata("all");
         landMetadata.description = token.description;
         landMetadata.image = token.image;
