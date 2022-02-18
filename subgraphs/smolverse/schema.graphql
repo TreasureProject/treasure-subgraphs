@@ -30,8 +30,8 @@ type Collection @entity {
   name: String!
   standard: TokenStandard
   baseUri: String
-  tokensCount: BigInt!
-  stakedTokensCount: BigInt!
+  tokensCount: Int!
+  stakedTokensCount: Int!
   tokens: [Token!]! @derivedFrom(field: "collection")
   attributes: [Attribute!] @derivedFrom(field: "collection")
 }

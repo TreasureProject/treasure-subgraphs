@@ -137,7 +137,7 @@ test("staked token claim is completed", () => {
 
   // Assert reward token was created
   const rewardTokenId = `${SMOL_TREASURES_ADDRESS.toHexString()}-0x4`;
-  assert.fieldEquals(TOKEN_ENTITY_TYPE, rewardTokenId, "name", "Gold");
+  assert.fieldEquals(TOKEN_ENTITY_TYPE, rewardTokenId, "name", "Lunar Gold");
 
   // Assert claim was completed
   const claimId = getClaimId(

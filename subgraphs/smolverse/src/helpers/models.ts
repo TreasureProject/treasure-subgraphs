@@ -4,7 +4,6 @@ import { Attribute, Collection, Random, Seeded, Token, User } from "../../genera
 import { getNameForCollection } from "./collections";
 import { TOKEN_STANDARD_ERC721 } from "./constants";
 import { getAttributeId, getCollectionId, getRandomId, getSeededId, getTokenId } from "./ids";
-import { ZERO_BI } from "./number";
 
 export function getOrCreateUser(id: string): User {
   let user = User.load(id);
@@ -56,8 +55,6 @@ export function getOrCreateCollection(address: Address): Collection {
     collection.name = getNameForCollection(address);
     collection.standard = TOKEN_STANDARD_ERC721;
     collection._attributeIds = [];
-    collection.tokensCount = ZERO_BI;
-    collection.tokensCount = ZERO_BI;
     collection.save();
   }
 
@@ -74,7 +71,7 @@ export function getOrCreateToken(collection: Collection, tokenId: BigInt): Token
     token.tokenId = tokenId;
     token.save();
 
-    collection.tokensCount = collection.tokensCount.plus(BigInt.fromI32(1));
+    collection.tokensCount += 1;
     collection.save();
   }
 

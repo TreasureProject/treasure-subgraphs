@@ -10,7 +10,6 @@ import { getCollectionId, getStakedTokenId } from "../helpers/ids";
 import { getIpfsJson } from "../helpers/json";
 import { updateTokenMetadata } from "../helpers/metadata";
 import { getOrCreateCollection, getOrCreateToken, getOrCreateUser } from "../helpers/models";
-import { ONE_BI } from "../helpers/number";
 import { isMint } from "../helpers/utils";
 
 export function handleTransfer(
@@ -73,7 +72,7 @@ export function handleStake(
   stakedToken.stakeTime = stakeTime;
   stakedToken.save();
 
-  collection.stakedTokensCount = collection.stakedTokensCount.plus(ONE_BI);
+  collection.stakedTokensCount += 1;
   collection.save();
 }
 
@@ -99,7 +98,7 @@ export function handleUnstake(address: Address, tokenId: BigInt, location: strin
 
   store.remove("StakedToken", id);
 
-  collection.stakedTokensCount = collection.stakedTokensCount.minus(ONE_BI);
+  collection.stakedTokensCount -= 1;
   collection.save();
 }
 

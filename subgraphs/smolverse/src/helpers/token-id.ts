@@ -7,7 +7,7 @@ export function getTokenName(tokenId: BigInt): string {
     case 1: return "Moon Rock";
     case 2: return "Stardust";
     case 3: return "Comet Shard";
-    case 4: return "Gold";
+    case 4: return "Lunar Gold";
     case 5: return "Alien Relic";
     default:
       log.error("Token name not handled: {}", [id.toString()]);
