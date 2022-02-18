@@ -1,10 +1,7 @@
-import { SMOL_BODIES_PETS_ADDRESS } from "@treasure/constants";
-
-import { BaseURIChanged, Transfer } from "../../generated/Smol Bodies Pets/SmolPets";
-import { SmolPets } from "../../generated/Smol Brains Pets/SmolPets";
-import { SMOL_BODIES_PETS_BASE_URI, SMOL_BRAINS_PETS_BASE_URI } from "../helpers/constants";
-import { getCollectionId } from "../helpers/ids";
+import { BaseURIChanged, SmolBodies, Transfer } from "../../generated/Smol Bodies/SmolBodies";
+import { SMOL_BODIES_BASE_URI } from "../helpers/constants";
 import { getOrCreateCollection } from "../helpers/models";
+
 import { handleTransfer as commonHandleTransfer } from "./common";
 
 export function handleBaseUriChanged(event: BaseURIChanged): void {
@@ -19,13 +16,9 @@ export function handleTransfer(event: Transfer): void {
   
   const collection = getOrCreateCollection(address);
   if (!collection.baseUri) {
-    const contract = SmolPets.bind(address);
+    const contract = SmolBodies.bind(address);
     const baseUriCall = contract.try_baseURI();
-    const defaultBaseUri =
-      collection.id == getCollectionId(SMOL_BODIES_PETS_ADDRESS) ?
-      SMOL_BODIES_PETS_BASE_URI :
-      SMOL_BRAINS_PETS_BASE_URI;
-    collection.baseUri = baseUriCall.reverted ? defaultBaseUri : baseUriCall.value;
+    collection.baseUri = baseUriCall.reverted ? SMOL_BODIES_BASE_URI : baseUriCall.value;
     collection.save();
   }
 
