@@ -1,32 +1,30 @@
 import { Address, ethereum } from "@graphprotocol/graph-ts";
-import { SMOL_BODIES_PETS_ADDRESS } from "@treasure/constants";
-import { assert, clearStore, createMockedFunction, test } from "matchstick-as/assembly/index";
+import { SMOL_BODIES_ADDRESS } from "@treasure/constants";
+import { assert, clearStore, createMockedFunction, test } from "matchstick-as";
 
-import { createBaseUriChangedEvent, createTransferEvent } from "./utils";
-import { handleBaseUriChanged, handleTransfer } from "../../src/mappings/smol-pets";
+import { handleBaseUriChanged, handleTransfer } from "../../src/mappings/smol-bodies";
 import { COLLECTION_ENTITY_TYPE, TOKEN_ENTITY_TYPE, USER_ADDRESS } from "../utils";
+import { createBaseUriChangedEvent, createTransferEvent } from "./utils";
 
-createMockedFunction(SMOL_BODIES_PETS_ADDRESS, "baseURI", "baseURI():(string)")
+createMockedFunction(SMOL_BODIES_ADDRESS, "baseURI", "baseURI():(string)")
   .returns([ethereum.Value.fromString("test")]);
 
 test("collection base uri is changed", () => {
   clearStore();
 
-  const baseUri = "ipfs://QmdEC7rjy2WZaTQSXtFtMEN2AvS8ARFvnMhRDcFHvhaohH/";
+  const baseUri = "https://treasure-marketplace.mypinata.cloud/ipfs/Qmbt6W9QB74VZzJfWbqG7vi2hiE2K4AnoyvWGFDHEjgoqN/";
   const baseUriChangedEvent = createBaseUriChangedEvent("", baseUri);
 
   handleBaseUriChanged(baseUriChangedEvent);
   
-  // Assert collection base URI is updated
   assert.fieldEquals(COLLECTION_ENTITY_TYPE, baseUriChangedEvent.address.toHexString(), "baseUri", baseUri);
 });
 
 test("token is minted", () => {
   clearStore();
 
-  const address = SMOL_BODIES_PETS_ADDRESS.toHexString();
+  const address = SMOL_BODIES_ADDRESS.toHexString();
   const transferEvent = createTransferEvent(
-    address,
     Address.zero().toHexString(),
     USER_ADDRESS,
     1

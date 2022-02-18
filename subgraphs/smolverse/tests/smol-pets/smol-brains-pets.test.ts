@@ -1,18 +1,18 @@
 import { Address, ethereum } from "@graphprotocol/graph-ts";
-import { SMOL_BODIES_PETS_ADDRESS } from "@treasure/constants";
+import { SMOL_BRAINS_PETS_ADDRESS } from "@treasure/constants";
 import { assert, clearStore, createMockedFunction, test } from "matchstick-as/assembly/index";
 
 import { createBaseUriChangedEvent, createTransferEvent } from "./utils";
 import { handleBaseUriChanged, handleTransfer } from "../../src/mappings/smol-pets";
 import { COLLECTION_ENTITY_TYPE, TOKEN_ENTITY_TYPE, USER_ADDRESS } from "../utils";
 
-createMockedFunction(SMOL_BODIES_PETS_ADDRESS, "baseURI", "baseURI():(string)")
+createMockedFunction(SMOL_BRAINS_PETS_ADDRESS, "baseURI", "baseURI():(string)")
   .returns([ethereum.Value.fromString("test")]);
 
 test("collection base uri is changed", () => {
   clearStore();
 
-  const baseUri = "ipfs://QmdEC7rjy2WZaTQSXtFtMEN2AvS8ARFvnMhRDcFHvhaohH/";
+  const baseUri = "ipfs://QmbZDMgiMYquBZvcJjDhBAeHajftLxMMP4z63VxpL58yJw/";
   const baseUriChangedEvent = createBaseUriChangedEvent("", baseUri);
 
   handleBaseUriChanged(baseUriChangedEvent);
@@ -24,7 +24,7 @@ test("collection base uri is changed", () => {
 test("token is minted", () => {
   clearStore();
 
-  const address = SMOL_BODIES_PETS_ADDRESS.toHexString();
+  const address = SMOL_BRAINS_PETS_ADDRESS.toHexString();
   const transferEvent = createTransferEvent(
     address,
     Address.zero().toHexString(),

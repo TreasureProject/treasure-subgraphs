@@ -27,12 +27,11 @@ type Collection @entity {
   "Internal for tracking attributes for a collection"
   _attributeIds: [String!]!
 
-  "Internal for tracking tokenIds minted for a collection"
-  _tokenIds: [String!]!
-
   name: String!
   standard: TokenStandard
   baseUri: String
+  tokensCount: Int!
+  stakedTokensCount: Int!
   tokens: [Token!]! @derivedFrom(field: "collection")
   attributes: [Attribute!] @derivedFrom(field: "collection")
 }
@@ -59,7 +58,6 @@ type Token @entity {
   description: String
   image: String
   owner: User
-  stakedTokens: [StakedToken!] @derivedFrom(field: "token")
 }
 
 type StakedToken @entity {
