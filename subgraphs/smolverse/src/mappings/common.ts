@@ -6,6 +6,7 @@ import {
 } from "@treasure/constants";
 
 import { Collection, StakedToken, _LandMetadata } from "../../generated/schema";
+import { SMOL_BRAINS_BASE_URI } from "../helpers/constants";
 import { getCollectionId, getStakedTokenId } from "../helpers/ids";
 import { getIpfsJson } from "../helpers/json";
 import { updateTokenMetadata } from "../helpers/metadata";
@@ -36,16 +37,17 @@ export function handleTransfer(
         token.image = landMetadata.image;
         token.attributes = landMetadata.attributes;
       } else {
-        tokenUri = `${collection.baseUri}0`;
+        tokenUri = `${SMOL_BRAINS_BASE_URI}0`;
       }
     } else if (collection.baseUri && collection.baseUri != "test") { // TODO: remove hack when Matchstick supports ipfs
+      const baseUri = collection.baseUri as string;
       if (
         collection.id == getCollectionId(SMOL_BRAINS_PETS_ADDRESS) ||
         collection.id == getCollectionId(SMOL_BODIES_PETS_ADDRESS)
       ) {
-        tokenUri = `${collection.baseUri}${tokenIdString}.json`;
+        tokenUri = `${baseUri}${tokenIdString}.json`;
       } else {
-        tokenUri = `${collection.baseUri}${tokenIdString}/0`;
+        tokenUri = `${baseUri}${tokenIdString}/0`;
       }
     }
 
