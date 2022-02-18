@@ -69,6 +69,11 @@ type LegionStat @entity {
 
   "Number of Summons that have resulted in the creation of this Legion type"
   summonedCount: Int!
+
+  craftsStarted: Int!
+  craftsFinished: Int!
+  craftsSucceeded: Int!
+  craftsFailed: Int!
 }
 
 type AtlasMineLockStat @entity {

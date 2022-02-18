@@ -1,18 +1,17 @@
 import * as craftingLegacy from "../../generated/Crafting Legacy/Crafting";
-import { Address, BigInt, log, store } from "@graphprotocol/graph-ts";
-import {
-  CONSUMABLE_ADDRESS,
-  LEGION_ADDRESS,
-  TREASURE_ADDRESS,
-} from "@treasure/constants";
+import { Address, BigInt, log } from "@graphprotocol/graph-ts";
 
 import {
   CraftingFinished,
   CraftingRevealed,
   CraftingStarted,
 } from "../../generated/Crafting/Crafting";
-import { getOrCreateUser, getTimeIntervalCraftingStats } from "../helpers/models";
-import { ZERO_BI } from "../helpers/constants";
+import {
+  getLegion,
+  getOrCreateLegionStat,
+  getOrCreateUser,
+  getTimeIntervalCraftingStats
+} from "../helpers/models";
 import { etherToWei } from "../helpers/number";
 
 function handleCraftingStarted(
@@ -23,6 +22,11 @@ function handleCraftingStarted(
   const user = getOrCreateUser(userAddress);
   user.craftsStarted += 1;
   user.save();
+
+  const legion = getLegion(tokenId);
+  if (!legion) {
+    log.error("Legion not found: {}", [tokenId.toString()]);
+  }
 
   const stats = getTimeIntervalCraftingStats(timestamp);
   for (let i = 0; i < stats.length; i++) {
@@ -36,6 +40,15 @@ function handleCraftingStarted(
     if (!stat._allAddresses.includes(user.id)) {
       stat._allAddresses = stat._allAddresses.concat([user.id]);
       stat.allAddressesCount = stat._allAddresses.length;
+    }
+
+    if (legion) {
+      const legionStat = getOrCreateLegionStat(stat.id, legion);
+      legionStat.startTimestamp = stat.startTimestamp;
+      legionStat.endTimestamp = stat.endTimestamp;
+      legionStat.craftingStat = stat.id;
+      legionStat.craftsStarted += 1;
+      legionStat.save();
     }
 
     stat.save();
@@ -82,6 +95,11 @@ export function handleCraftingRevealed(event: CraftingRevealed): void {
   user.brokenTreasuresCount += brokenTreasuresCount;
   user.save();
 
+  const legion = getLegion(params._tokenId);
+  if (!legion) {
+    log.error("Legion not found: {}", [params._tokenId.toString()]);
+  }
+
   const stats = getTimeIntervalCraftingStats(event.block.timestamp);
   for (let i = 0; i < stats.length; i++) {
     const stat = stats[i];
@@ -91,6 +109,15 @@ export function handleCraftingRevealed(event: CraftingRevealed): void {
     stat.craftsFailed += wasSuccessful ? 0 : 1;
     stat.brokenTreasuresCount += brokenTreasuresCount;
     stat.save();
+
+    if (legion) {
+      const legionStat = getOrCreateLegionStat(stat.id, legion);
+      legionStat.startTimestamp = stat.startTimestamp;
+      legionStat.endTimestamp = stat.endTimestamp;
+      legionStat.craftsSucceeded += wasSuccessful ? 1 : 0;
+      legionStat.craftsFailed += wasSuccessful ? 0 : 1;
+      legionStat.save();
+    }
   }
 }
 
@@ -101,6 +128,11 @@ export function handleCraftingFinished(event: CraftingFinished): void {
   user.craftsFinished += 1;
   user.save();
   const isUserCrafting = user.craftsStarted > user.craftsFinished;
+
+  const legion = getLegion(params._tokenId);
+  if (!legion) {
+    log.error("Legion not found: {}", [params._tokenId.toString()]);
+  }
 
   const stats = getTimeIntervalCraftingStats(event.block.timestamp);
   for (let i = 0; i < stats.length; i++) {
@@ -116,5 +148,13 @@ export function handleCraftingFinished(event: CraftingFinished): void {
       }
     }
     stat.save();
+
+    if (legion) {
+      const legionStat = getOrCreateLegionStat(stat.id, legion);
+      legionStat.startTimestamp = stat.startTimestamp;
+      legionStat.endTimestamp = stat.endTimestamp;
+      legionStat.craftsFinished += 1;
+      legionStat.save();
+    }
   }
 }

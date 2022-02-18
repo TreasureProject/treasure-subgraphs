@@ -43,11 +43,6 @@ export function handleSummoningStarted(event: SummoningStarted): void {
       stat.magicSpent = stat.magicSpent.plus(summonCost);
 
       const legionStat = getOrCreateLegionStat(stat.id, legion);
-      if (!legionStat) {
-        log.error("Legion not found: {}", [params._tokenId.toString()]);
-        continue;
-      }
-
       legionStat.startTimestamp = stat.startTimestamp;
       legionStat.endTimestamp = stat.endTimestamp;
       legionStat.summoningStat = stat.id;

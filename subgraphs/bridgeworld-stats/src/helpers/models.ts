@@ -377,6 +377,10 @@ export function getOrCreateLegionStat(statId: string, legion: Legion): LegionSta
     stat.summonsStarted = 0;
     stat.summonsFinished = 0;
     stat.summonedCount = 0;
+    stat.craftsStarted = 0;
+    stat.craftsFinished = 0;
+    stat.craftsSucceeded = 0;
+    stat.craftsFailed = 0;
     stat.save();
   }
 
