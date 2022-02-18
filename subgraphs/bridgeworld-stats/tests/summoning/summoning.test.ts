@@ -85,7 +85,7 @@ test("summoning stats count summons started", () => {
   assert.fieldEquals(SUMMONING_STAT_ENTITY_TYPE, "202201-monthly", "summonsStarted", "1");
   assert.fieldEquals(SUMMONING_STAT_ENTITY_TYPE, "202201-monthly", "activeAddressesCount", "1");
 
-  // Assert yearly interval contains both deposits
+  // Assert yearly interval contains both
   assert.fieldEquals(SUMMONING_STAT_ENTITY_TYPE, "2022-yearly", "magicSpent", "600000000000000000000");
   assert.fieldEquals(SUMMONING_STAT_ENTITY_TYPE, "2022-yearly", "summonsStarted", "2");
   assert.fieldEquals(SUMMONING_STAT_ENTITY_TYPE, "2022-yearly", "activeAddressesCount", "2");

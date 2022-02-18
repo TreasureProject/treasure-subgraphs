@@ -30,6 +30,11 @@ type User @entity {
   magicDeposited: BigInt!
   magicWithdrawn: BigInt!
   magicHarvested: BigInt!
+  craftsStarted: Int!
+  craftsFinished: Int!
+  craftsSucceeded: Int!
+  craftsFailed: Int!
+  brokenTreasuresCount: Int!
   summonsStarted: Int!
   summonsFinished: Int!
 }
@@ -116,6 +121,34 @@ type SummoningStat @entity {
   allAddressesCount: Int!
 
   legionStats: [SummoningLegionStat!]! @derivedFrom(field: "summoningStat")
+}
+
+type CraftingStat @entity {
+  id: ID!
+
+  "Internal for tracking active unique addresses"
+  _activeAddresses: [String!]!
+
+  "Internal for tracking all unique addresses"
+  _allAddresses: [String!]!
+
+  startTimestamp: BigInt
+  endTimestamp: BigInt
+  interval: Interval!
+
+  magicConsumed: BigInt!
+  magicReturned: BigInt!
+  craftsStarted: Int!
+  craftsFinished: Int!
+  craftsSucceeded: Int!
+  craftsFailed: Int!
+  brokenTreasuresCount: Int!
+
+  "Number of unique addresses actively crafting throughout time period"
+  activeAddressesCount: Int!
+
+  "Number of unique addresses that have crafted at any point"
+  allAddressesCount: Int!
 }
 
 type SummoningLegionStat @entity {

@@ -1,7 +1,7 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts";
 
-import { AtlasMineLockStat, AtlasMineStat, Legion, SummoningLegionStat, SummoningStat, User } from "../../generated/schema";
-import { LEGION_GENERATIONS, LEGION_RARITIES } from "./constants";
+import { AtlasMineLockStat, AtlasMineStat, CraftingStat, Legion, SummoningLegionStat, SummoningStat, User } from "../../generated/schema";
+import { LEGION_GENERATIONS, LEGION_RARITIES, ZERO_BI } from "./constants";
 import {
   getDaysInMonth,
   getDaysInYear,
@@ -32,11 +32,16 @@ export function getOrCreateUser(address: Address): User {
     user.magicDepositCount = 0;
     user.magicWithdrawCount = 0;
     user.magicHarvestCount = 0;
-    user.magicDeposited = BigInt.fromI32(0);
-    user.magicWithdrawn = BigInt.fromI32(0);
-    user.magicHarvested = BigInt.fromI32(0);
+    user.magicDeposited = ZERO_BI;
+    user.magicWithdrawn = ZERO_BI;
+    user.magicHarvested = ZERO_BI;
     user.summonsStarted = 0;
     user.summonsFinished = 0;
+    user.craftsStarted = 0;
+    user.craftsFinished = 0;
+    user.craftsSucceeded = 0;
+    user.craftsFailed = 0;
+    user.brokenTreasuresCount = 0;
     user.save();
   }
 
@@ -94,7 +99,7 @@ export function getLegionSummonCost(generation: string): BigInt {
     return etherToWei(300);
   }
 
-  return BigInt.fromI32(0);
+  return ZERO_BI;
 }
 
 export function getTimeIntervalAtlasMineStats(eventTimestamp: BigInt): AtlasMineStat[] {
@@ -171,9 +176,9 @@ export function createAtlasMineStat(id: string): AtlasMineStat {
   stat.magicDepositCount = 0;
   stat.magicWithdrawCount = 0;
   stat.magicHarvestCount = 0;
-  stat.magicDeposited = BigInt.fromI32(0);
-  stat.magicWithdrawn = BigInt.fromI32(0);
-  stat.magicHarvested = BigInt.fromI32(0);
+  stat.magicDeposited = ZERO_BI;
+  stat.magicWithdrawn = ZERO_BI;
+  stat.magicHarvested = ZERO_BI;
   stat.save();
   return stat;
 }
@@ -186,11 +191,92 @@ export function getOrCreateAtlasMineLockStat(atlasMineStatId: string, lock: i32)
     lockStat.atlasMineStat = atlasMineStatId;
     lockStat.lock = lock;
     lockStat.magicDepositCount = 0;
-    lockStat.magicDeposited = BigInt.fromI32(0);
+    lockStat.magicDeposited = ZERO_BI;
     lockStat.save();
   }
 
   return lockStat;
+}
+
+export function getTimeIntervalCraftingStats(eventTimestamp: BigInt): CraftingStat[] {
+  const timestamp = eventTimestamp.toI64() * 1000;
+  const date = new Date(timestamp);
+  const month = date.getUTCMonth();
+  const year = date.getUTCFullYear();
+
+  // Hourly
+  const hourlyId = getHourlyId(timestamp);
+  const hourlyStat = (CraftingStat.load(hourlyId) || createCraftingStat(hourlyId)) as CraftingStat;
+  const startOfHour = getStartOfHour(timestamp);
+  hourlyStat.interval = "Hourly";
+  hourlyStat.startTimestamp = BigInt.fromI64(startOfHour);
+  hourlyStat.endTimestamp = BigInt.fromI64(startOfHour + SECONDS_IN_HOUR - 1);
+  hourlyStat.save();
+
+  // Daily
+  const dailyId = getDailyId(timestamp);
+  const dailyStat = (CraftingStat.load(dailyId) || createCraftingStat(dailyId)) as CraftingStat;
+  const startOfDay = getStartOfDay(timestamp);
+  dailyStat.interval = "Daily";
+  dailyStat.startTimestamp = BigInt.fromI64(startOfDay);
+  dailyStat.endTimestamp = BigInt.fromI64(startOfDay + SECONDS_IN_DAY - 1);
+  dailyStat.save();
+
+  // Weekly
+  const weeklyId = getWeeklyId(timestamp);
+  const weeklyStat = (CraftingStat.load(weeklyId) || createCraftingStat(weeklyId)) as CraftingStat;
+  const startOfWeek = getStartOfWeek(timestamp);
+  weeklyStat.interval = "Weekly";
+  weeklyStat.startTimestamp = BigInt.fromI64(startOfWeek);
+  weeklyStat.endTimestamp = BigInt.fromI64(startOfWeek + (SECONDS_IN_DAY * 7) - 1);
+  weeklyStat.save();
+
+  // Monthly
+  const monthlyId = getMonthlyId(timestamp);
+  const monthlyStat = (CraftingStat.load(monthlyId) || createCraftingStat(monthlyId)) as CraftingStat;
+  const startOfMonth = getStartOfMonth(timestamp);
+  monthlyStat.interval = "Monthly";
+  monthlyStat.startTimestamp = BigInt.fromI64(startOfMonth);
+  monthlyStat.endTimestamp = BigInt.fromI64(startOfMonth + (SECONDS_IN_DAY * getDaysInMonth(month, year)) - 1);
+  monthlyStat.save();
+
+  // Yearly
+  const yearlyId = getYearlyId(timestamp);
+  const yearlyStat = (CraftingStat.load(yearlyId) || createCraftingStat(yearlyId)) as CraftingStat;
+  const startOfYear = getStartOfYear(timestamp);
+  yearlyStat.interval = "Yearly";
+  yearlyStat.startTimestamp = BigInt.fromI64(startOfYear);
+  yearlyStat.endTimestamp = BigInt.fromI64(startOfYear + (SECONDS_IN_DAY * getDaysInYear(year)) - 1);
+  yearlyStat.save();
+
+  // All-time
+  const allTimeId = getAllTimeId();
+  const allTimeStat = (CraftingStat.load(allTimeId) || createCraftingStat(allTimeId)) as CraftingStat;
+  allTimeStat.interval = "AllTime";
+  allTimeStat.save();
+
+  return [
+    hourlyStat,
+    dailyStat,
+    weeklyStat,
+    monthlyStat,
+    yearlyStat,
+    allTimeStat
+  ];
+}
+
+export function createCraftingStat(id: string): CraftingStat {
+  const stat = new CraftingStat(id);
+  stat._activeAddresses = [];
+  stat._allAddresses = [];
+  stat.magicConsumed = ZERO_BI;
+  stat.magicReturned = ZERO_BI;
+  stat.craftsStarted = 0;
+  stat.craftsFinished = 0;
+  stat.craftsSucceeded = 0;
+  stat.craftsFailed = 0;
+  stat.save();
+  return stat;
 }
 
 export function getTimeIntervalSummoningStats(eventTimestamp: BigInt): SummoningStat[] {
@@ -264,7 +350,7 @@ export function createSummoningStat(id: string): SummoningStat {
   const stat = new SummoningStat(id);
   stat._activeAddresses = [];
   stat._allAddresses = [];
-  stat.magicSpent = BigInt.fromI32(0);
+  stat.magicSpent = ZERO_BI;
   stat.summonsStarted = 0;
   stat.summonsFinished = 0;
   stat.save();
@@ -280,7 +366,7 @@ export function getOrCreateSummoningLegionStat(summoningStatId: string, legion: 
     stat.generation = legion.generation;
     stat.rarity = legion.rarity;
     stat.name = legion.name;
-    stat.magicSpent = BigInt.fromI32(0);
+    stat.magicSpent = ZERO_BI;
     stat.summonsStarted = 0;
     stat.summonsFinished = 0;
     stat.summonedCount = 0;
