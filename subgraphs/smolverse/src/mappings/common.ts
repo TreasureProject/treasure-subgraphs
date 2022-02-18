@@ -5,7 +5,7 @@ import {
   SMOL_BRAINS_PETS_ADDRESS
 } from "@treasure/constants";
 
-import { Collection, StakedToken } from "../../generated/schema";
+import { Collection, StakedToken, _LandMetadata } from "../../generated/schema";
 import { getCollectionId, getStakedTokenId } from "../helpers/ids";
 import { getIpfsJson } from "../helpers/json";
 import { updateTokenMetadata } from "../helpers/metadata";
@@ -26,22 +26,42 @@ export function handleTransfer(
     const tokenIdString = tokenId.toString();
     token.name = `${collection.name} #${tokenIdString}`;
 
-    if (collection.baseUri && collection.baseUri != "test") { // TODO: remove hack when Matchstick supports ipfs
-      let tokenUri = collection.baseUri as string;
-      if (collection.id == getCollectionId(SMOL_BRAINS_LAND_ADDRESS)) {
-        tokenUri += "24";
-      } else if (
+    let landMetadata: _LandMetadata | null = null;
+    let tokenUri: string | null = null;
+    if (collection.id == getCollectionId(SMOL_BRAINS_LAND_ADDRESS)) {
+      // Check for cached Land metadata
+      landMetadata = _LandMetadata.load("all");
+      if (landMetadata) {
+        token.description = landMetadata.description;
+        token.image = landMetadata.image;
+        token.attributes = landMetadata.attributes;
+      } else {
+        tokenUri = `${collection.baseUri}0`;
+      }
+    } else if (collection.baseUri && collection.baseUri != "test") { // TODO: remove hack when Matchstick supports ipfs
+      if (
         collection.id == getCollectionId(SMOL_BRAINS_PETS_ADDRESS) ||
         collection.id == getCollectionId(SMOL_BODIES_PETS_ADDRESS)
       ) {
-        tokenUri += `${tokenIdString}.json`;
+        tokenUri = `${collection.baseUri}${tokenIdString}.json`;
       } else {
-        tokenUri += `${tokenIdString}/0`;
+        tokenUri = `${collection.baseUri}${tokenIdString}/0`;
       }
+    }
 
+    if (tokenUri) {
       const data = getIpfsJson(tokenUri);
       if (data) {
         updateTokenMetadata(token, data);
+      }
+
+      // Cache Land metadata
+      if (!landMetadata) {
+        landMetadata = new _LandMetadata("all");
+        landMetadata.description = token.description;
+        landMetadata.image = token.image;
+        landMetadata.attributes = token.attributes;
+        landMetadata.save();
       }
     }
   }

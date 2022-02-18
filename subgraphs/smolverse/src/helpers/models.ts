@@ -1,9 +1,11 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts";
+import { SMOL_TREASURES_ADDRESS } from "@treasure/constants";
 
 import { Attribute, Collection, Random, Seeded, Token, User } from "../../generated/schema";
 import { getNameForCollection } from "./collections";
-import { TOKEN_STANDARD_ERC721 } from "./constants";
+import { SMOL_TREASURES_COLLECTION_NAME, SMOL_TREASURES_IMAGES_BASE_URI, TOKEN_STANDARD_ERC721 } from "./constants";
 import { getAttributeId, getCollectionId, getRandomId, getSeededId, getTokenId } from "./ids";
+import { getTreasureTokenName } from "./treasures";
 
 export function getOrCreateUser(id: string): User {
   let user = User.load(id);
@@ -69,6 +71,27 @@ export function getOrCreateToken(collection: Collection, tokenId: BigInt): Token
     token = new Token(id);
     token.collection = collection.id;
     token.tokenId = tokenId;
+    token.save();
+
+    collection.tokensCount += 1;
+    collection.save();
+  }
+
+  return token;
+}
+
+export function getOrCreateFarmRewardToken(tokenId: BigInt): Token {
+  const collection = getOrCreateCollection(SMOL_TREASURES_ADDRESS);
+  const id = getTokenId(collection, tokenId);
+  let token = Token.load(id);
+
+  if (!token) {
+    token = new Token(id);
+    token.collection = collection.id;
+    token.tokenId = tokenId;
+    token.name = getTreasureTokenName(tokenId);
+    token.description = SMOL_TREASURES_COLLECTION_NAME;
+    token.image = `${SMOL_TREASURES_IMAGES_BASE_URI}${tokenId.toString()}.gif`;
     token.save();
 
     collection.tokensCount += 1;

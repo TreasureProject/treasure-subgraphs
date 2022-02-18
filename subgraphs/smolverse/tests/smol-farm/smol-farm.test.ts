@@ -129,15 +129,16 @@ test("staked token claim is completed", () => {
   const startClaimingEvent = createStartClaimingEvent(USER_ADDRESS, tokenId, requestId);
   handleStartClaiming(startClaimingEvent);
 
-  const rewardClaimedEvent = createRewardClaimedEvent(USER_ADDRESS, tokenId, 4);
+  const rewardClaimedEvent = createRewardClaimedEvent(USER_ADDRESS, tokenId, 3);
   handleRewardClaimed(rewardClaimedEvent);
 
   // Assert reward token collection was created
   assert.fieldEquals(COLLECTION_ENTITY_TYPE, SMOL_TREASURES_ADDRESS.toHexString(), "name", "Smol Treasures");
 
   // Assert reward token was created
-  const rewardTokenId = `${SMOL_TREASURES_ADDRESS.toHexString()}-0x4`;
+  const rewardTokenId = `${SMOL_TREASURES_ADDRESS.toHexString()}-0x3`;
   assert.fieldEquals(TOKEN_ENTITY_TYPE, rewardTokenId, "name", "Lunar Gold");
+  assert.fieldEquals(TOKEN_ENTITY_TYPE, rewardTokenId, "image", "https://gateway.pinata.cloud/ipfs/QmZK1i4y7qn7Fi7mEMgT4KZcb1Etb12yndcTZ5dnhigDPt/3.gif");
 
   // Assert claim was completed
   const claimId = getClaimId(

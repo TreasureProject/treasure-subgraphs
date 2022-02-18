@@ -49,6 +49,14 @@ type Attribute @entity {
   tokens: [Token!]! @derivedFrom(field: "attributes")
 }
 
+type _LandMetadata @entity {
+  id: ID!
+  name: String!
+  attributes: [Attribute!]
+  description: String
+  image: String
+}
+
 type Token @entity {
   id: ID!
   collection: Collection!

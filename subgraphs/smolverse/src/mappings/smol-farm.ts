@@ -5,8 +5,7 @@ import { Claim, Random, StakedToken } from "../../generated/schema";
 import { RewardClaimed, SmolStaked, SmolUnstaked, StartClaiming } from "../../generated/Smol Farm/SmolFarm";
 import { LOCATION_FARM } from "../helpers/constants";
 import { getCollectionId, getRandomId, getStakedTokenId } from "../helpers/ids";
-import { getOrCreateCollection, getOrCreateToken } from "../helpers/models";
-import { getTokenName } from "../helpers/token-id";
+import { getOrCreateCollection, getOrCreateFarmRewardToken, getOrCreateToken } from "../helpers/models";
 import { handleStake, handleUnstake } from "./common";
 
 export function handleSmolStaked(event: SmolStaked): void {
@@ -91,11 +90,7 @@ export function handleRewardClaimed(event: RewardClaimed): void {
     return;
   }
 
-  const collection = getOrCreateCollection(SMOL_TREASURES_ADDRESS);
-  const reward = getOrCreateToken(collection, params._claimedRewardId);
-  reward.name = getTokenName(params._claimedRewardId);
-  reward.save();
-
+  const reward = getOrCreateFarmRewardToken(params._claimedRewardId);
   claim.status = "Claimed";
   claim.reward = reward.id;
   claim.save();

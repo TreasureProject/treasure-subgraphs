@@ -1,4 +1,4 @@
-import { SmolBrainsLand, Transfer } from "../../generated/Smol Brains Land/SmolBrainsLand";
+import { Transfer } from "../../generated/Smol Brains Land/SmolBrainsLand";
 import { SMOL_BRAINS_LAND_BASE_URI } from "../helpers/constants";
 import { getOrCreateCollection } from "../helpers/models";
 
@@ -10,9 +10,7 @@ export function handleTransfer(event: Transfer): void {
   
   const collection = getOrCreateCollection(address);
   if (!collection.baseUri) {
-    const contract = SmolBrainsLand.bind(address);
-    const baseUriCall = contract.try_baseURI();
-    collection.baseUri = baseUriCall.reverted ? SMOL_BRAINS_LAND_BASE_URI : baseUriCall.value;
+    collection.baseUri = SMOL_BRAINS_LAND_BASE_URI;
     collection.save();
   }
 
