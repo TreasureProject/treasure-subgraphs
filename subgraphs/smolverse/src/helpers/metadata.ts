@@ -21,7 +21,7 @@ ATTRIBUTE_PERCENTAGE_THRESHOLDS.set(SMOL_BRAINS_LAND_ADDRESS.toHexString(), 4_22
 const shouldUpdateAttributePercentages = (collection: Collection): boolean => {
   const threshold = ATTRIBUTE_PERCENTAGE_THRESHOLDS.getEntry(collection.id);
   const thresholdValue = threshold ? threshold.value : 0;
-  return collection._tokenIds.length >= thresholdValue;
+  return collection.tokensCount.toI32() >= thresholdValue;
 };
 
 export function updateAttributePercentages(collection: Collection): void {
@@ -31,7 +31,7 @@ export function updateAttributePercentages(collection: Collection): void {
   }
 
   const attributeIds = collection._attributeIds;
-  const totalTokens = collection._tokenIds.length;
+  const totalTokens = collection.tokensCount.toI32();
   const totalAttributes = attributeIds.length;
   for (let i = 0; i < totalAttributes; i++) {
     const attribute = Attribute.load(attributeIds[i]);
