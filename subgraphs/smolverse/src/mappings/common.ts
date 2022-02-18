@@ -71,11 +71,15 @@ export function handleStake(
   stakedToken.owner = owner.id;
   stakedToken.stakeTime = stakeTime;
   stakedToken.save();
+
+  collection.stakedTokensCount += 1;
+  collection.save();
 }
 
 export function handleUnstake(address: Address, tokenId: BigInt, location: string): void {
+  const collection = getOrCreateCollection(address);
   const id = getStakedTokenId(
-    getCollectionId(address),
+    collection.id,
     tokenId,
     location
   );
@@ -93,5 +97,8 @@ export function handleUnstake(address: Address, tokenId: BigInt, location: strin
   }
 
   store.remove("StakedToken", id);
+
+  collection.stakedTokensCount -= 1;
+  collection.save();
 }
 

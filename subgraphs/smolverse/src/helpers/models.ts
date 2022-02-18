@@ -36,7 +36,11 @@ export function getOrCreateAttribute(
     collection.save();
   }
 
-  attribute._tokenIds = attribute._tokenIds.concat([token.tokenId.toString()]);
+  const tokenIdString = token.tokenId.toString();
+  if (!attribute._tokenIds.includes(tokenIdString)) {
+    attribute._tokenIds = attribute._tokenIds.concat([tokenIdString]);
+  }
+
   attribute.save();
 
   return attribute;
@@ -51,7 +55,6 @@ export function getOrCreateCollection(address: Address): Collection {
     collection.name = getNameForCollection(address);
     collection.standard = TOKEN_STANDARD_ERC721;
     collection._attributeIds = [];
-    collection._tokenIds = [];
     collection.save();
   }
 
@@ -68,7 +71,7 @@ export function getOrCreateToken(collection: Collection, tokenId: BigInt): Token
     token.tokenId = tokenId;
     token.save();
 
-    collection._tokenIds = collection._tokenIds.concat([tokenId.toString()]);
+    collection.tokensCount += 1;
     collection.save();
   }
 
