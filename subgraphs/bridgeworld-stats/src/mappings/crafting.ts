@@ -12,6 +12,8 @@ import {
   CraftingStarted,
 } from "../../generated/Crafting/Crafting";
 import { getOrCreateUser, getTimeIntervalCraftingStats } from "../helpers/models";
+import { ZERO_BI } from "../helpers/constants";
+import { etherToWei } from "../helpers/number";
 
 function handleCraftingStarted(
   timestamp: BigInt,
@@ -62,65 +64,35 @@ export function handleCraftingStartedWithoutDifficulty(
   );
 }
 
-// export function handleCraftingRevealed(event: CraftingRevealed): void {
-//   let params = event.params;
-//   let result = params._outcome;
-//   let tokenId = params._tokenId;
-//   let id = getAddressId(event.address, tokenId);
+export function handleCraftingRevealed(event: CraftingRevealed): void {
+  const params = event.params;
 
-//   let craft = Craft.load(id);
+  const result = params._outcome;
+  const wasSuccessful = result.wasSuccessful;
+  const brokenAmounts = result.brokenAmounts;
 
-//   if (!craft) {
-//     log.error("[craft-revealed] Unknown craft: {}", [id]);
+  let brokenTreasuresCount = 0;
+  for (let i = 0; i < brokenAmounts.length; i++) {
+    brokenTreasuresCount += brokenAmounts[i].toI32();
+  }
 
-//     return;
-//   }
+  const user = getOrCreateUser(params._owner);
+  user.craftsSucceeded += wasSuccessful ? 1 : 0;
+  user.craftsFailed += wasSuccessful ? 0 : 1;
+  user.brokenTreasuresCount += brokenTreasuresCount;
+  user.save();
 
-//   let craftId = `${id}-${craft.random}`;
-//   let amounts = result.brokenAmounts;
-//   let treasures = result.brokenTreasureIds;
-
-//   for (let index = 0; index < amounts.length; index++) {
-//     let amount = amounts[index];
-//     let treasure = treasures[index];
-
-//     if (amount.isZero() || treasure.isZero()) {
-//       continue;
-//     }
-
-//     let broken = new Broken(`${craftId}-${treasure.toHexString()}`);
-
-//     broken.outcome = craftId;
-//     broken.quantity = amount;
-//     broken.token = getAddressId(TREASURE_ADDRESS, treasure);
-
-//     broken.save();
-//   }
-
-//   let outcome = new Outcome(craftId);
-
-//   outcome.magicReturned = result.magicReturned;
-//   outcome.rewardAmount = result.rewardAmount;
-//   outcome.reward = getAddressId(CONSUMABLE_ADDRESS, result.rewardId);
-//   outcome.success = result.wasSuccessful;
-
-//   outcome.save();
-
-//   // Increase Xp if successfull
-//   if (outcome.success == true) {
-//     let metadata = LegionInfo.load(`${craft.token}-metadata`);
-
-//     if (metadata && metadata.crafting != 6) {
-//       metadata.craftingXp += getXpPerLevel(metadata.crafting);
-//       metadata.save();
-//     }
-//   }
-
-//   craft.outcome = outcome.id;
-//   craft.status = "Revealed";
-
-//   craft.save();
-// }
+  const stats = getTimeIntervalCraftingStats(event.block.timestamp);
+  for (let i = 0; i < stats.length; i++) {
+    const stat = stats[i];
+    stat.magicConsumed = etherToWei(5).minus(result.magicReturned);
+    stat.magicReturned = stat.magicReturned.plus(result.magicReturned);
+    stat.craftsSucceeded += wasSuccessful ? 1 : 0;
+    stat.craftsFailed += wasSuccessful ? 0 : 1;
+    stat.brokenTreasuresCount += brokenTreasuresCount;
+    stat.save();
+  }
+}
 
 export function handleCraftingFinished(event: CraftingFinished): void {
   const params = event.params;

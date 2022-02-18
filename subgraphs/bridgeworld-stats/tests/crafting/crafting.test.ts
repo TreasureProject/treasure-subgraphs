@@ -1,9 +1,23 @@
 import { Address } from "@graphprotocol/graph-ts";
 import { assert, clearStore, test } from "matchstick-as";
 
-import { handleCraftingFinished, handleCraftingStartedWithDifficulty } from "../../src/mappings/crafting";
-import { CRAFTING_STAT_ENTITY_TYPE, USER_ADDRESS, USER_ENTITY_TYPE } from "../utils";
-import { createCraftingFinishedEvent, createCraftingStartedEvent } from "./utils";
+import { ZERO_BI } from "../../src/helpers/constants";
+import { etherToWei } from "../../src/helpers/number";
+import {
+  handleCraftingFinished,
+  handleCraftingRevealed,
+  handleCraftingStartedWithDifficulty
+} from "../../src/mappings/crafting";
+import {
+  CRAFTING_STAT_ENTITY_TYPE,
+  USER_ADDRESS,
+  USER_ENTITY_TYPE
+} from "../utils";
+import {
+  createCraftingFinishedEvent,
+  createCraftingRevealedEvent,
+  createCraftingStartedEvent
+} from "./utils";
 
 // Feb 9 22, 7:15
 const timestamp = 1644390900;
@@ -73,6 +87,96 @@ test("crafting stats count crafts started", () => {
   // Assert yearly interval contains both
   assert.fieldEquals(CRAFTING_STAT_ENTITY_TYPE, "2022-yearly", "craftsStarted", "2");
   assert.fieldEquals(CRAFTING_STAT_ENTITY_TYPE, "2022-yearly", "activeAddressesCount", "2");
+});
+
+test("crafting stats count magic consumed", () => {
+  clearStore();
+
+  const craftingRevealedEvent = createCraftingRevealedEvent(
+    timestamp,
+    USER_ADDRESS,
+    1,
+    true
+  );
+  handleCraftingRevealed(craftingRevealedEvent);
+
+  for (let i = 0; i < statIds.length; i++) {
+    // Assert all time intervals are created
+    assert.fieldEquals(CRAFTING_STAT_ENTITY_TYPE, statIds[i], "magicConsumed", "5000000000000000000");
+  }
+});
+
+test("crafting stats count magic returned", () => {
+  clearStore();
+
+  const craftingRevealedEvent = createCraftingRevealedEvent(
+    timestamp,
+    USER_ADDRESS,
+    1,
+    false,
+    etherToWei(4.5)
+  );
+  handleCraftingRevealed(craftingRevealedEvent);
+
+  for (let i = 0; i < statIds.length; i++) {
+    // Assert all time intervals are created
+    assert.fieldEquals(CRAFTING_STAT_ENTITY_TYPE, statIds[i], "magicConsumed", "500000000000000000");
+    assert.fieldEquals(CRAFTING_STAT_ENTITY_TYPE, statIds[i], "magicReturned", "4500000000000000000");
+  }
+});
+
+test("crafting stats count crafts succeeded", () => {
+  clearStore();
+
+  const craftingRevealedEvent = createCraftingRevealedEvent(timestamp, USER_ADDRESS, 1, true);
+  handleCraftingRevealed(craftingRevealedEvent);
+
+  // Assert user data is updated
+  assert.fieldEquals(USER_ENTITY_TYPE, USER_ADDRESS, "craftsSucceeded", "1");
+
+  for (let i = 0; i < statIds.length; i++) {
+    // Assert all time intervals are created
+    assert.fieldEquals(CRAFTING_STAT_ENTITY_TYPE, statIds[i], "craftsSucceeded", "1");
+  }
+});
+
+test("crafting stats count crafts failed", () => {
+  clearStore();
+
+  const craftingRevealedEvent = createCraftingRevealedEvent(timestamp, USER_ADDRESS, 1, false);
+  handleCraftingRevealed(craftingRevealedEvent);
+
+  // Assert user data is updated
+  assert.fieldEquals(USER_ENTITY_TYPE, USER_ADDRESS, "craftsFailed", "1");
+
+  for (let i = 0; i < statIds.length; i++) {
+    // Assert all time intervals are created
+    assert.fieldEquals(CRAFTING_STAT_ENTITY_TYPE, statIds[i], "craftsFailed", "1");
+  }
+});
+
+test("crafting stats count broken treasures", () => {
+  clearStore();
+
+  const craftingRevealedEvent = createCraftingRevealedEvent(
+    timestamp,
+    USER_ADDRESS,
+    1,
+    true,
+    ZERO_BI,
+    0,
+    [1, 2],
+    [1, 1]
+  );
+  handleCraftingRevealed(craftingRevealedEvent);
+
+  // Assert user data is updated
+  assert.fieldEquals(USER_ENTITY_TYPE, USER_ADDRESS, "brokenTreasuresCount", "2");
+
+  for (let i = 0; i < statIds.length; i++) {
+    // Assert all time intervals are created
+    assert.fieldEquals(CRAFTING_STAT_ENTITY_TYPE, statIds[i], "brokenTreasuresCount", "2");
+  }
 });
 
 test("crafting stats count crafts finished", () => {
