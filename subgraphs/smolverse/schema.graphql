@@ -99,5 +99,6 @@ type Claim @entity {
   id: ID!
   status: ClaimStatus!
   startTime: BigInt!
-  reward: Token
+  rewards: [Token!]!
+  rewardsCount: Int!
 }

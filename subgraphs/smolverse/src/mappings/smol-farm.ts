@@ -53,6 +53,8 @@ export function handleStartClaiming(event: StartClaiming): void {
   const claim = new Claim(claimId);
   claim.status = "Started";
   claim.startTime = event.block.timestamp;
+  claim.rewards = [];
+  claim.rewardsCount = params._numberRewards.toI32();
   claim.save();
 
   random._claimId = claim.id;
@@ -91,10 +93,13 @@ export function handleRewardClaimed(event: RewardClaimed): void {
   }
 
   const reward = getOrCreateFarmRewardToken(params._claimedRewardId);
-  claim.status = "Claimed";
-  claim.reward = reward.id;
-  claim.save();
+  claim.rewards = claim.rewards.concat([reward.id]);
 
-  stakedToken._pendingClaimId = null;
+  if (claim.rewards.length == claim.rewardsCount) {
+    claim.status = "Claimed";
+    stakedToken._pendingClaimId = null;
+  }
+
+  claim.save();
   stakedToken.save();
 }

@@ -101,7 +101,7 @@ test("staked token claim is started", () => {
   const randomRequestEvent = createRandomRequestEvent(requestId, 9876);
   handleRandomRequest(randomRequestEvent);
 
-  const startClaimingEvent = createStartClaimingEvent(USER_ADDRESS, tokenId, requestId);
+  const startClaimingEvent = createStartClaimingEvent(USER_ADDRESS, tokenId, requestId, 1);
   handleStartClaiming(startClaimingEvent);
 
   // Assert claim was created with starting status
@@ -126,27 +126,39 @@ test("staked token claim is completed", () => {
   const randomRequestEvent = createRandomRequestEvent(requestId, 9876);
   handleRandomRequest(randomRequestEvent);
 
-  const startClaimingEvent = createStartClaimingEvent(USER_ADDRESS, tokenId, requestId);
+  const startClaimingEvent = createStartClaimingEvent(USER_ADDRESS, tokenId, requestId, 2);
   handleStartClaiming(startClaimingEvent);
 
-  const rewardClaimedEvent = createRewardClaimedEvent(USER_ADDRESS, tokenId, 3);
-  handleRewardClaimed(rewardClaimedEvent);
+  const rewardClaimedEvent1 = createRewardClaimedEvent(USER_ADDRESS, tokenId, 3);
+  handleRewardClaimed(rewardClaimedEvent1);
 
   // Assert reward token collection was created
   assert.fieldEquals(COLLECTION_ENTITY_TYPE, SMOL_TREASURES_ADDRESS.toHexString(), "name", "Smol Treasures");
 
-  // Assert reward token was created
-  const rewardTokenId = `${SMOL_TREASURES_ADDRESS.toHexString()}-0x3`;
-  assert.fieldEquals(TOKEN_ENTITY_TYPE, rewardTokenId, "name", "Lunar Gold");
-  assert.fieldEquals(TOKEN_ENTITY_TYPE, rewardTokenId, "image", "https://gateway.pinata.cloud/ipfs/QmZK1i4y7qn7Fi7mEMgT4KZcb1Etb12yndcTZ5dnhigDPt/3.gif");
+  // Assert first reward token was created
+  const rewardTokenId1 = `${SMOL_TREASURES_ADDRESS.toHexString()}-0x3`;
+  assert.fieldEquals(TOKEN_ENTITY_TYPE, rewardTokenId1, "name", "Lunar Gold");
+  assert.fieldEquals(TOKEN_ENTITY_TYPE, rewardTokenId1, "image", "https://gateway.pinata.cloud/ipfs/QmZK1i4y7qn7Fi7mEMgT4KZcb1Etb12yndcTZ5dnhigDPt/3.gif");
 
-  // Assert claim was completed
+  // Assert claim is still in progress
   const claimId = getClaimId(
     getCollectionId(smolStakedEvent.params._smolAddress),
     BigInt.fromI32(tokenId),
     "Farm",
     BigInt.fromI32(requestId)
   );
+  assert.fieldEquals(CLAIM_ENTITY_TYPE, claimId, "status", "Started");
+  assert.fieldEquals(CLAIM_ENTITY_TYPE, claimId, "rewards", `[${rewardTokenId1}]`);
+
+  const rewardClaimedEvent2 = createRewardClaimedEvent(USER_ADDRESS, tokenId, 0);
+  handleRewardClaimed(rewardClaimedEvent2);
+
+  // Assert second reward token was created
+  const rewardTokenId2 = `${SMOL_TREASURES_ADDRESS.toHexString()}-0x0`;
+  assert.fieldEquals(TOKEN_ENTITY_TYPE, rewardTokenId2, "name", "Moon Rock");
+  assert.fieldEquals(TOKEN_ENTITY_TYPE, rewardTokenId2, "image", "https://gateway.pinata.cloud/ipfs/QmZK1i4y7qn7Fi7mEMgT4KZcb1Etb12yndcTZ5dnhigDPt/0.gif");
+
+  // Assert claim was completed
   assert.fieldEquals(CLAIM_ENTITY_TYPE, claimId, "status", "Claimed");
-  assert.fieldEquals(CLAIM_ENTITY_TYPE, claimId, "reward", rewardTokenId);
+  assert.fieldEquals(CLAIM_ENTITY_TYPE, claimId, "rewards", `[${rewardTokenId1}, ${rewardTokenId2}]`);
 });
