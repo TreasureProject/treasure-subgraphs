@@ -4,6 +4,7 @@ import {
   SMOL_BODIES_PETS_ADDRESS,
   SMOL_BRAINS_ADDRESS,
   SMOL_BRAINS_LAND_ADDRESS,
+  SMOL_BRAINS_PETS_ADDRESS,
 } from "@treasure/constants";
 
 import { Attribute, Collection, Token } from "../../generated/schema";
@@ -13,10 +14,11 @@ import { toBigDecimal } from "./number";
 
 
 const ATTRIBUTE_PERCENTAGE_THRESHOLDS = new TypedMap<string, number>();
-ATTRIBUTE_PERCENTAGE_THRESHOLDS.set(SMOL_BODIES_ADDRESS.toHexString(), 6_170);
-ATTRIBUTE_PERCENTAGE_THRESHOLDS.set(SMOL_BODIES_PETS_ADDRESS.toHexString(), 5_500);
-ATTRIBUTE_PERCENTAGE_THRESHOLDS.set(SMOL_BRAINS_ADDRESS.toHexString(), 11_700);
-ATTRIBUTE_PERCENTAGE_THRESHOLDS.set(SMOL_BRAINS_LAND_ADDRESS.toHexString(), 4_225);
+ATTRIBUTE_PERCENTAGE_THRESHOLDS.set(SMOL_BODIES_ADDRESS.toHexString(), 6_200);
+ATTRIBUTE_PERCENTAGE_THRESHOLDS.set(SMOL_BODIES_PETS_ADDRESS.toHexString(), 5_800);
+ATTRIBUTE_PERCENTAGE_THRESHOLDS.set(SMOL_BRAINS_ADDRESS.toHexString(), 11_800);
+ATTRIBUTE_PERCENTAGE_THRESHOLDS.set(SMOL_BRAINS_PETS_ADDRESS.toHexString(), 10_250);
+ATTRIBUTE_PERCENTAGE_THRESHOLDS.set(SMOL_BRAINS_LAND_ADDRESS.toHexString(), i32.MAX_VALUE);
 
 const shouldUpdateAttributePercentages = (collection: Collection): boolean => {
   const threshold = ATTRIBUTE_PERCENTAGE_THRESHOLDS.getEntry(collection.id);
@@ -26,7 +28,7 @@ const shouldUpdateAttributePercentages = (collection: Collection): boolean => {
 
 export function updateAttributePercentages(collection: Collection): void {
   if (!shouldUpdateAttributePercentages(collection)) {
-    log.info("Skipping attribute percentages update for collection: {}", [collection.id]);
+    log.debug("Skipping attribute percentages update for collection: {}", [collection.id]);
     return;
   }
 
