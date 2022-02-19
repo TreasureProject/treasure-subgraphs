@@ -80,7 +80,7 @@ export function getOrCreateToken(collection: Collection, tokenId: BigInt): Token
   return token;
 }
 
-export function getOrCreateFarmRewardToken(tokenId: BigInt): Token {
+export function getOrCreateRewardToken(tokenId: BigInt): Token {
   const collection = getOrCreateCollection(SMOL_TREASURES_ADDRESS);
   const id = getTokenId(collection, tokenId);
   let token = Token.load(id);

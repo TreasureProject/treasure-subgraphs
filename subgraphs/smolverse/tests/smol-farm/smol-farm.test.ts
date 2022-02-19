@@ -15,6 +15,7 @@ import { createRandomRequestEvent } from "../randomizer/utils";
 import {
   CLAIM_ENTITY_TYPE,
   COLLECTION_ENTITY_TYPE,
+  REWARD_ENTITY_TYPE,
   STAKED_TOKEN_ENTITY_TYPE,
   TOKEN_ENTITY_TYPE,
   USER_ADDRESS
@@ -135,10 +136,12 @@ test("staked token claim is completed", () => {
   // Assert reward token collection was created
   assert.fieldEquals(COLLECTION_ENTITY_TYPE, SMOL_TREASURES_ADDRESS.toHexString(), "name", "Smol Treasures");
 
-  // Assert first reward token was created
-  const rewardTokenId1 = `${SMOL_TREASURES_ADDRESS.toHexString()}-0x3`;
-  assert.fieldEquals(TOKEN_ENTITY_TYPE, rewardTokenId1, "name", "Lunar Gold");
-  assert.fieldEquals(TOKEN_ENTITY_TYPE, rewardTokenId1, "image", "https://gateway.pinata.cloud/ipfs/QmZK1i4y7qn7Fi7mEMgT4KZcb1Etb12yndcTZ5dnhigDPt/3.gif");
+  // Assert first reward and token was created
+  const tokenIdentifier = `${SMOL_TREASURES_ADDRESS.toHexString()}-0x3`;
+  const rewardId = `${tokenIdentifier}-0x1`;
+  assert.fieldEquals(TOKEN_ENTITY_TYPE, tokenIdentifier, "name", "Lunar Gold");
+  assert.fieldEquals(TOKEN_ENTITY_TYPE, tokenIdentifier, "image", "https://gateway.pinata.cloud/ipfs/QmZK1i4y7qn7Fi7mEMgT4KZcb1Etb12yndcTZ5dnhigDPt/3.gif");
+  assert.fieldEquals(REWARD_ENTITY_TYPE, rewardId, "token", `${SMOL_TREASURES_ADDRESS.toHexString()}-0x3`);
 
   // Assert claim is still in progress
   const claimId = getClaimId(
@@ -148,17 +151,16 @@ test("staked token claim is completed", () => {
     BigInt.fromI32(requestId)
   );
   assert.fieldEquals(CLAIM_ENTITY_TYPE, claimId, "status", "Started");
-  assert.fieldEquals(CLAIM_ENTITY_TYPE, claimId, "rewards", `[${rewardTokenId1}]`);
+  assert.fieldEquals(CLAIM_ENTITY_TYPE, claimId, "rewards", `[${rewardId}]`);
 
-  const rewardClaimedEvent2 = createRewardClaimedEvent(USER_ADDRESS, tokenId, 0);
+  const rewardClaimedEvent2 = createRewardClaimedEvent(USER_ADDRESS, tokenId, 3);
   handleRewardClaimed(rewardClaimedEvent2);
 
-  // Assert second reward token was created
-  const rewardTokenId2 = `${SMOL_TREASURES_ADDRESS.toHexString()}-0x0`;
-  assert.fieldEquals(TOKEN_ENTITY_TYPE, rewardTokenId2, "name", "Moon Rock");
-  assert.fieldEquals(TOKEN_ENTITY_TYPE, rewardTokenId2, "image", "https://gateway.pinata.cloud/ipfs/QmZK1i4y7qn7Fi7mEMgT4KZcb1Etb12yndcTZ5dnhigDPt/0.gif");
+  // Assert second reward was created
+  const rewardId2 = `${SMOL_TREASURES_ADDRESS.toHexString()}-0x3-0x2`;
+  assert.fieldEquals(REWARD_ENTITY_TYPE, rewardId2, "token", `${SMOL_TREASURES_ADDRESS.toHexString()}-0x3`);
 
   // Assert claim was completed
   assert.fieldEquals(CLAIM_ENTITY_TYPE, claimId, "status", "Claimed");
-  assert.fieldEquals(CLAIM_ENTITY_TYPE, claimId, "rewards", `[${rewardTokenId1}, ${rewardTokenId2}]`);
+  assert.fieldEquals(CLAIM_ENTITY_TYPE, claimId, "rewards", `[${rewardId}, ${rewardId2}]`);
 });

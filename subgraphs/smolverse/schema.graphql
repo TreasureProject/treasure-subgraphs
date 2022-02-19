@@ -95,10 +95,15 @@ type Seeded @entity {
   _randomIds: [String!]!
 }
 
+type Reward @entity {
+  id: ID!
+  token: Token!
+}
+
 type Claim @entity {
   id: ID!
   status: ClaimStatus!
   startTime: BigInt!
-  rewards: [Token!]!
+  rewards: [Reward!]!
   rewardsCount: Int!
 }

@@ -1,11 +1,10 @@
 import { log } from "@graphprotocol/graph-ts";
-import { SMOL_TREASURES_ADDRESS } from "@treasure/constants";
 
-import { Claim, Random, StakedToken } from "../../generated/schema";
+import { Claim, Random, Reward, StakedToken } from "../../generated/schema";
 import { RewardClaimed, SmolStaked, SmolUnstaked, StartClaiming } from "../../generated/Smol Farm/SmolFarm";
 import { LOCATION_FARM } from "../helpers/constants";
-import { getCollectionId, getRandomId, getStakedTokenId } from "../helpers/ids";
-import { getOrCreateCollection, getOrCreateFarmRewardToken, getOrCreateToken } from "../helpers/models";
+import { getCollectionId, getRandomId, getRewardId, getStakedTokenId } from "../helpers/ids";
+import { getOrCreateRewardToken } from "../helpers/models";
 import { handleStake, handleUnstake } from "./common";
 
 export function handleSmolStaked(event: SmolStaked): void {
@@ -91,10 +90,17 @@ export function handleRewardClaimed(event: RewardClaimed): void {
     log.error("[smol-farm] Unknown pending claim for staked token: {}", [claimId as string]);
     return;
   }
+  
+  // Create token and reward
+  const token = getOrCreateRewardToken(params._claimedRewardId);
+  const reward = new Reward(getRewardId(claim, token));
+  reward.token = token.id;
+  reward.save();
 
-  const reward = getOrCreateFarmRewardToken(params._claimedRewardId);
+  // Add reward to this claim
   claim.rewards = claim.rewards.concat([reward.id]);
 
+  // Complete claim if we've collected all rewards
   if (claim.rewards.length == claim.rewardsCount) {
     claim.status = "Claimed";
     stakedToken._pendingClaimId = null;
