@@ -1,4 +1,4 @@
-import { Address, BigInt, log } from "@graphprotocol/graph-ts";
+import { Address, BigInt } from "@graphprotocol/graph-ts";
 import { SMOL_TREASURES_ADDRESS } from "@treasure/constants";
 
 import { Attribute, Collection, Random, Seeded, Token, User } from "../../generated/schema";

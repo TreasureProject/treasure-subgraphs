@@ -1,4 +1,3 @@
-import { Attribute } from "../../generated/schema";
 import { SmolBrains, Transfer } from "../../generated/Smol Brains/SmolBrains";
 import { SMOL_BRAINS_BASE_URI } from "../helpers/constants";
 import { getAttributeId } from "../helpers/ids";
