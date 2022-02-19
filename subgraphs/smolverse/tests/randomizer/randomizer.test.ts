@@ -52,7 +52,7 @@ test("random request is seeded and claim marked revealable", () => {
   const randomRequestEvent = createRandomRequestEvent(requestId, commitId);
   handleRandomRequest(randomRequestEvent);
 
-  const startClaimingEvent = createStartClaimingEvent(USER_ADDRESS, tokenId, requestId);
+  const startClaimingEvent = createStartClaimingEvent(USER_ADDRESS, tokenId, requestId, 1);
   handleStartClaiming(startClaimingEvent);
 
   // Assert claim was created with starting status

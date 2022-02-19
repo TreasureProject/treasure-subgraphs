@@ -1,6 +1,6 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts";
 
-import { Collection } from "../../generated/schema";
+import { Claim, Collection, Token } from "../../generated/schema";
 import { stringToSlug } from "./string";
 
 export function getCollectionId(address: Address): string {
@@ -29,4 +29,8 @@ export function getRandomId(requestId: BigInt): string {
 
 export function getSeededId(commitId: BigInt): string {
   return commitId.toHexString();
+}
+
+export function getRewardId(claim: Claim): string {
+  return `${claim.id}-${BigInt.fromI32(claim.rewards.length + 1).toHexString()}`;
 }
