@@ -93,7 +93,7 @@ export function handleRewardClaimed(event: RewardClaimed): void {
   
   // Create token and reward
   const token = getOrCreateRewardToken(params._claimedRewardId);
-  const reward = new Reward(getRewardId(claim, token));
+  const reward = new Reward(getRewardId(claim));
   reward.token = token.id;
   reward.save();
 

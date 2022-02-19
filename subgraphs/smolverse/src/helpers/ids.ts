@@ -31,6 +31,6 @@ export function getSeededId(commitId: BigInt): string {
   return commitId.toHexString();
 }
 
-export function getRewardId(claim: Claim, token: Token): string {
-  return `${token.id}-${BigInt.fromI32(claim.rewards.length + 1).toHexString()}`;
+export function getRewardId(claim: Claim): string {
+  return `${claim.id}-${BigInt.fromI32(claim.rewards.length + 1).toHexString()}`;
 }

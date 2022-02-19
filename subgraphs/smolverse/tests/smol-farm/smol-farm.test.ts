@@ -133,23 +133,24 @@ test("staked token claim is completed", () => {
   const rewardClaimedEvent1 = createRewardClaimedEvent(USER_ADDRESS, tokenId, 3);
   handleRewardClaimed(rewardClaimedEvent1);
 
-  // Assert reward token collection was created
-  assert.fieldEquals(COLLECTION_ENTITY_TYPE, SMOL_TREASURES_ADDRESS.toHexString(), "name", "Smol Treasures");
-
-  // Assert first reward and token was created
-  const tokenIdentifier = `${SMOL_TREASURES_ADDRESS.toHexString()}-0x3`;
-  const rewardId = `${tokenIdentifier}-0x1`;
-  assert.fieldEquals(TOKEN_ENTITY_TYPE, tokenIdentifier, "name", "Lunar Gold");
-  assert.fieldEquals(TOKEN_ENTITY_TYPE, tokenIdentifier, "image", "https://gateway.pinata.cloud/ipfs/QmZK1i4y7qn7Fi7mEMgT4KZcb1Etb12yndcTZ5dnhigDPt/3.gif");
-  assert.fieldEquals(REWARD_ENTITY_TYPE, rewardId, "token", `${SMOL_TREASURES_ADDRESS.toHexString()}-0x3`);
-
-  // Assert claim is still in progress
   const claimId = getClaimId(
     getCollectionId(smolStakedEvent.params._smolAddress),
     BigInt.fromI32(tokenId),
     "Farm",
     BigInt.fromI32(requestId)
   );
+
+  // Assert reward token collection was created
+  assert.fieldEquals(COLLECTION_ENTITY_TYPE, SMOL_TREASURES_ADDRESS.toHexString(), "name", "Smol Treasures");
+
+  // Assert first reward and token was created
+  const tokenIdentifier = `${SMOL_TREASURES_ADDRESS.toHexString()}-0x3`;
+  const rewardId = `${claimId}-0x1`;
+  assert.fieldEquals(TOKEN_ENTITY_TYPE, tokenIdentifier, "name", "Lunar Gold");
+  assert.fieldEquals(TOKEN_ENTITY_TYPE, tokenIdentifier, "image", "https://gateway.pinata.cloud/ipfs/QmZK1i4y7qn7Fi7mEMgT4KZcb1Etb12yndcTZ5dnhigDPt/3.gif");
+  assert.fieldEquals(REWARD_ENTITY_TYPE, rewardId, "token", `${SMOL_TREASURES_ADDRESS.toHexString()}-0x3`);
+
+  // Assert claim is still in progress
   assert.fieldEquals(CLAIM_ENTITY_TYPE, claimId, "status", "Started");
   assert.fieldEquals(CLAIM_ENTITY_TYPE, claimId, "rewards", `[${rewardId}]`);
 
@@ -157,7 +158,7 @@ test("staked token claim is completed", () => {
   handleRewardClaimed(rewardClaimedEvent2);
 
   // Assert second reward was created
-  const rewardId2 = `${SMOL_TREASURES_ADDRESS.toHexString()}-0x3-0x2`;
+  const rewardId2 = `${claimId}-0x2`;
   assert.fieldEquals(REWARD_ENTITY_TYPE, rewardId2, "token", `${SMOL_TREASURES_ADDRESS.toHexString()}-0x3`);
 
   // Assert claim was completed
