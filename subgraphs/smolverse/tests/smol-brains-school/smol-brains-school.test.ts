@@ -1,13 +1,17 @@
-import { BigInt } from "@graphprotocol/graph-ts";
+import { BigInt, ethereum } from "@graphprotocol/graph-ts";
 import { SMOL_BRAINS_ADDRESS } from "@treasure/constants";
-import { assert, clearStore, test } from "matchstick-as";
+import { assert, clearStore, createMockedFunction, test } from "matchstick-as";
 
 import { Collection, StakedToken, Token, User } from "../../generated/schema";
 import { handleDropSchool, handleJoinSchool } from "../../src/mappings/smol-brains-school";
+import { ATTRIBUTE_ENTITY_TYPE, STAKED_TOKEN_ENTITY_TYPE, TOKEN_ENTITY_TYPE, USER_ADDRESS } from "../utils";
 import { createDropSchoolEvent, createJoinSchoolEvent } from "./utils";
 
-const STAKED_TOKEN_ENTITY_TYPE = "StakedToken";
-const USER_ADDRESS = "0x461950b159366edcd2bcbee8126d973ac49238e0";
+const IQ_STRING = "206657655423280423280";
+
+createMockedFunction(SMOL_BRAINS_ADDRESS, "brainz", "brainz(uint256):(uint256)")
+  .withArgs([ethereum.Value.fromI32(1)])
+  .returns([ethereum.Value.fromUnsignedBigInt(BigInt.fromString(IQ_STRING))]);
 
 test("smol brains joining school creates staked token", () => {
   clearStore();
@@ -54,4 +58,22 @@ test("smol brains dropping school removes staked token", () => {
   // Assert staked token was removed
   stakedToken = StakedToken.load(stakedTokenId);
   assert.assertNull(stakedToken);
+});
+
+test("smol brains dropping school updates IQ and head size", () => {
+  clearStore();
+
+  const joinEvent = createJoinSchoolEvent(USER_ADDRESS, 1);
+  handleJoinSchool(joinEvent);
+
+  const dropEvent = createDropSchoolEvent(USER_ADDRESS, 1);
+  handleDropSchool(dropEvent);
+
+  // Assert IQ attribute is updated
+  const iqAttributeId = `${SMOL_BRAINS_ADDRESS.toHexString()}-iq-0x1`;
+  assert.fieldEquals(ATTRIBUTE_ENTITY_TYPE, iqAttributeId, "value", IQ_STRING);
+
+  // Assert Head Size attribute is updated
+  const headSizeAttributeId = `${SMOL_BRAINS_ADDRESS.toHexString()}-head-size-4`;
+  assert.fieldEquals(TOKEN_ENTITY_TYPE, `${SMOL_BRAINS_ADDRESS.toHexString()}-0x1`, "attributes", `[${headSizeAttributeId}, ${iqAttributeId}]`);
 });

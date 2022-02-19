@@ -1,4 +1,4 @@
-import { Address, BigInt } from "@graphprotocol/graph-ts";
+import { Address, BigInt, log } from "@graphprotocol/graph-ts";
 import { SMOL_TREASURES_ADDRESS } from "@treasure/constants";
 
 import { Attribute, Collection, Random, Seeded, Token, User } from "../../generated/schema";
@@ -22,9 +22,11 @@ export function getOrCreateAttribute(
   collection: Collection,
   token: Token,
   name: string,
-  value: string
+  value: string,
+  overrideId: string | null = null,
+  skipSaveToCollection: boolean = false
 ): Attribute {
-  const id = getAttributeId(collection, name, value);
+  const id = (overrideId || getAttributeId(collection, name, value)) as string;
   let attribute = Attribute.load(id);
 
   if (!attribute) {
@@ -34,8 +36,10 @@ export function getOrCreateAttribute(
     attribute.value = value;
     attribute._tokenIds = [];
 
-    collection._attributeIds = collection._attributeIds.concat([id]);
-    collection.save();
+    if (!skipSaveToCollection) {
+      collection._attributeIds = collection._attributeIds.concat([id]);
+      collection.save();
+    }
   }
 
   const tokenIdString = token.tokenId.toString();
@@ -71,6 +75,7 @@ export function getOrCreateToken(collection: Collection, tokenId: BigInt): Token
     token = new Token(id);
     token.collection = collection.id;
     token.tokenId = tokenId;
+    token.attributes = [];
     token.save();
 
     collection.tokensCount += 1;
