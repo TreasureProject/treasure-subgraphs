@@ -1,6 +1,8 @@
-import { Address, BigInt, log } from "@graphprotocol/graph-ts";
-import { CONSUMABLE_ADDRESS } from "@treasure/constants";
-
+import { Address, BigInt } from "@graphprotocol/graph-ts";
+import {
+  CONSUMABLE_ADDRESS,
+  SMOL_TREASURES_ADDRESS,
+} from "@treasure/constants";
 
 function getConsumableName(tokenId: i32): string {
   switch (tokenId) {
@@ -35,11 +37,32 @@ function getConsumableName(tokenId: i32): string {
   }
 }
 
+function getSmolTreasureName(tokenId: i32): string {
+  switch (tokenId) {
+    case 0:
+      return "Moon Rock";
+    case 1:
+      return "Stardust";
+    case 2:
+      return "Comet Shard";
+    case 3:
+      return "Lunar Gold";
+    case 4:
+      return "Alien Relic";
+    default:
+      return "";
+  }
+}
+
 export function getName(contract: Address, tokenId: BigInt): string {
   let id = tokenId.toI32();
 
   if (contract.equals(CONSUMABLE_ADDRESS)) {
-    return getConsumableName(id)
+    return getConsumableName(id);
+  }
+
+  if (contract.equals(SMOL_TREASURES_ADDRESS)) {
+    return getSmolTreasureName(id);
   }
 
   switch (id) {
