@@ -168,6 +168,8 @@ dataSources:
       abis:
         - name: School
           file: {{{ abis }}}/SmolBrainsSchool.json
+        - name: SmolBrains
+          file: {{{ abis }}}/SmolBrains.json
       eventHandlers:
         - event: DropSchool(uint256)
           handler: handleDropSchool
