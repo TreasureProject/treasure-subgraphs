@@ -43,10 +43,10 @@ export function handleDropSchool(event: DropSchool): void {
 
     // Update Head Size attribute
     const level = Math.min(
-      parseInt(
+      Math.floor(
         weiToEther(
           BigInt.fromString(iqAttribute.value).div(BigInt.fromI32(50))
-        ).toString()
+        )
       ),
       5
     );
