@@ -10,7 +10,7 @@ dataSources:
     source:
       address: "{{ randomizer_address }}"
       abi: Randomizer
-      startBlock: {{ randomizer_start_block }}
+      startBlock: {{ randomizer_smol_farm_start_block }}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
