@@ -52,7 +52,7 @@ type Attribute @entity {
 type _LandMetadata @entity {
   id: ID!
   name: String!
-  attributes: [Attribute!]
+  attributes: [Attribute!]!
   description: String
   image: String
 }
@@ -62,7 +62,7 @@ type Token @entity {
   collection: Collection!
   tokenId: BigInt!
   name: String!
-  attributes: [Attribute!]
+  attributes: [Attribute!]!
   description: String
   image: String
   owner: User

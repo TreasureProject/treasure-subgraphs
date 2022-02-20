@@ -5,8 +5,8 @@ import {
   SMOL_BRAINS_PETS_ADDRESS
 } from "@treasure/constants";
 
-import { Collection, StakedToken, _LandMetadata } from "../../generated/schema";
-import { SMOL_BRAINS_BASE_URI, SMOL_BRAINS_LAND_BASE_URI } from "../helpers/constants";
+import { Collection, StakedToken, Token, _LandMetadata } from "../../generated/schema";
+import { SMOL_BRAINS_LAND_BASE_URI } from "../helpers/constants";
 import { getCollectionId, getStakedTokenId } from "../helpers/ids";
 import { getIpfsJson } from "../helpers/json";
 import { updateTokenMetadata } from "../helpers/metadata";
@@ -18,7 +18,7 @@ export function handleTransfer(
   from: Address,
   to: Address,
   tokenId: BigInt
-): void {
+): Token {
   const owner = getOrCreateUser(to.toHexString());
   const token = getOrCreateToken(collection, tokenId);
   token.owner = owner.id;
@@ -70,6 +70,7 @@ export function handleTransfer(
   }
 
   token.save();
+  return token;
 }
 
 export function handleStake(

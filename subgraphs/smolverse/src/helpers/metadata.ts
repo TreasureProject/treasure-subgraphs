@@ -41,6 +41,11 @@ export function updateAttributePercentages(collection: Collection): void {
       continue;
     }
 
+    if (["IQ", "Head Size"].includes(attribute.name)) {
+      log.debug("Skipping attribute percentages update for attribute: {}", [attribute.id])
+      continue;
+    }
+
     attribute.percentage =
       toBigDecimal(attribute._tokenIds.length)
         .div(toBigDecimal(collection.tokensCount))
