@@ -37,20 +37,17 @@ export function handleRandomSeeded(event: RandomSeeded): void {
       continue;
     }
 
+    // Shared randomizer, claim ID may not associated
     const claimId = random._claimId;
-    if (!claimId) {
-      log.error("[randomizer] Unknown claim ID for random: {}", [randomId]);
-      continue;
+    if (claimId) {
+      const claim = Claim.load(claimId as string);
+      if (claim) {
+        claim.status = "Revealable";
+        claim.save();
+      } else {
+        log.error("[randomizer] Unknown claim: {}", [claimId as string]);
+      }
     }
-
-    const claim = Claim.load(claimId as string);
-    if (!claim) {
-      log.error("[randomizer] Unknown claim: {}", [claimId as string]);
-      continue;
-    }
-
-    claim.status = "Revealable";
-    claim.save();
 
     store.remove("Random", randomId);
   }
