@@ -15,10 +15,16 @@ export function createJoinGymEvent(
 
 export function createDropGymEvent(
   owner: string,
-  tokenId: i32
+  tokenId: i32,
+  plates: i32,
+  level: i32
 ): DropGym {
   const event = changetype<DropGym>(newMockEvent());
   event.transaction.from = Address.fromString(owner);
-  event.parameters = [new ethereum.EventParam("tokenId", ethereum.Value.fromI32(tokenId))];
+  event.parameters = [
+    new ethereum.EventParam("tokenId", ethereum.Value.fromI32(tokenId)),
+    new ethereum.EventParam("plates", ethereum.Value.fromI32(plates)),
+    new ethereum.EventParam("level", ethereum.Value.fromI32(level))
+  ];
   return event;
 }
