@@ -39,15 +39,15 @@ function getConsumableName(tokenId: i32): string {
 
 function getSmolTreasureName(tokenId: i32): string {
   switch (tokenId) {
-    case 0:
-      return "Moon Rock";
     case 1:
-      return "Stardust";
+      return "Moon Rock";
     case 2:
-      return "Comet Shard";
+      return "Stardust";
     case 3:
-      return "Lunar Gold";
+      return "Comet Shard";
     case 4:
+      return "Lunar Gold";
+    case 5:
       return "Alien Relic";
     default:
       return "";

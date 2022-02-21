@@ -96,7 +96,7 @@ export function getOrCreateRewardToken(tokenId: BigInt): Token {
     token.tokenId = tokenId;
     token.name = getTreasureTokenName(tokenId);
     token.description = SMOL_TREASURES_COLLECTION_NAME;
-    token.image = `${SMOL_TREASURES_IMAGES_BASE_URI}${tokenId.toString()}.gif`;
+    token.image = `${SMOL_TREASURES_IMAGES_BASE_URI}${tokenId.minus(BigInt.fromI32(1)).toString()}.gif`;
     token.save();
 
     collection.tokensCount += 1;

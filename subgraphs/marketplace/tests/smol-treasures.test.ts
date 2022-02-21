@@ -28,7 +28,7 @@ test("smol treasures have correct names", () => {
   clearStore();
 
   const contract = SMOL_TREASURES_ADDRESS.toHexString();
-  const ids = [0, 1, 2, 3, 4];
+  const ids = [1, 2, 3, 4, 5];
   const tokenIds: BigInt[] = [];
   const tokens: string[] = [];
 
