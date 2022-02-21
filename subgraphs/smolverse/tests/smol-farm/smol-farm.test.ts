@@ -146,8 +146,8 @@ test("staked token claim is completed", () => {
   // Assert first reward and token was created
   const tokenIdentifier = `${SMOL_TREASURES_ADDRESS.toHexString()}-0x3`;
   const rewardId = `${claimId}-0x1`;
-  assert.fieldEquals(TOKEN_ENTITY_TYPE, tokenIdentifier, "name", "Lunar Gold");
-  assert.fieldEquals(TOKEN_ENTITY_TYPE, tokenIdentifier, "image", "https://gateway.pinata.cloud/ipfs/QmZK1i4y7qn7Fi7mEMgT4KZcb1Etb12yndcTZ5dnhigDPt/3.gif");
+  assert.fieldEquals(TOKEN_ENTITY_TYPE, tokenIdentifier, "name", "Comet Shard");
+  assert.fieldEquals(TOKEN_ENTITY_TYPE, tokenIdentifier, "image", "https://gateway.pinata.cloud/ipfs/QmZK1i4y7qn7Fi7mEMgT4KZcb1Etb12yndcTZ5dnhigDPt/2.gif");
   assert.fieldEquals(REWARD_ENTITY_TYPE, rewardId, "token", `${SMOL_TREASURES_ADDRESS.toHexString()}-0x3`);
 
   // Assert claim is still in progress
