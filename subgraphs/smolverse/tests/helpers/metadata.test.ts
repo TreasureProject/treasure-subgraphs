@@ -19,7 +19,8 @@ const mockTokenData = json.fromBytes(
     {
       "name": "#1",
       "description": "Smol Bodies",
-      "image": "https://gateway.pinata.cloud/ipfs/QmSqwxNFMeFtgdCnjBTTixx46Wi6TH9FtQ5jAp98JnAoeR/1/0.png",
+      "image": "test-image",
+      "video": "test-video",
       "attributes": [
         {
           "trait_type": "Gender",
@@ -52,7 +53,8 @@ test("token attributes are set", () => {
   // Assert token metadata was saved
   assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "name", "Smol Bodies #1");
   assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "description", "Smol Bodies");
-  assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "image", "https://gateway.pinata.cloud/ipfs/QmSqwxNFMeFtgdCnjBTTixx46Wi6TH9FtQ5jAp98JnAoeR/1/0.png");
+  assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "image", "test-image");
+  assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "video", "test-video");
 
   // Assert related attributes were created
   const attributeId1 = `${address}-gender-male`;

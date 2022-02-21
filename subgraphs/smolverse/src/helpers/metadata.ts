@@ -80,6 +80,11 @@ export function updateTokenMetadata(token: Token, data: JSON): void {
     token.image = image as string;
   }
 
+  const video = getJsonStringValue(data, "video");
+  if (video) {
+    token.video = video as string;
+  }
+
   // Parse attributes
   const attributesData = data.get("attributes");
   if (attributesData) {
