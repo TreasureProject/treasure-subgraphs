@@ -1,4 +1,4 @@
-import { JSONValueKind, log, TypedMap } from "@graphprotocol/graph-ts";
+import { log, TypedMap } from "@graphprotocol/graph-ts";
 import {
   SMOL_BODIES_ADDRESS,
   SMOL_BODIES_PETS_ADDRESS,
@@ -11,7 +11,6 @@ import { Attribute, Collection, Token } from "../../generated/schema";
 import { getJsonStringValue, JSON } from "./json";
 import { getOrCreateAttribute } from "./models";
 import { toBigDecimal } from "./number";
-
 
 const ATTRIBUTE_PERCENTAGE_THRESHOLDS = new TypedMap<string, number>();
 ATTRIBUTE_PERCENTAGE_THRESHOLDS.set(SMOL_BODIES_ADDRESS.toHexString(), 6_200);
@@ -28,7 +27,7 @@ const shouldUpdateAttributePercentages = (collection: Collection): boolean => {
 
 export function updateAttributePercentages(collection: Collection): void {
   if (!shouldUpdateAttributePercentages(collection)) {
-    log.debug("Skipping attribute percentages update for collection: {}", [collection.id]);
+    log.debug("[metadata] Skipping attribute percentages update for collection: {}", [collection.id]);
     return;
   }
 
@@ -37,12 +36,12 @@ export function updateAttributePercentages(collection: Collection): void {
   for (let i = 0; i < totalAttributes; i++) {
     const attribute = Attribute.load(attributeIds[i]);
     if (!attribute) {
-      log.warning("Unknown attribute in collection: {}", [attributeIds[i]]);
+      log.warning("[metadata] Unknown attribute in collection: {}", [attributeIds[i]]);
       continue;
     }
 
     if (["IQ", "Head Size"].includes(attribute.name)) {
-      log.debug("Skipping attribute percentages update for attribute: {}", [attribute.id])
+      log.debug("[metadata] Skipping attribute percentages update for attribute: {}", [attribute.id])
       continue;
     }
 
@@ -58,14 +57,14 @@ export function updateTokenMetadata(token: Token, data: JSON): void {
   const collection = Collection.load(token.collection);
 
   if (!collection) {
-    log.error("Token missing collection: {}, {}", [token.id, token.collection]);
+    log.error("[metadata] Token missing collection: {}, {}", [token.id, token.collection]);
     return;
   }
 
   // Parse metadata
   const name = getJsonStringValue(data, "name");
   if (!name) {
-    log.error("Token metadata missing name: {}", [token.id]);
+    log.error("[metadata] Token metadata missing name: {}", [token.id]);
     return;
   }
 
@@ -81,6 +80,11 @@ export function updateTokenMetadata(token: Token, data: JSON): void {
     token.image = image as string;
   }
 
+  const video = getJsonStringValue(data, "video");
+  if (video) {
+    token.video = video as string;
+  }
+
   // Parse attributes
   const attributesData = data.get("attributes");
   if (attributesData) {
@@ -88,16 +92,14 @@ export function updateTokenMetadata(token: Token, data: JSON): void {
     let attributes: Attribute[] = [];
     for (let i = 0; i < attributesDataArr.length; i++) {
       const attributeObj = attributesDataArr[i].toObject();
-      const nameData = attributeObj.get("trait_type");
-      const valueData = attributeObj.get("value");
-      if (!nameData || !valueData) {
-        log.error("Attribute missing data for token: {}", [token.id]);
+      const name = getJsonStringValue(attributeObj, "trait_type");
+      const value = getJsonStringValue(attributeObj, "value");
+      if (!name || !value) {
+        log.error("[metadata] Attribute missing data for token: {}", [token.id]);
         continue;
       }
 
-      const name = nameData.toString();
-      const value = valueData.kind === JSONValueKind.NUMBER ? valueData.toI64().toString() : valueData.toString();
-      attributes.push(getOrCreateAttribute(collection, token, name, value));
+      attributes.push(getOrCreateAttribute(collection, token, name as string, value as string));
     }
     
     token.attributes = attributes.map<string>((attribute) => attribute.id);

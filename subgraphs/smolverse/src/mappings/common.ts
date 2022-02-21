@@ -36,6 +36,7 @@ export function handleTransfer(
       if (landMetadata) {
         token.description = landMetadata.description;
         token.image = landMetadata.image;
+        token.video = landMetadata.video;
         token.attributes = landMetadata.attributes;
       } else {
         tokenUri = `${SMOL_BRAINS_LAND_BASE_URI}0`;
@@ -63,6 +64,7 @@ export function handleTransfer(
         landMetadata = new _LandMetadata("all");
         landMetadata.description = token.description;
         landMetadata.image = token.image;
+        landMetadata.video = token.video;
         landMetadata.attributes = token.attributes;
         landMetadata.save();
       }
