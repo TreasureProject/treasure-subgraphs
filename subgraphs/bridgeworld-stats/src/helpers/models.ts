@@ -1,8 +1,17 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts";
 
-import { AtlasMineLockStat, AtlasMineStat, Legion, SummoningLegionStat, SummoningStat, User } from "../../generated/schema";
+import {
+  AtlasMineLockStat,
+  AtlasMineStat,
+  Legion,
+  SummoningLegionStat,
+  SummoningStat,
+  User,
+} from "../../generated/schema";
 import { LEGION_GENERATIONS, LEGION_RARITIES } from "./constants";
 import {
+  SECONDS_IN_DAY,
+  SECONDS_IN_HOUR,
   getDaysInMonth,
   getDaysInYear,
   getStartOfDay,
@@ -10,8 +19,6 @@ import {
   getStartOfMonth,
   getStartOfWeek,
   getStartOfYear,
-  SECONDS_IN_DAY,
-  SECONDS_IN_HOUR
 } from "./date";
 import {
   getAllTimeId,
@@ -20,7 +27,7 @@ import {
   getLegionId,
   getMonthlyId,
   getWeeklyId,
-  getYearlyId
+  getYearlyId,
 } from "./ids";
 import { etherToWei } from "./number";
 
@@ -76,7 +83,11 @@ export function getCustomLegionName(tokenId: BigInt): string | null {
   }
 }
 
-export function getLegionName(tokenId: BigInt, generation: i32, rarity: i32): string {
+export function getLegionName(
+  tokenId: BigInt,
+  generation: i32,
+  rarity: i32
+): string {
   const customName = getCustomLegionName(tokenId);
   if (customName) {
     return customName;
@@ -97,7 +108,9 @@ export function getLegionSummonCost(generation: string): BigInt {
   return BigInt.fromI32(0);
 }
 
-export function getTimeIntervalAtlasMineStats(eventTimestamp: BigInt): AtlasMineStat[] {
+export function getTimeIntervalAtlasMineStats(
+  eventTimestamp: BigInt
+): AtlasMineStat[] {
   const timestamp = eventTimestamp.toI64() * 1000;
   const date = new Date(timestamp);
   const month = date.getUTCMonth();
@@ -105,7 +118,8 @@ export function getTimeIntervalAtlasMineStats(eventTimestamp: BigInt): AtlasMine
 
   // Hourly
   const hourlyId = getHourlyId(timestamp);
-  const hourlyStat = (AtlasMineStat.load(hourlyId) || createAtlasMineStat(hourlyId)) as AtlasMineStat;
+  const hourlyStat = (AtlasMineStat.load(hourlyId) ||
+    createAtlasMineStat(hourlyId)) as AtlasMineStat;
   const startOfHour = getStartOfHour(timestamp);
   hourlyStat.interval = "Hourly";
   hourlyStat.startTimestamp = BigInt.fromI64(startOfHour);
@@ -114,7 +128,8 @@ export function getTimeIntervalAtlasMineStats(eventTimestamp: BigInt): AtlasMine
 
   // Daily
   const dailyId = getDailyId(timestamp);
-  const dailyStat = (AtlasMineStat.load(dailyId) || createAtlasMineStat(dailyId)) as AtlasMineStat;
+  const dailyStat = (AtlasMineStat.load(dailyId) ||
+    createAtlasMineStat(dailyId)) as AtlasMineStat;
   const startOfDay = getStartOfDay(timestamp);
   dailyStat.interval = "Daily";
   dailyStat.startTimestamp = BigInt.fromI64(startOfDay);
@@ -123,34 +138,44 @@ export function getTimeIntervalAtlasMineStats(eventTimestamp: BigInt): AtlasMine
 
   // Weekly
   const weeklyId = getWeeklyId(timestamp);
-  const weeklyStat = (AtlasMineStat.load(weeklyId) || createAtlasMineStat(weeklyId)) as AtlasMineStat;
+  const weeklyStat = (AtlasMineStat.load(weeklyId) ||
+    createAtlasMineStat(weeklyId)) as AtlasMineStat;
   const startOfWeek = getStartOfWeek(timestamp);
   weeklyStat.interval = "Weekly";
   weeklyStat.startTimestamp = BigInt.fromI64(startOfWeek);
-  weeklyStat.endTimestamp = BigInt.fromI64(startOfWeek + (SECONDS_IN_DAY * 7) - 1);
+  weeklyStat.endTimestamp = BigInt.fromI64(
+    startOfWeek + SECONDS_IN_DAY * 7 - 1
+  );
   weeklyStat.save();
 
   // Monthly
   const monthlyId = getMonthlyId(timestamp);
-  const monthlyStat = (AtlasMineStat.load(monthlyId) || createAtlasMineStat(monthlyId)) as AtlasMineStat;
+  const monthlyStat = (AtlasMineStat.load(monthlyId) ||
+    createAtlasMineStat(monthlyId)) as AtlasMineStat;
   const startOfMonth = getStartOfMonth(timestamp);
   monthlyStat.interval = "Monthly";
   monthlyStat.startTimestamp = BigInt.fromI64(startOfMonth);
-  monthlyStat.endTimestamp = BigInt.fromI64(startOfMonth + (SECONDS_IN_DAY * getDaysInMonth(month, year)) - 1);
+  monthlyStat.endTimestamp = BigInt.fromI64(
+    startOfMonth + SECONDS_IN_DAY * getDaysInMonth(month, year) - 1
+  );
   monthlyStat.save();
 
   // Yearly
   const yearlyId = getYearlyId(timestamp);
-  const yearlyStat = (AtlasMineStat.load(yearlyId) || createAtlasMineStat(yearlyId)) as AtlasMineStat;
+  const yearlyStat = (AtlasMineStat.load(yearlyId) ||
+    createAtlasMineStat(yearlyId)) as AtlasMineStat;
   const startOfYear = getStartOfYear(timestamp);
   yearlyStat.interval = "Yearly";
   yearlyStat.startTimestamp = BigInt.fromI64(startOfYear);
-  yearlyStat.endTimestamp = BigInt.fromI64(startOfYear + (SECONDS_IN_DAY * getDaysInYear(year)) - 1);
+  yearlyStat.endTimestamp = BigInt.fromI64(
+    startOfYear + SECONDS_IN_DAY * getDaysInYear(year) - 1
+  );
   yearlyStat.save();
 
   // All-time
   const allTimeId = getAllTimeId();
-  const allTimeStat = (AtlasMineStat.load(allTimeId) || createAtlasMineStat(allTimeId)) as AtlasMineStat;
+  const allTimeStat = (AtlasMineStat.load(allTimeId) ||
+    createAtlasMineStat(allTimeId)) as AtlasMineStat;
   allTimeStat.interval = "AllTime";
   allTimeStat.save();
 
@@ -160,7 +185,7 @@ export function getTimeIntervalAtlasMineStats(eventTimestamp: BigInt): AtlasMine
     weeklyStat,
     monthlyStat,
     yearlyStat,
-    allTimeStat
+    allTimeStat,
   ];
 }
 
@@ -178,7 +203,10 @@ export function createAtlasMineStat(id: string): AtlasMineStat {
   return stat;
 }
 
-export function getOrCreateAtlasMineLockStat(atlasMineStatId: string, lock: i32): AtlasMineLockStat {
+export function getOrCreateAtlasMineLockStat(
+  atlasMineStatId: string,
+  lock: i32
+): AtlasMineLockStat {
   const id = `${atlasMineStatId}-lock${lock}`;
   let lockStat = AtlasMineLockStat.load(id);
   if (!lockStat) {
@@ -193,7 +221,9 @@ export function getOrCreateAtlasMineLockStat(atlasMineStatId: string, lock: i32)
   return lockStat;
 }
 
-export function getTimeIntervalSummoningStats(eventTimestamp: BigInt): SummoningStat[] {
+export function getTimeIntervalSummoningStats(
+  eventTimestamp: BigInt
+): SummoningStat[] {
   const timestamp = eventTimestamp.toI64() * 1000;
   const date = new Date(timestamp);
   const month = date.getUTCMonth();
@@ -201,7 +231,8 @@ export function getTimeIntervalSummoningStats(eventTimestamp: BigInt): Summoning
 
   // Hourly
   const hourlyId = getHourlyId(timestamp);
-  const hourlyStat = (SummoningStat.load(hourlyId) || createSummoningStat(hourlyId)) as SummoningStat;
+  const hourlyStat = (SummoningStat.load(hourlyId) ||
+    createSummoningStat(hourlyId)) as SummoningStat;
   const startOfHour = getStartOfHour(timestamp);
   hourlyStat.interval = "Hourly";
   hourlyStat.startTimestamp = BigInt.fromI64(startOfHour);
@@ -210,7 +241,8 @@ export function getTimeIntervalSummoningStats(eventTimestamp: BigInt): Summoning
 
   // Daily
   const dailyId = getDailyId(timestamp);
-  const dailyStat = (SummoningStat.load(dailyId) || createSummoningStat(dailyId)) as SummoningStat;
+  const dailyStat = (SummoningStat.load(dailyId) ||
+    createSummoningStat(dailyId)) as SummoningStat;
   const startOfDay = getStartOfDay(timestamp);
   dailyStat.interval = "Daily";
   dailyStat.startTimestamp = BigInt.fromI64(startOfDay);
@@ -219,34 +251,44 @@ export function getTimeIntervalSummoningStats(eventTimestamp: BigInt): Summoning
 
   // Weekly
   const weeklyId = getWeeklyId(timestamp);
-  const weeklyStat = (SummoningStat.load(weeklyId) || createSummoningStat(weeklyId)) as SummoningStat;
+  const weeklyStat = (SummoningStat.load(weeklyId) ||
+    createSummoningStat(weeklyId)) as SummoningStat;
   const startOfWeek = getStartOfWeek(timestamp);
   weeklyStat.interval = "Weekly";
   weeklyStat.startTimestamp = BigInt.fromI64(startOfWeek);
-  weeklyStat.endTimestamp = BigInt.fromI64(startOfWeek + (SECONDS_IN_DAY * 7) - 1);
+  weeklyStat.endTimestamp = BigInt.fromI64(
+    startOfWeek + SECONDS_IN_DAY * 7 - 1
+  );
   weeklyStat.save();
 
   // Monthly
   const monthlyId = getMonthlyId(timestamp);
-  const monthlyStat = (SummoningStat.load(monthlyId) || createSummoningStat(monthlyId)) as SummoningStat;
+  const monthlyStat = (SummoningStat.load(monthlyId) ||
+    createSummoningStat(monthlyId)) as SummoningStat;
   const startOfMonth = getStartOfMonth(timestamp);
   monthlyStat.interval = "Monthly";
   monthlyStat.startTimestamp = BigInt.fromI64(startOfMonth);
-  monthlyStat.endTimestamp = BigInt.fromI64(startOfMonth + (SECONDS_IN_DAY * getDaysInMonth(month, year)) - 1);
+  monthlyStat.endTimestamp = BigInt.fromI64(
+    startOfMonth + SECONDS_IN_DAY * getDaysInMonth(month, year) - 1
+  );
   monthlyStat.save();
 
   // Yearly
   const yearlyId = getYearlyId(timestamp);
-  const yearlyStat = (SummoningStat.load(yearlyId) || createSummoningStat(yearlyId)) as SummoningStat;
+  const yearlyStat = (SummoningStat.load(yearlyId) ||
+    createSummoningStat(yearlyId)) as SummoningStat;
   const startOfYear = getStartOfYear(timestamp);
   yearlyStat.interval = "Yearly";
   yearlyStat.startTimestamp = BigInt.fromI64(startOfYear);
-  yearlyStat.endTimestamp = BigInt.fromI64(startOfYear + (SECONDS_IN_DAY * getDaysInYear(year)) - 1);
+  yearlyStat.endTimestamp = BigInt.fromI64(
+    startOfYear + SECONDS_IN_DAY * getDaysInYear(year) - 1
+  );
   yearlyStat.save();
 
   // All-time
   const allTimeId = getAllTimeId();
-  const allTimeStat = (SummoningStat.load(allTimeId) || createSummoningStat(allTimeId)) as SummoningStat;
+  const allTimeStat = (SummoningStat.load(allTimeId) ||
+    createSummoningStat(allTimeId)) as SummoningStat;
   allTimeStat.interval = "AllTime";
   allTimeStat.save();
 
@@ -256,7 +298,7 @@ export function getTimeIntervalSummoningStats(eventTimestamp: BigInt): Summoning
     weeklyStat,
     monthlyStat,
     yearlyStat,
-    allTimeStat
+    allTimeStat,
   ];
 }
 
@@ -271,8 +313,14 @@ export function createSummoningStat(id: string): SummoningStat {
   return stat;
 }
 
-export function getOrCreateSummoningLegionStat(summoningStatId: string, legion: Legion): SummoningLegionStat {
-  const id = `${summoningStatId}-${legion.name.toLowerCase().split(" ").join("-")}`;
+export function getOrCreateSummoningLegionStat(
+  summoningStatId: string,
+  legion: Legion
+): SummoningLegionStat {
+  const id = `${summoningStatId}-${legion.name
+    .toLowerCase()
+    .split(" ")
+    .join("-")}`;
   let stat = SummoningLegionStat.load(id);
   if (!stat) {
     stat = new SummoningLegionStat(id);

@@ -1,11 +1,12 @@
-import { Claim, Random, Seeded } from "../../generated/schema";
+import { log, store } from "@graphprotocol/graph-ts";
+
 import {
   RandomRequest,
   RandomSeeded,
 } from "../../generated/Randomizer/Randomizer";
-import { log, store } from "@graphprotocol/graph-ts";
-import { getOrCreateRandom, getOrCreateSeeded } from "../helpers/models";
+import { Claim, Random, Seeded } from "../../generated/schema";
 import { getSeededId } from "../helpers/ids";
+import { getOrCreateRandom, getOrCreateSeeded } from "../helpers/models";
 
 export function handleRandomRequest(event: RandomRequest): void {
   const params = event.params;

@@ -1,11 +1,21 @@
-import { BigInt } from "@graphprotocol/graph-ts";
 import { assert, clearStore, test } from "matchstick-as";
+
+import { BigInt } from "@graphprotocol/graph-ts";
 
 import { Random, Seeded } from "../../generated/schema";
 import { getRandomId, getSeededId } from "../../src/helpers/ids";
-import { handleRandomRequest, handleRandomSeeded } from "../../src/mappings/randomizer";
-import { handleSmolStaked, handleStartClaiming } from "../../src/mappings/smol-farm";
-import { createSmolStakedEvent, createStartClaimingEvent } from "../smol-farm/utils";
+import {
+  handleRandomRequest,
+  handleRandomSeeded,
+} from "../../src/mappings/randomizer";
+import {
+  handleSmolStaked,
+  handleStartClaiming,
+} from "../../src/mappings/smol-farm";
+import {
+  createSmolStakedEvent,
+  createStartClaimingEvent,
+} from "../smol-farm/utils";
 import { createRandomRequestEvent, createRandomSeededEvent } from "./utils";
 
 const CLAIM_ENTITY_TYPE = "Claim";
@@ -28,15 +38,28 @@ test("random and seeded are created", () => {
 
   // Assert seeded was created with random
   const seededId = getSeededId(BigInt.fromI32(commitId));
-  assert.fieldEquals(SEEDED_ENTITY_TYPE, seededId, "_randomIds", `[${randomId}]`)
+  assert.fieldEquals(
+    SEEDED_ENTITY_TYPE,
+    seededId,
+    "_randomIds",
+    `[${randomId}]`
+  );
 
   const newRequestId = 5678;
-  const newRandomRequestEvent = createRandomRequestEvent(newRequestId, commitId);
+  const newRandomRequestEvent = createRandomRequestEvent(
+    newRequestId,
+    commitId
+  );
   handleRandomRequest(newRandomRequestEvent);
 
   // Assert random was added to existing seeded
   const newRandomId = getRandomId(BigInt.fromI32(newRequestId));
-  assert.fieldEquals(SEEDED_ENTITY_TYPE, seededId, "_randomIds", `[${randomId}, ${newRandomId}]`);
+  assert.fieldEquals(
+    SEEDED_ENTITY_TYPE,
+    seededId,
+    "_randomIds",
+    `[${randomId}, ${newRandomId}]`
+  );
 });
 
 test("random request is seeded and claim marked revealable", () => {
@@ -46,13 +69,22 @@ test("random request is seeded and claim marked revealable", () => {
   const requestId = 1234;
   const commitId = 9876;
 
-  const smolStakedEvent = createSmolStakedEvent(USER_ADDRESS, tokenId, 1644190714);
+  const smolStakedEvent = createSmolStakedEvent(
+    USER_ADDRESS,
+    tokenId,
+    1644190714
+  );
   handleSmolStaked(smolStakedEvent);
 
   const randomRequestEvent = createRandomRequestEvent(requestId, commitId);
   handleRandomRequest(randomRequestEvent);
 
-  const startClaimingEvent = createStartClaimingEvent(USER_ADDRESS, tokenId, requestId, 1);
+  const startClaimingEvent = createStartClaimingEvent(
+    USER_ADDRESS,
+    tokenId,
+    requestId,
+    1
+  );
   handleStartClaiming(startClaimingEvent);
 
   // Assert claim was created with starting status

@@ -1,4 +1,5 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts";
+
 import {
   CONSUMABLE_ADDRESS,
   SMOL_TREASURES_ADDRESS,

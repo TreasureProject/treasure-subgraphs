@@ -1,13 +1,15 @@
-import * as questingLegacy from "../../generated/Questing Legacy/Questing";
 import { Address, BigInt, log, store } from "@graphprotocol/graph-ts";
-import { DIFFICULTY, getAddressId, getXpPerLevel } from "../helpers";
+
 import { LEGION_ADDRESS, TREASURE_ADDRESS } from "@treasure/constants";
-import { LegionInfo, Quest, Random, Reward } from "../../generated/schema";
+
+import * as questingLegacy from "../../generated/Questing Legacy/Questing";
 import {
   QuestFinished,
   QuestRevealed,
   QuestStarted,
 } from "../../generated/Questing/Questing";
+import { LegionInfo, Quest, Random, Reward } from "../../generated/schema";
+import { DIFFICULTY, getAddressId, getXpPerLevel } from "../helpers";
 
 function handleQuestStarted(
   address: Address,

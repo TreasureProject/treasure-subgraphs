@@ -1,4 +1,5 @@
 import { BigInt } from "@graphprotocol/graph-ts";
+
 import { LEGION_ADDRESS } from "@treasure/constants";
 
 import { SECONDS_IN_DAY } from "./date";
@@ -23,7 +24,9 @@ export function getDailyId(timestamp: i64): string {
 
 export function getWeeklyId(timestamp: i64): string {
   const date = new Date(timestamp);
-  const sundayDate = new Date(timestamp - (date.getUTCDay() * SECONDS_IN_DAY * 1000));
+  const sundayDate = new Date(
+    timestamp - date.getUTCDay() * SECONDS_IN_DAY * 1000
+  );
   const year = sundayDate.getUTCFullYear();
   const mm = toPaddedString(sundayDate.getUTCMonth() + 1);
   const dd = toPaddedString(sundayDate.getUTCDate());
@@ -47,8 +50,5 @@ export function getAllTimeId(): string {
 }
 
 export function getLegionId(tokenId: BigInt): string {
-  return [
-    LEGION_ADDRESS.toHexString(),
-    tokenId.toHexString()
-  ].join("-");
+  return [LEGION_ADDRESS.toHexString(), tokenId.toHexString()].join("-");
 }

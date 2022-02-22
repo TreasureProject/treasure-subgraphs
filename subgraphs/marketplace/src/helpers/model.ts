@@ -1,7 +1,9 @@
 import { Address, BigInt, log } from "@graphprotocol/graph-ts";
-import { Collection, Token } from "../../generated/schema";
-import { getAddressId, getName } from ".";
+
 import { LEGION_ADDRESS } from "@treasure/constants";
+
+import { getAddressId, getName } from ".";
+import { Collection, Token } from "../../generated/schema";
 
 function createCollection(
   contract: Address,

@@ -3,7 +3,11 @@ import { SMOL_BODIES_ADDRESS } from "@treasure/constants";
 import { DropGym, JoinGym } from "../../generated/Smol Bodies Gym/Gym";
 import { LOCATION_GYM } from "../helpers/constants";
 import { getAttributeId } from "../helpers/ids";
-import { getOrCreateAttribute, getOrCreateCollection, getOrCreateToken } from "../helpers/models";
+import {
+  getOrCreateAttribute,
+  getOrCreateCollection,
+  getOrCreateToken,
+} from "../helpers/models";
 import { handleStake, handleUnstake } from "./common";
 
 export function handleJoinGym(event: JoinGym): void {
@@ -37,7 +41,9 @@ export function handleDropGym(event: DropGym): void {
   platesAttribute.save();
 
   // Remove old swol size attribute
-  const swolSizeAttributeIndex = token.attributes.findIndex((id) => id.includes("swol-size"));
+  const swolSizeAttributeIndex = token.attributes.findIndex((id) =>
+    id.includes("swol-size")
+  );
   if (swolSizeAttributeIndex >= 0) {
     const attributes = token.attributes;
     attributes.splice(swolSizeAttributeIndex, 1);
@@ -45,13 +51,17 @@ export function handleDropGym(event: DropGym): void {
   }
 
   // Add new swol size attribute
-  const swolSizeAttribute = getOrCreateAttribute(collection, token, "Swol Size", level);
-  token.attributes = token.attributes.concat([swolSizeAttribute.id, platesAttribute.id]);
+  const swolSizeAttribute = getOrCreateAttribute(
+    collection,
+    token,
+    "Swol Size",
+    level
+  );
+  token.attributes = token.attributes.concat([
+    swolSizeAttribute.id,
+    platesAttribute.id,
+  ]);
   token.save();
 
-  handleUnstake(
-    SMOL_BODIES_ADDRESS,
-    event.params.tokenId,
-    LOCATION_GYM
-  );
+  handleUnstake(SMOL_BODIES_ADDRESS, event.params.tokenId, LOCATION_GYM);
 }

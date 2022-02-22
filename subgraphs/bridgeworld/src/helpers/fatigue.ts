@@ -1,4 +1,5 @@
 import { BigInt, log } from "@graphprotocol/graph-ts";
+
 import { LegionInfo, _SummonFatigue } from "../../generated/schema";
 
 class Fatigue {

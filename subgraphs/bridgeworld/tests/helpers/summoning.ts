@@ -1,8 +1,12 @@
 import { newMockEvent } from "matchstick-as/assembly";
+
 import { Address, ethereum } from "@graphprotocol/graph-ts";
 
 import { SUMMONING_ADDRESS } from ".";
-import { SummoningFinished, SummoningStarted } from "../../generated/Summoning/Summoning";
+import {
+  SummoningFinished,
+  SummoningStarted,
+} from "../../generated/Summoning/Summoning";
 
 export const createSummoningStartedEvent = (
   user: string,
@@ -19,7 +23,7 @@ export const createSummoningStartedEvent = (
     ),
     new ethereum.EventParam("_tokenId", ethereum.Value.fromI32(tokenId)),
     new ethereum.EventParam("_requestId", ethereum.Value.fromI32(requestId)),
-    new ethereum.EventParam("_finishTime", ethereum.Value.fromI32(finishTime))
+    new ethereum.EventParam("_finishTime", ethereum.Value.fromI32(finishTime)),
   ];
 
   return newEvent;
@@ -40,7 +44,10 @@ export const createdSummoningFinishedEvent = (
     ),
     new ethereum.EventParam("_returnedId", ethereum.Value.fromI32(returnedId)),
     new ethereum.EventParam("_newTokenId", ethereum.Value.fromI32(newTokenId)),
-    new ethereum.EventParam("_newTokenSummoningCooldown", ethereum.Value.fromI32(newTokenSummoningCooldown))
+    new ethereum.EventParam(
+      "_newTokenSummoningCooldown",
+      ethereum.Value.fromI32(newTokenSummoningCooldown)
+    ),
   ];
 
   return newEvent;

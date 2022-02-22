@@ -1,7 +1,8 @@
-import * as common from "../mapping";
 import { Address, BigInt } from "@graphprotocol/graph-ts";
+
 import { Collection } from "../../generated/schema";
 import { isMint } from "../helpers";
+import * as common from "../mapping";
 
 class Transfer__Params {
   from: Address;

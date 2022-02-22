@@ -1,17 +1,19 @@
 import { Address, BigInt, TypedMap } from "@graphprotocol/graph-ts";
-import {
-  Listing,
-  StakedToken,
-  Token,
-  User,
-  UserToken,
-} from "../generated/schema";
+
 import {
   EXPLORER,
   MARKETPLACE_ADDRESS,
   MARKETPLACE_BUYER_ADDRESS,
   TREASURE_ADDRESS,
 } from "@treasure/constants";
+
+import { DropGym, JoinGym } from "../generated/Smol Bodies Gym/Gym";
+import { DropSchool, JoinSchool } from "../generated/Smol Brains School/School";
+import { Transfer } from "../generated/TreasureMarketplace/ERC721";
+import {
+  TransferBatch,
+  TransferSingle,
+} from "../generated/TreasureMarketplace/ERC1155";
 import {
   ItemCanceled,
   ItemListed,
@@ -19,10 +21,12 @@ import {
   ItemUpdated,
 } from "../generated/TreasureMarketplace/TreasureMarketplace";
 import {
-  TransferBatch,
-  TransferSingle,
-} from "../generated/TreasureMarketplace/ERC1155";
-import { Transfer } from "../generated/TreasureMarketplace/ERC721";
+  Listing,
+  StakedToken,
+  Token,
+  User,
+  UserToken,
+} from "../generated/schema";
 import {
   exists,
   getAddressId,
@@ -32,8 +36,6 @@ import {
   removeFromArray,
   removeIfExists,
 } from "./helpers";
-import { DropGym, JoinGym } from "../generated/Smol Bodies Gym/Gym";
-import { DropSchool, JoinSchool } from "../generated/Smol Brains School/School";
 
 let stakers = new TypedMap<string, string>();
 

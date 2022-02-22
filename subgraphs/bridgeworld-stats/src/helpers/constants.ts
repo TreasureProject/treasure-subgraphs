@@ -1,10 +1,6 @@
 import { BigDecimal } from "@graphprotocol/graph-ts";
 
-export const LEGION_GENERATIONS = [
-  "Genesis",
-  "Auxiliary",
-  "Recruit"
-];
+export const LEGION_GENERATIONS = ["Genesis", "Auxiliary", "Recruit"];
 
 export const LEGION_RARITIES = [
   "Legendary",

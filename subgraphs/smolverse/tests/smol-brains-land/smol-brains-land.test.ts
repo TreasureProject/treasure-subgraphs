@@ -1,11 +1,17 @@
-import { Address } from "@graphprotocol/graph-ts";
-import { SMOL_BRAINS_LAND_ADDRESS } from "@treasure/constants";
 import { assert, clearStore, test } from "matchstick-as";
+
+import { Address } from "@graphprotocol/graph-ts";
+
+import { SMOL_BRAINS_LAND_ADDRESS } from "@treasure/constants";
+
 import { Attribute, _LandMetadata } from "../../generated/schema";
 import { SMOL_BRAINS_LAND_BASE_URI } from "../../src/helpers/constants";
-
 import { handleTransfer } from "../../src/mappings/smol-brains-land";
-import { COLLECTION_ENTITY_TYPE, TOKEN_ENTITY_TYPE, USER_ADDRESS } from "../utils";
+import {
+  COLLECTION_ENTITY_TYPE,
+  TOKEN_ENTITY_TYPE,
+  USER_ADDRESS,
+} from "../utils";
 import { createTransferEvent } from "./utils";
 
 test("token is minted", () => {
@@ -23,7 +29,8 @@ test("token is minted", () => {
 
   const landMetadata = new _LandMetadata("all");
   landMetadata.description = "Smol Brains Land";
-  landMetadata.image = "https://treasure-marketplace.mypinata.cloud/ipfs/QmYAkzPbwL7F4S8QrabVgNQMCstfzdcpv1K2XNjBNvvko7/24";
+  landMetadata.image =
+    "https://treasure-marketplace.mypinata.cloud/ipfs/QmYAkzPbwL7F4S8QrabVgNQMCstfzdcpv1K2XNjBNvvko7/24";
   landMetadata.attributes = ["test-attribute1", "test-attribute2"];
   landMetadata.save();
 
@@ -36,10 +43,30 @@ test("token is minted", () => {
   handleTransfer(transferEvent);
 
   // Assert collection base URI is set
-  assert.fieldEquals(COLLECTION_ENTITY_TYPE, address, "baseUri", SMOL_BRAINS_LAND_BASE_URI);
+  assert.fieldEquals(
+    COLLECTION_ENTITY_TYPE,
+    address,
+    "baseUri",
+    SMOL_BRAINS_LAND_BASE_URI
+  );
 
   // Assert token is created
-  assert.fieldEquals(TOKEN_ENTITY_TYPE, `${address}-0x1`, "collection", address);
-  assert.fieldEquals(TOKEN_ENTITY_TYPE, `${address}-0x1`, "owner", USER_ADDRESS);
-  assert.fieldEquals(TOKEN_ENTITY_TYPE, `${address}-0x1`, "attributes", "[test-attribute1, test-attribute2]");
+  assert.fieldEquals(
+    TOKEN_ENTITY_TYPE,
+    `${address}-0x1`,
+    "collection",
+    address
+  );
+  assert.fieldEquals(
+    TOKEN_ENTITY_TYPE,
+    `${address}-0x1`,
+    "owner",
+    USER_ADDRESS
+  );
+  assert.fieldEquals(
+    TOKEN_ENTITY_TYPE,
+    `${address}-0x1`,
+    "attributes",
+    "[test-attribute1, test-attribute2]"
+  );
 });

@@ -1,4 +1,3 @@
-import * as ERC721 from "./721";
 import {
   DropSchool,
   JoinSchool,
@@ -6,6 +5,7 @@ import {
 } from "../../generated/Smol Brains School/School";
 import { Transfer } from "../../generated/Smol Brains/ERC721";
 import { handleStake, handleStakingSet, handleUnstake } from "../mapping";
+import * as ERC721 from "./721";
 
 export function handleTransfer(event: Transfer): void {
   ERC721.handleTransfer(event, "Smol Brains");

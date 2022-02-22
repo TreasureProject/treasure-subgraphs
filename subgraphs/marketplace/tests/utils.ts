@@ -1,16 +1,24 @@
 import { newMockEvent } from "matchstick-as/assembly";
+
 import { Address, ethereum } from "@graphprotocol/graph-ts";
 
+import {
+  MARKETPLACE_ADDRESS,
+  MARKETPLACE_BUYER_ADDRESS,
+} from "@treasure/constants";
+
+import { LegionCreated } from "../generated/Legion Metadata Store/LegionMetadataStore";
+import { Transfer } from "../generated/TreasureMarketplace/ERC721";
+import {
+  TransferBatch,
+  TransferSingle,
+} from "../generated/TreasureMarketplace/ERC1155";
 import {
   ItemCanceled,
   ItemListed,
   ItemSold,
   ItemUpdated,
 } from "../generated/TreasureMarketplace/TreasureMarketplace";
-import { LegionCreated } from "../generated/Legion Metadata Store/LegionMetadataStore";
-import { MARKETPLACE_ADDRESS, MARKETPLACE_BUYER_ADDRESS } from "@treasure/constants";
-import { Transfer } from "../generated/TreasureMarketplace/ERC721";
-import { TransferBatch, TransferSingle } from "../generated/TreasureMarketplace/ERC1155";
 
 export const LEGION_METADATA_STORE_ADDRESS =
   "0x99193EE9229b833d2aA4DbBdA697C6600b944286";

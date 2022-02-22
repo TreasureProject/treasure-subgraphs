@@ -1,11 +1,5 @@
-import {
-  AtlasMine,
-  Deposit,
-  StakedToken,
-  User,
-  Withdraw,
-} from "../../generated/schema";
 import { BigDecimal, BigInt, log, store } from "@graphprotocol/graph-ts";
+
 import {
   Deposit as DepositEvent,
   Staked,
@@ -13,6 +7,13 @@ import {
   UtilizationRate,
   Withdraw as WithdrawEvent,
 } from "../../generated/Atlas Mine/AtlasMine";
+import {
+  AtlasMine,
+  Deposit,
+  StakedToken,
+  User,
+  Withdraw,
+} from "../../generated/schema";
 import { getAddressId } from "../helpers/utils";
 
 const ONE = BigDecimal.fromString((1e18).toString());

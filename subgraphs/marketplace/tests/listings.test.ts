@@ -1,6 +1,9 @@
-import { Address } from "@graphprotocol/graph-ts";
-import { LEGION_ADDRESS, MARKETPLACE_BUYER_ADDRESS } from "@treasure/constants";
 import { assert, clearStore, test } from "matchstick-as/assembly";
+
+import { Address } from "@graphprotocol/graph-ts";
+
+import { LEGION_ADDRESS, MARKETPLACE_BUYER_ADDRESS } from "@treasure/constants";
+
 import {
   handleItemCanceled,
   handleItemListed,
@@ -12,7 +15,6 @@ import {
   handleTransfer as handleLegionTransfer,
 } from "../src/mappings/legions";
 import { handleTransfer as handleSmolBrainsTransfer } from "../src/mappings/smol-brains";
-
 import {
   createItemCanceledEvent,
   createItemListedEvent,

@@ -70,7 +70,7 @@ type AtlasMineStat @entity {
   magicDeposited: BigInt!
   magicWithdrawn: BigInt!
   magicHarvested: BigInt!
-  
+
   "Number of unique addresses actively staking throughout time period"
   activeAddressesCount: Int!
 

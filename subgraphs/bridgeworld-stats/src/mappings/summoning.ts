@@ -9,7 +9,7 @@ import {
   getLegionSummonCost,
   getOrCreateSummoningLegionStat,
   getOrCreateUser,
-  getTimeIntervalSummoningStats
+  getTimeIntervalSummoningStats,
 } from "../helpers/models";
 
 export function handleSummoningStarted(event: SummoningStarted): void {

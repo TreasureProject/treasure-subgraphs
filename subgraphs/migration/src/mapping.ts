@@ -1,19 +1,21 @@
 import {
   Address,
   BigInt,
-  json,
   JSONValueKind,
+  json,
   log,
 } from "@graphprotocol/graph-ts";
+
 import { BURNER_ADDRESS } from "@treasure/constants";
-import { Asset, Transfer, User, UserAsset } from "../generated/schema";
-import { Transfer as TransferEvent } from "../generated/Treasure/ERC721";
+
 import {
   ERC1155,
   TransferBatch,
   TransferSingle,
 } from "../generated/Treasure Fraction/ERC1155";
+import { Transfer as TransferEvent } from "../generated/Treasure/ERC721";
 import { L1Treasure } from "../generated/Treasure/L1Treasure";
+import { Asset, Transfer, User, UserAsset } from "../generated/schema";
 import { base64Decode } from "./helpers";
 
 function addAssetToUser(asset: Asset, user: User): void {

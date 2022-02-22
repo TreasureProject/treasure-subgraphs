@@ -1,7 +1,8 @@
-import { Address, BigInt } from "@graphprotocol/graph-ts";
 import { assert, clearStore, test } from "matchstick-as/assembly";
-import { handleTransferSingle } from "../src/mappings/legacy-legions-genesis";
 
+import { Address, BigInt } from "@graphprotocol/graph-ts";
+
+import { handleTransferSingle } from "../src/mappings/legacy-legions-genesis";
 import { createTransferSingleEvent } from "./utils";
 
 const COLLECTION_ENTITY_TYPE = "Collection";

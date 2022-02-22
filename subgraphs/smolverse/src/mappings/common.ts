@@ -1,16 +1,26 @@
 import { Address, BigInt, log, store } from "@graphprotocol/graph-ts";
+
 import {
   SMOL_BODIES_PETS_ADDRESS,
   SMOL_BRAINS_LAND_ADDRESS,
-  SMOL_BRAINS_PETS_ADDRESS
+  SMOL_BRAINS_PETS_ADDRESS,
 } from "@treasure/constants";
 
-import { Collection, StakedToken, Token, _LandMetadata } from "../../generated/schema";
+import {
+  Collection,
+  StakedToken,
+  Token,
+  _LandMetadata,
+} from "../../generated/schema";
 import { SMOL_BRAINS_LAND_BASE_URI } from "../helpers/constants";
 import { getCollectionId, getStakedTokenId } from "../helpers/ids";
 import { getIpfsJson } from "../helpers/json";
 import { updateTokenMetadata } from "../helpers/metadata";
-import { getOrCreateCollection, getOrCreateToken, getOrCreateUser } from "../helpers/models";
+import {
+  getOrCreateCollection,
+  getOrCreateToken,
+  getOrCreateUser,
+} from "../helpers/models";
 import { isMint } from "../helpers/utils";
 
 export function handleTransfer(
@@ -41,7 +51,8 @@ export function handleTransfer(
       } else {
         tokenUri = `${SMOL_BRAINS_LAND_BASE_URI}0`;
       }
-    } else if (collection.baseUri && collection.baseUri != "test") { // TODO: remove hack when Matchstick supports ipfs
+    } else if (collection.baseUri && collection.baseUri != "test") {
+      // TODO: remove hack when Matchstick supports ipfs
       const baseUri = collection.baseUri as string;
       if (
         collection.id == getCollectionId(SMOL_BRAINS_PETS_ADDRESS) ||
@@ -102,13 +113,13 @@ export function handleStake(
   collection.save();
 }
 
-export function handleUnstake(address: Address, tokenId: BigInt, location: string): void {
+export function handleUnstake(
+  address: Address,
+  tokenId: BigInt,
+  location: string
+): void {
   const collection = getOrCreateCollection(address);
-  const id = getStakedTokenId(
-    collection.id,
-    tokenId,
-    location
-  );
+  const id = getStakedTokenId(collection.id, tokenId, location);
   const stakedToken = StakedToken.load(id);
   if (!stakedToken) {
     log.info("[smol-staking] Skipped already removed staked token: {}", [id]);
@@ -127,4 +138,3 @@ export function handleUnstake(address: Address, tokenId: BigInt, location: strin
   collection.stakedTokensCount -= 1;
   collection.save();
 }
-
