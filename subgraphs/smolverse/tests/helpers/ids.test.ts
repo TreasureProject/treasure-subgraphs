@@ -8,7 +8,7 @@ import {
   getRandomId,
   getSeededId,
   getStakedTokenId,
-  getTokenId
+  getTokenId,
 } from "../../src/helpers/ids";
 
 test("collection unique id is generated", () => {

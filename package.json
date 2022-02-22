@@ -7,6 +7,8 @@
     "subgraphs/*"
   ],
   "scripts": {
+    "format": "prettier --write .",
+    "prepare:git-hooks": "husky install",
     "build:arbitrum-testnet": "yarn workspaces run build:arbitrum-testnet",
     "build:arbitrum": "yarn workspaces run build:arbitrum",
     "build:mainnet": "yarn workspaces run build:mainnet",
@@ -26,8 +28,11 @@
   "devDependencies": {
     "@graphprotocol/graph-cli": "0.26.0",
     "@graphprotocol/graph-ts": "0.24.1",
+    "husky": "^7.0.4",
+    "lint-staged": "^12.3.4",
     "matchstick-as": "0.3.0",
     "mustache": "4.2.0",
+    "prettier": "^2.5.1",
     "typescript": "4.5.5"
   },
   "resolutions": {

@@ -28,7 +28,12 @@ test("smol brains collection is setup properly", () => {
 
   assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "collection", collectionId);
   assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "name", "Smol Brains #1");
-  assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "owners", `[${USER_ADDRESS}-${id}]`);
+  assert.fieldEquals(
+    TOKEN_ENTITY_TYPE,
+    id,
+    "owners",
+    `[${USER_ADDRESS}-${id}]`
+  );
   assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "tokenId", "1");
 
   assert.fieldEquals(COLLECTION_ENTITY_TYPE, collectionId, "totalSales", "0");

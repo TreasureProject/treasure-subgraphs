@@ -12,10 +12,16 @@ export const createTransferEvent = (
   const event = changetype<Transfer>(newMockEvent());
   event.address = SMOL_BRAINS_ADDRESS;
   event.parameters = [
-    new ethereum.EventParam("from", ethereum.Value.fromAddress(Address.fromString(from))),
-    new ethereum.EventParam("to", ethereum.Value.fromAddress(Address.fromString(to))),
-    new ethereum.EventParam("tokenId", ethereum.Value.fromI32(tokenId))
+    new ethereum.EventParam(
+      "from",
+      ethereum.Value.fromAddress(Address.fromString(from))
+    ),
+    new ethereum.EventParam(
+      "to",
+      ethereum.Value.fromAddress(Address.fromString(to))
+    ),
+    new ethereum.EventParam("tokenId", ethereum.Value.fromI32(tokenId)),
   ];
 
   return event;
-}
+};

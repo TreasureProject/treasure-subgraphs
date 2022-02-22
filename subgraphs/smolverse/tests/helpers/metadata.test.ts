@@ -1,4 +1,10 @@
-import { Address, BigDecimal, Bytes, ethereum, json } from "@graphprotocol/graph-ts";
+import {
+  Address,
+  BigDecimal,
+  Bytes,
+  ethereum,
+  json,
+} from "@graphprotocol/graph-ts";
 import { SMOL_BODIES_ADDRESS } from "@treasure/constants";
 import { assert, clearStore, createMockedFunction, test } from "matchstick-as";
 
@@ -6,16 +12,25 @@ import { Attribute, Token } from "../../generated/schema";
 import { updateTokenMetadata } from "../../src/helpers/metadata";
 import { handleTransfer } from "../../src/mappings/smol-bodies";
 import { createTransferEvent } from "../smol-bodies/utils";
-import { ATTRIBUTE_ENTITY_TYPE, TOKEN_ENTITY_TYPE, USER_ADDRESS } from "../utils";
+import {
+  ATTRIBUTE_ENTITY_TYPE,
+  TOKEN_ENTITY_TYPE,
+  USER_ADDRESS,
+} from "../utils";
 
-createMockedFunction(Address.zero(), "baseURI", "baseURI():(string)")
-  .returns([ethereum.Value.fromString("test")]);
+createMockedFunction(Address.zero(), "baseURI", "baseURI():(string)").returns([
+  ethereum.Value.fromString("test"),
+]);
 
-createMockedFunction(SMOL_BODIES_ADDRESS, "baseURI", "baseURI():(string)")
-  .returns([ethereum.Value.fromString("test")]);
+createMockedFunction(
+  SMOL_BODIES_ADDRESS,
+  "baseURI",
+  "baseURI():(string)"
+).returns([ethereum.Value.fromString("test")]);
 
-const mockTokenData = json.fromBytes(
-  Bytes.fromUTF8(`
+const mockTokenData = json
+  .fromBytes(
+    Bytes.fromUTF8(`
     {
       "name": "#1",
       "description": "Smol Bodies",
@@ -33,7 +48,8 @@ const mockTokenData = json.fromBytes(
       ]
     }
   `)
-).toObject();
+  )
+  .toObject();
 
 test("token attributes are set", () => {
   clearStore();
@@ -58,17 +74,32 @@ test("token attributes are set", () => {
 
   // Assert related attributes were created
   const attributeId1 = `${address}-gender-male`;
-  assert.fieldEquals(ATTRIBUTE_ENTITY_TYPE, attributeId1, "collection", address);
+  assert.fieldEquals(
+    ATTRIBUTE_ENTITY_TYPE,
+    attributeId1,
+    "collection",
+    address
+  );
   assert.fieldEquals(ATTRIBUTE_ENTITY_TYPE, attributeId1, "name", "Gender");
   assert.fieldEquals(ATTRIBUTE_ENTITY_TYPE, attributeId1, "value", "male");
 
   const attributeId2 = `${address}-swol-size-0`;
-  assert.fieldEquals(ATTRIBUTE_ENTITY_TYPE, attributeId2, "collection", address);
+  assert.fieldEquals(
+    ATTRIBUTE_ENTITY_TYPE,
+    attributeId2,
+    "collection",
+    address
+  );
   assert.fieldEquals(ATTRIBUTE_ENTITY_TYPE, attributeId2, "name", "Swol Size");
   assert.fieldEquals(ATTRIBUTE_ENTITY_TYPE, attributeId2, "value", "0");
 
   // Assert attributes were attached to token
-  assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "attributes", `[${attributeId1}, ${attributeId2}]`);
+  assert.fieldEquals(
+    TOKEN_ENTITY_TYPE,
+    id,
+    "attributes",
+    `[${attributeId1}, ${attributeId2}]`
+  );
 });
 
 test("token attribute percentages are set", () => {
@@ -103,8 +134,11 @@ test("token attribute percentages are set", () => {
   const token2 = Token.load(`${address}-0x2`) as Token;
   const token3 = Token.load(`${address}-0x3`) as Token;
 
-  updateTokenMetadata(token1, json.fromBytes(
-    Bytes.fromUTF8(`
+  updateTokenMetadata(
+    token1,
+    json
+      .fromBytes(
+        Bytes.fromUTF8(`
       {
         "name": "#1",
         "description": "Smol Bodies",
@@ -121,10 +155,15 @@ test("token attribute percentages are set", () => {
         ]
       }
     `)
-  ).toObject());
+      )
+      .toObject()
+  );
 
-  updateTokenMetadata(token2, json.fromBytes(
-    Bytes.fromUTF8(`
+  updateTokenMetadata(
+    token2,
+    json
+      .fromBytes(
+        Bytes.fromUTF8(`
       {
         "name": "#2",
         "description": "Smol Bodies",
@@ -141,10 +180,15 @@ test("token attribute percentages are set", () => {
         ]
       }
     `)
-  ).toObject());
+      )
+      .toObject()
+  );
 
-  updateTokenMetadata(token3, json.fromBytes(
-    Bytes.fromUTF8(`
+  updateTokenMetadata(
+    token3,
+    json
+      .fromBytes(
+        Bytes.fromUTF8(`
       {
         "name": "#3",
         "description": "Smol Bodies",
@@ -161,14 +205,41 @@ test("token attribute percentages are set", () => {
         ]
       }
     `)
-  ).toObject());
+      )
+      .toObject()
+  );
 
   // Assert attribute percentages
-  assert.fieldEquals(ATTRIBUTE_ENTITY_TYPE, `${address}-gender-male`, "percentage", "0.6666666666");
-  assert.fieldEquals(ATTRIBUTE_ENTITY_TYPE, `${address}-gender-female`, "percentage", "0.3333333333");
-  assert.fieldEquals(ATTRIBUTE_ENTITY_TYPE, `${address}-background-dojo`, "percentage", "0.3333333333");
-  assert.fieldEquals(ATTRIBUTE_ENTITY_TYPE, `${address}-background-alley`, "percentage", "0.3333333333");
-  assert.fieldEquals(ATTRIBUTE_ENTITY_TYPE, `${address}-background-gym`, "percentage", "0.3333333333");
+  assert.fieldEquals(
+    ATTRIBUTE_ENTITY_TYPE,
+    `${address}-gender-male`,
+    "percentage",
+    "0.6666666666"
+  );
+  assert.fieldEquals(
+    ATTRIBUTE_ENTITY_TYPE,
+    `${address}-gender-female`,
+    "percentage",
+    "0.3333333333"
+  );
+  assert.fieldEquals(
+    ATTRIBUTE_ENTITY_TYPE,
+    `${address}-background-dojo`,
+    "percentage",
+    "0.3333333333"
+  );
+  assert.fieldEquals(
+    ATTRIBUTE_ENTITY_TYPE,
+    `${address}-background-alley`,
+    "percentage",
+    "0.3333333333"
+  );
+  assert.fieldEquals(
+    ATTRIBUTE_ENTITY_TYPE,
+    `${address}-background-gym`,
+    "percentage",
+    "0.3333333333"
+  );
 });
 
 test("token attribute percentages are not set until threshold is met", () => {
@@ -181,11 +252,17 @@ test("token attribute percentages are not set until threshold is met", () => {
   );
   handleTransfer(transferEvent);
 
-  const token = Token.load(`${transferEvent.address.toHexString()}-0x1`) as Token;
+  const token = Token.load(
+    `${transferEvent.address.toHexString()}-0x1`
+  ) as Token;
   updateTokenMetadata(token, mockTokenData);
 
   // Assert attribute percentages were not updated
-  const attribute = Attribute.load(`${transferEvent.address.toHexString()}-gender-male`) as Attribute;
-  const percentage = attribute.percentage ? (attribute.percentage as BigDecimal).toString() : "unknown";
-  assert.assertTrue(percentage == "unknown")
+  const attribute = Attribute.load(
+    `${transferEvent.address.toHexString()}-gender-male`
+  ) as Attribute;
+  const percentage = attribute.percentage
+    ? (attribute.percentage as BigDecimal).toString()
+    : "unknown";
+  assert.assertTrue(percentage == "unknown");
 });

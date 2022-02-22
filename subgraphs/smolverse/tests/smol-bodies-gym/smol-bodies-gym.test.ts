@@ -3,8 +3,16 @@ import { SMOL_BODIES_ADDRESS } from "@treasure/constants";
 import { assert, clearStore, test } from "matchstick-as";
 
 import { Collection, StakedToken, Token, User } from "../../generated/schema";
-import { handleDropGym, handleJoinGym } from "../../src/mappings/smol-bodies-gym";
-import { ATTRIBUTE_ENTITY_TYPE, STAKED_TOKEN_ENTITY_TYPE, TOKEN_ENTITY_TYPE, USER_ADDRESS } from "../utils";
+import {
+  handleDropGym,
+  handleJoinGym,
+} from "../../src/mappings/smol-bodies-gym";
+import {
+  ATTRIBUTE_ENTITY_TYPE,
+  STAKED_TOKEN_ENTITY_TYPE,
+  TOKEN_ENTITY_TYPE,
+  USER_ADDRESS,
+} from "../utils";
 import { createDropGymEvent, createJoinGymEvent } from "./utils";
 
 test("smol bodies joining gym creates staked token", () => {
@@ -18,7 +26,9 @@ test("smol bodies joining gym creates staked token", () => {
   assert.assertNotNull(user);
 
   // Assert collection was created
-  const collection = Collection.load(SMOL_BODIES_ADDRESS.toHexString()) as Collection;
+  const collection = Collection.load(
+    SMOL_BODIES_ADDRESS.toHexString()
+  ) as Collection;
   assert.assertNotNull(collection);
 
   // Assert token was created
@@ -29,9 +39,24 @@ test("smol bodies joining gym creates staked token", () => {
 
   // Assert staked token was created
   const stakedTokenId = `${tokenId}-gym`;
-  assert.fieldEquals(STAKED_TOKEN_ENTITY_TYPE, stakedTokenId, "token", token.id);
-  assert.fieldEquals(STAKED_TOKEN_ENTITY_TYPE, stakedTokenId, "location", "Gym");
-  assert.fieldEquals(STAKED_TOKEN_ENTITY_TYPE, stakedTokenId, "owner", USER_ADDRESS);
+  assert.fieldEquals(
+    STAKED_TOKEN_ENTITY_TYPE,
+    stakedTokenId,
+    "token",
+    token.id
+  );
+  assert.fieldEquals(
+    STAKED_TOKEN_ENTITY_TYPE,
+    stakedTokenId,
+    "location",
+    "Gym"
+  );
+  assert.fieldEquals(
+    STAKED_TOKEN_ENTITY_TYPE,
+    stakedTokenId,
+    "owner",
+    USER_ADDRESS
+  );
 });
 
 test("smol bodies dropping gym removes staked token", () => {
@@ -69,5 +94,10 @@ test("smol bodies dropping gym updates plates and swol size", () => {
 
   // Assert Swol Size attribute is updated
   const swolSizeAttributeId = `${SMOL_BODIES_ADDRESS.toHexString()}-swol-size-1`;
-  assert.fieldEquals(TOKEN_ENTITY_TYPE, `${SMOL_BODIES_ADDRESS.toHexString()}-0x1`, "attributes", `[${swolSizeAttributeId}, ${platesAttributeId}]`);
+  assert.fieldEquals(
+    TOKEN_ENTITY_TYPE,
+    `${SMOL_BODIES_ADDRESS.toHexString()}-0x1`,
+    "attributes",
+    `[${swolSizeAttributeId}, ${platesAttributeId}]`
+  );
 });

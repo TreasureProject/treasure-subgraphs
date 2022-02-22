@@ -1,13 +1,28 @@
 import { Address, ethereum } from "@graphprotocol/graph-ts";
 import { SMOL_BODIES_PETS_ADDRESS } from "@treasure/constants";
-import { assert, clearStore, createMockedFunction, test } from "matchstick-as/assembly/index";
+import {
+  assert,
+  clearStore,
+  createMockedFunction,
+  test,
+} from "matchstick-as/assembly/index";
 
 import { createBaseUriChangedEvent, createTransferEvent } from "./utils";
-import { handleBaseUriChanged, handleTransfer } from "../../src/mappings/smol-pets";
-import { COLLECTION_ENTITY_TYPE, TOKEN_ENTITY_TYPE, USER_ADDRESS } from "../utils";
+import {
+  handleBaseUriChanged,
+  handleTransfer,
+} from "../../src/mappings/smol-pets";
+import {
+  COLLECTION_ENTITY_TYPE,
+  TOKEN_ENTITY_TYPE,
+  USER_ADDRESS,
+} from "../utils";
 
-createMockedFunction(SMOL_BODIES_PETS_ADDRESS, "baseURI", "baseURI():(string)")
-  .returns([ethereum.Value.fromString("test")]);
+createMockedFunction(
+  SMOL_BODIES_PETS_ADDRESS,
+  "baseURI",
+  "baseURI():(string)"
+).returns([ethereum.Value.fromString("test")]);
 
 test("collection base uri is changed", () => {
   clearStore();
@@ -16,9 +31,14 @@ test("collection base uri is changed", () => {
   const baseUriChangedEvent = createBaseUriChangedEvent("", baseUri);
 
   handleBaseUriChanged(baseUriChangedEvent);
-  
+
   // Assert collection base URI is updated
-  assert.fieldEquals(COLLECTION_ENTITY_TYPE, baseUriChangedEvent.address.toHexString(), "baseUri", baseUri);
+  assert.fieldEquals(
+    COLLECTION_ENTITY_TYPE,
+    baseUriChangedEvent.address.toHexString(),
+    "baseUri",
+    baseUri
+  );
 });
 
 test("token is minted", () => {
@@ -37,6 +57,16 @@ test("token is minted", () => {
   assert.fieldEquals(COLLECTION_ENTITY_TYPE, address, "baseUri", "test");
 
   // Assert token is created
-  assert.fieldEquals(TOKEN_ENTITY_TYPE, `${address}-0x1`, "collection", address);
-  assert.fieldEquals(TOKEN_ENTITY_TYPE, `${address}-0x1`, "owner", USER_ADDRESS);
+  assert.fieldEquals(
+    TOKEN_ENTITY_TYPE,
+    `${address}-0x1`,
+    "collection",
+    address
+  );
+  assert.fieldEquals(
+    TOKEN_ENTITY_TYPE,
+    `${address}-0x1`,
+    "owner",
+    USER_ADDRESS
+  );
 });

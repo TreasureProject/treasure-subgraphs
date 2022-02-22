@@ -1,10 +1,27 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts";
 import { SMOL_TREASURES_ADDRESS } from "@treasure/constants";
 
-import { Attribute, Collection, Random, Seeded, Token, User } from "../../generated/schema";
+import {
+  Attribute,
+  Collection,
+  Random,
+  Seeded,
+  Token,
+  User,
+} from "../../generated/schema";
 import { getNameForCollection } from "./collections";
-import { SMOL_TREASURES_COLLECTION_NAME, SMOL_TREASURES_IMAGES_BASE_URI, TOKEN_STANDARD_ERC721 } from "./constants";
-import { getAttributeId, getCollectionId, getRandomId, getSeededId, getTokenId } from "./ids";
+import {
+  SMOL_TREASURES_COLLECTION_NAME,
+  SMOL_TREASURES_IMAGES_BASE_URI,
+  TOKEN_STANDARD_ERC721,
+} from "./constants";
+import {
+  getAttributeId,
+  getCollectionId,
+  getRandomId,
+  getSeededId,
+  getTokenId,
+} from "./ids";
 import { getTreasureTokenName } from "./treasures";
 
 export function getOrCreateUser(id: string): User {
@@ -67,10 +84,13 @@ export function getOrCreateCollection(address: Address): Collection {
   return collection;
 }
 
-export function getOrCreateToken(collection: Collection, tokenId: BigInt): Token {
+export function getOrCreateToken(
+  collection: Collection,
+  tokenId: BigInt
+): Token {
   const id = getTokenId(collection, tokenId);
   let token = Token.load(id);
-  
+
   if (!token) {
     token = new Token(id);
     token.collection = collection.id;
@@ -96,7 +116,9 @@ export function getOrCreateRewardToken(tokenId: BigInt): Token {
     token.tokenId = tokenId;
     token.name = getTreasureTokenName(tokenId);
     token.description = SMOL_TREASURES_COLLECTION_NAME;
-    token.image = `${SMOL_TREASURES_IMAGES_BASE_URI}${tokenId.minus(BigInt.fromI32(1)).toString()}.gif`;
+    token.image = `${SMOL_TREASURES_IMAGES_BASE_URI}${tokenId
+      .minus(BigInt.fromI32(1))
+      .toString()}.gif`;
     token.save();
 
     collection.tokensCount += 1;

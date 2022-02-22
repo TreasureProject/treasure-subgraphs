@@ -41,7 +41,7 @@ export function handlePilgrimagesStarted(event: PilgrimagesStarted): void {
   }
 
   for (let index = 0; index < amounts.length; index++) {
-    let amount = amounts[index].toI32()
+    let amount = amounts[index].toI32();
 
     pilgrimage.current = pilgrimage.current + amount;
     pilgrimage.total = pilgrimage.total + amount;

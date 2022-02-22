@@ -2,22 +2,38 @@ import { Address, ethereum } from "@graphprotocol/graph-ts";
 import { SMOL_BODIES_ADDRESS } from "@treasure/constants";
 import { assert, clearStore, createMockedFunction, test } from "matchstick-as";
 
-import { handleBaseUriChanged, handleTransfer } from "../../src/mappings/smol-bodies";
-import { COLLECTION_ENTITY_TYPE, TOKEN_ENTITY_TYPE, USER_ADDRESS } from "../utils";
+import {
+  handleBaseUriChanged,
+  handleTransfer,
+} from "../../src/mappings/smol-bodies";
+import {
+  COLLECTION_ENTITY_TYPE,
+  TOKEN_ENTITY_TYPE,
+  USER_ADDRESS,
+} from "../utils";
 import { createBaseUriChangedEvent, createTransferEvent } from "./utils";
 
-createMockedFunction(SMOL_BODIES_ADDRESS, "baseURI", "baseURI():(string)")
-  .returns([ethereum.Value.fromString("test")]);
+createMockedFunction(
+  SMOL_BODIES_ADDRESS,
+  "baseURI",
+  "baseURI():(string)"
+).returns([ethereum.Value.fromString("test")]);
 
 test("collection base uri is changed", () => {
   clearStore();
 
-  const baseUri = "https://treasure-marketplace.mypinata.cloud/ipfs/Qmbt6W9QB74VZzJfWbqG7vi2hiE2K4AnoyvWGFDHEjgoqN/";
+  const baseUri =
+    "https://treasure-marketplace.mypinata.cloud/ipfs/Qmbt6W9QB74VZzJfWbqG7vi2hiE2K4AnoyvWGFDHEjgoqN/";
   const baseUriChangedEvent = createBaseUriChangedEvent("", baseUri);
 
   handleBaseUriChanged(baseUriChangedEvent);
-  
-  assert.fieldEquals(COLLECTION_ENTITY_TYPE, baseUriChangedEvent.address.toHexString(), "baseUri", baseUri);
+
+  assert.fieldEquals(
+    COLLECTION_ENTITY_TYPE,
+    baseUriChangedEvent.address.toHexString(),
+    "baseUri",
+    baseUri
+  );
 });
 
 test("token is minted", () => {
@@ -35,6 +51,16 @@ test("token is minted", () => {
   assert.fieldEquals(COLLECTION_ENTITY_TYPE, address, "baseUri", "test");
 
   // Assert token is created
-  assert.fieldEquals(TOKEN_ENTITY_TYPE, `${address}-0x1`, "collection", address);
-  assert.fieldEquals(TOKEN_ENTITY_TYPE, `${address}-0x1`, "owner", USER_ADDRESS);
+  assert.fieldEquals(
+    TOKEN_ENTITY_TYPE,
+    `${address}-0x1`,
+    "collection",
+    address
+  );
+  assert.fieldEquals(
+    TOKEN_ENTITY_TYPE,
+    `${address}-0x1`,
+    "owner",
+    USER_ADDRESS
+  );
 });

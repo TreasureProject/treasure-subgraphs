@@ -73,7 +73,7 @@ export const createCraftingStartedWithoutDifficultyEvent = (
   tokenId: i32,
   requestId: i32,
   treasures: i32[] = [95],
-  amounts: i32[] = [1],
+  amounts: i32[] = [1]
 ): craftingLegacy.CraftingStarted => {
   const newEvent = changetype<craftingLegacy.CraftingStarted>(
     _createCraftingStartedEvent(user, tokenId, requestId, treasures, amounts)

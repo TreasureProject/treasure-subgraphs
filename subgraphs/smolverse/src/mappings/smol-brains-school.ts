@@ -1,11 +1,18 @@
 import { BigInt, log } from "@graphprotocol/graph-ts";
 import { SMOL_BRAINS_ADDRESS } from "@treasure/constants";
 
-import { DropSchool, JoinSchool } from "../../generated/Smol Brains School/School";
+import {
+  DropSchool,
+  JoinSchool,
+} from "../../generated/Smol Brains School/School";
 import { SmolBrains } from "../../generated/Smol Brains/SmolBrains";
 import { LOCATION_SCHOOL } from "../helpers/constants";
 import { getAttributeId } from "../helpers/ids";
-import { getOrCreateAttribute, getOrCreateCollection, getOrCreateToken } from "../helpers/models";
+import {
+  getOrCreateAttribute,
+  getOrCreateCollection,
+  getOrCreateToken,
+} from "../helpers/models";
 import { weiToEther } from "../helpers/number";
 import { handleStake, handleUnstake } from "./common";
 
@@ -44,32 +51,38 @@ export function handleDropSchool(event: DropSchool): void {
     // Update Head Size attribute
     const level = Math.min(
       Math.floor(
-        weiToEther(
-          BigInt.fromString(iqAttribute.value).div(BigInt.fromI32(50))
-        )
+        weiToEther(BigInt.fromString(iqAttribute.value).div(BigInt.fromI32(50)))
       ),
       5
     );
     const levelString = level.toString().replace(".0", "");
 
     // Remove old head size attribute
-    const headSizeAttributeIndex = token.attributes.findIndex((id) => id.includes("head-size"));
+    const headSizeAttributeIndex = token.attributes.findIndex((id) =>
+      id.includes("head-size")
+    );
     if (headSizeAttributeIndex >= 0) {
       const attributes = token.attributes;
       attributes.splice(headSizeAttributeIndex, 1);
       token.attributes = attributes;
     }
 
-    const headSizeAttribute = getOrCreateAttribute(collection, token, "Head Size", levelString);
-    token.attributes = token.attributes.concat([headSizeAttribute.id, iqAttribute.id]);
+    const headSizeAttribute = getOrCreateAttribute(
+      collection,
+      token,
+      "Head Size",
+      levelString
+    );
+    token.attributes = token.attributes.concat([
+      headSizeAttribute.id,
+      iqAttribute.id,
+    ]);
     token.save();
   } else {
-    log.error("[smol-brains-school] Error fetching new IQ: {}", [tokenId.toString()]);
+    log.error("[smol-brains-school] Error fetching new IQ: {}", [
+      tokenId.toString(),
+    ]);
   }
 
-  handleUnstake(
-    SMOL_BRAINS_ADDRESS,
-    tokenId,
-    LOCATION_SCHOOL
-  );
+  handleUnstake(SMOL_BRAINS_ADDRESS, tokenId, LOCATION_SCHOOL);
 }
