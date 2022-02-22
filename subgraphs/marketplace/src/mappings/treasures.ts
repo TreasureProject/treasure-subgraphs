@@ -1,9 +1,9 @@
-import * as common from "../mapping";
 import {
   TransferBatch,
   TransferSingle,
 } from "../../generated/TreasureMarketplace/ERC1155";
 import { createErc1155Collection } from "../helpers";
+import * as common from "../mapping";
 
 export function handleTransferSingle(event: TransferSingle): void {
   createErc1155Collection(event.address, "Treasures");

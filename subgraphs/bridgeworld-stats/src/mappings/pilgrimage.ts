@@ -1,10 +1,11 @@
-import { Pilgrimage } from "../../generated/schema";
+import { log } from "@graphprotocol/graph-ts";
+
 import {
   NoPilgrimagesToFinish,
   PilgrimagesFinished,
   PilgrimagesStarted,
 } from "../../generated/Pilgrimage/Pilgrimage";
-import { log } from "@graphprotocol/graph-ts";
+import { Pilgrimage } from "../../generated/schema";
 
 export function handleNoPilgrimagesToFinish(
   event: NoPilgrimagesToFinish

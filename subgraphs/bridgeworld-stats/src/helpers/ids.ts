@@ -1,4 +1,5 @@
 import { BigInt } from "@graphprotocol/graph-ts";
+
 import { LEGION_ADDRESS } from "@treasure/constants";
 
 import { SECONDS_IN_DAY } from "./date";

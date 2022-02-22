@@ -1,6 +1,7 @@
+import { newMockEvent } from "matchstick-as";
+
 import { Address, ethereum } from "@graphprotocol/graph-ts";
 
-import { newMockEvent } from "matchstick-as";
 import {
   DropSchool,
   JoinSchool,

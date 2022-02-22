@@ -1,5 +1,3 @@
-import { Address, ethereum } from "@graphprotocol/graph-ts";
-import { SMOL_BODIES_PETS_ADDRESS } from "@treasure/constants";
 import {
   assert,
   clearStore,
@@ -7,7 +5,10 @@ import {
   test,
 } from "matchstick-as/assembly/index";
 
-import { createBaseUriChangedEvent, createTransferEvent } from "./utils";
+import { Address, ethereum } from "@graphprotocol/graph-ts";
+
+import { SMOL_BODIES_PETS_ADDRESS } from "@treasure/constants";
+
 import {
   handleBaseUriChanged,
   handleTransfer,
@@ -17,6 +18,7 @@ import {
   TOKEN_ENTITY_TYPE,
   USER_ADDRESS,
 } from "../utils";
+import { createBaseUriChangedEvent, createTransferEvent } from "./utils";
 
 createMockedFunction(
   SMOL_BODIES_PETS_ADDRESS,

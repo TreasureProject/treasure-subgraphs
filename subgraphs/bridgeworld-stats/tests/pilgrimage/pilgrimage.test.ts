@@ -1,14 +1,14 @@
 import { assert, clearStore, test } from "matchstick-as/assembly/index";
 
 import {
-  PILGRIMAGE_ADDRESS,
-  createPilgrimagesStartedEvent,
-  createPilgrimagesFinishedEvent,
-} from "./utils";
-import {
-  handlePilgrimagesStarted,
   handlePilgrimagesFinished,
+  handlePilgrimagesStarted,
 } from "../../src/mappings/pilgrimage";
+import {
+  PILGRIMAGE_ADDRESS,
+  createPilgrimagesFinishedEvent,
+  createPilgrimagesStartedEvent,
+} from "./utils";
 
 const PILGRIMAGE_ENTITY_TYPE = "Pilgrimage";
 const USER_ADDRESS = "0x461950b159366edcd2bcbee8126d973ac49238e0";

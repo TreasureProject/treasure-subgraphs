@@ -1,8 +1,10 @@
-import { BigInt } from "@graphprotocol/graph-ts";
-import { SMOL_TREASURES_ADDRESS } from "@treasure/constants";
 import { assert, clearStore, test } from "matchstick-as";
-import { Collection, StakedToken, Token, User } from "../../generated/schema";
 
+import { BigInt } from "@graphprotocol/graph-ts";
+
+import { SMOL_TREASURES_ADDRESS } from "@treasure/constants";
+
+import { Collection, StakedToken, Token, User } from "../../generated/schema";
 import {
   getCollectionId,
   getStakedTokenId,

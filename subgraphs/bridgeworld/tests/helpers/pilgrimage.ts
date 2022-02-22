@@ -1,11 +1,12 @@
 import { newMockEvent } from "matchstick-as/assembly";
+
 import { Address, ethereum } from "@graphprotocol/graph-ts";
 
-import {
-  PilgrimagesStarted,
-  PilgrimagesFinished,
-} from "../../generated/Pilgrimage/Pilgrimage";
 import { PILGRIMAGE_ADDRESS } from ".";
+import {
+  PilgrimagesFinished,
+  PilgrimagesStarted,
+} from "../../generated/Pilgrimage/Pilgrimage";
 
 export const createPilgrimagesStartedEvent = (
   user: string,

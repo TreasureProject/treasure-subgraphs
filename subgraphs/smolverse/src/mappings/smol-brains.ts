@@ -2,7 +2,6 @@ import { SmolBrains, Transfer } from "../../generated/Smol Brains/SmolBrains";
 import { SMOL_BRAINS_BASE_URI } from "../helpers/constants";
 import { getAttributeId } from "../helpers/ids";
 import { getOrCreateAttribute, getOrCreateCollection } from "../helpers/models";
-
 import { handleTransfer as commonHandleTransfer } from "./common";
 
 export function handleTransfer(event: Transfer): void {

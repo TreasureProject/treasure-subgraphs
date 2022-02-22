@@ -1,4 +1,5 @@
 import { Address, BigInt, store } from "@graphprotocol/graph-ts";
+
 import { Token, User, UserToken } from "../generated/schema";
 import { getAddressId, getImageHash, getName, getRarity } from "./helpers";
 

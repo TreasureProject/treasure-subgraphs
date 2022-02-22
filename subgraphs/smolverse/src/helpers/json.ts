@@ -1,10 +1,10 @@
 import {
-  ipfs,
-  json,
   JSONValue,
   JSONValueKind,
-  log,
   TypedMap,
+  ipfs,
+  json,
+  log,
 } from "@graphprotocol/graph-ts";
 
 const MAX_RETRIES = 2;

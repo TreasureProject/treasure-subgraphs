@@ -1,6 +1,6 @@
 import { assert, clearStore, test } from "matchstick-as";
-import { handleLegionCreated } from "../../src/mappings/legion";
 
+import { handleLegionCreated } from "../../src/mappings/legion";
 import {
   handleSummoningFinished,
   handleSummoningStarted,

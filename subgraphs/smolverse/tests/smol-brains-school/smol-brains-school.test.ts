@@ -1,6 +1,8 @@
-import { BigInt, ethereum } from "@graphprotocol/graph-ts";
-import { SMOL_BRAINS_ADDRESS } from "@treasure/constants";
 import { assert, clearStore, createMockedFunction, test } from "matchstick-as";
+
+import { BigInt, ethereum } from "@graphprotocol/graph-ts";
+
+import { SMOL_BRAINS_ADDRESS } from "@treasure/constants";
 
 import { Collection, StakedToken, Token, User } from "../../generated/schema";
 import {

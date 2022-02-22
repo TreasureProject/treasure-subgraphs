@@ -1,3 +1,5 @@
+import { assert, clearStore, createMockedFunction, test } from "matchstick-as";
+
 import {
   Address,
   BigDecimal,
@@ -5,8 +7,8 @@ import {
   ethereum,
   json,
 } from "@graphprotocol/graph-ts";
+
 import { SMOL_BODIES_ADDRESS } from "@treasure/constants";
-import { assert, clearStore, createMockedFunction, test } from "matchstick-as";
 
 import { Attribute, Token } from "../../generated/schema";
 import { updateTokenMetadata } from "../../src/helpers/metadata";

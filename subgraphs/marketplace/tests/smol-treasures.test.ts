@@ -1,16 +1,18 @@
+import { assert, clearStore, test } from "matchstick-as/assembly";
+
 import { Address, BigInt } from "@graphprotocol/graph-ts";
+
 import {
   MARKETPLACE_ADDRESS,
   MARKETPLACE_BUYER_ADDRESS,
   SMOL_TREASURES_ADDRESS,
 } from "@treasure/constants";
-import { assert, clearStore, test } from "matchstick-as/assembly";
+
 import { handleItemListed, handleItemSold } from "../src/mapping";
 import {
   handleTransferBatch,
   handleTransferSingle,
 } from "../src/mappings/smol-treasures";
-
 import {
   createItemListedEvent,
   createItemSoldEvent,

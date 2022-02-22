@@ -1,6 +1,8 @@
-import { Address, ethereum } from "@graphprotocol/graph-ts";
-import { SMOL_BRAINS_ADDRESS } from "@treasure/constants";
 import { assert, clearStore, createMockedFunction, test } from "matchstick-as";
+
+import { Address, ethereum } from "@graphprotocol/graph-ts";
+
+import { SMOL_BRAINS_ADDRESS } from "@treasure/constants";
 
 import { handleTransfer } from "../../src/mappings/smol-brains";
 import {

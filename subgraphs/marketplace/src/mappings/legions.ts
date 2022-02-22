@@ -1,10 +1,12 @@
-import * as common from "../mapping";
-import { Transfer } from "../../generated/TreasureMarketplace/ERC721";
-import { LegionCreated } from "../../generated/Legion Metadata Store/LegionMetadataStore";
-import { createLegionsCollection, getAddressId } from "../helpers";
-import { Token } from "../../generated/schema";
 import { BigInt, log } from "@graphprotocol/graph-ts";
+
 import { LEGION_ADDRESS } from "@treasure/constants";
+
+import { LegionCreated } from "../../generated/Legion Metadata Store/LegionMetadataStore";
+import { Transfer } from "../../generated/TreasureMarketplace/ERC721";
+import { Token } from "../../generated/schema";
+import { createLegionsCollection, getAddressId } from "../helpers";
+import * as common from "../mapping";
 
 const RARITY = [
   "Legendary",

@@ -1,6 +1,7 @@
+import { newMockEvent } from "matchstick-as";
+
 import { Address, ethereum } from "@graphprotocol/graph-ts";
 
-import { newMockEvent } from "matchstick-as";
 import { DropGym, JoinGym } from "../../generated/Smol Bodies Gym/Gym";
 
 export function createJoinGymEvent(owner: string, tokenId: i32): JoinGym {

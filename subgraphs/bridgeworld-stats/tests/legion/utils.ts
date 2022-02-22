@@ -1,5 +1,6 @@
-import { Address, ethereum } from "@graphprotocol/graph-ts";
 import { newMockEvent } from "matchstick-as";
+
+import { Address, ethereum } from "@graphprotocol/graph-ts";
 
 import { LegionCreated } from "../../generated/Legion Metadata Store/LegionMetadataStore";
 

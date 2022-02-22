@@ -1,5 +1,10 @@
-import * as common from "../mapping";
 import { Address, BigInt, log, store } from "@graphprotocol/graph-ts";
+
+import {
+  ApprovalForAll,
+  TransferBatch,
+  TransferSingle,
+} from "../../generated/Consumable/ERC1155";
 import {
   Approval,
   ConsumableInfo,
@@ -7,12 +12,8 @@ import {
   User,
   UserApproval,
 } from "../../generated/schema";
-import {
-  ApprovalForAll,
-  TransferBatch,
-  TransferSingle,
-} from "../../generated/Consumable/ERC1155";
 import { getAddressId, isMint } from "../helpers";
+import * as common from "../mapping";
 
 // @ts-ignore - i32 undefined
 function getName(tokenId: i32): string {

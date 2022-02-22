@@ -1,4 +1,5 @@
 import { assert, test } from "matchstick-as";
+
 import { stringToSlug } from "../../src/helpers/string";
 
 test("that string is converted to slug", () => {

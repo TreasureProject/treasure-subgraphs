@@ -1,6 +1,8 @@
-import { Address, ethereum } from "@graphprotocol/graph-ts";
-import { SMOL_BRAINS_ADDRESS } from "@treasure/constants";
 import { newMockEvent } from "matchstick-as/assembly/index";
+
+import { Address, ethereum } from "@graphprotocol/graph-ts";
+
+import { SMOL_BRAINS_ADDRESS } from "@treasure/constants";
 
 import { Transfer } from "../../generated/Smol Brains/SmolBrains";
 

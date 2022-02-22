@@ -1,5 +1,5 @@
-import * as common from "../mapping";
 import { TransferSingle } from "../../generated/Extra Life/ERC1155";
+import * as common from "../mapping";
 
 export function handleTransferSingle(event: TransferSingle): void {
   let params = event.params;

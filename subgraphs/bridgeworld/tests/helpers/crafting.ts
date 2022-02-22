@@ -1,13 +1,14 @@
-import * as craftingLegacy from "../../generated/Crafting Legacy/Crafting";
 import { newMockEvent } from "matchstick-as/assembly";
+
 import { Address, ethereum } from "@graphprotocol/graph-ts";
 
+import { CRAFTING_ADDRESS } from ".";
+import * as craftingLegacy from "../../generated/Crafting Legacy/Crafting";
 import {
   CraftingFinished,
   CraftingRevealed,
   CraftingStarted,
 } from "../../generated/Crafting/Crafting";
-import { CRAFTING_ADDRESS } from ".";
 
 const _createCraftingStartedEvent = (
   user: string,

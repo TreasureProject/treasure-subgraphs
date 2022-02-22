@@ -1,5 +1,9 @@
 import { assert, clearStore, test } from "matchstick-as/assembly";
 
+import { Address } from "@graphprotocol/graph-ts";
+
+import { handleDeposit, handleWithdraw } from "../src/mappings/atlas-mine";
+import { handleApproval } from "../src/mappings/magic";
 import {
   ATLAS_MINE_ADDRESS,
   DEPOSIT_ENTITY_TYPE,
@@ -12,10 +16,6 @@ import {
   createWithdrawEvent,
   toBigIntString,
 } from "./helpers/index";
-
-import { Address } from "@graphprotocol/graph-ts";
-import { handleDeposit, handleWithdraw } from "../src/mappings/atlas-mine";
-import { handleApproval } from "../src/mappings/magic";
 
 test("withdrawals will add to existing when depositId matches", () => {
   clearStore();

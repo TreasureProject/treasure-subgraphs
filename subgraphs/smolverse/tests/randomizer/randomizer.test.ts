@@ -1,5 +1,6 @@
-import { BigInt } from "@graphprotocol/graph-ts";
 import { assert, clearStore, test } from "matchstick-as";
+
+import { BigInt } from "@graphprotocol/graph-ts";
 
 import { Random, Seeded } from "../../generated/schema";
 import { getRandomId, getSeededId } from "../../src/helpers/ids";

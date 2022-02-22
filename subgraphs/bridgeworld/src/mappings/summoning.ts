@@ -1,15 +1,17 @@
 import { BigInt, log, store } from "@graphprotocol/graph-ts";
+
 import { LEGION_ADDRESS } from "@treasure/constants";
-import {
-  _SummonFatigue,
-  LegionInfo,
-  Random,
-  Summon,
-} from "../../generated/schema";
+
 import {
   SummoningFinished,
   SummoningStarted,
 } from "../../generated/Summoning/Summoning";
+import {
+  LegionInfo,
+  Random,
+  Summon,
+  _SummonFatigue,
+} from "../../generated/schema";
 import { getAddressId } from "../helpers/utils";
 
 function getMetadataId(tokenId: BigInt): string {

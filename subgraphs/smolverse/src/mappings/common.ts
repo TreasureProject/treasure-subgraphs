@@ -1,4 +1,5 @@
 import { Address, BigInt, log, store } from "@graphprotocol/graph-ts";
+
 import {
   SMOL_BODIES_PETS_ADDRESS,
   SMOL_BRAINS_LAND_ADDRESS,

@@ -1,10 +1,11 @@
+import { log } from "@graphprotocol/graph-ts";
+
 import {
   Board,
   DeadlineSet,
   SmolBrainSet,
 } from "../../generated/Smol Rocket/Rocket";
 import { Boarded, Rocket, Token } from "../../generated/schema";
-import { log } from "@graphprotocol/graph-ts";
 
 export function handleBoard(event: Board): void {
   let params = event.params;

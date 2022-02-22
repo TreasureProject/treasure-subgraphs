@@ -1,4 +1,5 @@
 import { BigInt, log } from "@graphprotocol/graph-ts";
+
 import { SMOL_BRAINS_ADDRESS } from "@treasure/constants";
 
 import {

@@ -1,4 +1,5 @@
-import { Address, log, TypedMap } from "@graphprotocol/graph-ts";
+import { Address, TypedMap, log } from "@graphprotocol/graph-ts";
+
 import {
   SMOL_BODIES_ADDRESS,
   SMOL_BODIES_PETS_ADDRESS,

@@ -1,12 +1,12 @@
 import { log } from "@graphprotocol/graph-ts";
 
-import { Claim, Random, Reward, StakedToken } from "../../generated/schema";
 import {
   RewardClaimed,
   SmolStaked,
   SmolUnstaked,
   StartClaiming,
 } from "../../generated/Smol Farm/SmolFarm";
+import { Claim, Random, Reward, StakedToken } from "../../generated/schema";
 import { LOCATION_FARM } from "../helpers/constants";
 import {
   getCollectionId,

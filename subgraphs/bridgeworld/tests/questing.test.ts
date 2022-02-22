@@ -1,24 +1,9 @@
 import { assert, clearStore, test } from "matchstick-as/assembly";
 
-import {
-  Difficulty,
-  LEGION_INFO_ENTITY_TYPE,
-  QUEST_ENTITY_TYPE,
-  QUESTING_ADDRESS,
-  USER_ADDRESS,
-  createLegionCreatedEvent,
-  createLegionQuestLevelUpEvent,
-  createLegionTransferEvent,
-  createQuestStartedEvent,
-  createQuestStartedWithoutDifficultyEvent,
-  createQuestRevealedEvent,
-  createQuestFinishedEvent,
-  createRandomRequestEvent,
-  createRandomSeededEvent,
-} from "./helpers/index";
-
 import { Address } from "@graphprotocol/graph-ts";
+
 import { LEGION_ADDRESS } from "@treasure/constants";
+
 import {
   handleLegionCreated,
   handleLegionQuestLevelUp,
@@ -34,6 +19,22 @@ import {
   handleRandomRequest,
   handleRandomSeeded,
 } from "../src/mappings/randomizer";
+import {
+  Difficulty,
+  LEGION_INFO_ENTITY_TYPE,
+  QUESTING_ADDRESS,
+  QUEST_ENTITY_TYPE,
+  USER_ADDRESS,
+  createLegionCreatedEvent,
+  createLegionQuestLevelUpEvent,
+  createLegionTransferEvent,
+  createQuestFinishedEvent,
+  createQuestRevealedEvent,
+  createQuestStartedEvent,
+  createQuestStartedWithoutDifficultyEvent,
+  createRandomRequestEvent,
+  createRandomSeededEvent,
+} from "./helpers/index";
 
 test("questing increases xp when completed", () => {
   clearStore();

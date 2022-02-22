@@ -1,4 +1,5 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts";
+
 import { SMOL_TREASURES_ADDRESS } from "@treasure/constants";
 
 import {

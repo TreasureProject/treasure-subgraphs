@@ -1,4 +1,5 @@
-import { log, TypedMap } from "@graphprotocol/graph-ts";
+import { TypedMap, log } from "@graphprotocol/graph-ts";
+
 import {
   SMOL_BODIES_ADDRESS,
   SMOL_BODIES_PETS_ADDRESS,
@@ -8,7 +9,7 @@ import {
 } from "@treasure/constants";
 
 import { Attribute, Collection, Token } from "../../generated/schema";
-import { getJsonStringValue, JSON } from "./json";
+import { JSON, getJsonStringValue } from "./json";
 import { getOrCreateAttribute } from "./models";
 import { toBigDecimal } from "./number";
 

@@ -10,6 +10,8 @@ import {
 } from "../../generated/schema";
 import { LEGION_GENERATIONS, LEGION_RARITIES } from "./constants";
 import {
+  SECONDS_IN_DAY,
+  SECONDS_IN_HOUR,
   getDaysInMonth,
   getDaysInYear,
   getStartOfDay,
@@ -17,8 +19,6 @@ import {
   getStartOfMonth,
   getStartOfWeek,
   getStartOfYear,
-  SECONDS_IN_DAY,
-  SECONDS_IN_HOUR,
 } from "./date";
 import {
   getAllTimeId,

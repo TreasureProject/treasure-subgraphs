@@ -1,6 +1,8 @@
-import { Address, BigInt, ethereum } from "@graphprotocol/graph-ts";
-import { SMOL_BODIES_ADDRESS, SMOL_FARM_ADDRESS } from "@treasure/constants";
 import { newMockEvent } from "matchstick-as";
+
+import { Address, BigInt, ethereum } from "@graphprotocol/graph-ts";
+
+import { SMOL_BODIES_ADDRESS, SMOL_FARM_ADDRESS } from "@treasure/constants";
 
 import {
   RewardClaimed,

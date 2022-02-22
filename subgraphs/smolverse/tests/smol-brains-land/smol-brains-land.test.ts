@@ -1,9 +1,11 @@
-import { Address } from "@graphprotocol/graph-ts";
-import { SMOL_BRAINS_LAND_ADDRESS } from "@treasure/constants";
 import { assert, clearStore, test } from "matchstick-as";
+
+import { Address } from "@graphprotocol/graph-ts";
+
+import { SMOL_BRAINS_LAND_ADDRESS } from "@treasure/constants";
+
 import { Attribute, _LandMetadata } from "../../generated/schema";
 import { SMOL_BRAINS_LAND_BASE_URI } from "../../src/helpers/constants";
-
 import { handleTransfer } from "../../src/mappings/smol-brains-land";
 import {
   COLLECTION_ENTITY_TYPE,

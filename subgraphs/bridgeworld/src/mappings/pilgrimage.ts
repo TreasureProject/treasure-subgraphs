@@ -1,13 +1,15 @@
-import * as common from "../mapping";
 import { BigInt, log, store } from "@graphprotocol/graph-ts";
+
 import { LEGION_ADDRESS } from "@treasure/constants";
-import { LEGION_IPFS, getAddressId, getImageHash } from "../helpers";
-import { LegionInfo, Pilgrimage, Token } from "../../generated/schema";
+
 import {
   NoPilgrimagesToFinish,
   PilgrimagesFinished,
   PilgrimagesStarted,
 } from "../../generated/Pilgrimage/Pilgrimage";
+import { LegionInfo, Pilgrimage, Token } from "../../generated/schema";
+import { LEGION_IPFS, getAddressId, getImageHash } from "../helpers";
+import * as common from "../mapping";
 
 export function handleNoPilgrimagesToFinish(
   event: NoPilgrimagesToFinish

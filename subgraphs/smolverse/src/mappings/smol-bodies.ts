@@ -6,7 +6,6 @@ import {
 import { SMOL_BODIES_BASE_URI } from "../helpers/constants";
 import { getAttributeId } from "../helpers/ids";
 import { getOrCreateAttribute, getOrCreateCollection } from "../helpers/models";
-
 import { handleTransfer as commonHandleTransfer } from "./common";
 
 export function handleBaseUriChanged(event: BaseURIChanged): void {

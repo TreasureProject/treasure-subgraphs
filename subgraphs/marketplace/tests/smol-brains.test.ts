@@ -1,7 +1,8 @@
-import { Address } from "@graphprotocol/graph-ts";
 import { assert, clearStore, test } from "matchstick-as/assembly";
-import { handleTransfer } from "../src/mappings/smol-brains";
 
+import { Address } from "@graphprotocol/graph-ts";
+
+import { handleTransfer } from "../src/mappings/smol-brains";
 import { createTransferEvent } from "./utils";
 
 const COLLECTION_ENTITY_TYPE = "Collection";

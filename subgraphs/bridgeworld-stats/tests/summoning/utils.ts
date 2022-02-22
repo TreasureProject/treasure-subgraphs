@@ -1,5 +1,6 @@
-import { Address, BigInt, ethereum } from "@graphprotocol/graph-ts";
 import { newMockEvent } from "matchstick-as";
+
+import { Address, BigInt, ethereum } from "@graphprotocol/graph-ts";
 
 import {
   SummoningFinished,
