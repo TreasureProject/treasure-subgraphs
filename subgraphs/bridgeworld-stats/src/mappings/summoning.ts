@@ -7,7 +7,7 @@ import {
 import {
   getLegion,
   getLegionSummonCost,
-  getOrCreateSummoningLegionStat,
+  getOrCreateLegionStat,
   getOrCreateUser,
   getTimeIntervalSummoningStats,
 } from "../helpers/models";
@@ -42,15 +42,12 @@ export function handleSummoningStarted(event: SummoningStarted): void {
       const summonCost = getLegionSummonCost(legion.generation);
       stat.magicSpent = stat.magicSpent.plus(summonCost);
 
-      const legionStat = getOrCreateSummoningLegionStat(stat.id, legion);
-      if (!legionStat) {
-        log.error("Legion not found: {}", [params._tokenId.toString()]);
-        continue;
-      }
-
+      const legionStat = getOrCreateLegionStat(stat.id, legion);
       legionStat.startTimestamp = stat.startTimestamp;
       legionStat.endTimestamp = stat.endTimestamp;
-      legionStat.magicSpent = legionStat.magicSpent.plus(summonCost);
+      legionStat.summoningStat = stat.id;
+      legionStat.summoningMagicSpent =
+        legionStat.summoningMagicSpent.plus(summonCost);
       legionStat.summonsStarted += 1;
       legionStat.save();
     }
@@ -93,7 +90,7 @@ export function handleSummoningFinished(event: SummoningFinished): void {
     stat.save();
 
     if (legion) {
-      const legionStat = getOrCreateSummoningLegionStat(stat.id, legion);
+      const legionStat = getOrCreateLegionStat(stat.id, legion);
       legionStat.startTimestamp = stat.startTimestamp;
       legionStat.endTimestamp = stat.endTimestamp;
       legionStat.summonsFinished += 1;
@@ -101,7 +98,7 @@ export function handleSummoningFinished(event: SummoningFinished): void {
     }
 
     if (newLegion) {
-      const newLegionStat = getOrCreateSummoningLegionStat(stat.id, newLegion);
+      const newLegionStat = getOrCreateLegionStat(stat.id, newLegion);
       newLegionStat.startTimestamp = stat.startTimestamp;
       newLegionStat.endTimestamp = stat.endTimestamp;
       newLegionStat.summonedCount += 1;

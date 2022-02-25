@@ -22,6 +22,12 @@ enum LegionRarity {
   None
 }
 
+enum CraftingDifficulty {
+  Prism
+  HarvesterPart
+  Extractor
+}
+
 type User @entity {
   id: ID!
   magicDepositCount: Int!
@@ -30,6 +36,11 @@ type User @entity {
   magicDeposited: BigInt!
   magicWithdrawn: BigInt!
   magicHarvested: BigInt!
+  craftsStarted: Int!
+  craftsFinished: Int!
+  craftsSucceeded: Int!
+  craftsFailed: Int!
+  brokenTreasuresCount: Int!
   summonsStarted: Int!
   summonsFinished: Int!
 }
@@ -42,12 +53,70 @@ type Legion @entity {
   name: String!
 }
 
-type AtlasMineLockStat @entity {
+type _Craft @entity {
   id: ID!
+  difficulty: CraftingDifficulty!
+}
+
+type TreasureStat @entity {
+  id: ID!
+
   startTimestamp: BigInt
   endTimestamp: BigInt
+
+  tokenId: BigInt!
+  name: String!
+  tier: Int!
+
+  craftingStat: CraftingStat
+
+  "Number of this Treasure type used in Crafts"
+  craftingUsed: Int!
+
+  "Number of this Treasure type broken in Crafts"
+  craftingBroken: Int!
+}
+
+type LegionStat @entity {
+  id: ID!
+
+  startTimestamp: BigInt
+  endTimestamp: BigInt
+
+  generation: LegionGeneration!
+  rarity: LegionRarity!
+  name: String!
+
+  summoningStat: SummoningStat
+  craftingStat: CraftingStat
+
+  "$MAGIC spent on Summons by this Legion type"
+  summoningMagicSpent: BigInt!
+
+  "Number of Summons started by this Legion type"
+  summonsStarted: Int!
+
+  "Number of Summons finished by this Legion type"
+  summonsFinished: Int!
+
+  "Number of Summons that have resulted in the creation of this Legion type"
+  summonedCount: Int!
+
+  craftsStarted: Int!
+  craftsFinished: Int!
+  craftsSucceeded: Int!
+  craftsFailed: Int!
+}
+
+type AtlasMineLockStat @entity {
+  id: ID!
+
+  startTimestamp: BigInt
+  endTimestamp: BigInt
+
   atlasMineStat: AtlasMineStat!
   lock: Int!
+
   magicDepositCount: Int!
   magicDeposited: BigInt!
 }
@@ -78,6 +147,57 @@ type AtlasMineStat @entity {
   allAddressesCount: Int!
 
   lockStats: [AtlasMineLockStat!]! @derivedFrom(field: "atlasMineStat")
+}
+
+type CraftingDifficultyStat @entity {
+  id: ID!
+
+  startTimestamp: BigInt
+  endTimestamp: BigInt
+
+  difficulty: CraftingDifficulty!
+  craftingStat: CraftingStat!
+
+  magicConsumed: BigInt!
+  magicReturned: BigInt!
+  craftsStarted: Int!
+  craftsFinished: Int!
+  craftsSucceeded: Int!
+  craftsFailed: Int!
+  brokenTreasuresCount: Int!
+}
+
+type CraftingStat @entity {
+  id: ID!
+
+  "Internal for tracking active unique addresses"
+  _activeAddresses: [String!]!
+
+  "Internal for tracking all unique addresses"
+  _allAddresses: [String!]!
+
+  startTimestamp: BigInt
+  endTimestamp: BigInt
+  interval: Interval!
+
+  magicConsumed: BigInt!
+  magicReturned: BigInt!
+  craftsStarted: Int!
+  craftsFinished: Int!
+  craftsSucceeded: Int!
+  craftsFailed: Int!
+  brokenTreasuresCount: Int!
+
+  "Number of unique addresses actively crafting throughout time period"
+  activeAddressesCount: Int!
+
+  "Number of unique addresses that have crafted at any point"
+  allAddressesCount: Int!
+
+  difficultyStats: [CraftingDifficultyStat!]!
+    @derivedFrom(field: "craftingStat")
+  legionStats: [LegionStat!]! @derivedFrom(field: "craftingStat")
+  treasureStats: [TreasureStat!]! @derivedFrom(field: "craftingStat")
 }
 
 type Pilgrimage @entity {
@@ -115,27 +235,5 @@ type SummoningStat @entity {
   "Number of unique addresses that have summoned at any point"
   allAddressesCount: Int!
 
-  legionStats: [SummoningLegionStat!]! @derivedFrom(field: "summoningStat")
-}
-
-type SummoningLegionStat @entity {
-  id: ID!
-  startTimestamp: BigInt
-  endTimestamp: BigInt
-  summoningStat: SummoningStat!
-  generation: LegionGeneration!
-  rarity: LegionRarity!
-  name: String!
-
-  "$MAGIC spent on Summons by this Legion type"
-  magicSpent: BigInt!
-
-  "Number of Summons started by this Legion type"
-  summonsStarted: Int!
-
-  "Number of Summons finished by this Legion type"
-  summonsFinished: Int!
-
-  "Number of Summons that have resulted in the creation of this Legion type"
-  summonedCount: Int!
+  legionStats: [LegionStat!]! @derivedFrom(field: "summoningStat")
 }

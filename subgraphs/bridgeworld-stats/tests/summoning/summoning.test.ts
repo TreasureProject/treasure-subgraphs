@@ -1,5 +1,7 @@
 import { assert, clearStore, test } from "matchstick-as";
 
+import { Address } from "@graphprotocol/graph-ts";
+
 import { handleLegionCreated } from "../../src/mappings/legion";
 import {
   handleSummoningFinished,
@@ -7,14 +9,14 @@ import {
 } from "../../src/mappings/summoning";
 import { createLegionCreatedEvent } from "../legion/utils";
 import {
+  LEGION_STAT_ENTITY_TYPE,
+  SUMMONING_STAT_ENTITY_TYPE,
+  USER_ADDRESS,
+} from "../utils";
+import {
   createSummoningFinishedEvent,
   createSummoningStartedEvent,
 } from "./utils";
-
-const SUMMONING_STAT_ENTITY_TYPE = "SummoningStat";
-const SUMMONING_LEGION_STAT_ENTITY_TYPE = "SummoningLegionStat";
-const USER_ADDRESS = "0x461950b159366edcd2bcbee8126d973ac49238e0";
-const USER_ADDRESS2 = "0x461950b159366edcd2bcbee8126d973ac49238e1";
 
 // Feb 9 22, 7:15
 const timestamp = 1644390900;
@@ -78,13 +80,13 @@ test("summoning stats count summons started", () => {
 
     // Assert all time intervals for legion type are created
     assert.fieldEquals(
-      SUMMONING_LEGION_STAT_ENTITY_TYPE,
+      LEGION_STAT_ENTITY_TYPE,
       `${statIds[i]}-genesis-common`,
-      "magicSpent",
+      "summoningMagicSpent",
       "300000000000000000000"
     );
     assert.fieldEquals(
-      SUMMONING_LEGION_STAT_ENTITY_TYPE,
+      LEGION_STAT_ENTITY_TYPE,
       `${statIds[i]}-genesis-common`,
       "summonsStarted",
       "1"
@@ -156,7 +158,7 @@ test("summoning stats count summons started", () => {
   // Jan 20 22, 23:15
   const summoningStartedEvent2 = createSummoningStartedEvent(
     1642720500,
-    USER_ADDRESS2,
+    Address.zero().toHexString(),
     1
   );
   handleSummoningStarted(summoningStartedEvent2);
@@ -239,7 +241,7 @@ test("summoning stats count summons started", () => {
     "1"
   );
 
-  // Assert yearly interval contains both deposits
+  // Assert yearly interval contains both
   assert.fieldEquals(
     SUMMONING_STAT_ENTITY_TYPE,
     "2022-yearly",
@@ -317,19 +319,19 @@ test("summoning stats count summons finished", () => {
 
     // Assert all time intervals for legion type are created
     assert.fieldEquals(
-      SUMMONING_LEGION_STAT_ENTITY_TYPE,
+      LEGION_STAT_ENTITY_TYPE,
       `${statIds[i]}-genesis-common`,
       "summonsStarted",
       "1"
     );
     assert.fieldEquals(
-      SUMMONING_LEGION_STAT_ENTITY_TYPE,
+      LEGION_STAT_ENTITY_TYPE,
       `${statIds[i]}-genesis-common`,
       "summonsFinished",
       "1"
     );
     assert.fieldEquals(
-      SUMMONING_LEGION_STAT_ENTITY_TYPE,
+      LEGION_STAT_ENTITY_TYPE,
       `${statIds[i]}-auxiliary-common`,
       "summonedCount",
       "1"

@@ -3,12 +3,15 @@ import { Address, BigInt } from "@graphprotocol/graph-ts";
 import {
   AtlasMineLockStat,
   AtlasMineStat,
+  CraftingDifficultyStat,
+  CraftingStat,
   Legion,
-  SummoningLegionStat,
+  LegionStat,
   SummoningStat,
+  TreasureStat,
   User,
 } from "../../generated/schema";
-import { LEGION_GENERATIONS, LEGION_RARITIES } from "./constants";
+import { LEGION_GENERATIONS, LEGION_RARITIES, ZERO_BI } from "./constants";
 import {
   SECONDS_IN_DAY,
   SECONDS_IN_HOUR,
@@ -30,20 +33,13 @@ import {
   getYearlyId,
 } from "./ids";
 import { etherToWei } from "./number";
+import { getName, getTier } from "./treasure";
 
 export function getOrCreateUser(address: Address): User {
   const id = address.toHexString();
   let user = User.load(id);
   if (!user) {
     user = new User(id);
-    user.magicDepositCount = 0;
-    user.magicWithdrawCount = 0;
-    user.magicHarvestCount = 0;
-    user.magicDeposited = BigInt.fromI32(0);
-    user.magicWithdrawn = BigInt.fromI32(0);
-    user.magicHarvested = BigInt.fromI32(0);
-    user.summonsStarted = 0;
-    user.summonsFinished = 0;
     user.save();
   }
 
@@ -105,7 +101,7 @@ export function getLegionSummonCost(generation: string): BigInt {
     return etherToWei(300);
   }
 
-  return BigInt.fromI32(0);
+  return ZERO_BI;
 }
 
 export function getTimeIntervalAtlasMineStats(
@@ -193,12 +189,6 @@ export function createAtlasMineStat(id: string): AtlasMineStat {
   const stat = new AtlasMineStat(id);
   stat._activeAddresses = [];
   stat._allAddresses = [];
-  stat.magicDepositCount = 0;
-  stat.magicWithdrawCount = 0;
-  stat.magicHarvestCount = 0;
-  stat.magicDeposited = BigInt.fromI32(0);
-  stat.magicWithdrawn = BigInt.fromI32(0);
-  stat.magicHarvested = BigInt.fromI32(0);
   stat.save();
   return stat;
 }
@@ -213,12 +203,115 @@ export function getOrCreateAtlasMineLockStat(
     lockStat = new AtlasMineLockStat(id);
     lockStat.atlasMineStat = atlasMineStatId;
     lockStat.lock = lock;
-    lockStat.magicDepositCount = 0;
-    lockStat.magicDeposited = BigInt.fromI32(0);
     lockStat.save();
   }
 
   return lockStat;
+}
+
+export function getTimeIntervalCraftingStats(
+  eventTimestamp: BigInt
+): CraftingStat[] {
+  const timestamp = eventTimestamp.toI64() * 1000;
+  const date = new Date(timestamp);
+  const month = date.getUTCMonth();
+  const year = date.getUTCFullYear();
+
+  // Hourly
+  const hourlyId = getHourlyId(timestamp);
+  const hourlyStat = (CraftingStat.load(hourlyId) ||
+    createCraftingStat(hourlyId)) as CraftingStat;
+  const startOfHour = getStartOfHour(timestamp);
+  hourlyStat.interval = "Hourly";
+  hourlyStat.startTimestamp = BigInt.fromI64(startOfHour);
+  hourlyStat.endTimestamp = BigInt.fromI64(startOfHour + SECONDS_IN_HOUR - 1);
+  hourlyStat.save();
+
+  // Daily
+  const dailyId = getDailyId(timestamp);
+  const dailyStat = (CraftingStat.load(dailyId) ||
+    createCraftingStat(dailyId)) as CraftingStat;
+  const startOfDay = getStartOfDay(timestamp);
+  dailyStat.interval = "Daily";
+  dailyStat.startTimestamp = BigInt.fromI64(startOfDay);
+  dailyStat.endTimestamp = BigInt.fromI64(startOfDay + SECONDS_IN_DAY - 1);
+  dailyStat.save();
+
+  // Weekly
+  const weeklyId = getWeeklyId(timestamp);
+  const weeklyStat = (CraftingStat.load(weeklyId) ||
+    createCraftingStat(weeklyId)) as CraftingStat;
+  const startOfWeek = getStartOfWeek(timestamp);
+  weeklyStat.interval = "Weekly";
+  weeklyStat.startTimestamp = BigInt.fromI64(startOfWeek);
+  weeklyStat.endTimestamp = BigInt.fromI64(
+    startOfWeek + SECONDS_IN_DAY * 7 - 1
+  );
+  weeklyStat.save();
+
+  // Monthly
+  const monthlyId = getMonthlyId(timestamp);
+  const monthlyStat = (CraftingStat.load(monthlyId) ||
+    createCraftingStat(monthlyId)) as CraftingStat;
+  const startOfMonth = getStartOfMonth(timestamp);
+  monthlyStat.interval = "Monthly";
+  monthlyStat.startTimestamp = BigInt.fromI64(startOfMonth);
+  monthlyStat.endTimestamp = BigInt.fromI64(
+    startOfMonth + SECONDS_IN_DAY * getDaysInMonth(month, year) - 1
+  );
+  monthlyStat.save();
+
+  // Yearly
+  const yearlyId = getYearlyId(timestamp);
+  const yearlyStat = (CraftingStat.load(yearlyId) ||
+    createCraftingStat(yearlyId)) as CraftingStat;
+  const startOfYear = getStartOfYear(timestamp);
+  yearlyStat.interval = "Yearly";
+  yearlyStat.startTimestamp = BigInt.fromI64(startOfYear);
+  yearlyStat.endTimestamp = BigInt.fromI64(
+    startOfYear + SECONDS_IN_DAY * getDaysInYear(year) - 1
+  );
+  yearlyStat.save();
+
+  // All-time
+  const allTimeId = getAllTimeId();
+  const allTimeStat = (CraftingStat.load(allTimeId) ||
+    createCraftingStat(allTimeId)) as CraftingStat;
+  allTimeStat.interval = "AllTime";
+  allTimeStat.save();
+
+  return [
+    hourlyStat,
+    dailyStat,
+    weeklyStat,
+    monthlyStat,
+    yearlyStat,
+    allTimeStat,
+  ];
+}
+
+export function createCraftingStat(id: string): CraftingStat {
+  const stat = new CraftingStat(id);
+  stat._activeAddresses = [];
+  stat._allAddresses = [];
+  stat.save();
+  return stat;
+}
+
+export function getOrCreateCraftingDifficultyStat(
+  craftingStatId: string,
+  difficulty: string
+): CraftingDifficultyStat {
+  const id = `${craftingStatId}-difficulty${difficulty}`;
+  let stat = CraftingDifficultyStat.load(id);
+  if (!stat) {
+    stat = new CraftingDifficultyStat(id);
+    stat.craftingStat = craftingStatId;
+    stat.difficulty = difficulty;
+    stat.save();
+  }
+
+  return stat;
 }
 
 export function getTimeIntervalSummoningStats(
@@ -306,32 +399,41 @@ export function createSummoningStat(id: string): SummoningStat {
   const stat = new SummoningStat(id);
   stat._activeAddresses = [];
   stat._allAddresses = [];
-  stat.magicSpent = BigInt.fromI32(0);
-  stat.summonsStarted = 0;
-  stat.summonsFinished = 0;
   stat.save();
   return stat;
 }
 
-export function getOrCreateSummoningLegionStat(
+export function getOrCreateLegionStat(
   summoningStatId: string,
   legion: Legion
-): SummoningLegionStat {
+): LegionStat {
   const id = `${summoningStatId}-${legion.name
     .toLowerCase()
     .split(" ")
     .join("-")}`;
-  let stat = SummoningLegionStat.load(id);
+  let stat = LegionStat.load(id);
   if (!stat) {
-    stat = new SummoningLegionStat(id);
-    stat.summoningStat = summoningStatId;
+    stat = new LegionStat(id);
     stat.generation = legion.generation;
     stat.rarity = legion.rarity;
     stat.name = legion.name;
-    stat.magicSpent = BigInt.fromI32(0);
-    stat.summonsStarted = 0;
-    stat.summonsFinished = 0;
-    stat.summonedCount = 0;
+    stat.save();
+  }
+
+  return stat;
+}
+
+export function getOrCreateTreasureStat(
+  statId: string,
+  tokenId: BigInt
+): TreasureStat {
+  const id = `${statId}-${tokenId.toHexString()}`;
+  let stat = TreasureStat.load(id);
+  if (!stat) {
+    stat = new TreasureStat(id);
+    stat.tokenId = tokenId;
+    stat.name = getName(tokenId);
+    stat.tier = getTier(tokenId);
     stat.save();
   }
 

@@ -10,7 +10,7 @@ export function toPaddedString(number: i32): string {
   return number.toString();
 }
 
-export function etherToWei(ether: i32): BigInt {
+export function etherToWei(ether: f64): BigInt {
   return BigInt.fromString(
     BigDecimal.fromString(ether.toString()).times(ONE_WEI).toString()
   );
