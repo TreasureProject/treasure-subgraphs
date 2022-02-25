@@ -27,6 +27,10 @@ type Collection @entity {
   "Internal for tracking attributes for a collection"
   _attributeIds: [String!]!
 
+  "Internal for tracking token IDs with missing metadata"
+  _missingMetadataTokens: [Token!]!
+  _missingMetadataLastUpdated: BigInt!
+
   name: String!
   standard: TokenStandard
   baseUri: String

@@ -79,6 +79,7 @@ export function getOrCreateCollection(address: Address): Collection {
     collection.name = getNameForCollection(address);
     collection.standard = TOKEN_STANDARD_ERC721;
     collection._attributeIds = [];
+    collection._missingMetadataTokens = [];
     collection.save();
   }
 
