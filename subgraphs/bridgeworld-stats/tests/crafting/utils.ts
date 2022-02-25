@@ -1,7 +1,12 @@
-import { Address, BigInt, ethereum } from "@graphprotocol/graph-ts";
 import { newMockEvent } from "matchstick-as";
 
-import { CraftingFinished, CraftingRevealed, CraftingStarted } from "../../generated/Crafting/Crafting";
+import { Address, BigInt, ethereum } from "@graphprotocol/graph-ts";
+
+import {
+  CraftingFinished,
+  CraftingRevealed,
+  CraftingStarted,
+} from "../../generated/Crafting/Crafting";
 import { ZERO_BI } from "../../src/helpers/constants";
 
 export const createCraftingStartedEvent = (
@@ -31,7 +36,7 @@ export const createCraftingStartedEvent = (
       "_treasureAmounts",
       ethereum.Value.fromI32Array(amounts)
     ),
-    new ethereum.EventParam("_difficulty", ethereum.Value.fromI32(difficulty))
+    new ethereum.EventParam("_difficulty", ethereum.Value.fromI32(difficulty)),
   ];
 
   return event;
@@ -72,7 +77,7 @@ export function createCraftingRevealedEvent(
   ];
 
   return event;
-};
+}
 
 export function createCraftingFinishedEvent(
   timestamp: i32,
@@ -82,8 +87,11 @@ export function createCraftingFinishedEvent(
   const event = changetype<CraftingFinished>(newMockEvent());
   event.block.timestamp = BigInt.fromI32(timestamp);
   event.parameters = [
-    new ethereum.EventParam("_owner", ethereum.Value.fromAddress(Address.fromString(owner))),
-    new ethereum.EventParam("_tokenId", ethereum.Value.fromI32(tokenId))
+    new ethereum.EventParam(
+      "_owner",
+      ethereum.Value.fromAddress(Address.fromString(owner))
+    ),
+    new ethereum.EventParam("_tokenId", ethereum.Value.fromI32(tokenId)),
   ];
 
   return event;

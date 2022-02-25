@@ -1,32 +1,46 @@
-import { ipfs, json, JSONValue, log, TypedMap } from "@graphprotocol/graph-ts";
-import { Collection } from "../../generated/schema";
+import {
+  JSONValue,
+  JSONValueKind,
+  TypedMap,
+  ipfs,
+  json,
+  log,
+} from "@graphprotocol/graph-ts";
+
+const MAX_RETRIES = 2;
 
 export type JSON = TypedMap<string, JSONValue>;
 
-export function getJsonStringValue(json: JSON, attribute: string): string | null {
-  const value = json.get(attribute);
-  return value ? value.toString() : null;
+export function getJsonStringValue(
+  json: JSON,
+  attribute: string
+): string | null {
+  const valueData = json.get(attribute);
+  if (!valueData) {
+    return null;
+  }
+
+  return valueData.kind === JSONValueKind.NUMBER
+    ? valueData.toI64().toString()
+    : valueData.toString();
 }
 
-export function getIpfsJson(path: string): JSON | null {
+export function getIpfsJson(path: string, retries: i32 = 0): JSON | null {
   const normalizedPath = path
     .replace("ipfs://", "")
     .replace("https://treasure-marketplace.mypinata.cloud/ipfs/", "");
   const data = ipfs.cat(normalizedPath);
   if (!data) {
-    log.error("Missing IPFS data at path: {}", [normalizedPath]);
-    return null;
+    if (retries > MAX_RETRIES) {
+      log.error("[json] IPFS data not found, max retries: {}", [
+        normalizedPath,
+      ]);
+      return null;
+    }
+
+    log.warning("[json] IPFS data not found, retry: {}", [normalizedPath]);
+    return getIpfsJson(path, retries + 1);
   }
 
   return json.fromBytes(data).toObject();
-}
-
-export function getCollectionJson(collection: Collection, path: string): JSON | null {
-  const baseUri = collection.baseUri;
-  if (!baseUri) {
-    log.error("Unknown base URI for collection: {}", [collection.id]);
-    return null;
-  }
-
-  return getIpfsJson(`${baseUri as string}${path}`);
 }

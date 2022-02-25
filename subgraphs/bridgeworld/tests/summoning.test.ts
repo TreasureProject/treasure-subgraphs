@@ -1,6 +1,9 @@
-import { Address } from "@graphprotocol/graph-ts";
-import { LEGION_ADDRESS } from "@treasure/constants";
 import { assert, clearStore, test } from "matchstick-as";
+
+import { Address } from "@graphprotocol/graph-ts";
+
+import { LEGION_ADDRESS } from "@treasure/constants";
+
 import { handleLegionCreated, handleTransfer } from "../src/mappings/legion";
 import { handleRandomRequest } from "../src/mappings/randomizer";
 import {
@@ -8,16 +11,16 @@ import {
   handleSummoningStarted,
 } from "../src/mappings/summoning";
 import {
-  createLegionCreatedEvent,
-  createLegionTransferEvent,
-  createRandomRequestEvent,
-  createdSummoningFinishedEvent,
-  createSummoningStartedEvent,
   LEGION_INFO_ENTITY_TYPE,
   SUMMON_ENTITY_TYPE,
   SUMMON_FATIGUE_ENTITY_TYPE,
   TOKEN_ENTITY_TYPE,
   USER_ADDRESS,
+  createLegionCreatedEvent,
+  createLegionTransferEvent,
+  createRandomRequestEvent,
+  createSummoningStartedEvent,
+  createdSummoningFinishedEvent,
 } from "./helpers/index";
 
 test("summon is started and finished with result token", () => {

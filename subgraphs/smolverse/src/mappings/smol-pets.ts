@@ -1,39 +1,41 @@
-import { BaseURIChanged, SmolPetMint, Transfer } from "../../generated/Smol Bodies Pets/SmolPets";
-import { getCollectionJson, JSON } from "../helpers/json";
-import { updateTokenMetadata } from "../helpers/metadata";
-import { getOrCreateCollection, getOrCreateToken, getOrCreateUser } from "../helpers/models";
+import { SMOL_BODIES_PETS_ADDRESS } from "@treasure/constants";
+
+import {
+  BaseURIChanged,
+  Transfer,
+} from "../../generated/Smol Bodies Pets/SmolPets";
+import { SmolPets } from "../../generated/Smol Brains Pets/SmolPets";
+import {
+  SMOL_BODIES_PETS_BASE_URI,
+  SMOL_BRAINS_PETS_BASE_URI,
+} from "../helpers/constants";
+import { getCollectionId } from "../helpers/ids";
+import { getOrCreateCollection } from "../helpers/models";
+import { handleTransfer as commonHandleTransfer } from "./common";
 
 export function handleBaseUriChanged(event: BaseURIChanged): void {
-  const params = event.params;
-
   const collection = getOrCreateCollection(event.address);
-  collection.baseUri = params.to;
+  collection.baseUri = event.params.to;
   collection.save();
 }
 
-// export function handleMint(event: SmolPetMint, ipfsData: JSON | null = null): void {
-export function handleMint(event: SmolPetMint): void {
+export function handleTransfer(event: Transfer): void {
+  const address = event.address;
   const params = event.params;
 
-  const owner = getOrCreateUser(params.to.toHexString());
-  const collection = getOrCreateCollection(event.address);
-  const token = getOrCreateToken(collection, params.tokenId);
-  token.owner = owner.id;
-
-  // const data = ipfsData || getCollectionJson(collection, `${token.tokenId}.json`);
-  const data = getCollectionJson(collection, `${token.tokenId}.json`);
-  if (data) {
-    updateTokenMetadata(token, data);
+  const collection = getOrCreateCollection(address);
+  if (!collection.baseUri) {
+    const contract = SmolPets.bind(address);
+    const baseUriCall = contract.try_baseURI();
+    const defaultBaseUri =
+      collection.id == getCollectionId(SMOL_BODIES_PETS_ADDRESS)
+        ? SMOL_BODIES_PETS_BASE_URI
+        : SMOL_BRAINS_PETS_BASE_URI;
+    collection.baseUri = baseUriCall.reverted
+      ? defaultBaseUri
+      : baseUriCall.value;
+    collection.save();
   }
 
-  token.save();
-}
-
-export function handleTransfer(event: Transfer): void {
-  const params = event.params;
-
-  const collection = getOrCreateCollection(event.address);
-  const token = getOrCreateToken(collection, params.tokenId);
-  token.owner = params.to.toHexString();
-  token.save();
+  commonHandleTransfer(collection, params.from, params.to, params.tokenId);
 }

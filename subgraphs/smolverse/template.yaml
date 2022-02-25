@@ -10,7 +10,7 @@ dataSources:
     source:
       address: "{{ randomizer_address }}"
       abi: Randomizer
-      startBlock: {{ randomizer_start_block }}
+      startBlock: {{ randomizer_smol_farm_start_block }}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -51,8 +51,6 @@ dataSources:
       eventHandlers:
         - event: BaseURIChanged(string,string)
           handler: handleBaseUriChanged
-        - event: SmolPetMint(indexed address,uint256,string)
-          handler: handleMint
         - event: Transfer(indexed address,indexed address,indexed uint256)
           handler: handleTransfer
       file: ./src/mappings/smol-pets.ts
@@ -79,8 +77,6 @@ dataSources:
       eventHandlers:
         - event: BaseURIChanged(string,string)
           handler: handleBaseUriChanged
-        - event: SmolPetMint(indexed address,uint256,string)
-          handler: handleMint
         - event: Transfer(indexed address,indexed address,indexed uint256)
           handler: handleTransfer
       file: ./src/mappings/smol-pets.ts
@@ -121,7 +117,7 @@ dataSources:
     network: {{ network }}
     source:
       address: "{{ smol_brains_address }}"
-      abi: ERC721
+      abi: SmolBrains
       startBlock: {{ smol_brains_start_block }}
     mapping:
       kind: ethereum/events
@@ -130,18 +126,18 @@ dataSources:
       entities:
         - Transfer
       abis:
-        - name: ERC721
-          file: {{{ abis }}}/721.json
+        - name: SmolBrains
+          file: {{{ abis }}}/SmolBrains.json
       eventHandlers:
         - event: Transfer(indexed address,indexed address,indexed uint256)
           handler: handleTransfer
-      file: ./src/mappings/erc721.ts
+      file: ./src/mappings/smol-brains.ts
   - name: Smol Brains Land
     kind: ethereum/contract
     network: {{ network }}
     source:
       address: "{{ smol_brains_land_address }}"
-      abi: ERC721
+      abi: SmolBrainsLand
       startBlock: {{ smol_brains_land_start_block }}
     mapping:
       kind: ethereum/events
@@ -150,12 +146,12 @@ dataSources:
       entities:
         - Transfer
       abis:
-        - name: ERC721
-          file: {{{ abis }}}/721.json
+        - name: SmolBrainsLand
+          file: {{{ abis }}}/SmolBrainsLand.json
       eventHandlers:
         - event: Transfer(indexed address,indexed address,indexed uint256)
           handler: handleTransfer
-      file: ./src/mappings/erc721.ts
+      file: ./src/mappings/smol-brains-land.ts
   - name: Smol Brains School
     kind: ethereum/contract
     network: {{ network }}
@@ -172,6 +168,8 @@ dataSources:
       abis:
         - name: School
           file: {{{ abis }}}/SmolBrainsSchool.json
+        - name: SmolBrains
+          file: {{{ abis }}}/SmolBrains.json
       eventHandlers:
         - event: DropSchool(uint256)
           handler: handleDropSchool
@@ -183,7 +181,7 @@ dataSources:
     network: {{ network }}
     source:
       address: "{{ smol_bodies_address }}"
-      abi: ERC721
+      abi: SmolBodies
       startBlock: {{ smol_bodies_start_block }}
     mapping:
       kind: ethereum/events
@@ -193,12 +191,14 @@ dataSources:
         - Transfer
         - SmolBodiesMint
       abis:
-        - name: ERC721
-          file: {{{ abis }}}/721.json
+        - name: SmolBodies
+          file: {{{ abis }}}/SmolBodies.json
       eventHandlers:
+        - event: BaseURIChanged(string,string)
+          handler: handleBaseUriChanged
         - event: Transfer(indexed address,indexed address,indexed uint256)
           handler: handleTransfer
-      file: ./src/mappings/erc721.ts
+      file: ./src/mappings/smol-bodies.ts
   - name: Smol Bodies Gym
     kind: ethereum/contract
     network: {{ network }}

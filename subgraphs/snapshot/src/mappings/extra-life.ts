@@ -1,7 +1,7 @@
-import * as ERC1155 from "./1155";
-import { Collection } from "../../generated/schema";
 import { TransferSingle } from "../../generated/Extra Life/ERC1155";
+import { Collection } from "../../generated/schema";
 import { isMint } from "../helpers";
+import * as ERC1155 from "./1155";
 
 export function handleTransferSingle(event: TransferSingle): void {
   let params = event.params;

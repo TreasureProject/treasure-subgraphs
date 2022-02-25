@@ -1,5 +1,7 @@
-import { Address, ethereum } from "@graphprotocol/graph-ts";
 import { newMockEvent } from "matchstick-as";
+
+import { Address, ethereum } from "@graphprotocol/graph-ts";
+
 import { MAGIC_ADDRESS } from ".";
 import { Approval } from "../../generated/Magic/ERC20";
 

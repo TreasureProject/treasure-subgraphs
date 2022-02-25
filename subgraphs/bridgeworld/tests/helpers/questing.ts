@@ -1,13 +1,14 @@
-import * as questingLegacy from "../../generated/Questing Legacy/Questing";
 import { newMockEvent } from "matchstick-as/assembly";
+
 import { Address, ethereum } from "@graphprotocol/graph-ts";
 
+import { QUESTING_ADDRESS } from ".";
+import * as questingLegacy from "../../generated/Questing Legacy/Questing";
 import {
   QuestFinished,
   QuestRevealed,
   QuestStarted,
 } from "../../generated/Questing/Questing";
-import { QUESTING_ADDRESS } from ".";
 
 const _createQuestStartedEvent = (
   user: string,

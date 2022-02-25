@@ -1,4 +1,3 @@
-import * as common from "../mapping";
 import {
   Address,
   BigInt,
@@ -6,6 +5,16 @@ import {
   log,
   store,
 } from "@graphprotocol/graph-ts";
+
+import { LEGION_ADDRESS } from "@treasure/constants";
+
+import {
+  LegionConstellationRankUp,
+  LegionCraftLevelUp,
+  LegionCreated,
+  LegionQuestLevelUp,
+} from "../../generated/Legion Metadata Store/LegionMetadataStore";
+import { ApprovalForAll, Transfer } from "../../generated/Legion/ERC721";
 import {
   Approval,
   Constellation,
@@ -14,15 +23,8 @@ import {
   User,
   UserApproval,
 } from "../../generated/schema";
-import { ApprovalForAll, Transfer } from "../../generated/Legion/ERC721";
-import { LEGION_ADDRESS } from "@treasure/constants";
 import { LEGION_IPFS, getAddressId, getImageHash, isMint } from "../helpers";
-import {
-  LegionConstellationRankUp,
-  LegionCraftLevelUp,
-  LegionCreated,
-  LegionQuestLevelUp,
-} from "../../generated/Legion Metadata Store/LegionMetadataStore";
+import * as common from "../mapping";
 
 const RARITY = [
   "Legendary",

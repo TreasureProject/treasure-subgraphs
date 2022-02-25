@@ -6,10 +6,10 @@ import {
 } from "../../generated/Summoning/Summoning";
 import {
   getLegion,
-  getOrCreateLegionStat,
   getLegionSummonCost,
+  getOrCreateLegionStat,
   getOrCreateUser,
-  getTimeIntervalSummoningStats
+  getTimeIntervalSummoningStats,
 } from "../helpers/models";
 
 export function handleSummoningStarted(event: SummoningStarted): void {
@@ -46,7 +46,8 @@ export function handleSummoningStarted(event: SummoningStarted): void {
       legionStat.startTimestamp = stat.startTimestamp;
       legionStat.endTimestamp = stat.endTimestamp;
       legionStat.summoningStat = stat.id;
-      legionStat.summoningMagicSpent = legionStat.summoningMagicSpent.plus(summonCost);
+      legionStat.summoningMagicSpent =
+        legionStat.summoningMagicSpent.plus(summonCost);
       legionStat.summonsStarted += 1;
       legionStat.save();
     }

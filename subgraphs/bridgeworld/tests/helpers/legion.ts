@@ -1,14 +1,16 @@
 import { newMockEvent } from "matchstick-as/assembly";
+
 import { Address, ethereum } from "@graphprotocol/graph-ts";
 
-import { Transfer } from "../../generated/Legion/ERC721";
+import { LEGION_ADDRESS } from "@treasure/constants";
+
+import { LEGION_METADATA_STORE_ADDRESS } from ".";
 import {
   LegionCraftLevelUp,
   LegionCreated,
   LegionQuestLevelUp,
 } from "../../generated/Legion Metadata Store/LegionMetadataStore";
-import { LEGION_ADDRESS } from "@treasure/constants";
-import { LEGION_METADATA_STORE_ADDRESS } from ".";
+import { Transfer } from "../../generated/Legion/ERC721";
 import { createTransferEvent } from "./transfer";
 
 export const createLegionCreatedEvent = (

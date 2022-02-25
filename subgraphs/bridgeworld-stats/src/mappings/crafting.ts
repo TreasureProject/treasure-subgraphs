@@ -1,25 +1,23 @@
 import { Address, BigInt, log, store } from "@graphprotocol/graph-ts";
 
+import { CraftingStarted as CraftingLegacyStarted } from "../../generated/Crafting Legacy/Crafting";
 import {
   CraftingFinished,
   CraftingRevealed,
   CraftingStarted,
 } from "../../generated/Crafting/Crafting";
-import {
-  CraftingStarted as CraftingLegacyStarted
-} from "../../generated/Crafting Legacy/Crafting";
+import { _Craft } from "../../generated/schema";
+import { CRAFT_DIFFICULTIES } from "../helpers/constants";
+import { getCraftId } from "../helpers/ids";
 import {
   getLegion,
   getOrCreateCraftingDifficultyStat,
   getOrCreateLegionStat,
   getOrCreateTreasureStat,
   getOrCreateUser,
-  getTimeIntervalCraftingStats
+  getTimeIntervalCraftingStats,
 } from "../helpers/models";
 import { etherToWei } from "../helpers/number";
-import { _Craft } from "../../generated/schema";
-import { getCraftId } from "../helpers/ids";
-import { CRAFT_DIFFICULTIES } from "../helpers/constants";
 
 function handleCraftingStarted(
   timestamp: BigInt,
@@ -66,7 +64,10 @@ function handleCraftingStarted(
       legionStat.save();
     }
 
-    const difficultyStat = getOrCreateCraftingDifficultyStat(stat.id, difficulty);
+    const difficultyStat = getOrCreateCraftingDifficultyStat(
+      stat.id,
+      difficulty
+    );
     difficultyStat.startTimestamp = stat.startTimestamp;
     difficultyStat.endTimestamp = stat.endTimestamp;
     difficultyStat.craftsStarted += 1;
@@ -145,7 +146,9 @@ export function handleCraftingRevealed(event: CraftingRevealed): void {
   const stats = getTimeIntervalCraftingStats(event.block.timestamp);
   for (let i = 0; i < stats.length; i++) {
     const stat = stats[i];
-    stat.magicConsumed = stat.magicConsumed.plus(etherToWei(5).minus(result.magicReturned));
+    stat.magicConsumed = stat.magicConsumed.plus(
+      etherToWei(5).minus(result.magicReturned)
+    );
     stat.magicReturned = stat.magicReturned.plus(result.magicReturned);
     stat.craftsSucceeded += wasSuccessful ? 1 : 0;
     stat.craftsFailed += wasSuccessful ? 0 : 1;
@@ -162,11 +165,18 @@ export function handleCraftingRevealed(event: CraftingRevealed): void {
     }
 
     if (craft) {
-      const difficultyStat = getOrCreateCraftingDifficultyStat(stat.id, craft.difficulty);
+      const difficultyStat = getOrCreateCraftingDifficultyStat(
+        stat.id,
+        craft.difficulty
+      );
       difficultyStat.startTimestamp = stat.startTimestamp;
       difficultyStat.endTimestamp = stat.endTimestamp;
-      difficultyStat.magicConsumed = difficultyStat.magicConsumed.plus(etherToWei(5).minus(result.magicReturned));
-      difficultyStat.magicReturned = difficultyStat.magicReturned.plus(result.magicReturned);
+      difficultyStat.magicConsumed = difficultyStat.magicConsumed.plus(
+        etherToWei(5).minus(result.magicReturned)
+      );
+      difficultyStat.magicReturned = difficultyStat.magicReturned.plus(
+        result.magicReturned
+      );
       difficultyStat.craftsSucceeded += wasSuccessful ? 1 : 0;
       difficultyStat.craftsFailed += wasSuccessful ? 0 : 1;
       difficultyStat.brokenTreasuresCount += brokenTreasuresCount;
@@ -174,7 +184,10 @@ export function handleCraftingRevealed(event: CraftingRevealed): void {
     }
 
     for (let j = 0; j < brokenTreasureIds.length; j++) {
-      const treasureStat = getOrCreateTreasureStat(stat.id, brokenTreasureIds[j]);
+      const treasureStat = getOrCreateTreasureStat(
+        stat.id,
+        brokenTreasureIds[j]
+      );
       treasureStat.startTimestamp = stat.startTimestamp;
       treasureStat.endTimestamp = stat.endTimestamp;
       treasureStat.craftingStat = stat.id;
@@ -227,7 +240,10 @@ export function handleCraftingFinished(event: CraftingFinished): void {
     }
 
     if (craft) {
-      const difficultyStat = getOrCreateCraftingDifficultyStat(stat.id, craft.difficulty);
+      const difficultyStat = getOrCreateCraftingDifficultyStat(
+        stat.id,
+        craft.difficulty
+      );
       difficultyStat.startTimestamp = stat.startTimestamp;
       difficultyStat.endTimestamp = stat.endTimestamp;
       difficultyStat.craftsFinished += 1;

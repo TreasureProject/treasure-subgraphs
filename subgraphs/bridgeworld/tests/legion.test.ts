@@ -1,24 +1,25 @@
 import { assert, clearStore, test } from "matchstick-as/assembly";
 
+import { Address } from "@graphprotocol/graph-ts";
+
+import { LEGION_ADDRESS } from "@treasure/constants";
+
+import { LEGION_IPFS } from "../src/helpers/index";
+import { handleLegionCreated, handleTransfer } from "../src/mappings/legion";
+import {
+  handlePilgrimagesFinished,
+  handlePilgrimagesStarted,
+} from "../src/mappings/pilgrimage";
 import {
   LEGACY_LEGION_GENESIS_ADDRESS,
   LEGION_INFO_ENTITY_TYPE,
   TOKEN_ENTITY_TYPE,
   USER_ADDRESS,
-  createPilgrimagesStartedEvent,
-  createPilgrimagesFinishedEvent,
-  createLegionTransferEvent,
   createLegionCreatedEvent,
+  createLegionTransferEvent,
+  createPilgrimagesFinishedEvent,
+  createPilgrimagesStartedEvent,
 } from "./helpers/index";
-import {
-  handlePilgrimagesStarted,
-  handlePilgrimagesFinished,
-} from "../src/mappings/pilgrimage";
-
-import { Address } from "@graphprotocol/graph-ts";
-import { handleLegionCreated, handleTransfer } from "../src/mappings/legion";
-import { LEGION_ADDRESS } from "@treasure/constants";
-import { LEGION_IPFS } from "../src/helpers/index";
 
 // PilgrimageId = 7 in production
 test("legion metadata is correct for pilgrimaged riverman", () => {

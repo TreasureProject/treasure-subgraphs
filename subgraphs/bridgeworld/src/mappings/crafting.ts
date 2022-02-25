@@ -1,5 +1,17 @@
-import * as craftingLegacy from "../../generated/Crafting Legacy/Crafting";
 import { Address, BigInt, log, store } from "@graphprotocol/graph-ts";
+
+import {
+  CONSUMABLE_ADDRESS,
+  LEGION_ADDRESS,
+  TREASURE_ADDRESS,
+} from "@treasure/constants";
+
+import * as craftingLegacy from "../../generated/Crafting Legacy/Crafting";
+import {
+  CraftingFinished,
+  CraftingRevealed,
+  CraftingStarted,
+} from "../../generated/Crafting/Crafting";
 import {
   Broken,
   Craft,
@@ -7,17 +19,7 @@ import {
   Outcome,
   Random,
 } from "../../generated/schema";
-import {
-  CONSUMABLE_ADDRESS,
-  LEGION_ADDRESS,
-  TREASURE_ADDRESS,
-} from "@treasure/constants";
 import { DIFFICULTY, getAddressId, getXpPerLevel } from "../helpers";
-import {
-  CraftingFinished,
-  CraftingRevealed,
-  CraftingStarted,
-} from "../../generated/Crafting/Crafting";
 
 function handleCraftingStarted(
   address: Address,

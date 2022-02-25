@@ -86,7 +86,7 @@ type LegionStat @entity {
   generation: LegionGeneration!
   rarity: LegionRarity!
   name: String!
-  
+
   summoningStat: SummoningStat
   craftingStat: CraftingStat
 
@@ -139,7 +139,7 @@ type AtlasMineStat @entity {
   magicDeposited: BigInt!
   magicWithdrawn: BigInt!
   magicHarvested: BigInt!
-  
+
   "Number of unique addresses actively staking throughout time period"
   activeAddressesCount: Int!
 
@@ -194,7 +194,8 @@ type CraftingStat @entity {
   "Number of unique addresses that have crafted at any point"
   allAddressesCount: Int!
 
-  difficultyStats: [CraftingDifficultyStat!]! @derivedFrom(field: "craftingStat")
+  difficultyStats: [CraftingDifficultyStat!]!
+    @derivedFrom(field: "craftingStat")
   legionStats: [LegionStat!]! @derivedFrom(field: "craftingStat")
   treasureStats: [TreasureStat!]! @derivedFrom(field: "craftingStat")
 }

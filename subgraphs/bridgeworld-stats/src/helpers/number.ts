@@ -1,4 +1,5 @@
 import { BigDecimal, BigInt } from "@graphprotocol/graph-ts";
+
 import { ONE_WEI } from "./constants";
 
 export function toPaddedString(number: i32): string {

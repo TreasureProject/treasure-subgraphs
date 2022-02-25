@@ -27,12 +27,11 @@ type Collection @entity {
   "Internal for tracking attributes for a collection"
   _attributeIds: [String!]!
 
-  "Internal for tracking tokenIds minted for a collection"
-  _tokenIds: [String!]!
-
   name: String!
   standard: TokenStandard
   baseUri: String
+  tokensCount: Int!
+  stakedTokensCount: Int!
   tokens: [Token!]! @derivedFrom(field: "collection")
   attributes: [Attribute!] @derivedFrom(field: "collection")
 }
@@ -50,16 +49,25 @@ type Attribute @entity {
   tokens: [Token!]! @derivedFrom(field: "attributes")
 }
 
+type _LandMetadata @entity {
+  id: ID!
+  name: String!
+  attributes: [Attribute!]!
+  description: String
+  image: String
+  video: String
+}
+
 type Token @entity {
   id: ID!
   collection: Collection!
   tokenId: BigInt!
   name: String!
-  attributes: [Attribute!]
+  attributes: [Attribute!]!
   description: String
   image: String
+  video: String
   owner: User
-  stakedTokens: [StakedToken!] @derivedFrom(field: "token")
 }
 
 type StakedToken @entity {
@@ -89,9 +97,15 @@ type Seeded @entity {
   _randomIds: [String!]!
 }
 
+type Reward @entity {
+  id: ID!
+  token: Token!
+}
+
 type Claim @entity {
   id: ID!
   status: ClaimStatus!
   startTime: BigInt!
-  reward: Token
+  rewards: [Reward!]!
+  rewardsCount: Int!
 }

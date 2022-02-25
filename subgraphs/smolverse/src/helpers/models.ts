@@ -1,9 +1,29 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts";
 
-import { Attribute, Collection, Random, Seeded, Token, User } from "../../generated/schema";
+import { SMOL_TREASURES_ADDRESS } from "@treasure/constants";
+
+import {
+  Attribute,
+  Collection,
+  Random,
+  Seeded,
+  Token,
+  User,
+} from "../../generated/schema";
 import { getNameForCollection } from "./collections";
-import { TOKEN_STANDARD_ERC721 } from "./constants";
-import { getAttributeId, getCollectionId, getRandomId, getSeededId, getTokenId } from "./ids";
+import {
+  SMOL_TREASURES_COLLECTION_NAME,
+  SMOL_TREASURES_IMAGES_BASE_URI,
+  TOKEN_STANDARD_ERC721,
+} from "./constants";
+import {
+  getAttributeId,
+  getCollectionId,
+  getRandomId,
+  getSeededId,
+  getTokenId,
+} from "./ids";
+import { getTreasureTokenName } from "./treasures";
 
 export function getOrCreateUser(id: string): User {
   let user = User.load(id);
@@ -20,9 +40,11 @@ export function getOrCreateAttribute(
   collection: Collection,
   token: Token,
   name: string,
-  value: string
+  value: string,
+  overrideId: string | null = null,
+  skipSaveToCollection: boolean = false
 ): Attribute {
-  const id = getAttributeId(collection, name, value);
+  const id = (overrideId || getAttributeId(collection, name, value)) as string;
   let attribute = Attribute.load(id);
 
   if (!attribute) {
@@ -32,11 +54,17 @@ export function getOrCreateAttribute(
     attribute.value = value;
     attribute._tokenIds = [];
 
-    collection._attributeIds = collection._attributeIds.concat([id]);
-    collection.save();
+    if (!skipSaveToCollection) {
+      collection._attributeIds = collection._attributeIds.concat([id]);
+      collection.save();
+    }
   }
 
-  attribute._tokenIds = attribute._tokenIds.concat([token.tokenId.toString()]);
+  const tokenIdString = token.tokenId.toString();
+  if (!attribute._tokenIds.includes(tokenIdString)) {
+    attribute._tokenIds = attribute._tokenIds.concat([tokenIdString]);
+  }
+
   attribute.save();
 
   return attribute;
@@ -51,24 +79,50 @@ export function getOrCreateCollection(address: Address): Collection {
     collection.name = getNameForCollection(address);
     collection.standard = TOKEN_STANDARD_ERC721;
     collection._attributeIds = [];
-    collection._tokenIds = [];
     collection.save();
   }
 
   return collection;
 }
 
-export function getOrCreateToken(collection: Collection, tokenId: BigInt): Token {
+export function getOrCreateToken(
+  collection: Collection,
+  tokenId: BigInt
+): Token {
   const id = getTokenId(collection, tokenId);
   let token = Token.load(id);
-  
+
   if (!token) {
     token = new Token(id);
     token.collection = collection.id;
     token.tokenId = tokenId;
+    token.attributes = [];
     token.save();
 
-    collection._tokenIds = collection._tokenIds.concat([tokenId.toString()]);
+    collection.tokensCount += 1;
+    collection.save();
+  }
+
+  return token;
+}
+
+export function getOrCreateRewardToken(tokenId: BigInt): Token {
+  const collection = getOrCreateCollection(SMOL_TREASURES_ADDRESS);
+  const id = getTokenId(collection, tokenId);
+  let token = Token.load(id);
+
+  if (!token) {
+    token = new Token(id);
+    token.collection = collection.id;
+    token.tokenId = tokenId;
+    token.name = getTreasureTokenName(tokenId);
+    token.description = SMOL_TREASURES_COLLECTION_NAME;
+    token.image = `${SMOL_TREASURES_IMAGES_BASE_URI}${tokenId
+      .minus(BigInt.fromI32(1))
+      .toString()}.gif`;
+    token.save();
+
+    collection.tokensCount += 1;
     collection.save();
   }
 

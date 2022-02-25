@@ -1,4 +1,5 @@
 import { Address, BigInt, store } from "@graphprotocol/graph-ts";
+
 import { Token, User, UserToken } from "../generated/schema";
 import { getAddressId, getImageHash, getName, getRarity } from "./helpers";
 
@@ -20,9 +21,7 @@ function getToken(data: Transfer): Token {
     let name = getName(data.tokenId);
 
     token.contract = data.contract;
-    token.image = getImageHash(data.tokenId, name)
-      .split(" ")
-      .join("%20");
+    token.image = getImageHash(data.tokenId, name).split(" ").join("%20");
     token.name = name;
     token.rarity = getRarity(data.tokenId);
     token.tokenId = data.tokenId;
