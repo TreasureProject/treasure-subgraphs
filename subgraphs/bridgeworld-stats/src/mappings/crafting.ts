@@ -12,6 +12,7 @@ import {
   getLegion,
   getOrCreateCraftingDifficultyStat,
   getOrCreateLegionStat,
+  getOrCreateTreasureStat,
   getOrCreateUser,
   getTimeIntervalCraftingStats
 } from "../helpers/models";
@@ -24,6 +25,8 @@ function handleCraftingStarted(
   timestamp: BigInt,
   userAddress: Address,
   tokenId: BigInt,
+  treasureIds: BigInt[],
+  treasureAmounts: i32[],
   difficultyIndex: i32
 ): void {
   const user = getOrCreateUser(userAddress);
@@ -69,6 +72,15 @@ function handleCraftingStarted(
     difficultyStat.craftsStarted += 1;
     difficultyStat.save();
 
+    for (let j = 0; j < treasureIds.length; j++) {
+      const treasureStat = getOrCreateTreasureStat(stat.id, treasureIds[j]);
+      treasureStat.startTimestamp = stat.startTimestamp;
+      treasureStat.endTimestamp = stat.endTimestamp;
+      treasureStat.craftingStat = stat.id;
+      treasureStat.craftingUsed += treasureAmounts[j];
+      treasureStat.save();
+    }
+
     stat.save();
   }
 }
@@ -81,6 +93,8 @@ export function handleCraftingStartedWithDifficulty(
     event.block.timestamp,
     params._owner,
     params._tokenId,
+    params._treasureIds,
+    params._treasureAmounts,
     params._difficulty
   );
 }
@@ -93,6 +107,8 @@ export function handleCraftingStartedWithoutDifficulty(
     event.block.timestamp,
     params._owner,
     params._tokenId,
+    params._treasureIds,
+    params._treasureAmounts,
     0 // Prism
   );
 }
@@ -102,6 +118,7 @@ export function handleCraftingRevealed(event: CraftingRevealed): void {
   const tokenId = params._tokenId;
   const result = params._outcome;
   const wasSuccessful = result.wasSuccessful;
+  const brokenTreasureIds = result.brokenTreasureIds;
   const brokenAmounts = result.brokenAmounts;
 
   let brokenTreasuresCount = 0;
@@ -154,6 +171,15 @@ export function handleCraftingRevealed(event: CraftingRevealed): void {
       difficultyStat.craftsFailed += wasSuccessful ? 0 : 1;
       difficultyStat.brokenTreasuresCount += brokenTreasuresCount;
       difficultyStat.save();
+    }
+
+    for (let j = 0; j < brokenTreasureIds.length; j++) {
+      const treasureStat = getOrCreateTreasureStat(stat.id, brokenTreasureIds[j]);
+      treasureStat.startTimestamp = stat.startTimestamp;
+      treasureStat.endTimestamp = stat.endTimestamp;
+      treasureStat.craftingStat = stat.id;
+      treasureStat.craftingBroken += brokenAmounts[j].toI32();
+      treasureStat.save();
     }
   }
 }

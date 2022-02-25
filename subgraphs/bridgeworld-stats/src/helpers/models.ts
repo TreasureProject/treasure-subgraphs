@@ -8,6 +8,7 @@ import {
   Legion,
   LegionStat,
   SummoningStat,
+  TreasureStat,
   User
 } from "../../generated/schema";
 import { LEGION_GENERATIONS, LEGION_RARITIES, ZERO_BI } from "./constants";
@@ -32,6 +33,7 @@ import {
   getYearlyId
 } from "./ids";
 import { etherToWei } from "./number";
+import { getName, getTier } from "./treasure";
 
 export function getOrCreateUser(address: Address): User {
   const id = address.toHexString();
@@ -405,6 +407,20 @@ export function getOrCreateLegionStat(statId: string, legion: Legion): LegionSta
     stat.craftsFinished = 0;
     stat.craftsSucceeded = 0;
     stat.craftsFailed = 0;
+    stat.save();
+  }
+
+  return stat;
+}
+
+export function getOrCreateTreasureStat(statId: string, tokenId: BigInt): TreasureStat {
+  const id = `${statId}-${tokenId.toHexString()}`;
+  let stat = TreasureStat.load(id);
+  if (!stat) {
+    stat = new TreasureStat(id);
+    stat.tokenId = tokenId;
+    stat.name = getName(tokenId);
+    stat.tier = getTier(tokenId);
     stat.save();
   }
 

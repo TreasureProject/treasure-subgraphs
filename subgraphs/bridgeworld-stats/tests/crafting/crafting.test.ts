@@ -14,6 +14,7 @@ import {
   CRAFTING_DIFFICULTY_STAT_ENTITY_TYPE,
   CRAFTING_STAT_ENTITY_TYPE,
   LEGION_STAT_ENTITY_TYPE,
+  TREASURE_STAT_ENTITY_TYPE,
   USER_ADDRESS,
   USER_ENTITY_TYPE
 } from "../utils";
@@ -157,6 +158,24 @@ test("crafting stats count magic returned", () => {
   }
 });
 
+test("crafting stats count treasures used", () => {
+  clearStore();
+
+  const legionCreatedEvent = createLegionCreatedEvent(1, 0, 4);
+  handleLegionCreated(legionCreatedEvent);
+
+  const craftingStartedEvent = createCraftingStartedEvent(timestamp, USER_ADDRESS, 1, 1, 0, [92], [2]);
+  handleCraftingStartedWithDifficulty(craftingStartedEvent);
+
+  const craftingRevealedEvent = createCraftingRevealedEvent(timestamp, USER_ADDRESS, 1, false);
+  handleCraftingRevealed(craftingRevealedEvent);
+
+  for (let i = 0; i < statIds.length; i++) {
+    // Assert all time intervals are created
+    assert.fieldEquals(TREASURE_STAT_ENTITY_TYPE, `${statIds[i]}-0x5c`, "craftingUsed", "2");
+  }
+});
+
 test("crafting stats count crafts succeeded", () => {
   clearStore();
 
@@ -227,20 +246,24 @@ test("crafting stats count broken treasures", () => {
     true,
     ZERO_BI,
     0,
-    [1, 2],
-    [1, 1]
+    [92, 96],
+    [2, 1]
   );
   handleCraftingRevealed(craftingRevealedEvent);
 
   // Assert user data is updated
-  assert.fieldEquals(USER_ENTITY_TYPE, USER_ADDRESS, "brokenTreasuresCount", "2");
+  assert.fieldEquals(USER_ENTITY_TYPE, USER_ADDRESS, "brokenTreasuresCount", "3");
 
   for (let i = 0; i < statIds.length; i++) {
     // Assert all time intervals are created
-    assert.fieldEquals(CRAFTING_STAT_ENTITY_TYPE, statIds[i], "brokenTreasuresCount", "2");
+    assert.fieldEquals(CRAFTING_STAT_ENTITY_TYPE, statIds[i], "brokenTreasuresCount", "3");
 
     // Assert all time intervals for difficulty are created
-    assert.fieldEquals(CRAFTING_DIFFICULTY_STAT_ENTITY_TYPE, `${statIds[i]}-difficultyPrism`, "brokenTreasuresCount", "2");
+    assert.fieldEquals(CRAFTING_DIFFICULTY_STAT_ENTITY_TYPE, `${statIds[i]}-difficultyPrism`, "brokenTreasuresCount", "3");
+
+    // Assert all time intervals for treasure are created
+    assert.fieldEquals(TREASURE_STAT_ENTITY_TYPE, `${statIds[i]}-0x5c`, "craftingBroken", "2");
+    assert.fieldEquals(TREASURE_STAT_ENTITY_TYPE, `${statIds[i]}-0x60`, "craftingBroken", "1");
   }
 });
 

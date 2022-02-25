@@ -58,6 +58,25 @@ type _Craft @entity {
   difficulty: CraftingDifficulty!
 }
 
+type TreasureStat @entity {
+  id: ID!
+
+  startTimestamp: BigInt
+  endTimestamp: BigInt
+
+  tokenId: BigInt!
+  name: String!
+  tier: Int!
+
+  craftingStat: CraftingStat
+
+  "Number of this Treasure type used in Crafts"
+  craftingUsed: Int!
+
+  "Number of this Treasure type broken in Crafts"
+  craftingBroken: Int!
+}
+
 type LegionStat @entity {
   id: ID!
 
@@ -175,7 +194,9 @@ type CraftingStat @entity {
   "Number of unique addresses that have crafted at any point"
   allAddressesCount: Int!
 
+  difficultyStats: [CraftingDifficultyStat!]! @derivedFrom(field: "craftingStat")
   legionStats: [LegionStat!]! @derivedFrom(field: "craftingStat")
+  treasureStats: [TreasureStat!]! @derivedFrom(field: "craftingStat")
 }
 
 type Pilgrimage @entity {
