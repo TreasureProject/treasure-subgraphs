@@ -1,6 +1,10 @@
 import { BigInt } from "@graphprotocol/graph-ts";
 
-import { CRAFTING_ADDRESS, LEGION_ADDRESS } from "@treasure/constants";
+import {
+  CRAFTING_ADDRESS,
+  LEGION_ADDRESS,
+  QUESTING_ADDRESS,
+} from "@treasure/constants";
 
 import { SECONDS_IN_DAY } from "./date";
 import { toPaddedString } from "./number";
@@ -50,9 +54,13 @@ export function getAllTimeId(): string {
 }
 
 export function getCraftId(tokenId: BigInt): string {
-  return [CRAFTING_ADDRESS.toHexString(), tokenId.toHexString()].join("-");
+  return `${CRAFTING_ADDRESS.toHexString()}-${tokenId.toHexString()}`;
 }
 
 export function getLegionId(tokenId: BigInt): string {
-  return [LEGION_ADDRESS.toHexString(), tokenId.toHexString()].join("-");
+  return `${LEGION_ADDRESS.toHexString()}-${tokenId.toHexString()}`;
+}
+
+export function getQuestId(tokenId: BigInt): string {
+  return `$${QUESTING_ADDRESS.toHexString()}-${tokenId.toHexString()}`;
 }
