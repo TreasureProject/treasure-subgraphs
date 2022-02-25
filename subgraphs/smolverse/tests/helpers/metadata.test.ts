@@ -10,7 +10,7 @@ import {
 
 import { SMOL_BODIES_ADDRESS } from "@treasure/constants";
 
-import { Attribute, Token } from "../../generated/schema";
+import { Attribute, Collection, Token } from "../../generated/schema";
 import { updateTokenMetadata } from "../../src/helpers/metadata";
 import { handleTransfer } from "../../src/mappings/smol-bodies";
 import { createTransferEvent } from "../smol-bodies/utils";
@@ -65,8 +65,9 @@ test("token attributes are set", () => {
   handleTransfer(transferEvent);
 
   const id = `${address}-0x1`;
+  const collection = Collection.load(address) as Collection;
   const token = Token.load(id) as Token;
-  updateTokenMetadata(token, mockTokenData);
+  updateTokenMetadata(collection, token, mockTokenData);
 
   // Assert token metadata was saved
   assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "name", "Smol Bodies #1");
@@ -132,11 +133,13 @@ test("token attribute percentages are set", () => {
   transferEvent3.address = Address.zero();
   handleTransfer(transferEvent3);
 
+  const collection = Collection.load(address) as Collection;
   const token1 = Token.load(`${address}-0x1`) as Token;
   const token2 = Token.load(`${address}-0x2`) as Token;
   const token3 = Token.load(`${address}-0x3`) as Token;
 
   updateTokenMetadata(
+    collection,
     token1,
     json
       .fromBytes(
@@ -162,6 +165,7 @@ test("token attribute percentages are set", () => {
   );
 
   updateTokenMetadata(
+    collection,
     token2,
     json
       .fromBytes(
@@ -187,6 +191,7 @@ test("token attribute percentages are set", () => {
   );
 
   updateTokenMetadata(
+    collection,
     token3,
     json
       .fromBytes(
@@ -254,10 +259,13 @@ test("token attribute percentages are not set until threshold is met", () => {
   );
   handleTransfer(transferEvent);
 
+  const collection = Collection.load(
+    transferEvent.address.toHexString()
+  ) as Collection;
   const token = Token.load(
     `${transferEvent.address.toHexString()}-0x1`
   ) as Token;
-  updateTokenMetadata(token, mockTokenData);
+  updateTokenMetadata(collection, token, mockTokenData);
 
   // Assert attribute percentages were not updated
   const attribute = Attribute.load(

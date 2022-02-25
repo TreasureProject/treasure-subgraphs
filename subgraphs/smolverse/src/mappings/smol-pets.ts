@@ -37,5 +37,11 @@ export function handleTransfer(event: Transfer): void {
     collection.save();
   }
 
-  commonHandleTransfer(collection, params.from, params.to, params.tokenId);
+  commonHandleTransfer(
+    event.block.timestamp,
+    collection,
+    params.from,
+    params.to,
+    params.tokenId
+  );
 }

@@ -6,6 +6,9 @@ export const SMOL_BRAINS_PETS_COLLECTION_NAME = "Smol Brains Pets";
 export const SMOL_BODIES_PETS_COLLECTION_NAME = "Smol Bodies Pets";
 export const SMOL_TREASURES_COLLECTION_NAME = "Smol Treasures";
 
+// Cron jobs
+export const MISSING_METADATA_UPDATE_INTERVAL = 3600;
+
 // IPFS
 export const SMOL_BODIES_BASE_URI =
   "https://treasure-marketplace.mypinata.cloud/ipfs/Qmbt6W9QB74VZzJfWbqG7vi2hiE2K4AnoyvWGFDHEjgoqN/";

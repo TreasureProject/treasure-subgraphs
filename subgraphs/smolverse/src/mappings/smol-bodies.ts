@@ -29,6 +29,7 @@ export function handleTransfer(event: Transfer): void {
   }
 
   const token = commonHandleTransfer(
+    event.block.timestamp,
     collection,
     params.from,
     params.to,
