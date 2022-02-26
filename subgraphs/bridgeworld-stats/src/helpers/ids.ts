@@ -62,5 +62,5 @@ export function getLegionId(tokenId: BigInt): string {
 }
 
 export function getQuestId(tokenId: BigInt): string {
-  return `$${QUESTING_ADDRESS.toHexString()}-${tokenId.toHexString()}`;
+  return `${QUESTING_ADDRESS.toHexString()}-${tokenId.toHexString()}`;
 }
