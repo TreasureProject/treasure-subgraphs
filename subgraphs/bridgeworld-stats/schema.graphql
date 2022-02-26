@@ -49,6 +49,10 @@ type User @entity {
   brokenTreasuresCount: Int!
   questsStarted: Int!
   questsFinished: Int!
+  questingShardsEarned: Int!
+  questingStarlightEarned: Int!
+  questingUniversalLocksEarned: Int!
+  questingTreasuresEarned: Int!
   summonsStarted: Int!
   summonsFinished: Int!
 }
@@ -82,12 +86,16 @@ type TreasureStat @entity {
   tier: Int!
 
   craftingStat: CraftingStat
+  questingStat: QuestingStat
 
   "Number of this Treasure type used in Crafts"
   craftingUsed: Int!
 
   "Number of this Treasure type broken in Crafts"
   craftingBroken: Int!
+
+  "Number of this Treasure type earned in Quests"
+  questingEarned: Int!
 }
 
 type LegionStat @entity {
@@ -131,8 +139,20 @@ type LegionStat @entity {
   "Number of Quests started by this Legion type"
   questsStarted: Int!
 
-  "Number of Crafts finished by this Legion type"
+  "Number of Quests finished by this Legion type"
   questsFinished: Int!
+
+  "Number of Prism Shards earned by this Legion type while questing"
+  questingShardsEarned: Int!
+
+  "Number of Essences of Starlight earned by this Legion type while questing"
+  questingStarlightEarned: Int!
+
+  "Number of Universal Locks earned by this Legion type while questing"
+  questingUniversalLocksEarned: Int!
+
+  "Number of treasures earned by this Legion type while questing"
+  questingTreasuresEarned: Int!
 }
 
 type AtlasMineLockStat @entity {
@@ -245,6 +265,10 @@ type QuestingDifficultyStat @entity {
 
   questsStarted: Int!
   questsFinished: Int!
+  questingShardsEarned: Int!
+  questingStarlightEarned: Int!
+  questingUniversalLocksEarned: Int!
+  questingTreasuresEarned: Int!
 }
 
 type QuestingStat @entity {
@@ -262,6 +286,10 @@ type QuestingStat @entity {
 
   questsStarted: Int!
   questsFinished: Int!
+  questingShardsEarned: Int!
+  questingStarlightEarned: Int!
+  questingUniversalLocksEarned: Int!
+  questingTreasuresEarned: Int!
 
   "Number of unique addresses actively questing throughout time period"
   activeAddressesCount: Int!
@@ -271,6 +299,7 @@ type QuestingStat @entity {
 
   difficultyStats: [QuestingDifficulty!]! @derivedFrom(field: "questingStat")
   legionStats: [LegionStat!]! @derivedFrom(field: "questingStat")
+  treasureStats: [TreasureStat!]! @derivedFrom(field: "questingStat")
 }
 
 type SummoningStat @entity {

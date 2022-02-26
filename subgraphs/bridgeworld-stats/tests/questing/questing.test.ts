@@ -5,6 +5,7 @@ import { Address } from "@graphprotocol/graph-ts";
 import { handleLegionCreated } from "../../src/mappings/legion";
 import {
   handleQuestFinished,
+  handleQuestRevealed,
   handleQuestStartedWithDifficulty,
 } from "../../src/mappings/questing";
 import { createLegionCreatedEvent } from "../legion/utils";
@@ -12,10 +13,15 @@ import {
   LEGION_STAT_ENTITY_TYPE,
   QUESTING_DIFFICULTY_STAT_ENTITY_TYPE,
   QUESTING_STAT_ENTITY_TYPE,
+  TREASURE_STAT_ENTITY_TYPE,
   USER_ADDRESS,
   USER_ENTITY_TYPE,
 } from "../utils";
-import { createQuestFinishedEvent, createQuestStartedEvent } from "./utils";
+import {
+  createQuestFinishedEvent,
+  createQuestRevealedEvent,
+  createQuestStartedEvent,
+} from "./utils";
 
 // Feb 9 22, 7:15
 const timestamp = 1644390900;
@@ -226,6 +232,208 @@ test("questing stats count quests started", () => {
     "activeAddressesCount",
     "2"
   );
+});
+
+test("questing stats count consumables earned", () => {
+  clearStore();
+
+  const legionCreatedEvent = createLegionCreatedEvent(1, 0, 4);
+  handleLegionCreated(legionCreatedEvent);
+
+  const questStartedEvent = createQuestStartedEvent(
+    timestamp,
+    USER_ADDRESS,
+    1,
+    0,
+    0
+  );
+  handleQuestStartedWithDifficulty(questStartedEvent);
+
+  const questRevealedEvent = createQuestRevealedEvent(
+    timestamp,
+    USER_ADDRESS,
+    1,
+    3,
+    3,
+    1,
+    0
+  );
+  handleQuestRevealed(questRevealedEvent);
+
+  // Assert user data is updated
+  assert.fieldEquals(
+    USER_ENTITY_TYPE,
+    USER_ADDRESS,
+    "questingShardsEarned",
+    "3"
+  );
+  assert.fieldEquals(
+    USER_ENTITY_TYPE,
+    USER_ADDRESS,
+    "questingStarlightEarned",
+    "3"
+  );
+  assert.fieldEquals(
+    USER_ENTITY_TYPE,
+    USER_ADDRESS,
+    "questingUniversalLocksEarned",
+    "1"
+  );
+  assert.fieldEquals(
+    USER_ENTITY_TYPE,
+    USER_ADDRESS,
+    "questingTreasuresEarned",
+    "0"
+  );
+
+  for (let i = 0; i < statIds.length; i++) {
+    // Assert all time intervals are created
+    assert.fieldEquals(
+      QUESTING_STAT_ENTITY_TYPE,
+      statIds[i],
+      "questingShardsEarned",
+      "3"
+    );
+    assert.fieldEquals(
+      QUESTING_STAT_ENTITY_TYPE,
+      statIds[i],
+      "questingStarlightEarned",
+      "3"
+    );
+    assert.fieldEquals(
+      QUESTING_STAT_ENTITY_TYPE,
+      statIds[i],
+      "questingUniversalLocksEarned",
+      "1"
+    );
+    assert.fieldEquals(
+      QUESTING_STAT_ENTITY_TYPE,
+      statIds[i],
+      "questingTreasuresEarned",
+      "0"
+    );
+
+    // Assert all time intervals for difficulty are created
+    assert.fieldEquals(
+      QUESTING_DIFFICULTY_STAT_ENTITY_TYPE,
+      `${statIds[i]}-difficultyEasy`,
+      "questingShardsEarned",
+      "3"
+    );
+    assert.fieldEquals(
+      QUESTING_DIFFICULTY_STAT_ENTITY_TYPE,
+      `${statIds[i]}-difficultyEasy`,
+      "questingStarlightEarned",
+      "3"
+    );
+    assert.fieldEquals(
+      QUESTING_DIFFICULTY_STAT_ENTITY_TYPE,
+      `${statIds[i]}-difficultyEasy`,
+      "questingUniversalLocksEarned",
+      "1"
+    );
+    assert.fieldEquals(
+      QUESTING_DIFFICULTY_STAT_ENTITY_TYPE,
+      `${statIds[i]}-difficultyEasy`,
+      "questingTreasuresEarned",
+      "0"
+    );
+
+    // Assert all time intervals for legions are created
+    assert.fieldEquals(
+      LEGION_STAT_ENTITY_TYPE,
+      `${statIds[i]}-genesis-common`,
+      "questingShardsEarned",
+      "3"
+    );
+    assert.fieldEquals(
+      LEGION_STAT_ENTITY_TYPE,
+      `${statIds[i]}-genesis-common`,
+      "questingStarlightEarned",
+      "3"
+    );
+    assert.fieldEquals(
+      LEGION_STAT_ENTITY_TYPE,
+      `${statIds[i]}-genesis-common`,
+      "questingUniversalLocksEarned",
+      "1"
+    );
+    assert.fieldEquals(
+      LEGION_STAT_ENTITY_TYPE,
+      `${statIds[i]}-genesis-common`,
+      "questingTreasuresEarned",
+      "0"
+    );
+  }
+});
+
+test("questing stats count treasures earned", () => {
+  clearStore();
+
+  const legionCreatedEvent = createLegionCreatedEvent(1, 0, 4);
+  handleLegionCreated(legionCreatedEvent);
+
+  const questStartedEvent = createQuestStartedEvent(
+    timestamp,
+    USER_ADDRESS,
+    1,
+    0,
+    0
+  );
+  handleQuestStartedWithDifficulty(questStartedEvent);
+
+  const questRevealedEvent = createQuestRevealedEvent(
+    timestamp,
+    USER_ADDRESS,
+    1,
+    3,
+    3,
+    1,
+    92
+  );
+  handleQuestRevealed(questRevealedEvent);
+
+  // Assert user data is updated
+  assert.fieldEquals(
+    USER_ENTITY_TYPE,
+    USER_ADDRESS,
+    "questingTreasuresEarned",
+    "1"
+  );
+
+  for (let i = 0; i < statIds.length; i++) {
+    // Assert all time intervals are created
+    assert.fieldEquals(
+      QUESTING_STAT_ENTITY_TYPE,
+      statIds[i],
+      "questingTreasuresEarned",
+      "1"
+    );
+
+    // Assert all time intervals for difficulty are created
+    assert.fieldEquals(
+      QUESTING_DIFFICULTY_STAT_ENTITY_TYPE,
+      `${statIds[i]}-difficultyEasy`,
+      "questingTreasuresEarned",
+      "1"
+    );
+
+    // Assert all time intervals for legions are created
+    assert.fieldEquals(
+      LEGION_STAT_ENTITY_TYPE,
+      `${statIds[i]}-genesis-common`,
+      "questingTreasuresEarned",
+      "1"
+    );
+
+    // Assert all time intervals for treasures are created
+    assert.fieldEquals(
+      TREASURE_STAT_ENTITY_TYPE,
+      `${statIds[i]}-0x5c`,
+      "questingEarned",
+      "1"
+    );
+  }
 });
 
 test("questing stats count quests finished", () => {

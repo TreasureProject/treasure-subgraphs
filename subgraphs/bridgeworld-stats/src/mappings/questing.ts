@@ -13,6 +13,7 @@ import {
   getLegion,
   getOrCreateLegionStat,
   getOrCreateQuestingDifficultyStat,
+  getOrCreateTreasureStat,
   getOrCreateUser,
   getTimeIntervalQuestingStats,
 } from "../helpers/models";
@@ -95,7 +96,71 @@ export function handleQuestStartedWithoutDifficulty(
   );
 }
 
-export function handleQuestRevealed(event: QuestRevealed): void {}
+export function handleQuestRevealed(event: QuestRevealed): void {
+  const params = event.params;
+  const tokenId = params._tokenId;
+  const result = params._reward;
+  const shardsEarned = result.crystalShardAmount;
+  const starlightEarned = result.starlightAmount;
+  const universalLocksEarned = result.universalLockAmount;
+  const earnedTreasure = result.treasureId.gt(BigInt.zero());
+
+  const user = getOrCreateUser(params._owner);
+  user.questingShardsEarned += shardsEarned;
+  user.questingStarlightEarned += starlightEarned;
+  user.questingUniversalLocksEarned += universalLocksEarned;
+  user.questingTreasuresEarned += earnedTreasure ? 1 : 0;
+  user.save();
+
+  const legion = getLegion(tokenId);
+  if (!legion) {
+    log.error("Legion not found: {}", [tokenId.toString()]);
+  }
+
+  const quest = _Quest.load(getQuestId(tokenId));
+  if (!quest) {
+    log.error("Quest not found: {}", [tokenId.toString()]);
+  }
+
+  const stats = getTimeIntervalQuestingStats(event.block.timestamp);
+  for (let i = 0; i < stats.length; i++) {
+    const stat = stats[i];
+    stat.questingShardsEarned += shardsEarned;
+    stat.questingStarlightEarned += starlightEarned;
+    stat.questingUniversalLocksEarned += universalLocksEarned;
+    stat.questingTreasuresEarned += earnedTreasure ? 1 : 0;
+    stat.save();
+
+    if (legion) {
+      const legionStat = getOrCreateLegionStat(stat.id, legion);
+      legionStat.questingShardsEarned += shardsEarned;
+      legionStat.questingStarlightEarned += starlightEarned;
+      legionStat.questingUniversalLocksEarned += universalLocksEarned;
+      legionStat.questingTreasuresEarned += earnedTreasure ? 1 : 0;
+      legionStat.save();
+    }
+
+    if (quest) {
+      const difficultyStat = getOrCreateQuestingDifficultyStat(
+        stat.id,
+        quest.difficulty
+      );
+      difficultyStat.questingShardsEarned += shardsEarned;
+      difficultyStat.questingStarlightEarned += starlightEarned;
+      difficultyStat.questingUniversalLocksEarned += universalLocksEarned;
+      difficultyStat.questingTreasuresEarned += earnedTreasure ? 1 : 0;
+      difficultyStat.save();
+    }
+
+    if (earnedTreasure) {
+      const treasureStat = getOrCreateTreasureStat(stat.id, result.treasureId);
+      treasureStat.startTimestamp = stat.startTimestamp;
+      treasureStat.endTimestamp = stat.endTimestamp;
+      treasureStat.questingEarned += 1;
+      treasureStat.save();
+    }
+  }
+}
 
 export function handleQuestFinished(event: QuestFinished): void {
   const params = event.params;

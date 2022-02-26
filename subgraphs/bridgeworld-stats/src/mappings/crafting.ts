@@ -74,12 +74,15 @@ function handleCraftingStarted(
     difficultyStat.save();
 
     for (let j = 0; j < treasureIds.length; j++) {
-      const treasureStat = getOrCreateTreasureStat(stat.id, treasureIds[j]);
-      treasureStat.startTimestamp = stat.startTimestamp;
-      treasureStat.endTimestamp = stat.endTimestamp;
-      treasureStat.craftingStat = stat.id;
-      treasureStat.craftingUsed += treasureAmounts[j];
-      treasureStat.save();
+      const treasureId = treasureIds[j];
+      if (treasureId.gt(BigInt.zero())) {
+        const treasureStat = getOrCreateTreasureStat(stat.id, treasureId);
+        treasureStat.startTimestamp = stat.startTimestamp;
+        treasureStat.endTimestamp = stat.endTimestamp;
+        treasureStat.craftingStat = stat.id;
+        treasureStat.craftingUsed += treasureAmounts[j];
+        treasureStat.save();
+      }
     }
 
     stat.save();
@@ -184,15 +187,15 @@ export function handleCraftingRevealed(event: CraftingRevealed): void {
     }
 
     for (let j = 0; j < brokenTreasureIds.length; j++) {
-      const treasureStat = getOrCreateTreasureStat(
-        stat.id,
-        brokenTreasureIds[j]
-      );
-      treasureStat.startTimestamp = stat.startTimestamp;
-      treasureStat.endTimestamp = stat.endTimestamp;
-      treasureStat.craftingStat = stat.id;
-      treasureStat.craftingBroken += brokenAmounts[j].toI32();
-      treasureStat.save();
+      const treasureId = brokenTreasureIds[j];
+      if (treasureId.gt(BigInt.zero())) {
+        const treasureStat = getOrCreateTreasureStat(stat.id, treasureId);
+        treasureStat.startTimestamp = stat.startTimestamp;
+        treasureStat.endTimestamp = stat.endTimestamp;
+        treasureStat.craftingStat = stat.id;
+        treasureStat.craftingBroken += brokenAmounts[j].toI32();
+        treasureStat.save();
+      }
     }
   }
 }
