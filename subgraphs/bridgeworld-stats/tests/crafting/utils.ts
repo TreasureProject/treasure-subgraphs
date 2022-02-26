@@ -7,7 +7,6 @@ import {
   CraftingRevealed,
   CraftingStarted,
 } from "../../generated/Crafting/Crafting";
-import { ZERO_BI } from "../../src/helpers/constants";
 
 export const createCraftingStartedEvent = (
   timestamp: i32,
@@ -47,7 +46,7 @@ export function createCraftingRevealedEvent(
   user: string,
   tokenId: i32,
   success: boolean = true,
-  magicReturned: BigInt = ZERO_BI,
+  magicReturned: BigInt = BigInt.zero(),
   rewardId: i32 = 1,
   brokenTreasures: i32[] = [],
   brokenAmounts: i32[] = [],

@@ -1,8 +1,7 @@
 import { assert, clearStore, test } from "matchstick-as";
 
-import { Address } from "@graphprotocol/graph-ts";
+import { Address, BigInt } from "@graphprotocol/graph-ts";
 
-import { ZERO_BI } from "../../src/helpers/constants";
 import { etherToWei } from "../../src/helpers/number";
 import {
   handleCraftingFinished,
@@ -483,7 +482,7 @@ test("crafting stats count broken treasures", () => {
     USER_ADDRESS,
     1,
     true,
-    ZERO_BI,
+    BigInt.zero(),
     0,
     [92, 96],
     [2, 1]

@@ -1,4 +1,4 @@
-import { Address, BigInt, Entity } from "@graphprotocol/graph-ts";
+import { Address, BigInt } from "@graphprotocol/graph-ts";
 
 import {
   AtlasMineLockStat,
@@ -13,7 +13,7 @@ import {
   TreasureStat,
   User,
 } from "../../generated/schema";
-import { LEGION_GENERATIONS, LEGION_RARITIES, ZERO_BI } from "./constants";
+import { LEGION_GENERATIONS, LEGION_RARITIES } from "./constants";
 import {
   SECONDS_IN_DAY,
   SECONDS_IN_HOUR,
@@ -103,7 +103,7 @@ export function getLegionSummonCost(generation: string): BigInt {
     return etherToWei(300);
   }
 
-  return ZERO_BI;
+  return BigInt.zero();
 }
 
 export function getTimeIntervalAtlasMineStats(

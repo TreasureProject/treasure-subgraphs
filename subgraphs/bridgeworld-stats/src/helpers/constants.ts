@@ -16,4 +16,3 @@ export const LEGION_RARITIES = [
 export const QUEST_DIFFICULTIES = ["Easy", "Medium", "Hard"];
 
 export const ONE_WEI = BigDecimal.fromString((1e18).toString());
-export const ZERO_BI = BigInt.fromI32(0);
