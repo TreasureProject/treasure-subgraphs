@@ -2,11 +2,14 @@ import { assert, clearStore, test } from "matchstick-as/assembly/index";
 
 import { Address } from "@graphprotocol/graph-ts";
 
+import { handleLegionCreated } from "../../src/mappings/legion";
 import {
   handlePilgrimagesFinished,
   handlePilgrimagesStarted,
 } from "../../src/mappings/pilgrimage";
+import { createLegionCreatedEvent } from "../legion/utils";
 import {
+  LEGION_STAT_ENTITY_TYPE,
   PILGRIMAGE_STAT_ENTITY_TYPE,
   USER_ADDRESS,
   USER_ENTITY_TYPE,
@@ -210,4 +213,73 @@ test("pilgrimage stats count pilgrimages started", () => {
     "activeAddressesCount",
     "2"
   );
+});
+
+test("pilgrimage stats count pilgrimages finished", () => {
+  clearStore();
+
+  const legionCreatedEvent = createLegionCreatedEvent(1, 1, 4, 3);
+  handleLegionCreated(legionCreatedEvent);
+
+  const legionCreatedEvent2 = createLegionCreatedEvent(2, 1, 4, 3);
+  handleLegionCreated(legionCreatedEvent2);
+
+  const pilgrimagesStartedEvent = createPilgrimagesStartedEvent(
+    timestamp,
+    USER_ADDRESS,
+    Address.zero().toHexString(),
+    0,
+    [1, 2],
+    [1, 1],
+    [0, 1]
+  );
+  handlePilgrimagesStarted(pilgrimagesStartedEvent);
+
+  for (let i = 0; i < statIds.length; i++) {
+    // Assert all time intervals are created
+    assert.fieldEquals(
+      PILGRIMAGE_STAT_ENTITY_TYPE,
+      statIds[i],
+      "pilgrimagesStarted",
+      "2"
+    );
+    assert.fieldEquals(
+      PILGRIMAGE_STAT_ENTITY_TYPE,
+      statIds[i],
+      "activeAddressesCount",
+      "1"
+    );
+  }
+
+  const pilgrimageFinishedEvent = createPilgrimagesFinishedEvent(
+    timestamp,
+    USER_ADDRESS,
+    [1, 2],
+    [0, 1]
+  );
+  handlePilgrimagesFinished(pilgrimageFinishedEvent);
+
+  for (let i = 0; i < statIds.length; i++) {
+    // Assert all time intervals are created
+    assert.fieldEquals(
+      PILGRIMAGE_STAT_ENTITY_TYPE,
+      statIds[i],
+      "pilgrimagesFinished",
+      "2"
+    );
+    assert.fieldEquals(
+      PILGRIMAGE_STAT_ENTITY_TYPE,
+      statIds[i],
+      "activeAddressesCount",
+      "0"
+    );
+
+    // Assert all time intervals for legion type are created
+    assert.fieldEquals(
+      LEGION_STAT_ENTITY_TYPE,
+      `${statIds[i]}-auxiliary-common-assassin`,
+      "pilgrimagesResulted",
+      "2"
+    );
+  }
 });
