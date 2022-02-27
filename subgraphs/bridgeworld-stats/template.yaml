@@ -126,6 +126,54 @@ dataSources:
         - event: NoPilgrimagesToFinish(indexed address)
           handler: handleNoPilgrimagesToFinish
       file: ./src/mappings/pilgrimage.ts
+  - name: Questing
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ questing_address }}"
+      abi: Questing
+      startBlock: {{ questing_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Token
+        - User
+        - UserToken
+      abis:
+        - name: Questing
+          file: ../../node_modules/@treasure/subgraph-abis/src/Questing.json
+      eventHandlers:
+        - event: QuestStarted(indexed address,indexed uint256,indexed uint256,uint256,uint8)
+          handler: handleQuestStartedWithDifficulty
+        - event: QuestRevealed(indexed address,indexed uint256,(uint8,uint8,uint8,uint256))
+          handler: handleQuestRevealed
+        - event: QuestFinished(indexed address,indexed uint256)
+          handler: handleQuestFinished
+      file: ./src/mappings/questing.ts
+  - name: Questing Legacy
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ questing_address }}"
+      abi: Questing
+      startBlock: {{ questing_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Token
+        - User
+        - UserToken
+      abis:
+        - name: Questing
+          file: ../../node_modules/@treasure/subgraph-abis/src/QuestingLegacy.json
+      eventHandlers:
+        - event: QuestStarted(indexed address,indexed uint256,indexed uint256,uint256)
+          handler: handleQuestStartedWithoutDifficulty
+      file: ./src/mappings/questing.ts
   - name: Summoning
     kind: ethereum/contract
     network: {{ network }}

@@ -7,11 +7,13 @@ import {
   CraftingStat,
   Legion,
   LegionStat,
+  QuestingDifficultyStat,
+  QuestingStat,
   SummoningStat,
   TreasureStat,
   User,
 } from "../../generated/schema";
-import { LEGION_GENERATIONS, LEGION_RARITIES, ZERO_BI } from "./constants";
+import { LEGION_GENERATIONS, LEGION_RARITIES } from "./constants";
 import {
   SECONDS_IN_DAY,
   SECONDS_IN_HOUR,
@@ -101,7 +103,7 @@ export function getLegionSummonCost(generation: string): BigInt {
     return etherToWei(300);
   }
 
-  return ZERO_BI;
+  return BigInt.zero();
 }
 
 export function getTimeIntervalAtlasMineStats(
@@ -307,6 +309,111 @@ export function getOrCreateCraftingDifficultyStat(
   if (!stat) {
     stat = new CraftingDifficultyStat(id);
     stat.craftingStat = craftingStatId;
+    stat.difficulty = difficulty;
+    stat.save();
+  }
+
+  return stat;
+}
+
+export function getTimeIntervalQuestingStats(
+  eventTimestamp: BigInt
+): QuestingStat[] {
+  const timestamp = eventTimestamp.toI64() * 1000;
+  const date = new Date(timestamp);
+  const month = date.getUTCMonth();
+  const year = date.getUTCFullYear();
+
+  // Hourly
+  const hourlyId = getHourlyId(timestamp);
+  const hourlyStat = (QuestingStat.load(hourlyId) ||
+    createQuestingStat(hourlyId)) as QuestingStat;
+  const startOfHour = getStartOfHour(timestamp);
+  hourlyStat.interval = "Hourly";
+  hourlyStat.startTimestamp = BigInt.fromI64(startOfHour);
+  hourlyStat.endTimestamp = BigInt.fromI64(startOfHour + SECONDS_IN_HOUR - 1);
+  hourlyStat.save();
+
+  // Daily
+  const dailyId = getDailyId(timestamp);
+  const dailyStat = (QuestingStat.load(dailyId) ||
+    createQuestingStat(dailyId)) as QuestingStat;
+  const startOfDay = getStartOfDay(timestamp);
+  dailyStat.interval = "Daily";
+  dailyStat.startTimestamp = BigInt.fromI64(startOfDay);
+  dailyStat.endTimestamp = BigInt.fromI64(startOfDay + SECONDS_IN_DAY - 1);
+  dailyStat.save();
+
+  // Weekly
+  const weeklyId = getWeeklyId(timestamp);
+  const weeklyStat = (QuestingStat.load(weeklyId) ||
+    createQuestingStat(weeklyId)) as QuestingStat;
+  const startOfWeek = getStartOfWeek(timestamp);
+  weeklyStat.interval = "Weekly";
+  weeklyStat.startTimestamp = BigInt.fromI64(startOfWeek);
+  weeklyStat.endTimestamp = BigInt.fromI64(
+    startOfWeek + SECONDS_IN_DAY * 7 - 1
+  );
+  weeklyStat.save();
+
+  // Monthly
+  const monthlyId = getMonthlyId(timestamp);
+  const monthlyStat = (QuestingStat.load(monthlyId) ||
+    createQuestingStat(monthlyId)) as QuestingStat;
+  const startOfMonth = getStartOfMonth(timestamp);
+  monthlyStat.interval = "Monthly";
+  monthlyStat.startTimestamp = BigInt.fromI64(startOfMonth);
+  monthlyStat.endTimestamp = BigInt.fromI64(
+    startOfMonth + SECONDS_IN_DAY * getDaysInMonth(month, year) - 1
+  );
+  monthlyStat.save();
+
+  // Yearly
+  const yearlyId = getYearlyId(timestamp);
+  const yearlyStat = (QuestingStat.load(yearlyId) ||
+    createQuestingStat(yearlyId)) as QuestingStat;
+  const startOfYear = getStartOfYear(timestamp);
+  yearlyStat.interval = "Yearly";
+  yearlyStat.startTimestamp = BigInt.fromI64(startOfYear);
+  yearlyStat.endTimestamp = BigInt.fromI64(
+    startOfYear + SECONDS_IN_DAY * getDaysInYear(year) - 1
+  );
+  yearlyStat.save();
+
+  // All-time
+  const allTimeId = getAllTimeId();
+  const allTimeStat = (QuestingStat.load(allTimeId) ||
+    createQuestingStat(allTimeId)) as QuestingStat;
+  allTimeStat.interval = "AllTime";
+  allTimeStat.save();
+
+  return [
+    hourlyStat,
+    dailyStat,
+    weeklyStat,
+    monthlyStat,
+    yearlyStat,
+    allTimeStat,
+  ];
+}
+
+export function createQuestingStat(id: string): QuestingStat {
+  const stat = new QuestingStat(id);
+  stat._activeAddresses = [];
+  stat._allAddresses = [];
+  stat.save();
+  return stat;
+}
+
+export function getOrCreateQuestingDifficultyStat(
+  questingStatId: string,
+  difficulty: string
+): QuestingDifficultyStat {
+  const id = `${questingStatId}-difficulty${difficulty}`;
+  let stat = QuestingDifficultyStat.load(id);
+  if (!stat) {
+    stat = new QuestingDifficultyStat(id);
+    stat.questingStat = questingStatId;
     stat.difficulty = difficulty;
     stat.save();
   }
