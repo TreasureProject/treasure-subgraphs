@@ -1,4 +1,4 @@
-import { Address } from "@graphprotocol/graph-ts";
+import { Address, BigInt } from "@graphprotocol/graph-ts";
 
 export const BURNER_ADDRESS = Address.fromString("{{ burner_address }}");
 export const CONSUMABLE_ADDRESS = Address.fromString(
@@ -33,4 +33,7 @@ export const MARKETPLACE_ADDRESS = Address.fromString(
 );
 export const MARKETPLACE_BUYER_ADDRESS = Address.fromString(
   "{{ treasure_marketplace_buyer_address }}"
+);
+export const HOURLY_STAT_INTERVAL_START_BLOCK = BigInt.fromString(
+  "{{ hourly_stat_interval_start_block }}"
 );

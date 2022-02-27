@@ -21,10 +21,10 @@ export function handleSummoningStarted(event: SummoningStarted): void {
 
   const legion = getLegion(params._tokenId);
   if (!legion) {
-    log.error("Legion not found: {}", [params._tokenId.toString()]);
+    log.error("[summoning] Legion not found: {}", [params._tokenId.toString()]);
   }
 
-  const stats = getTimeIntervalSummoningStats(event.block.timestamp);
+  const stats = getTimeIntervalSummoningStats(event.block);
   for (let i = 0; i < stats.length; i++) {
     const stat = stats[i];
     stat.summonsStarted += 1;
@@ -66,15 +66,19 @@ export function handleSummoningFinished(event: SummoningFinished): void {
 
   const legion = getLegion(params._returnedId);
   if (!legion) {
-    log.error("Legion not found: {}", [params._returnedId.toString()]);
+    log.error("[summoning] Legion not found: {}", [
+      params._returnedId.toString(),
+    ]);
   }
 
   const newLegion = getLegion(params._newTokenId);
   if (!legion) {
-    log.error("Legion not found: {}", [params._newTokenId.toString()]);
+    log.error("[summoning] Legion not found: {}", [
+      params._newTokenId.toString(),
+    ]);
   }
 
-  const stats = getTimeIntervalSummoningStats(event.block.timestamp);
+  const stats = getTimeIntervalSummoningStats(event.block);
   for (let i = 0; i < stats.length; i++) {
     const stat = stats[i];
     stat.summonsFinished += 1;
@@ -91,8 +95,6 @@ export function handleSummoningFinished(event: SummoningFinished): void {
 
     if (legion) {
       const legionStat = getOrCreateLegionStat(stat.id, legion);
-      legionStat.startTimestamp = stat.startTimestamp;
-      legionStat.endTimestamp = stat.endTimestamp;
       legionStat.summonsFinished += 1;
       legionStat.save();
     }
@@ -101,6 +103,7 @@ export function handleSummoningFinished(event: SummoningFinished): void {
       const newLegionStat = getOrCreateLegionStat(stat.id, newLegion);
       newLegionStat.startTimestamp = stat.startTimestamp;
       newLegionStat.endTimestamp = stat.endTimestamp;
+      newLegionStat.summoningStat = stat.id;
       newLegionStat.summonedCount += 1;
       newLegionStat.save();
     }
