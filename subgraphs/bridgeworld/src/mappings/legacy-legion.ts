@@ -1,11 +1,12 @@
-import * as common from "../mapping";
 import { Address, BigInt, log, store } from "@graphprotocol/graph-ts";
-import { Approval, Token, User, UserApproval } from "../../generated/schema";
+
 import {
   ApprovalForAll,
   TransferBatch,
   TransferSingle,
 } from "../../generated/Legacy Legion/ERC1155";
+import { Approval, Token, User, UserApproval } from "../../generated/schema";
+import * as common from "../mapping";
 
 function setGeneration(contract: Address, tokenId: BigInt): void {
   let token = Token.load(`${contract.toHexString()}-${tokenId.toHexString()}`);

@@ -1,11 +1,13 @@
-import { Address } from "@graphprotocol/graph-ts";
-import { TREASURE_ADDRESS } from "@treasure/constants";
 import { assert, clearStore, test } from "matchstick-as/assembly";
+
+import { Address } from "@graphprotocol/graph-ts";
+
+import { TREASURE_ADDRESS } from "@treasure/constants";
+
 import {
   handleTransferBatch,
   handleTransferSingle,
 } from "../src/mappings/treasures";
-
 import { createTransferBatchEvent, createTransferSingleEvent } from "./utils";
 
 const COLLECTION_ENTITY_TYPE = "Collection";

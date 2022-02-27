@@ -2,22 +2,24 @@ import { SmolBrains, Transfer } from "../../generated/Smol Brains/SmolBrains";
 import { SMOL_BRAINS_BASE_URI } from "../helpers/constants";
 import { getAttributeId } from "../helpers/ids";
 import { getOrCreateAttribute, getOrCreateCollection } from "../helpers/models";
-
 import { handleTransfer as commonHandleTransfer } from "./common";
 
 export function handleTransfer(event: Transfer): void {
   const address = event.address;
   const params = event.params;
-  
+
   const collection = getOrCreateCollection(address);
   if (!collection.baseUri) {
     const contract = SmolBrains.bind(address);
     const baseUriCall = contract.try_baseURI();
-    collection.baseUri = baseUriCall.reverted ? SMOL_BRAINS_BASE_URI : baseUriCall.value;
+    collection.baseUri = baseUriCall.reverted
+      ? SMOL_BRAINS_BASE_URI
+      : baseUriCall.value;
     collection.save();
   }
 
   const token = commonHandleTransfer(
+    event.block.timestamp,
     collection,
     params.from,
     params.to,

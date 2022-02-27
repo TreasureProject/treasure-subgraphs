@@ -1,9 +1,19 @@
 import { log } from "@graphprotocol/graph-ts";
 
+import {
+  RewardClaimed,
+  SmolStaked,
+  SmolUnstaked,
+  StartClaiming,
+} from "../../generated/Smol Farm/SmolFarm";
 import { Claim, Random, Reward, StakedToken } from "../../generated/schema";
-import { RewardClaimed, SmolStaked, SmolUnstaked, StartClaiming } from "../../generated/Smol Farm/SmolFarm";
 import { LOCATION_FARM } from "../helpers/constants";
-import { getCollectionId, getRandomId, getRewardId, getStakedTokenId } from "../helpers/ids";
+import {
+  getCollectionId,
+  getRandomId,
+  getRewardId,
+  getStakedTokenId,
+} from "../helpers/ids";
 import { getOrCreateRewardToken } from "../helpers/models";
 import { handleStake, handleUnstake } from "./common";
 
@@ -20,11 +30,7 @@ export function handleSmolStaked(event: SmolStaked): void {
 
 export function handleSmolUnstaked(event: SmolUnstaked): void {
   const params = event.params;
-  handleUnstake(
-    params._smolAddress,
-    params._tokenId,
-    LOCATION_FARM
-  );
+  handleUnstake(params._smolAddress, params._tokenId, LOCATION_FARM);
 }
 
 export function handleStartClaiming(event: StartClaiming): void {
@@ -81,16 +87,20 @@ export function handleRewardClaimed(event: RewardClaimed): void {
 
   const claimId = stakedToken._pendingClaimId;
   if (!claimId) {
-    log.error("[smol-farm] Unknown pending claim ID for staked token: {}", [stakedTokenId]);
+    log.error("[smol-farm] Unknown pending claim ID for staked token: {}", [
+      stakedTokenId,
+    ]);
     return;
   }
 
   const claim = Claim.load(claimId as string);
   if (!claim) {
-    log.error("[smol-farm] Unknown pending claim for staked token: {}", [claimId as string]);
+    log.error("[smol-farm] Unknown pending claim for staked token: {}", [
+      claimId as string,
+    ]);
     return;
   }
-  
+
   // Create token and reward
   const token = getOrCreateRewardToken(params._claimedRewardId);
   const reward = new Reward(getRewardId(claim));

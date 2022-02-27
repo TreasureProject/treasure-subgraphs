@@ -1,5 +1,7 @@
 import { newMockEvent } from "matchstick-as/assembly";
+
 import { Address, ethereum } from "@graphprotocol/graph-ts";
+
 import { Transfer } from "../../generated/Legion/ERC721";
 
 export const createTransferEvent = (

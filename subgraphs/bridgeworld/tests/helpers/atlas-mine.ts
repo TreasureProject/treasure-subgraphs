@@ -1,5 +1,7 @@
-import { Address, BigInt, ethereum } from "@graphprotocol/graph-ts";
 import { newMockEvent } from "matchstick-as";
+
+import { Address, BigInt, ethereum } from "@graphprotocol/graph-ts";
+
 import { ATLAS_MINE_ADDRESS, Lock, toBigIntString } from ".";
 import { Deposit, Withdraw } from "../../generated/Atlas Mine/AtlasMine";
 

@@ -1,5 +1,6 @@
-import { LEGION_ADDRESS } from "@treasure/constants";
 import { assert, clearStore, test } from "matchstick-as";
+
+import { LEGION_ADDRESS } from "@treasure/constants";
 
 import { handleLegionCreated } from "../../src/mappings/legion";
 import { createLegionCreatedEvent } from "./utils";

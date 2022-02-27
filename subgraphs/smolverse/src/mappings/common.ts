@@ -1,19 +1,23 @@
 import { Address, BigInt, log, store } from "@graphprotocol/graph-ts";
-import {
-  SMOL_BODIES_PETS_ADDRESS,
-  SMOL_BRAINS_LAND_ADDRESS,
-  SMOL_BRAINS_PETS_ADDRESS
-} from "@treasure/constants";
 
-import { Collection, StakedToken, Token, _LandMetadata } from "../../generated/schema";
-import { SMOL_BRAINS_LAND_BASE_URI } from "../helpers/constants";
-import { getCollectionId, getStakedTokenId } from "../helpers/ids";
-import { getIpfsJson } from "../helpers/json";
-import { updateTokenMetadata } from "../helpers/metadata";
-import { getOrCreateCollection, getOrCreateToken, getOrCreateUser } from "../helpers/models";
+import {
+  Collection,
+  StakedToken,
+  Token,
+  _LandMetadata,
+} from "../../generated/schema";
+import { MISSING_METADATA_UPDATE_INTERVAL } from "../helpers/constants";
+import { getStakedTokenId } from "../helpers/ids";
+import { fetchTokenMetadata } from "../helpers/metadata";
+import {
+  getOrCreateCollection,
+  getOrCreateToken,
+  getOrCreateUser,
+} from "../helpers/models";
 import { isMint } from "../helpers/utils";
 
 export function handleTransfer(
+  timestamp: BigInt,
   collection: Collection,
   from: Address,
   to: Address,
@@ -24,51 +28,34 @@ export function handleTransfer(
   token.owner = owner.id;
 
   if (isMint(from)) {
-    const tokenIdString = tokenId.toString();
-    token.name = `${collection.name} #${tokenIdString}`;
+    fetchTokenMetadata(collection, token);
+  }
 
-    let landMetadata: _LandMetadata | null = null;
-    let tokenUri: string | null = null;
-    const isLand = collection.id == getCollectionId(SMOL_BRAINS_LAND_ADDRESS);
-    if (isLand) {
-      // Check for cached Land metadata
-      landMetadata = _LandMetadata.load("all");
-      if (landMetadata) {
-        token.description = landMetadata.description;
-        token.image = landMetadata.image;
-        token.video = landMetadata.video;
-        token.attributes = landMetadata.attributes;
-      } else {
-        tokenUri = `${SMOL_BRAINS_LAND_BASE_URI}0`;
-      }
-    } else if (collection.baseUri && collection.baseUri != "test") { // TODO: remove hack when Matchstick supports ipfs
-      const baseUri = collection.baseUri as string;
-      if (
-        collection.id == getCollectionId(SMOL_BRAINS_PETS_ADDRESS) ||
-        collection.id == getCollectionId(SMOL_BODIES_PETS_ADDRESS)
-      ) {
-        tokenUri = `${baseUri}${tokenIdString}.json`;
-      } else {
-        tokenUri = `${baseUri}${tokenIdString}/0`;
+  // Should we run missing metadata cron job?
+  if (
+    timestamp.gt(
+      collection._missingMetadataLastUpdated.plus(
+        BigInt.fromI32(MISSING_METADATA_UPDATE_INTERVAL)
+      )
+    )
+  ) {
+    const tokenIds = collection._missingMetadataTokens;
+    log.debug("Re-fetching missing metadata from {} tokens", [
+      tokenIds.length.toString(),
+    ]);
+
+    // Reset list of missing metadata before we attempt to re-fetch them
+    collection._missingMetadataTokens = [];
+    for (let i = 0; i < tokenIds.length; i++) {
+      const token = Token.load(tokenIds[i]);
+      if (token) {
+        fetchTokenMetadata(collection, token);
       }
     }
 
-    if (tokenUri) {
-      const data = getIpfsJson(tokenUri);
-      if (data) {
-        updateTokenMetadata(token, data);
-      }
-
-      // Cache Land metadata
-      if (isLand && !landMetadata) {
-        landMetadata = new _LandMetadata("all");
-        landMetadata.description = token.description;
-        landMetadata.image = token.image;
-        landMetadata.video = token.video;
-        landMetadata.attributes = token.attributes;
-        landMetadata.save();
-      }
-    }
+    // Update cron job's last run time
+    collection._missingMetadataLastUpdated = timestamp;
+    collection.save();
   }
 
   token.save();
@@ -102,13 +89,13 @@ export function handleStake(
   collection.save();
 }
 
-export function handleUnstake(address: Address, tokenId: BigInt, location: string): void {
+export function handleUnstake(
+  address: Address,
+  tokenId: BigInt,
+  location: string
+): void {
   const collection = getOrCreateCollection(address);
-  const id = getStakedTokenId(
-    collection.id,
-    tokenId,
-    location
-  );
+  const id = getStakedTokenId(collection.id, tokenId, location);
   const stakedToken = StakedToken.load(id);
   if (!stakedToken) {
     log.info("[smol-staking] Skipped already removed staked token: {}", [id]);
@@ -127,4 +114,3 @@ export function handleUnstake(address: Address, tokenId: BigInt, location: strin
   collection.stakedTokensCount -= 1;
   collection.save();
 }
-

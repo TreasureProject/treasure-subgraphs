@@ -1,4 +1,5 @@
 import { Address, BigInt, log, store } from "@graphprotocol/graph-ts";
+
 import { Staking, Token, User, UserToken } from "../generated/schema";
 
 class Transfer {

@@ -1,5 +1,5 @@
-import { Approval, User, UserApproval } from "../../generated/schema";
 import { Approval as ApprovalEvent } from "../../generated/Magic/ERC20";
+import { Approval, User, UserApproval } from "../../generated/schema";
 
 export function handleApproval(event: ApprovalEvent): void {
   let params = event.params;

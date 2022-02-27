@@ -1,10 +1,11 @@
-import { Pilgrimage } from "../../generated/schema";
+import { log } from "@graphprotocol/graph-ts";
+
 import {
   NoPilgrimagesToFinish,
   PilgrimagesFinished,
   PilgrimagesStarted,
 } from "../../generated/Pilgrimage/Pilgrimage";
-import { log } from "@graphprotocol/graph-ts";
+import { Pilgrimage } from "../../generated/schema";
 
 export function handleNoPilgrimagesToFinish(
   event: NoPilgrimagesToFinish
@@ -41,7 +42,7 @@ export function handlePilgrimagesStarted(event: PilgrimagesStarted): void {
   }
 
   for (let index = 0; index < amounts.length; index++) {
-    let amount = amounts[index].toI32()
+    let amount = amounts[index].toI32();
 
     pilgrimage.current = pilgrimage.current + amount;
     pilgrimage.total = pilgrimage.total + amount;

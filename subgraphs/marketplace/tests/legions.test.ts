@@ -1,8 +1,10 @@
-import { Address, BigInt } from "@graphprotocol/graph-ts";
-import { LEGION_ADDRESS } from "@treasure/constants";
 import { assert, clearStore, test } from "matchstick-as/assembly";
-import { handleLegionCreated, handleTransfer } from "../src/mappings/legions";
 
+import { Address, BigInt } from "@graphprotocol/graph-ts";
+
+import { LEGION_ADDRESS } from "@treasure/constants";
+
+import { handleLegionCreated, handleTransfer } from "../src/mappings/legions";
 import { createLegionCreatedEvent, createTransferEvent } from "./utils";
 
 const COLLECTION_ENTITY_TYPE = "Collection";

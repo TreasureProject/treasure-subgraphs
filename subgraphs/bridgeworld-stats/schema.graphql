@@ -22,6 +22,18 @@ enum LegionRarity {
   None
 }
 
+enum CraftingDifficulty {
+  Prism
+  HarvesterPart
+  Extractor
+}
+
+enum QuestingDifficulty {
+  Easy
+  Medium
+  Hard
+}
+
 type User @entity {
   id: ID!
   magicDepositCount: Int!
@@ -30,6 +42,17 @@ type User @entity {
   magicDeposited: BigInt!
   magicWithdrawn: BigInt!
   magicHarvested: BigInt!
+  craftsStarted: Int!
+  craftsFinished: Int!
+  craftsSucceeded: Int!
+  craftsFailed: Int!
+  brokenTreasuresCount: Int!
+  questsStarted: Int!
+  questsFinished: Int!
+  questingShardsEarned: Int!
+  questingStarlightEarned: Int!
+  questingUniversalLocksEarned: Int!
+  questingTreasuresEarned: Int!
   summonsStarted: Int!
   summonsFinished: Int!
 }
@@ -42,12 +65,105 @@ type Legion @entity {
   name: String!
 }
 
-type AtlasMineLockStat @entity {
+type _Craft @entity {
   id: ID!
+  difficulty: CraftingDifficulty!
+}
+
+type _Quest @entity {
+  id: ID!
+  difficulty: QuestingDifficulty!
+}
+
+type TreasureStat @entity {
+  id: ID!
+
   startTimestamp: BigInt
   endTimestamp: BigInt
+
+  tokenId: BigInt!
+  name: String!
+  tier: Int!
+
+  craftingStat: CraftingStat
+  questingStat: QuestingStat
+
+  "Number of this Treasure type used in Crafts"
+  craftingUsed: Int!
+
+  "Number of this Treasure type broken in Crafts"
+  craftingBroken: Int!
+
+  "Number of this Treasure type earned in Quests"
+  questingEarned: Int!
+}
+
+type LegionStat @entity {
+  id: ID!
+
+  startTimestamp: BigInt
+  endTimestamp: BigInt
+
+  generation: LegionGeneration!
+  rarity: LegionRarity!
+  name: String!
+
+  craftingStat: CraftingStat
+  summoningStat: SummoningStat
+  questingStat: QuestingStat
+
+  "Number of Crafts started by this Legion type"
+  craftsStarted: Int!
+
+  "Number of Crafts finished by this Legion type"
+  craftsFinished: Int!
+
+  "Number of successful Crafts by this Legion type"
+  craftsSucceeded: Int!
+
+  "Number of failed Crafts by this Legion type"
+  craftsFailed: Int!
+
+  "$MAGIC spent on Summons by this Legion type"
+  summoningMagicSpent: BigInt!
+
+  "Number of Summons started by this Legion type"
+  summonsStarted: Int!
+
+  "Number of Summons finished by this Legion type"
+  summonsFinished: Int!
+
+  "Number of Summons that have resulted in the creation of this Legion type"
+  summonedCount: Int!
+
+  "Number of Quests started by this Legion type"
+  questsStarted: Int!
+
+  "Number of Quests finished by this Legion type"
+  questsFinished: Int!
+
+  "Number of Prism Shards earned by this Legion type while questing"
+  questingShardsEarned: Int!
+
+  "Number of Essences of Starlight earned by this Legion type while questing"
+  questingStarlightEarned: Int!
+
+  "Number of Universal Locks earned by this Legion type while questing"
+  questingUniversalLocksEarned: Int!
+
+  "Number of treasures earned by this Legion type while questing"
+  questingTreasuresEarned: Int!
+}
+
+type AtlasMineLockStat @entity {
+  id: ID!
+
+  startTimestamp: BigInt
+  endTimestamp: BigInt
+
   atlasMineStat: AtlasMineStat!
   lock: Int!
+
   magicDepositCount: Int!
   magicDeposited: BigInt!
 }
@@ -70,7 +186,7 @@ type AtlasMineStat @entity {
   magicDeposited: BigInt!
   magicWithdrawn: BigInt!
   magicHarvested: BigInt!
-  
+
   "Number of unique addresses actively staking throughout time period"
   activeAddressesCount: Int!
 
@@ -80,11 +196,111 @@ type AtlasMineStat @entity {
   lockStats: [AtlasMineLockStat!]! @derivedFrom(field: "atlasMineStat")
 }
 
+type CraftingDifficultyStat @entity {
+  id: ID!
+
+  startTimestamp: BigInt
+  endTimestamp: BigInt
+
+  difficulty: CraftingDifficulty!
+  craftingStat: CraftingStat!
+
+  magicConsumed: BigInt!
+  magicReturned: BigInt!
+  craftsStarted: Int!
+  craftsFinished: Int!
+  craftsSucceeded: Int!
+  craftsFailed: Int!
+  brokenTreasuresCount: Int!
+}
+
+type CraftingStat @entity {
+  id: ID!
+
+  "Internal for tracking active unique addresses"
+  _activeAddresses: [String!]!
+
+  "Internal for tracking all unique addresses"
+  _allAddresses: [String!]!
+
+  startTimestamp: BigInt
+  endTimestamp: BigInt
+  interval: Interval!
+
+  magicConsumed: BigInt!
+  magicReturned: BigInt!
+  craftsStarted: Int!
+  craftsFinished: Int!
+  craftsSucceeded: Int!
+  craftsFailed: Int!
+  brokenTreasuresCount: Int!
+
+  "Number of unique addresses actively crafting throughout time period"
+  activeAddressesCount: Int!
+
+  "Number of unique addresses that have crafted at any point"
+  allAddressesCount: Int!
+
+  difficultyStats: [CraftingDifficultyStat!]!
+    @derivedFrom(field: "craftingStat")
+  legionStats: [LegionStat!]! @derivedFrom(field: "craftingStat")
+  treasureStats: [TreasureStat!]! @derivedFrom(field: "craftingStat")
+}
+
 type Pilgrimage @entity {
   id: ID!
 
   current: Int!
   total: Int!
+}
+
+type QuestingDifficultyStat @entity {
+  id: ID!
+
+  startTimestamp: BigInt
+  endTimestamp: BigInt
+
+  difficulty: QuestingDifficulty!
+  questingStat: QuestingStat!
+
+  questsStarted: Int!
+  questsFinished: Int!
+  questingShardsEarned: Int!
+  questingStarlightEarned: Int!
+  questingUniversalLocksEarned: Int!
+  questingTreasuresEarned: Int!
+}
+
+type QuestingStat @entity {
+  id: ID!
+
+  "Internal for tracking active unique addresses"
+  _activeAddresses: [String!]!
+
+  "Internal for tracking all unique addresses"
+  _allAddresses: [String!]!
+
+  startTimestamp: BigInt
+  endTimestamp: BigInt
+  interval: Interval!
+
+  questsStarted: Int!
+  questsFinished: Int!
+  questingShardsEarned: Int!
+  questingStarlightEarned: Int!
+  questingUniversalLocksEarned: Int!
+  questingTreasuresEarned: Int!
+
+  "Number of unique addresses actively questing throughout time period"
+  activeAddressesCount: Int!
+
+  "Number of unique addresses that have quested at any point"
+  allAddressesCount: Int!
+
+  difficultyStats: [QuestingDifficultyStat!]!
+    @derivedFrom(field: "questingStat")
+  legionStats: [LegionStat!]! @derivedFrom(field: "questingStat")
+  treasureStats: [TreasureStat!]! @derivedFrom(field: "questingStat")
 }
 
 type SummoningStat @entity {
@@ -115,27 +331,5 @@ type SummoningStat @entity {
   "Number of unique addresses that have summoned at any point"
   allAddressesCount: Int!
 
-  legionStats: [SummoningLegionStat!]! @derivedFrom(field: "summoningStat")
-}
-
-type SummoningLegionStat @entity {
-  id: ID!
-  startTimestamp: BigInt
-  endTimestamp: BigInt
-  summoningStat: SummoningStat!
-  generation: LegionGeneration!
-  rarity: LegionRarity!
-  name: String!
-
-  "$MAGIC spent on Summons by this Legion type"
-  magicSpent: BigInt!
-
-  "Number of Summons started by this Legion type"
-  summonsStarted: Int!
-
-  "Number of Summons finished by this Legion type"
-  summonsFinished: Int!
-
-  "Number of Summons that have resulted in the creation of this Legion type"
-  summonedCount: Int!
+  legionStats: [LegionStat!]! @derivedFrom(field: "summoningStat")
 }

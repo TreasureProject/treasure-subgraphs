@@ -1,10 +1,20 @@
-import { BigInt, ethereum } from "@graphprotocol/graph-ts";
-import { SMOL_BRAINS_ADDRESS } from "@treasure/constants";
 import { assert, clearStore, createMockedFunction, test } from "matchstick-as";
 
+import { BigInt, ethereum } from "@graphprotocol/graph-ts";
+
+import { SMOL_BRAINS_ADDRESS } from "@treasure/constants";
+
 import { Collection, StakedToken, Token, User } from "../../generated/schema";
-import { handleDropSchool, handleJoinSchool } from "../../src/mappings/smol-brains-school";
-import { ATTRIBUTE_ENTITY_TYPE, STAKED_TOKEN_ENTITY_TYPE, TOKEN_ENTITY_TYPE, USER_ADDRESS } from "../utils";
+import {
+  handleDropSchool,
+  handleJoinSchool,
+} from "../../src/mappings/smol-brains-school";
+import {
+  ATTRIBUTE_ENTITY_TYPE,
+  STAKED_TOKEN_ENTITY_TYPE,
+  TOKEN_ENTITY_TYPE,
+  USER_ADDRESS,
+} from "../utils";
 import { createDropSchoolEvent, createJoinSchoolEvent } from "./utils";
 
 const IQ_STRING = "206657655423280423280";
@@ -24,7 +34,9 @@ test("smol brains joining school creates staked token", () => {
   assert.assertNotNull(user);
 
   // Assert collection was created
-  const collection = Collection.load(SMOL_BRAINS_ADDRESS.toHexString()) as Collection;
+  const collection = Collection.load(
+    SMOL_BRAINS_ADDRESS.toHexString()
+  ) as Collection;
   assert.assertNotNull(collection);
 
   // Assert token was created
@@ -35,9 +47,24 @@ test("smol brains joining school creates staked token", () => {
 
   // Assert staked token was created
   const stakedTokenId = `${tokenId}-school`;
-  assert.fieldEquals(STAKED_TOKEN_ENTITY_TYPE, stakedTokenId, "token", token.id);
-  assert.fieldEquals(STAKED_TOKEN_ENTITY_TYPE, stakedTokenId, "location", "School");
-  assert.fieldEquals(STAKED_TOKEN_ENTITY_TYPE, stakedTokenId, "owner", USER_ADDRESS);
+  assert.fieldEquals(
+    STAKED_TOKEN_ENTITY_TYPE,
+    stakedTokenId,
+    "token",
+    token.id
+  );
+  assert.fieldEquals(
+    STAKED_TOKEN_ENTITY_TYPE,
+    stakedTokenId,
+    "location",
+    "School"
+  );
+  assert.fieldEquals(
+    STAKED_TOKEN_ENTITY_TYPE,
+    stakedTokenId,
+    "owner",
+    USER_ADDRESS
+  );
 });
 
 test("smol brains dropping school removes staked token", () => {
@@ -75,5 +102,10 @@ test("smol brains dropping school updates IQ and head size", () => {
 
   // Assert Head Size attribute is updated
   const headSizeAttributeId = `${SMOL_BRAINS_ADDRESS.toHexString()}-head-size-4`;
-  assert.fieldEquals(TOKEN_ENTITY_TYPE, `${SMOL_BRAINS_ADDRESS.toHexString()}-0x1`, "attributes", `[${headSizeAttributeId}, ${iqAttributeId}]`);
+  assert.fieldEquals(
+    TOKEN_ENTITY_TYPE,
+    `${SMOL_BRAINS_ADDRESS.toHexString()}-0x1`,
+    "attributes",
+    `[${headSizeAttributeId}, ${iqAttributeId}]`
+  );
 });

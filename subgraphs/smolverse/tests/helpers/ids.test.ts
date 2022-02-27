@@ -1,5 +1,6 @@
-import { Address, BigInt } from "@graphprotocol/graph-ts";
 import { assert, test } from "matchstick-as/assembly/index";
+
+import { Address, BigInt } from "@graphprotocol/graph-ts";
 
 import { Collection } from "../../generated/schema";
 import {
@@ -8,7 +9,7 @@ import {
   getRandomId,
   getSeededId,
   getStakedTokenId,
-  getTokenId
+  getTokenId,
 } from "../../src/helpers/ids";
 
 test("collection unique id is generated", () => {

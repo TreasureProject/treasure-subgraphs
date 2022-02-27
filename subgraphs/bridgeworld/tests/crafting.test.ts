@@ -1,30 +1,9 @@
 import { assert, clearStore, test } from "matchstick-as/assembly";
 
-import {
-  BROKEN_ENTITY_TYPE,
-  CRAFT_ENTITY_TYPE,
-  CRAFTING_ADDRESS,
-  Difficulty,
-  LEGION_INFO_ENTITY_TYPE,
-  USER_ADDRESS,
-  createLegionCreatedEvent,
-  createLegionCraftLevelUpEvent,
-  createLegionTransferEvent,
-  createCraftingStartedEvent,
-  createCraftingStartedWithoutDifficultyEvent,
-  createCraftingRevealedEvent,
-  createCraftingFinishedEvent,
-  createRandomRequestEvent,
-  createRandomSeededEvent,
-} from "./helpers/index";
-
 import { Address } from "@graphprotocol/graph-ts";
+
 import { LEGION_ADDRESS } from "@treasure/constants";
-import {
-  handleLegionCreated,
-  handleLegionCraftLevelUp,
-  handleTransfer,
-} from "../src/mappings/legion";
+
 import {
   handleCraftingFinished,
   handleCraftingRevealed,
@@ -32,9 +11,31 @@ import {
   handleCraftingStartedWithoutDifficulty,
 } from "../src/mappings/crafting";
 import {
+  handleLegionCraftLevelUp,
+  handleLegionCreated,
+  handleTransfer,
+} from "../src/mappings/legion";
+import {
   handleRandomRequest,
   handleRandomSeeded,
 } from "../src/mappings/randomizer";
+import {
+  BROKEN_ENTITY_TYPE,
+  CRAFTING_ADDRESS,
+  CRAFT_ENTITY_TYPE,
+  Difficulty,
+  LEGION_INFO_ENTITY_TYPE,
+  USER_ADDRESS,
+  createCraftingFinishedEvent,
+  createCraftingRevealedEvent,
+  createCraftingStartedEvent,
+  createCraftingStartedWithoutDifficultyEvent,
+  createLegionCraftLevelUpEvent,
+  createLegionCreatedEvent,
+  createLegionTransferEvent,
+  createRandomRequestEvent,
+  createRandomSeededEvent,
+} from "./helpers/index";
 
 test("crafting increases xp when completed successfully", () => {
   clearStore();

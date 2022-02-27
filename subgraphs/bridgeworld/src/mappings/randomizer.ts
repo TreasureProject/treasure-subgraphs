@@ -1,9 +1,10 @@
-import { Craft, Quest, Random, Seeded, Summon } from "../../generated/schema";
+import { log } from "@graphprotocol/graph-ts";
+
 import {
   RandomRequest,
   RandomSeeded,
 } from "../../generated/Randomizer/Randomizer";
-import { log } from "@graphprotocol/graph-ts";
+import { Craft, Quest, Random, Seeded, Summon } from "../../generated/schema";
 import { checkSummonFatigue } from "../helpers";
 
 export function handleRandomRequest(event: RandomRequest): void {
