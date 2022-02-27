@@ -25,7 +25,7 @@ export function handlePilgrimagesStarted(event: PilgrimagesStarted): void {
   user.pilgrimagesStarted += pilgrimagesCount;
   user.save();
 
-  const stats = getTimeIntervalPilgrimageStats(event.block.timestamp);
+  const stats = getTimeIntervalPilgrimageStats(event.block);
   for (let i = 0; i < stats.length; i++) {
     const stat = stats[i];
     stat.pilgrimagesStarted += pilgrimagesCount;
@@ -52,7 +52,7 @@ export function handlePilgrimagesFinished(event: PilgrimagesFinished): void {
   user.save();
   const isUserPilgrimaging = user.pilgrimagesStarted > user.pilgrimagesFinished;
 
-  const stats = getTimeIntervalPilgrimageStats(event.block.timestamp);
+  const stats = getTimeIntervalPilgrimageStats(event.block);
   for (let i = 0; i < stats.length; i++) {
     const stat = stats[i];
     stat.pilgrimagesFinished += tokenIds.length;

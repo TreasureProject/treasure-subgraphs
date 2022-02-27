@@ -12,7 +12,6 @@ import {
   USER_ENTITY_TYPE,
 } from "../utils";
 import {
-  PILGRIMAGE_ADDRESS,
   createPilgrimagesFinishedEvent,
   createPilgrimagesStartedEvent,
 } from "./utils";
@@ -28,9 +27,7 @@ const statIds = [
   "all-time",
 ];
 
-test("pilgrimage stats count pilgrimages started", () => {});
-
-test("current and total pilgrimages counts are stored", () => {
+test("pilgrimage stats count pilgrimages started", () => {
   clearStore();
 
   const pilgrimagesStartedEvent = createPilgrimagesStartedEvent(

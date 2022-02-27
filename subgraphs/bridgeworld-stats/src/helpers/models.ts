@@ -354,84 +354,101 @@ export function getOrCreateCraftingDifficultyStat(
 }
 
 export function getTimeIntervalPilgrimageStats(
-  eventTimestamp: BigInt
+  block: ethereum.Block
 ): PilgrimageStat[] {
-  const timestamp = eventTimestamp.toI64() * 1000;
+  const stats: PilgrimageStat[] = [];
+  const timestamp = block.timestamp.toI64() * 1000;
   const date = new Date(timestamp);
   const month = date.getUTCMonth();
   const year = date.getUTCFullYear();
 
-  // Hourly
-  const hourlyId = getHourlyId(timestamp);
-  const hourlyStat = (PilgrimageStat.load(hourlyId) ||
-    createPilgrimageStat(hourlyId)) as PilgrimageStat;
-  const startOfHour = getStartOfHour(timestamp);
-  hourlyStat.interval = "Hourly";
-  hourlyStat.startTimestamp = BigInt.fromI64(startOfHour);
-  hourlyStat.endTimestamp = BigInt.fromI64(startOfHour + SECONDS_IN_HOUR - 1);
-  hourlyStat.save();
+  if (!block.number.lt(HOURLY_STAT_INTERVAL_START_BLOCK)) {
+    // Hourly
+    const hourlyId = getHourlyId(timestamp);
+    let hourlyStat = PilgrimageStat.load(hourlyId);
+    if (!hourlyStat) {
+      hourlyStat = createPilgrimageStat(hourlyId);
+      const startOfHour = getStartOfHour(timestamp);
+      hourlyStat.interval = "Hourly";
+      hourlyStat.startTimestamp = BigInt.fromI64(startOfHour);
+      hourlyStat.endTimestamp = BigInt.fromI64(
+        startOfHour + SECONDS_IN_HOUR - 1
+      );
+      hourlyStat.save();
+    }
+
+    stats.push(hourlyStat);
+  }
 
   // Daily
   const dailyId = getDailyId(timestamp);
-  const dailyStat = (PilgrimageStat.load(dailyId) ||
-    createPilgrimageStat(dailyId)) as PilgrimageStat;
-  const startOfDay = getStartOfDay(timestamp);
-  dailyStat.interval = "Daily";
-  dailyStat.startTimestamp = BigInt.fromI64(startOfDay);
-  dailyStat.endTimestamp = BigInt.fromI64(startOfDay + SECONDS_IN_DAY - 1);
-  dailyStat.save();
+  let dailyStat = PilgrimageStat.load(dailyId);
+  if (!dailyStat) {
+    dailyStat = createPilgrimageStat(dailyId);
+    const startOfDay = getStartOfDay(timestamp);
+    dailyStat.interval = "Daily";
+    dailyStat.startTimestamp = BigInt.fromI64(startOfDay);
+    dailyStat.endTimestamp = BigInt.fromI64(startOfDay + SECONDS_IN_DAY - 1);
+    dailyStat.save();
+  }
+  stats.push(dailyStat);
 
   // Weekly
   const weeklyId = getWeeklyId(timestamp);
-  const weeklyStat = (PilgrimageStat.load(weeklyId) ||
-    createPilgrimageStat(weeklyId)) as PilgrimageStat;
-  const startOfWeek = getStartOfWeek(timestamp);
-  weeklyStat.interval = "Weekly";
-  weeklyStat.startTimestamp = BigInt.fromI64(startOfWeek);
-  weeklyStat.endTimestamp = BigInt.fromI64(
-    startOfWeek + SECONDS_IN_DAY * 7 - 1
-  );
-  weeklyStat.save();
+  let weeklyStat = PilgrimageStat.load(weeklyId);
+  if (!weeklyStat) {
+    weeklyStat = createPilgrimageStat(weeklyId);
+    const startOfWeek = getStartOfWeek(timestamp);
+    weeklyStat.interval = "Weekly";
+    weeklyStat.startTimestamp = BigInt.fromI64(startOfWeek);
+    weeklyStat.endTimestamp = BigInt.fromI64(
+      startOfWeek + SECONDS_IN_DAY * 7 - 1
+    );
+    weeklyStat.save();
+  }
+  stats.push(weeklyStat);
 
   // Monthly
   const monthlyId = getMonthlyId(timestamp);
-  const monthlyStat = (PilgrimageStat.load(monthlyId) ||
-    createPilgrimageStat(monthlyId)) as PilgrimageStat;
-  const startOfMonth = getStartOfMonth(timestamp);
-  monthlyStat.interval = "Monthly";
-  monthlyStat.startTimestamp = BigInt.fromI64(startOfMonth);
-  monthlyStat.endTimestamp = BigInt.fromI64(
-    startOfMonth + SECONDS_IN_DAY * getDaysInMonth(month, year) - 1
-  );
-  monthlyStat.save();
+  let monthlyStat = PilgrimageStat.load(monthlyId);
+  if (!monthlyStat) {
+    monthlyStat = createPilgrimageStat(monthlyId);
+    const startOfMonth = getStartOfMonth(timestamp);
+    monthlyStat.interval = "Monthly";
+    monthlyStat.startTimestamp = BigInt.fromI64(startOfMonth);
+    monthlyStat.endTimestamp = BigInt.fromI64(
+      startOfMonth + SECONDS_IN_DAY * getDaysInMonth(month, year) - 1
+    );
+    monthlyStat.save();
+  }
+  stats.push(monthlyStat);
 
   // Yearly
   const yearlyId = getYearlyId(timestamp);
-  const yearlyStat = (PilgrimageStat.load(yearlyId) ||
-    createPilgrimageStat(yearlyId)) as PilgrimageStat;
-  const startOfYear = getStartOfYear(timestamp);
-  yearlyStat.interval = "Yearly";
-  yearlyStat.startTimestamp = BigInt.fromI64(startOfYear);
-  yearlyStat.endTimestamp = BigInt.fromI64(
-    startOfYear + SECONDS_IN_DAY * getDaysInYear(year) - 1
-  );
-  yearlyStat.save();
+  let yearlyStat = PilgrimageStat.load(yearlyId);
+  if (!yearlyStat) {
+    yearlyStat = createPilgrimageStat(yearlyId);
+    const startOfYear = getStartOfYear(timestamp);
+    yearlyStat.interval = "Yearly";
+    yearlyStat.startTimestamp = BigInt.fromI64(startOfYear);
+    yearlyStat.endTimestamp = BigInt.fromI64(
+      startOfYear + SECONDS_IN_DAY * getDaysInYear(year) - 1
+    );
+    yearlyStat.save();
+  }
+  stats.push(yearlyStat);
 
   // All-time
   const allTimeId = getAllTimeId();
-  const allTimeStat = (PilgrimageStat.load(allTimeId) ||
-    createPilgrimageStat(allTimeId)) as PilgrimageStat;
-  allTimeStat.interval = "AllTime";
-  allTimeStat.save();
+  let allTimeStat = PilgrimageStat.load(allTimeId);
+  if (!allTimeStat) {
+    allTimeStat = createPilgrimageStat(allTimeId);
+    allTimeStat.interval = "AllTime";
+    allTimeStat.save();
+  }
+  stats.push(allTimeStat);
 
-  return [
-    hourlyStat,
-    dailyStat,
-    weeklyStat,
-    monthlyStat,
-    yearlyStat,
-    allTimeStat,
-  ];
+  return stats;
 }
 
 export function createPilgrimageStat(id: string): PilgrimageStat {

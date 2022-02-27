@@ -2,6 +2,8 @@ import { newMockEvent } from "matchstick-as/assembly/index";
 
 import { Address, BigInt, ethereum } from "@graphprotocol/graph-ts";
 
+import { HOURLY_STAT_INTERVAL_START_BLOCK } from "@treasure/constants";
+
 import {
   PilgrimagesFinished,
   PilgrimagesStarted,
@@ -18,10 +20,11 @@ export const createPilgrimagesStartedEvent = (
   amounts: i32[],
   pilgrimageIds: i32[]
 ): PilgrimagesStarted => {
-  const newEvent = changetype<PilgrimagesStarted>(newMockEvent());
-  newEvent.block.timestamp = BigInt.fromI32(timestamp);
-  newEvent.address = Address.fromString(PILGRIMAGE_ADDRESS);
-  newEvent.parameters = [
+  const event = changetype<PilgrimagesStarted>(newMockEvent());
+  event.block.number = HOURLY_STAT_INTERVAL_START_BLOCK;
+  event.block.timestamp = BigInt.fromI32(timestamp);
+  event.address = Address.fromString(PILGRIMAGE_ADDRESS);
+  event.parameters = [
     new ethereum.EventParam(
       "_user",
       ethereum.Value.fromAddress(Address.fromString(user))
@@ -42,7 +45,7 @@ export const createPilgrimagesStartedEvent = (
     ),
   ];
 
-  return newEvent;
+  return event;
 };
 
 export const createPilgrimagesFinishedEvent = (
@@ -51,10 +54,11 @@ export const createPilgrimagesFinishedEvent = (
   tokenids: i32[],
   finishedPilgrimageIds: i32[]
 ): PilgrimagesFinished => {
-  const newEvent = changetype<PilgrimagesFinished>(newMockEvent());
-  newEvent.block.timestamp = BigInt.fromI32(timestamp);
-  newEvent.address = Address.fromString(PILGRIMAGE_ADDRESS);
-  newEvent.parameters = [
+  const event = changetype<PilgrimagesFinished>(newMockEvent());
+  event.block.number = HOURLY_STAT_INTERVAL_START_BLOCK;
+  event.block.timestamp = BigInt.fromI32(timestamp);
+  event.address = Address.fromString(PILGRIMAGE_ADDRESS);
+  event.parameters = [
     new ethereum.EventParam(
       "_user",
       ethereum.Value.fromAddress(Address.fromString(user))
@@ -66,5 +70,5 @@ export const createPilgrimagesFinishedEvent = (
     ),
   ];
 
-  return newEvent;
+  return event;
 };
