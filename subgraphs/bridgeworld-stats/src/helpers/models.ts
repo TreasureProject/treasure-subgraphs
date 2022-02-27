@@ -7,6 +7,7 @@ import {
   CraftingStat,
   Legion,
   LegionStat,
+  PilgrimageStat,
   QuestingDifficultyStat,
   QuestingStat,
   SummoningStat,
@@ -316,6 +317,95 @@ export function getOrCreateCraftingDifficultyStat(
   return stat;
 }
 
+export function getTimeIntervalPilgrimageStats(
+  eventTimestamp: BigInt
+): PilgrimageStat[] {
+  const timestamp = eventTimestamp.toI64() * 1000;
+  const date = new Date(timestamp);
+  const month = date.getUTCMonth();
+  const year = date.getUTCFullYear();
+
+  // Hourly
+  const hourlyId = getHourlyId(timestamp);
+  const hourlyStat = (PilgrimageStat.load(hourlyId) ||
+    createPilgrimageStat(hourlyId)) as PilgrimageStat;
+  const startOfHour = getStartOfHour(timestamp);
+  hourlyStat.interval = "Hourly";
+  hourlyStat.startTimestamp = BigInt.fromI64(startOfHour);
+  hourlyStat.endTimestamp = BigInt.fromI64(startOfHour + SECONDS_IN_HOUR - 1);
+  hourlyStat.save();
+
+  // Daily
+  const dailyId = getDailyId(timestamp);
+  const dailyStat = (PilgrimageStat.load(dailyId) ||
+    createPilgrimageStat(dailyId)) as PilgrimageStat;
+  const startOfDay = getStartOfDay(timestamp);
+  dailyStat.interval = "Daily";
+  dailyStat.startTimestamp = BigInt.fromI64(startOfDay);
+  dailyStat.endTimestamp = BigInt.fromI64(startOfDay + SECONDS_IN_DAY - 1);
+  dailyStat.save();
+
+  // Weekly
+  const weeklyId = getWeeklyId(timestamp);
+  const weeklyStat = (PilgrimageStat.load(weeklyId) ||
+    createPilgrimageStat(weeklyId)) as PilgrimageStat;
+  const startOfWeek = getStartOfWeek(timestamp);
+  weeklyStat.interval = "Weekly";
+  weeklyStat.startTimestamp = BigInt.fromI64(startOfWeek);
+  weeklyStat.endTimestamp = BigInt.fromI64(
+    startOfWeek + SECONDS_IN_DAY * 7 - 1
+  );
+  weeklyStat.save();
+
+  // Monthly
+  const monthlyId = getMonthlyId(timestamp);
+  const monthlyStat = (PilgrimageStat.load(monthlyId) ||
+    createPilgrimageStat(monthlyId)) as PilgrimageStat;
+  const startOfMonth = getStartOfMonth(timestamp);
+  monthlyStat.interval = "Monthly";
+  monthlyStat.startTimestamp = BigInt.fromI64(startOfMonth);
+  monthlyStat.endTimestamp = BigInt.fromI64(
+    startOfMonth + SECONDS_IN_DAY * getDaysInMonth(month, year) - 1
+  );
+  monthlyStat.save();
+
+  // Yearly
+  const yearlyId = getYearlyId(timestamp);
+  const yearlyStat = (PilgrimageStat.load(yearlyId) ||
+    createPilgrimageStat(yearlyId)) as PilgrimageStat;
+  const startOfYear = getStartOfYear(timestamp);
+  yearlyStat.interval = "Yearly";
+  yearlyStat.startTimestamp = BigInt.fromI64(startOfYear);
+  yearlyStat.endTimestamp = BigInt.fromI64(
+    startOfYear + SECONDS_IN_DAY * getDaysInYear(year) - 1
+  );
+  yearlyStat.save();
+
+  // All-time
+  const allTimeId = getAllTimeId();
+  const allTimeStat = (PilgrimageStat.load(allTimeId) ||
+    createPilgrimageStat(allTimeId)) as PilgrimageStat;
+  allTimeStat.interval = "AllTime";
+  allTimeStat.save();
+
+  return [
+    hourlyStat,
+    dailyStat,
+    weeklyStat,
+    monthlyStat,
+    yearlyStat,
+    allTimeStat,
+  ];
+}
+
+export function createPilgrimageStat(id: string): PilgrimageStat {
+  const stat = new PilgrimageStat(id);
+  stat._activeAddresses = [];
+  stat._allAddresses = [];
+  stat.save();
+  return stat;
+}
+
 export function getTimeIntervalQuestingStats(
   eventTimestamp: BigInt
 ): QuestingStat[] {
@@ -512,17 +602,24 @@ export function createSummoningStat(id: string): SummoningStat {
 
 export function getOrCreateLegionStat(
   summoningStatId: string,
-  legion: Legion
+  legion: Legion,
+  withClass: boolean = false
 ): LegionStat {
-  const id = `${summoningStatId}-${legion.name
-    .toLowerCase()
-    .split(" ")
-    .join("-")}`;
+  const id = [
+    summoningStatId,
+    legion.name.toLowerCase().split(" ").join("-"),
+    withClass ? legion.legionClass.toLowerCase() : null,
+  ]
+    .filter((x) => !!x)
+    .join("-");
   let stat = LegionStat.load(id);
   if (!stat) {
     stat = new LegionStat(id);
     stat.generation = legion.generation;
     stat.rarity = legion.rarity;
+    if (withClass) {
+      stat.legionClass = legion.legionClass;
+    }
     stat.name = legion.name;
     stat.save();
   }

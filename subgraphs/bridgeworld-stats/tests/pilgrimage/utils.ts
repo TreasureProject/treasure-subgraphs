@@ -1,6 +1,6 @@
 import { newMockEvent } from "matchstick-as/assembly/index";
 
-import { Address, ethereum } from "@graphprotocol/graph-ts";
+import { Address, BigInt, ethereum } from "@graphprotocol/graph-ts";
 
 import {
   PilgrimagesFinished,
@@ -10,6 +10,7 @@ import {
 export const PILGRIMAGE_ADDRESS = "0x088613c6bbb951c9796ba3bb42a1f310fb209fbd";
 
 export const createPilgrimagesStartedEvent = (
+  timestamp: i32,
   user: string,
   legionContract: string,
   finishTime: i32,
@@ -18,6 +19,7 @@ export const createPilgrimagesStartedEvent = (
   pilgrimageIds: i32[]
 ): PilgrimagesStarted => {
   const newEvent = changetype<PilgrimagesStarted>(newMockEvent());
+  newEvent.block.timestamp = BigInt.fromI32(timestamp);
   newEvent.address = Address.fromString(PILGRIMAGE_ADDRESS);
   newEvent.parameters = [
     new ethereum.EventParam(
@@ -44,11 +46,13 @@ export const createPilgrimagesStartedEvent = (
 };
 
 export const createPilgrimagesFinishedEvent = (
+  timestamp: i32,
   user: string,
   tokenids: i32[],
   finishedPilgrimageIds: i32[]
 ): PilgrimagesFinished => {
   const newEvent = changetype<PilgrimagesFinished>(newMockEvent());
+  newEvent.block.timestamp = BigInt.fromI32(timestamp);
   newEvent.address = Address.fromString(PILGRIMAGE_ADDRESS);
   newEvent.parameters = [
     new ethereum.EventParam(
