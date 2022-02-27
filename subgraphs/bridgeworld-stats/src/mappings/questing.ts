@@ -103,13 +103,13 @@ export function handleQuestRevealed(event: QuestRevealed): void {
   const shardsEarned = result.crystalShardAmount;
   const starlightEarned = result.starlightAmount;
   const universalLocksEarned = result.universalLockAmount;
-  const earnedTreasure = result.treasureId.gt(BigInt.zero());
+  const treasuresEarned = result.treasureId.gt(BigInt.zero()) ? 1 : 0;
 
   const user = getOrCreateUser(params._owner);
   user.questingShardsEarned += shardsEarned;
   user.questingStarlightEarned += starlightEarned;
   user.questingUniversalLocksEarned += universalLocksEarned;
-  user.questingTreasuresEarned += earnedTreasure ? 1 : 0;
+  user.questingTreasuresEarned += treasuresEarned;
   user.save();
 
   const legion = getLegion(tokenId);
@@ -128,7 +128,7 @@ export function handleQuestRevealed(event: QuestRevealed): void {
     stat.questingShardsEarned += shardsEarned;
     stat.questingStarlightEarned += starlightEarned;
     stat.questingUniversalLocksEarned += universalLocksEarned;
-    stat.questingTreasuresEarned += earnedTreasure ? 1 : 0;
+    stat.questingTreasuresEarned += treasuresEarned;
     stat.save();
 
     if (legion) {
@@ -136,7 +136,7 @@ export function handleQuestRevealed(event: QuestRevealed): void {
       legionStat.questingShardsEarned += shardsEarned;
       legionStat.questingStarlightEarned += starlightEarned;
       legionStat.questingUniversalLocksEarned += universalLocksEarned;
-      legionStat.questingTreasuresEarned += earnedTreasure ? 1 : 0;
+      legionStat.questingTreasuresEarned += treasuresEarned;
       legionStat.save();
     }
 
@@ -148,16 +148,16 @@ export function handleQuestRevealed(event: QuestRevealed): void {
       difficultyStat.questingShardsEarned += shardsEarned;
       difficultyStat.questingStarlightEarned += starlightEarned;
       difficultyStat.questingUniversalLocksEarned += universalLocksEarned;
-      difficultyStat.questingTreasuresEarned += earnedTreasure ? 1 : 0;
+      difficultyStat.questingTreasuresEarned += treasuresEarned;
       difficultyStat.save();
     }
 
-    if (earnedTreasure) {
+    if (treasuresEarned > 0) {
       const treasureStat = getOrCreateTreasureStat(stat.id, result.treasureId);
       treasureStat.startTimestamp = stat.startTimestamp;
       treasureStat.endTimestamp = stat.endTimestamp;
       treasureStat.questingStat = stat.id;
-      treasureStat.questingEarned += 1;
+      treasureStat.questingEarned += treasuresEarned;
       treasureStat.save();
     }
   }
@@ -208,8 +208,6 @@ export function handleQuestFinished(event: QuestFinished): void {
 
     if (legion) {
       const legionStat = getOrCreateLegionStat(stat.id, legion);
-      legionStat.startTimestamp = stat.startTimestamp;
-      legionStat.endTimestamp = stat.endTimestamp;
       legionStat.questsFinished += 1;
       legionStat.save();
     }

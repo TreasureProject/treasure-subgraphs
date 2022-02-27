@@ -38,7 +38,7 @@ function handleCraftingStarted(
 
   const legion = getLegion(tokenId);
   if (!legion) {
-    log.error("Legion not found: {}", [tokenId.toString()]);
+    log.error("[crafting] Legion not found: {}", [tokenId.toString()]);
   }
 
   const stats = getTimeIntervalCraftingStats(block);
@@ -138,12 +138,12 @@ export function handleCraftingRevealed(event: CraftingRevealed): void {
 
   const legion = getLegion(tokenId);
   if (!legion) {
-    log.error("Legion not found: {}", [tokenId.toString()]);
+    log.error("[crafting] Legion not found: {}", [tokenId.toString()]);
   }
 
   const craft = _Craft.load(getCraftId(tokenId));
   if (!craft) {
-    log.error("Craft not found: {}", [tokenId.toString()]);
+    log.error("[crafting] Craft not found: {}", [tokenId.toString()]);
   }
 
   const stats = getTimeIntervalCraftingStats(event.block);
@@ -160,8 +160,6 @@ export function handleCraftingRevealed(event: CraftingRevealed): void {
 
     if (legion) {
       const legionStat = getOrCreateLegionStat(stat.id, legion);
-      legionStat.startTimestamp = stat.startTimestamp;
-      legionStat.endTimestamp = stat.endTimestamp;
       legionStat.craftsSucceeded += wasSuccessful ? 1 : 0;
       legionStat.craftsFailed += wasSuccessful ? 0 : 1;
       legionStat.save();
@@ -172,8 +170,6 @@ export function handleCraftingRevealed(event: CraftingRevealed): void {
         stat.id,
         craft.difficulty
       );
-      difficultyStat.startTimestamp = stat.startTimestamp;
-      difficultyStat.endTimestamp = stat.endTimestamp;
       difficultyStat.magicConsumed = difficultyStat.magicConsumed.plus(
         etherToWei(5).minus(result.magicReturned)
       );
@@ -211,12 +207,12 @@ export function handleCraftingFinished(event: CraftingFinished): void {
 
   const legion = getLegion(tokenId);
   if (!legion) {
-    log.error("Legion not found: {}", [tokenId.toString()]);
+    log.error("[crafting] Legion not found: {}", [tokenId.toString()]);
   }
 
   const craft = _Craft.load(getCraftId(tokenId));
   if (!craft) {
-    log.error("Craft not found: {}", [tokenId.toString()]);
+    log.error("[crafting] Craft not found: {}", [tokenId.toString()]);
   }
 
   const stats = getTimeIntervalCraftingStats(event.block);
@@ -236,8 +232,6 @@ export function handleCraftingFinished(event: CraftingFinished): void {
 
     if (legion) {
       const legionStat = getOrCreateLegionStat(stat.id, legion);
-      legionStat.startTimestamp = stat.startTimestamp;
-      legionStat.endTimestamp = stat.endTimestamp;
       legionStat.craftsFinished += 1;
       legionStat.save();
     }
@@ -247,8 +241,6 @@ export function handleCraftingFinished(event: CraftingFinished): void {
         stat.id,
         craft.difficulty
       );
-      difficultyStat.startTimestamp = stat.startTimestamp;
-      difficultyStat.endTimestamp = stat.endTimestamp;
       difficultyStat.craftsFinished += 1;
       difficultyStat.save();
     }
