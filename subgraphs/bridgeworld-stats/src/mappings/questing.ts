@@ -1,4 +1,4 @@
-import { Address, BigInt, log, store } from "@graphprotocol/graph-ts";
+import { Address, BigInt, ethereum, log, store } from "@graphprotocol/graph-ts";
 
 import { QuestStarted as LegacyQuestStarted } from "../../generated/Questing Legacy/Questing";
 import {
@@ -19,7 +19,7 @@ import {
 } from "../helpers/models";
 
 function handleQuestStarted(
-  timestamp: BigInt,
+  block: ethereum.Block,
   userAddress: Address,
   tokenId: BigInt,
   difficultyIndex: i32
@@ -35,10 +35,10 @@ function handleQuestStarted(
 
   const legion = getLegion(tokenId);
   if (!legion) {
-    log.error("Legion not found: {}", [tokenId.toString()]);
+    log.error("[questing] Legion not found: {}", [tokenId.toString()]);
   }
 
-  const stats = getTimeIntervalQuestingStats(timestamp);
+  const stats = getTimeIntervalQuestingStats(block);
   for (let i = 0; i < stats.length; i++) {
     const stat = stats[i];
     stat.questsStarted += 1;
@@ -77,7 +77,7 @@ function handleQuestStarted(
 export function handleQuestStartedWithDifficulty(event: QuestStarted): void {
   const params = event.params;
   handleQuestStarted(
-    event.block.timestamp,
+    event.block,
     params._owner,
     params._tokenId,
     params._difficulty
@@ -89,7 +89,7 @@ export function handleQuestStartedWithoutDifficulty(
 ): void {
   const params = event.params;
   handleQuestStarted(
-    event.block.timestamp,
+    event.block,
     params._owner,
     params._tokenId,
     0 // Easy
@@ -114,15 +114,15 @@ export function handleQuestRevealed(event: QuestRevealed): void {
 
   const legion = getLegion(tokenId);
   if (!legion) {
-    log.error("Legion not found: {}", [tokenId.toString()]);
+    log.error("[questing] Legion not found: {}", [tokenId.toString()]);
   }
 
   const quest = _Quest.load(getQuestId(tokenId));
   if (!quest) {
-    log.error("Quest not found: {}", [tokenId.toString()]);
+    log.error("[questing] Quest not found: {}", [tokenId.toString()]);
   }
 
-  const stats = getTimeIntervalQuestingStats(event.block.timestamp);
+  const stats = getTimeIntervalQuestingStats(event.block);
   for (let i = 0; i < stats.length; i++) {
     const stat = stats[i];
     stat.questingShardsEarned += shardsEarned;
@@ -156,6 +156,7 @@ export function handleQuestRevealed(event: QuestRevealed): void {
       const treasureStat = getOrCreateTreasureStat(stat.id, result.treasureId);
       treasureStat.startTimestamp = stat.startTimestamp;
       treasureStat.endTimestamp = stat.endTimestamp;
+      treasureStat.questingStat = stat.id;
       treasureStat.questingEarned += 1;
       treasureStat.save();
     }
@@ -173,15 +174,15 @@ export function handleQuestFinished(event: QuestFinished): void {
 
   const quest = _Quest.load(getQuestId(tokenId));
   if (!quest) {
-    log.error("Quest not found: {}", [tokenId.toString()]);
+    log.error("[questing] Quest not found: {}", [tokenId.toString()]);
   }
 
   const legion = getLegion(tokenId);
   if (!legion) {
-    log.error("Legion not found: {}", [tokenId.toString()]);
+    log.error("[questing] Legion not found: {}", [tokenId.toString()]);
   }
 
-  const stats = getTimeIntervalQuestingStats(event.block.timestamp);
+  const stats = getTimeIntervalQuestingStats(event.block);
   for (let i = 0; i < stats.length; i++) {
     const stat = stats[i];
     stat.questsFinished += 1;

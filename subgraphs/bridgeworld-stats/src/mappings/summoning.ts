@@ -24,7 +24,7 @@ export function handleSummoningStarted(event: SummoningStarted): void {
     log.error("Legion not found: {}", [params._tokenId.toString()]);
   }
 
-  const stats = getTimeIntervalSummoningStats(event.block.timestamp);
+  const stats = getTimeIntervalSummoningStats(event.block);
   for (let i = 0; i < stats.length; i++) {
     const stat = stats[i];
     stat.summonsStarted += 1;
@@ -74,7 +74,7 @@ export function handleSummoningFinished(event: SummoningFinished): void {
     log.error("Legion not found: {}", [params._newTokenId.toString()]);
   }
 
-  const stats = getTimeIntervalSummoningStats(event.block.timestamp);
+  const stats = getTimeIntervalSummoningStats(event.block);
   for (let i = 0; i < stats.length; i++) {
     const stat = stats[i];
     stat.summonsFinished += 1;

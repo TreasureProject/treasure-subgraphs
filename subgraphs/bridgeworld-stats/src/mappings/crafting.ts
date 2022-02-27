@@ -1,4 +1,4 @@
-import { Address, BigInt, log, store } from "@graphprotocol/graph-ts";
+import { Address, BigInt, ethereum, log, store } from "@graphprotocol/graph-ts";
 
 import { CraftingStarted as CraftingLegacyStarted } from "../../generated/Crafting Legacy/Crafting";
 import {
@@ -20,7 +20,7 @@ import {
 import { etherToWei } from "../helpers/number";
 
 function handleCraftingStarted(
-  timestamp: BigInt,
+  block: ethereum.Block,
   userAddress: Address,
   tokenId: BigInt,
   treasureIds: BigInt[],
@@ -41,7 +41,7 @@ function handleCraftingStarted(
     log.error("Legion not found: {}", [tokenId.toString()]);
   }
 
-  const stats = getTimeIntervalCraftingStats(timestamp);
+  const stats = getTimeIntervalCraftingStats(block);
   for (let i = 0; i < stats.length; i++) {
     const stat = stats[i];
     stat.craftsStarted += 1;
@@ -94,7 +94,7 @@ export function handleCraftingStartedWithDifficulty(
 ): void {
   const params = event.params;
   handleCraftingStarted(
-    event.block.timestamp,
+    event.block,
     params._owner,
     params._tokenId,
     params._treasureIds,
@@ -108,7 +108,7 @@ export function handleCraftingStartedWithoutDifficulty(
 ): void {
   const params = event.params;
   handleCraftingStarted(
-    event.block.timestamp,
+    event.block,
     params._owner,
     params._tokenId,
     params._treasureIds,
@@ -146,7 +146,7 @@ export function handleCraftingRevealed(event: CraftingRevealed): void {
     log.error("Craft not found: {}", [tokenId.toString()]);
   }
 
-  const stats = getTimeIntervalCraftingStats(event.block.timestamp);
+  const stats = getTimeIntervalCraftingStats(event.block);
   for (let i = 0; i < stats.length; i++) {
     const stat = stats[i];
     stat.magicConsumed = stat.magicConsumed.plus(
@@ -219,7 +219,7 @@ export function handleCraftingFinished(event: CraftingFinished): void {
     log.error("Craft not found: {}", [tokenId.toString()]);
   }
 
-  const stats = getTimeIntervalCraftingStats(event.block.timestamp);
+  const stats = getTimeIntervalCraftingStats(event.block);
   for (let i = 0; i < stats.length; i++) {
     const stat = stats[i];
     stat.craftsFinished += 1;
