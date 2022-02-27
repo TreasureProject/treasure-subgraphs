@@ -2,6 +2,8 @@ import { newMockEvent } from "matchstick-as";
 
 import { Address, BigInt, ethereum } from "@graphprotocol/graph-ts";
 
+import { HOURLY_STAT_INTERVAL_START_BLOCK } from "@treasure/constants";
+
 import {
   SummoningFinished,
   SummoningStarted,
@@ -13,6 +15,7 @@ export function createSummoningStartedEvent(
   tokenId: i32
 ): SummoningStarted {
   const event = changetype<SummoningStarted>(newMockEvent());
+  event.block.number = HOURLY_STAT_INTERVAL_START_BLOCK;
   event.block.timestamp = BigInt.fromI32(timestamp);
   event.parameters = [
     new ethereum.EventParam(
@@ -32,6 +35,7 @@ export function createSummoningFinishedEvent(
   newTokenId: i32
 ): SummoningFinished {
   const event = changetype<SummoningFinished>(newMockEvent());
+  event.block.number = HOURLY_STAT_INTERVAL_START_BLOCK;
   event.block.timestamp = BigInt.fromI32(timestamp);
   event.parameters = [
     new ethereum.EventParam(

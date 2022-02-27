@@ -1,4 +1,4 @@
-import { Address, BigInt, log, store } from "@graphprotocol/graph-ts";
+import { Address, BigInt, ethereum, log, store } from "@graphprotocol/graph-ts";
 
 import { CraftingStarted as CraftingLegacyStarted } from "../../generated/Crafting Legacy/Crafting";
 import {
@@ -20,7 +20,7 @@ import {
 import { etherToWei } from "../helpers/number";
 
 function handleCraftingStarted(
-  timestamp: BigInt,
+  block: ethereum.Block,
   userAddress: Address,
   tokenId: BigInt,
   treasureIds: BigInt[],
@@ -38,10 +38,10 @@ function handleCraftingStarted(
 
   const legion = getLegion(tokenId);
   if (!legion) {
-    log.error("Legion not found: {}", [tokenId.toString()]);
+    log.error("[crafting] Legion not found: {}", [tokenId.toString()]);
   }
 
-  const stats = getTimeIntervalCraftingStats(timestamp);
+  const stats = getTimeIntervalCraftingStats(block);
   for (let i = 0; i < stats.length; i++) {
     const stat = stats[i];
     stat.craftsStarted += 1;
@@ -94,7 +94,7 @@ export function handleCraftingStartedWithDifficulty(
 ): void {
   const params = event.params;
   handleCraftingStarted(
-    event.block.timestamp,
+    event.block,
     params._owner,
     params._tokenId,
     params._treasureIds,
@@ -108,7 +108,7 @@ export function handleCraftingStartedWithoutDifficulty(
 ): void {
   const params = event.params;
   handleCraftingStarted(
-    event.block.timestamp,
+    event.block,
     params._owner,
     params._tokenId,
     params._treasureIds,
@@ -138,15 +138,15 @@ export function handleCraftingRevealed(event: CraftingRevealed): void {
 
   const legion = getLegion(tokenId);
   if (!legion) {
-    log.error("Legion not found: {}", [tokenId.toString()]);
+    log.error("[crafting] Legion not found: {}", [tokenId.toString()]);
   }
 
   const craft = _Craft.load(getCraftId(tokenId));
   if (!craft) {
-    log.error("Craft not found: {}", [tokenId.toString()]);
+    log.error("[crafting] Craft not found: {}", [tokenId.toString()]);
   }
 
-  const stats = getTimeIntervalCraftingStats(event.block.timestamp);
+  const stats = getTimeIntervalCraftingStats(event.block);
   for (let i = 0; i < stats.length; i++) {
     const stat = stats[i];
     stat.magicConsumed = stat.magicConsumed.plus(
@@ -160,8 +160,6 @@ export function handleCraftingRevealed(event: CraftingRevealed): void {
 
     if (legion) {
       const legionStat = getOrCreateLegionStat(stat.id, legion);
-      legionStat.startTimestamp = stat.startTimestamp;
-      legionStat.endTimestamp = stat.endTimestamp;
       legionStat.craftsSucceeded += wasSuccessful ? 1 : 0;
       legionStat.craftsFailed += wasSuccessful ? 0 : 1;
       legionStat.save();
@@ -172,8 +170,6 @@ export function handleCraftingRevealed(event: CraftingRevealed): void {
         stat.id,
         craft.difficulty
       );
-      difficultyStat.startTimestamp = stat.startTimestamp;
-      difficultyStat.endTimestamp = stat.endTimestamp;
       difficultyStat.magicConsumed = difficultyStat.magicConsumed.plus(
         etherToWei(5).minus(result.magicReturned)
       );
@@ -211,15 +207,15 @@ export function handleCraftingFinished(event: CraftingFinished): void {
 
   const legion = getLegion(tokenId);
   if (!legion) {
-    log.error("Legion not found: {}", [tokenId.toString()]);
+    log.error("[crafting] Legion not found: {}", [tokenId.toString()]);
   }
 
   const craft = _Craft.load(getCraftId(tokenId));
   if (!craft) {
-    log.error("Craft not found: {}", [tokenId.toString()]);
+    log.error("[crafting] Craft not found: {}", [tokenId.toString()]);
   }
 
-  const stats = getTimeIntervalCraftingStats(event.block.timestamp);
+  const stats = getTimeIntervalCraftingStats(event.block);
   for (let i = 0; i < stats.length; i++) {
     const stat = stats[i];
     stat.craftsFinished += 1;
@@ -236,8 +232,6 @@ export function handleCraftingFinished(event: CraftingFinished): void {
 
     if (legion) {
       const legionStat = getOrCreateLegionStat(stat.id, legion);
-      legionStat.startTimestamp = stat.startTimestamp;
-      legionStat.endTimestamp = stat.endTimestamp;
       legionStat.craftsFinished += 1;
       legionStat.save();
     }
@@ -247,8 +241,6 @@ export function handleCraftingFinished(event: CraftingFinished): void {
         stat.id,
         craft.difficulty
       );
-      difficultyStat.startTimestamp = stat.startTimestamp;
-      difficultyStat.endTimestamp = stat.endTimestamp;
       difficultyStat.craftsFinished += 1;
       difficultyStat.save();
     }

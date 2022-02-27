@@ -2,6 +2,8 @@ import { newMockEvent } from "matchstick-as";
 
 import { Address, BigInt, ethereum } from "@graphprotocol/graph-ts";
 
+import { HOURLY_STAT_INTERVAL_START_BLOCK } from "@treasure/constants";
+
 import {
   CraftingFinished,
   CraftingRevealed,
@@ -18,6 +20,7 @@ export const createCraftingStartedEvent = (
   amounts: i32[] = [1]
 ): CraftingStarted => {
   const event = changetype<CraftingStarted>(newMockEvent());
+  event.block.number = HOURLY_STAT_INTERVAL_START_BLOCK;
   event.block.timestamp = BigInt.fromI32(timestamp);
   event.parameters = [
     new ethereum.EventParam(
@@ -53,6 +56,7 @@ export function createCraftingRevealedEvent(
   rewardAmount: i32 = 1
 ): CraftingRevealed {
   const event = changetype<CraftingRevealed>(newMockEvent());
+  event.block.number = HOURLY_STAT_INTERVAL_START_BLOCK;
   event.block.timestamp = BigInt.fromI32(timestamp);
   event.parameters = [
     new ethereum.EventParam(
@@ -84,6 +88,7 @@ export function createCraftingFinishedEvent(
   tokenId: i32
 ): CraftingFinished {
   const event = changetype<CraftingFinished>(newMockEvent());
+  event.block.number = HOURLY_STAT_INTERVAL_START_BLOCK;
   event.block.timestamp = BigInt.fromI32(timestamp);
   event.parameters = [
     new ethereum.EventParam(

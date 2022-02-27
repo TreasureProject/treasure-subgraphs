@@ -17,7 +17,7 @@ export function handleDeposit(event: Deposit): void {
   user.magicDeposited = user.magicDeposited.plus(params.amount);
   user.save();
 
-  const stats = getTimeIntervalAtlasMineStats(event.block.timestamp);
+  const stats = getTimeIntervalAtlasMineStats(event.block);
   for (let i = 0; i < stats.length; i++) {
     const stat = stats[i];
     stat.magicDepositCount += 1;
@@ -52,7 +52,7 @@ export function handleWithdraw(event: Withdraw): void {
   user.save();
   const isUserStaked = user.magicDeposited.gt(user.magicWithdrawn);
 
-  const stats = getTimeIntervalAtlasMineStats(event.block.timestamp);
+  const stats = getTimeIntervalAtlasMineStats(event.block);
   for (let i = 0; i < stats.length; i++) {
     const stat = stats[i];
     stat.magicWithdrawCount += 1;
@@ -78,7 +78,7 @@ export function handleHarvest(event: Harvest): void {
   user.magicHarvested = user.magicHarvested.plus(params.amount);
   user.save();
 
-  const stats = getTimeIntervalAtlasMineStats(event.block.timestamp);
+  const stats = getTimeIntervalAtlasMineStats(event.block);
   for (let i = 0; i < stats.length; i++) {
     const stat = stats[i];
     stat.magicHarvestCount += 1;
