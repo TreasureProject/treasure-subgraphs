@@ -297,7 +297,8 @@ type QuestingStat @entity {
   "Number of unique addresses that have quested at any point"
   allAddressesCount: Int!
 
-  difficultyStats: [QuestingDifficulty!]! @derivedFrom(field: "questingStat")
+  difficultyStats: [QuestingDifficultyStat!]!
+    @derivedFrom(field: "questingStat")
   legionStats: [LegionStat!]! @derivedFrom(field: "questingStat")
   treasureStats: [TreasureStat!]! @derivedFrom(field: "questingStat")
 }
