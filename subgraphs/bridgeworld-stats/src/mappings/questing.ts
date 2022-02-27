@@ -1,4 +1,4 @@
-import { Address, BigInt, log } from "@graphprotocol/graph-ts";
+import { Address, BigInt, log, store } from "@graphprotocol/graph-ts";
 
 import { QuestStarted as LegacyQuestStarted } from "../../generated/Questing Legacy/Questing";
 import {
@@ -212,5 +212,9 @@ export function handleQuestFinished(event: QuestFinished): void {
       legionStat.questsFinished += 1;
       legionStat.save();
     }
+  }
+
+  if (quest) {
+    store.remove("_Quest", quest.id);
   }
 }
