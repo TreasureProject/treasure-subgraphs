@@ -7,82 +7,246 @@ on:
     branches: [master]
 
 jobs:
-  deploy-dev:
-    if: github.event_name == 'pull_request' && github.event.pull_request.draft == false
+  changes:
+    name: Detect Changes
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        include:
-          - network: arbitrum-testnet
+    outputs:
+      bridgeworld: ${{ steps.filter.outputs.bridgeworld }}
+      bridgeworld_stats: ${{ steps.filter.outputs.bridgeworld_stats }}
+      marketplace: ${{ steps.filter.outputs.marketplace }}
+      migration: ${{ steps.filter.outputs.migration }}
+      smolverse: ${{ steps.filter.outputs.smolverse }}
+      snapshot: ${{ steps.filter.outputs.snapshot }}
     steps:
-      - uses: actions/checkout@v2
-      - name: Install node
+    - uses: dorny/paths-filter@v2
+      id: filter
+      with:
+        filters: |
+          bridgeworld:
+            - "packages/**"
+            - "subgraphs/bridgeworld/**"
+          bridgeworld_stats:
+            - "packages/**"
+            - "subgraphs/bridgeworld-stats/**"
+          marketplace:
+            - "packages/**"
+            - "subgraphs/marketplace/**"
+          migration:
+            - "packages/**"
+            - "subgraphs/migration/**"
+          smolverse:
+            - "packages/**"
+            - "subgraphs/smolverse/**"
+          snapshot:
+            - "packages/**"
+            - "subgraphs/snapshot/**"
+
+  bridgeworld:
+    name: Bridgeworld Subgraph
+    if: ${{ needs.changes.outputs.bridgeworld == 'true' }}
+    needs: changes
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./subgraphs/bridgeworld
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: Install Node
         uses: actions/setup-node@v1
         with:
           node-version: 14
-      - name: Install
+      - name: Install dependencies
         run: yarn --frozen-lockfile
-      - name: Prepare
-        env:
-          NETWORK: ${{ matrix.network }}
-        run: yarn prepare:$NETWORK
-      - name: Codegen
-        env:
-          NETWORK: ${{ matrix.network }}
-        run: yarn codegen:$NETWORK
+      - name: Prepare for DEV
+        if: github.event_name == 'pull_request' && github.event.pull_request.draft == false
+        run: yarn prepare:dev
+      - name: Prepare for PROD
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        run: yarn prepare:prod
+      - name: Generate code
+        run: yarn codegen
       - name: Test
-        env:
-          NETWORK: ${{ matrix.network }}
-        run: yarn test:$NETWORK
-      - name: Build
-        env:
-          NETWORK: ${{ matrix.network }}
-        run: yarn build:$NETWORK
+        run: yarn test
       - name: Authenticate
         env:
           GRAPH_ACCESS_TOKEN: ${{ secrets.GRAPH_ACCESS_TOKEN }}
         run: yarn graph auth --product hosted-service "$GRAPH_ACCESS_TOKEN"
-      - name: Deploy to ${{ matrix.network }}
-        env:
-          NETWORK: ${{ matrix.network }}
-        run: yarn deploy:$NETWORK
-  deploy-prod:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+      - name: Deploy to DEV
+        if: github.event_name == 'pull_request' && github.event.pull_request.draft == false
+        run: yarn deploy:dev
+      - name: Deploy to PROD
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        run: yarn deploy:prod
+
+  bridgeworld_stats:
+    name: Bridgeworld Stats Subgraph
+    if: ${{ needs.changes.outputs.bridgeworld_stats == 'true' }}
+    needs: changes
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        include:
-          - network: arbitrum
-          - network: mainnet
+    defaults:
+      run:
+        working-directory: ./subgraphs/bridgeworld-stats
     steps:
-      - uses: actions/checkout@v2
-      - name: Install node
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: Install Node
         uses: actions/setup-node@v1
         with:
           node-version: 14
-      - name: Install
+      - name: Install dependencies
         run: yarn --frozen-lockfile
-      - name: Prepare
-        env:
-          NETWORK: ${{ matrix.network }}
-        run: yarn prepare:$NETWORK
-      - name: Codegen
-        env:
-          NETWORK: ${{ matrix.network }}
-        run: yarn codegen:$NETWORK
+      - name: Prepare for DEV
+        if: github.event_name == 'pull_request' && github.event.pull_request.draft == false
+        run: yarn prepare:dev
+      - name: Prepare for PROD
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        run: yarn prepare:prod
+      - name: Generate code
+        run: yarn codegen
       - name: Test
+        run: yarn test
+      - name: Authenticate
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         env:
-          NETWORK: ${{ matrix.network }}
-        run: yarn test:$NETWORK
-      - name: Build
-        env:
-          NETWORK: ${{ matrix.network }}
-        run: yarn build:$NETWORK
+          GRAPH_ACCESS_TOKEN: ${{ secrets.GRAPH_ACCESS_TOKEN }}
+        run: yarn graph auth --product hosted-service "$GRAPH_ACCESS_TOKEN"
+      - name: Deploy to PROD
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        run: yarn deploy:prod
+
+  marketplace:
+    name: Marketplace Subgraph
+    if: ${{ needs.changes.outputs.marketplace == 'true' }}
+    needs: changes
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./subgraphs/marketplace
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: Install Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14
+      - name: Install dependencies
+        run: yarn --frozen-lockfile
+      - name: Prepare for DEV
+        if: github.event_name == 'pull_request' && github.event.pull_request.draft == false
+        run: yarn prepare:dev
+      - name: Prepare for PROD
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        run: yarn prepare:prod
+      - name: Generate code
+        run: yarn codegen
+      - name: Test
+        run: yarn test
       - name: Authenticate
         env:
           GRAPH_ACCESS_TOKEN: ${{ secrets.GRAPH_ACCESS_TOKEN }}
         run: yarn graph auth --product hosted-service "$GRAPH_ACCESS_TOKEN"
-      - name: Deploy to ${{ matrix.network }}
+      - name: Deploy to DEV
+        if: github.event_name == 'pull_request' && github.event.pull_request.draft == false
+        run: yarn deploy:dev
+      - name: Deploy to PROD
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        run: yarn deploy:prod
+
+  migration:
+    name: Migration Subgraph
+    if: ${{ needs.changes.outputs.migration == 'true' }}
+    needs: changes
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./subgraphs/migration
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: Install Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14
+      - name: Install dependencies
+        run: yarn --frozen-lockfile
+      - name: Prepare for PROD
+        run: yarn prepare:prod
+      - name: Generate code
+        run: yarn codegen
+      - name: Authenticate
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         env:
-          NETWORK: ${{ matrix.network }}
-        run: yarn deploy:$NETWORK
+          GRAPH_ACCESS_TOKEN: ${{ secrets.GRAPH_ACCESS_TOKEN }}
+        run: yarn graph auth --product hosted-service "$GRAPH_ACCESS_TOKEN"
+      - name: Deploy to PROD
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        run: yarn deploy:prod
+
+  smolverse:
+    name: Smolverse Subgraph
+    if: ${{ needs.changes.outputs.smolverse == 'true' }}
+    needs: changes
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./subgraphs/smolverse
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: Install Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14
+      - name: Install dependencies
+        run: yarn --frozen-lockfile
+      - name: Prepare for DEV
+        if: github.event_name == 'pull_request' && github.event.pull_request.draft == false
+        run: yarn prepare:dev
+      - name: Prepare for PROD
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        run: yarn prepare:prod
+      - name: Generate code
+        run: yarn codegen
+      - name: Test
+        run: yarn test
+      - name: Authenticate
+        env:
+          GRAPH_ACCESS_TOKEN: ${{ secrets.GRAPH_ACCESS_TOKEN }}
+        run: yarn graph auth --product hosted-service "$GRAPH_ACCESS_TOKEN"
+      - name: Deploy to DEV
+        if: github.event_name == 'pull_request' && github.event.pull_request.draft == false
+        run: yarn deploy:dev
+      - name: Deploy to PROD
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        run: yarn deploy:prod
+
+  snapshot:
+    name: Snapshot Subgraph
+    if: ${{ needs.changes.outputs.snapshot == 'true' }}
+    needs: changes
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./subgraphs/snapshot
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: Install Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14
+      - name: Install dependencies
+        run: yarn --frozen-lockfile
+      - name: Prepare for PROD
+        run: yarn prepare:prod
+      - name: Generate code
+        run: yarn codegen
+      - name: Authenticate
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        env:
+          GRAPH_ACCESS_TOKEN: ${{ secrets.GRAPH_ACCESS_TOKEN }}
+        run: yarn graph auth --product hosted-service "$GRAPH_ACCESS_TOKEN"
+      - name: Deploy to PROD
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        run: yarn deploy:prod
