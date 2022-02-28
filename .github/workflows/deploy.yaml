@@ -43,7 +43,7 @@ jobs:
 
   bridgeworld:
     name: Bridgeworld Subgraph
-    if: ${{ needs.changes.outputs.bridgeworld == "true" }}
+    if: ${{ needs.changes.outputs.bridgeworld == 'true' }}
     needs: changes
     runs-on: ubuntu-latest
     defaults:
@@ -81,7 +81,7 @@ jobs:
 
   bridgeworld_stats:
     name: Bridgeworld Stats Subgraph
-    if: ${{ needs.changes.outputs.bridgeworld_stats == "true" }}
+    if: ${{ needs.changes.outputs.bridgeworld_stats == 'true' }}
     needs: changes
     runs-on: ubuntu-latest
     defaults:
@@ -117,7 +117,7 @@ jobs:
 
   marketplace:
     name: Marketplace Subgraph
-    if: ${{ needs.changes.outputs.marketplace == "true" }}
+    if: ${{ needs.changes.outputs.marketplace == 'true' }}
     needs: changes
     runs-on: ubuntu-latest
     defaults:
@@ -155,7 +155,7 @@ jobs:
 
   migration:
     name: Migration Subgraph
-    if: ${{ needs.changes.outputs.migration == "true" }} && github.event_name == 'push' && github.ref == 'refs/heads/master'
+    if: ${{ needs.changes.outputs.migration == 'true' }} && github.event_name == 'push' && github.ref == 'refs/heads/master'
     needs: changes
     runs-on: ubuntu-latest
     defaults:
@@ -183,7 +183,7 @@ jobs:
 
   smolverse:
     name: Smolverse Subgraph
-    if: ${{ needs.changes.outputs.smolverse == "true" }}
+    if: ${{ needs.changes.outputs.smolverse == 'true' }}
     needs: changes
     runs-on: ubuntu-latest
     defaults:
@@ -221,7 +221,7 @@ jobs:
 
   snapshot:
     name: Snapshot Subgraph
-    if: ${{ needs.changes.outputs.snapshot == "true" }} && github.event_name == 'push' && github.ref == 'refs/heads/master'
+    if: ${{ needs.changes.outputs.snapshot == 'true' }} && github.event_name == 'push' && github.ref == 'refs/heads/master'
     needs: changes
     runs-on: ubuntu-latest
     defaults:
