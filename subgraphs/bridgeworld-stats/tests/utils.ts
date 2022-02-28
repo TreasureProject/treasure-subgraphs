@@ -1,3 +1,4 @@
+export const CONSUMABLE_STAT_ENTITY_TYPE = "ConsumableStat";
 export const CRAFTING_STAT_ENTITY_TYPE = "CraftingStat";
 export const CRAFTING_DIFFICULTY_STAT_ENTITY_TYPE = "CraftingDifficultyStat";
 export const LEGION_STAT_ENTITY_TYPE = "LegionStat";

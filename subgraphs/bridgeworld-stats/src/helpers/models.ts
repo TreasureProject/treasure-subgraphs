@@ -5,6 +5,7 @@ import { HOURLY_STAT_INTERVAL_START_BLOCK } from "@treasure/constants";
 import {
   AtlasMineLockStat,
   AtlasMineStat,
+  ConsumableStat,
   CraftingDifficultyStat,
   CraftingStat,
   Legion,
@@ -17,6 +18,7 @@ import {
   User,
 } from "../../generated/schema";
 import { LEGION_GENERATIONS, LEGION_RARITIES } from "./constants";
+import { getConsumableName } from "./consumable";
 import {
   SECONDS_IN_DAY,
   SECONDS_IN_HOUR,
@@ -38,7 +40,7 @@ import {
   getYearlyId,
 } from "./ids";
 import { etherToWei } from "./number";
-import { getName, getTier } from "./treasure";
+import { getTier, getTreasureName } from "./treasure";
 
 export function getOrCreateUser(address: Address): User {
   const id = address.toHexString();
@@ -714,6 +716,22 @@ export function getOrCreateLegionStat(
   return stat;
 }
 
+export function getOrCreateConsumableStat(
+  statId: string,
+  tokenId: BigInt
+): ConsumableStat {
+  const id = `${statId}-${tokenId.toHexString()}`;
+  let stat = ConsumableStat.load(id);
+  if (!stat) {
+    stat = new ConsumableStat(id);
+    stat.tokenId = tokenId;
+    stat.name = getConsumableName(tokenId);
+    stat.save();
+  }
+
+  return stat;
+}
+
 export function getOrCreateTreasureStat(
   statId: string,
   tokenId: BigInt
@@ -723,7 +741,7 @@ export function getOrCreateTreasureStat(
   if (!stat) {
     stat = new TreasureStat(id);
     stat.tokenId = tokenId;
-    stat.name = getName(tokenId);
+    stat.name = getTreasureName(tokenId);
     stat.tier = getTier(tokenId);
     stat.save();
   }

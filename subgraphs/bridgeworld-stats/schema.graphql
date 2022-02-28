@@ -91,6 +91,21 @@ type _Quest @entity {
   difficulty: QuestingDifficulty!
 }
 
+type ConsumableStat @entity {
+  id: ID!
+
+  startTimestamp: BigInt
+  endTimestamp: BigInt
+
+  tokenId: BigInt!
+  name: String!
+
+  craftingStat: CraftingStat
+
+  "Number of this Consumable type earned in Crafts"
+  craftingEarned: Int!
+}
+
 type TreasureStat @entity {
   id: ID!
 

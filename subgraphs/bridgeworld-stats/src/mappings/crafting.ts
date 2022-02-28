@@ -11,6 +11,7 @@ import { CRAFT_DIFFICULTIES } from "../helpers/constants";
 import { getCraftId } from "../helpers/ids";
 import {
   getLegion,
+  getOrCreateConsumableStat,
   getOrCreateCraftingDifficultyStat,
   getOrCreateLegionStat,
   getOrCreateTreasureStat,
@@ -121,9 +122,10 @@ export function handleCraftingRevealed(event: CraftingRevealed): void {
   const params = event.params;
   const tokenId = params._tokenId;
   const result = params._outcome;
-  const wasSuccessful = result.wasSuccessful;
   const brokenTreasureIds = result.brokenTreasureIds;
   const brokenAmounts = result.brokenAmounts;
+  const succeededCount = result.wasSuccessful ? 1 : 0;
+  const failedCount = result.wasSuccessful ? 0 : 1;
 
   let brokenTreasuresCount = 0;
   for (let i = 0; i < brokenAmounts.length; i++) {
@@ -131,8 +133,8 @@ export function handleCraftingRevealed(event: CraftingRevealed): void {
   }
 
   const user = getOrCreateUser(params._owner);
-  user.craftsSucceeded += wasSuccessful ? 1 : 0;
-  user.craftsFailed += wasSuccessful ? 0 : 1;
+  user.craftsSucceeded += succeededCount;
+  user.craftsFailed += failedCount;
   user.brokenTreasuresCount += brokenTreasuresCount;
   user.save();
 
@@ -153,15 +155,15 @@ export function handleCraftingRevealed(event: CraftingRevealed): void {
       etherToWei(5).minus(result.magicReturned)
     );
     stat.magicReturned = stat.magicReturned.plus(result.magicReturned);
-    stat.craftsSucceeded += wasSuccessful ? 1 : 0;
-    stat.craftsFailed += wasSuccessful ? 0 : 1;
+    stat.craftsSucceeded += succeededCount;
+    stat.craftsFailed += failedCount;
     stat.brokenTreasuresCount += brokenTreasuresCount;
     stat.save();
 
     if (legion) {
       const legionStat = getOrCreateLegionStat(stat.id, legion);
-      legionStat.craftsSucceeded += wasSuccessful ? 1 : 0;
-      legionStat.craftsFailed += wasSuccessful ? 0 : 1;
+      legionStat.craftsSucceeded += succeededCount;
+      legionStat.craftsFailed += failedCount;
       legionStat.save();
     }
 
@@ -176,10 +178,22 @@ export function handleCraftingRevealed(event: CraftingRevealed): void {
       difficultyStat.magicReturned = difficultyStat.magicReturned.plus(
         result.magicReturned
       );
-      difficultyStat.craftsSucceeded += wasSuccessful ? 1 : 0;
-      difficultyStat.craftsFailed += wasSuccessful ? 0 : 1;
+      difficultyStat.craftsSucceeded += succeededCount;
+      difficultyStat.craftsFailed += failedCount;
       difficultyStat.brokenTreasuresCount += brokenTreasuresCount;
       difficultyStat.save();
+    }
+
+    if (result.rewardId) {
+      const consumableStat = getOrCreateConsumableStat(
+        stat.id,
+        result.rewardId
+      );
+      consumableStat.startTimestamp = stat.startTimestamp;
+      consumableStat.endTimestamp = stat.endTimestamp;
+      consumableStat.craftingStat = stat.id;
+      consumableStat.craftingEarned += result.rewardAmount;
+      consumableStat.save();
     }
 
     for (let j = 0; j < brokenTreasureIds.length; j++) {
