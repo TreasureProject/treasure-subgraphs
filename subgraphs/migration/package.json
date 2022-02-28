@@ -6,6 +6,6 @@
   "scripts": {
     "codegen": "graph codegen",
     "deploy:prod": "graph deploy --product hosted-service treasureproject/migration",
-    "prepare:prod": "mustache ../../node_modules/@treasure/subgraph-config/src/mainnet.json template.yaml > subgraph.yaml"
+    "prepare:prod": "yarn --cwd ../../packages/constants prepare:mainnet && mustache ../../node_modules/@treasure/subgraph-config/src/mainnet.json template.yaml > subgraph.yaml"
   }
 }

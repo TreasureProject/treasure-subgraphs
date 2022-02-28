@@ -8,8 +8,8 @@
     "deploy:dev": "graph deploy --product hosted-service treasureproject/marketplace-dev",
     "deploy:staging": "graph deploy --product hosted-service treasureproject/marketplace-next",
     "deploy:prod": "graph deploy --product hosted-service treasureproject/marketplace",
-    "prepare:dev": "mustache ../../node_modules/@treasure/subgraph-config/src/arbitrum-testnet.json template.yaml > subgraph.yaml",
-    "prepare:prod": "mustache ../../node_modules/@treasure/subgraph-config/src/arbitrum.json template.yaml > subgraph.yaml",
+    "prepare:dev": "yarn --cwd ../../packages/constants prepare:arbitrum-testnet && mustache ../../node_modules/@treasure/subgraph-config/src/arbitrum-testnet.json template.yaml > subgraph.yaml",
+    "prepare:prod": "yarn --cwd ../../packages/constants prepare:arbitrum && mustache ../../node_modules/@treasure/subgraph-config/src/arbitrum.json template.yaml > subgraph.yaml",
     "test": "graph test"
   }
 }

@@ -58,7 +58,6 @@ jobs:
           node-version: 14
       - name: Install dependencies
         run: yarn --frozen-lockfile
-        working-directory: ./
       - name: Prepare for DEV
         if: github.event_name == 'pull_request' && github.event.pull_request.draft == false
         run: yarn prepare:dev
@@ -97,7 +96,6 @@ jobs:
           node-version: 14
       - name: Install dependencies
         run: yarn --frozen-lockfile
-        working-directory: ./
       - name: Prepare for DEV
         if: github.event_name == 'pull_request' && github.event.pull_request.draft == false
         run: yarn prepare:dev
@@ -134,7 +132,6 @@ jobs:
           node-version: 14
       - name: Install dependencies
         run: yarn --frozen-lockfile
-        working-directory: ./
       - name: Prepare for DEV
         if: github.event_name == 'pull_request' && github.event.pull_request.draft == false
         run: yarn prepare:dev
@@ -158,7 +155,7 @@ jobs:
 
   migration:
     name: Migration Subgraph
-    if: ${{ needs.changes.outputs.migration == 'true' }} && github.event_name == 'push' && github.ref == 'refs/heads/master'
+    if: ${{ needs.changes.outputs.migration == 'true' }}
     needs: changes
     runs-on: ubuntu-latest
     defaults:
@@ -173,16 +170,17 @@ jobs:
           node-version: 14
       - name: Install dependencies
         run: yarn --frozen-lockfile
-        working-directory: ./
       - name: Prepare for PROD
         run: yarn prepare:prod
       - name: Generate code
         run: yarn codegen
       - name: Authenticate
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         env:
           GRAPH_ACCESS_TOKEN: ${{ secrets.GRAPH_ACCESS_TOKEN }}
         run: yarn graph auth --product hosted-service "$GRAPH_ACCESS_TOKEN"
       - name: Deploy to PROD
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         run: yarn deploy:prod
 
   smolverse:
@@ -202,7 +200,6 @@ jobs:
           node-version: 14
       - name: Install dependencies
         run: yarn --frozen-lockfile
-        working-directory: ./
       - name: Prepare for DEV
         if: github.event_name == 'pull_request' && github.event.pull_request.draft == false
         run: yarn prepare:dev
@@ -226,7 +223,7 @@ jobs:
 
   snapshot:
     name: Snapshot Subgraph
-    if: ${{ needs.changes.outputs.snapshot == 'true' }} && github.event_name == 'push' && github.ref == 'refs/heads/master'
+    if: ${{ needs.changes.outputs.snapshot == 'true' }}
     needs: changes
     runs-on: ubuntu-latest
     defaults:
@@ -241,14 +238,15 @@ jobs:
           node-version: 14
       - name: Install dependencies
         run: yarn --frozen-lockfile
-        working-directory: ./
       - name: Prepare for PROD
         run: yarn prepare:prod
       - name: Generate code
         run: yarn codegen
       - name: Authenticate
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         env:
           GRAPH_ACCESS_TOKEN: ${{ secrets.GRAPH_ACCESS_TOKEN }}
         run: yarn graph auth --product hosted-service "$GRAPH_ACCESS_TOKEN"
       - name: Deploy to PROD
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         run: yarn deploy:prod
