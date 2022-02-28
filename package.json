@@ -8,22 +8,7 @@
   ],
   "scripts": {
     "format": "prettier --write .",
-    "prepare:git-hooks": "husky install",
-    "build:arbitrum-testnet": "yarn workspaces run build:arbitrum-testnet",
-    "build:arbitrum": "yarn workspaces run build:arbitrum",
-    "build:mainnet": "yarn workspaces run build:mainnet",
-    "codegen:arbitrum-testnet": "yarn workspaces run codegen:arbitrum-testnet",
-    "codegen:arbitrum": "yarn workspaces run codegen:arbitrum",
-    "codegen:mainnet": "yarn workspaces run codegen:mainnet",
-    "deploy:arbitrum-testnet": "yarn workspaces run deploy:arbitrum-testnet",
-    "deploy:arbitrum": "yarn workspaces run deploy:arbitrum",
-    "deploy:mainnet": "yarn workspaces run deploy:mainnet",
-    "prepare:arbitrum-testnet": "yarn workspaces run prepare:arbitrum-testnet",
-    "prepare:arbitrum": "yarn workspaces run prepare:arbitrum",
-    "prepare:mainnet": "yarn workspaces run prepare:mainnet",
-    "test:arbitrum-testnet": "yarn workspaces run test:arbitrum-testnet",
-    "test:arbitrum": "yarn workspaces run test:arbitrum",
-    "test:mainnet": "yarn workspaces run test:mainnet"
+    "prepare": "husky install"
   },
   "devDependencies": {
     "@graphprotocol/graph-cli": "0.26.0",
