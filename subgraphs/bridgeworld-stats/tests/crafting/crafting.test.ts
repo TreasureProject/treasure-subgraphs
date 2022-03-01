@@ -11,6 +11,7 @@ import {
 import { handleLegionCreated } from "../../src/mappings/legion";
 import { createLegionCreatedEvent } from "../legion/utils";
 import {
+  CONSUMABLE_STAT_ENTITY_TYPE,
   CRAFTING_DIFFICULTY_STAT_ENTITY_TYPE,
   CRAFTING_STAT_ENTITY_TYPE,
   LEGION_STAT_ENTITY_TYPE,
@@ -483,7 +484,7 @@ test("crafting stats count broken treasures", () => {
     1,
     true,
     BigInt.zero(),
-    0,
+    3,
     [92, 96],
     [2, 1]
   );
@@ -512,6 +513,20 @@ test("crafting stats count broken treasures", () => {
       `${statIds[i]}-difficultyPrism`,
       "brokenTreasuresCount",
       "3"
+    );
+
+    // Assert all time intervals for consumable are created
+    assert.fieldEquals(
+      CONSUMABLE_STAT_ENTITY_TYPE,
+      `${statIds[i]}-0x3`,
+      "name",
+      "Large Prism"
+    );
+    assert.fieldEquals(
+      CONSUMABLE_STAT_ENTITY_TYPE,
+      `${statIds[i]}-0x3`,
+      "craftingEarned",
+      "1"
     );
 
     // Assert all time intervals for treasure are created
