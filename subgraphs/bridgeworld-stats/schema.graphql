@@ -34,29 +34,6 @@ enum QuestingDifficulty {
   Hard
 }
 
-type User @entity {
-  id: ID!
-  magicDepositCount: Int!
-  magicWithdrawCount: Int!
-  magicHarvestCount: Int!
-  magicDeposited: BigInt!
-  magicWithdrawn: BigInt!
-  magicHarvested: BigInt!
-  craftsStarted: Int!
-  craftsFinished: Int!
-  craftsSucceeded: Int!
-  craftsFailed: Int!
-  brokenTreasuresCount: Int!
-  questsStarted: Int!
-  questsFinished: Int!
-  questingShardsEarned: Int!
-  questingStarlightEarned: Int!
-  questingUniversalLocksEarned: Int!
-  questingTreasuresEarned: Int!
-  summonsStarted: Int!
-  summonsFinished: Int!
-}
-
 type Legion @entity {
   id: ID!
   tokenId: BigInt!
@@ -155,6 +132,37 @@ type LegionStat @entity {
   questingTreasuresEarned: Int!
 }
 
+type UserStat @entity {
+  id: ID!
+  address: String!
+
+  startTimestamp: BigInt
+  endTimestamp: BigInt
+  interval: Interval!
+
+  magicDepositCount: Int!
+  magicWithdrawCount: Int!
+  magicHarvestCount: Int!
+  magicDeposited: BigInt!
+  magicWithdrawn: BigInt!
+  magicHarvested: BigInt!
+  craftsStarted: Int!
+  craftsFinished: Int!
+  craftsSucceeded: Int!
+  craftsFailed: Int!
+  brokenTreasuresCount: Int!
+  pilgrimagesStarted: Int!
+  pilgrimagesFinished: Int!
+  questsStarted: Int!
+  questsFinished: Int!
+  questingShardsEarned: Int!
+  questingStarlightEarned: Int!
+  questingUniversalLocksEarned: Int!
+  questingTreasuresEarned: Int!
+  summonsStarted: Int!
+  summonsFinished: Int!
+}
+
 type AtlasMineLockStat @entity {
   id: ID!
 
@@ -170,12 +178,6 @@ type AtlasMineLockStat @entity {
 
 type AtlasMineStat @entity {
   id: ID!
-
-  "Internal for tracking active unique addresses"
-  _activeAddresses: [String!]!
-
-  "Internal for tracking all unique addresses"
-  _allAddresses: [String!]!
 
   startTimestamp: BigInt
   endTimestamp: BigInt
@@ -216,12 +218,6 @@ type CraftingDifficultyStat @entity {
 
 type CraftingStat @entity {
   id: ID!
-
-  "Internal for tracking active unique addresses"
-  _activeAddresses: [String!]!
-
-  "Internal for tracking all unique addresses"
-  _allAddresses: [String!]!
 
   startTimestamp: BigInt
   endTimestamp: BigInt
@@ -274,12 +270,6 @@ type QuestingDifficultyStat @entity {
 type QuestingStat @entity {
   id: ID!
 
-  "Internal for tracking active unique addresses"
-  _activeAddresses: [String!]!
-
-  "Internal for tracking all unique addresses"
-  _allAddresses: [String!]!
-
   startTimestamp: BigInt
   endTimestamp: BigInt
   interval: Interval!
@@ -305,12 +295,6 @@ type QuestingStat @entity {
 
 type SummoningStat @entity {
   id: ID!
-
-  "Internal for tracking active unique addresses"
-  _activeAddresses: [String!]!
-
-  "Internal for tracking all unique addresses"
-  _allAddresses: [String!]!
 
   startTimestamp: BigInt
   endTimestamp: BigInt

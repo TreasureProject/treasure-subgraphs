@@ -14,7 +14,7 @@ import {
   getOrCreateCraftingDifficultyStat,
   getOrCreateLegionStat,
   getOrCreateTreasureStat,
-  getOrCreateUser,
+  getOrCreateUserStat,
   getTimeIntervalCraftingStats,
 } from "../helpers/models";
 import { etherToWei } from "../helpers/number";
@@ -27,10 +27,6 @@ function handleCraftingStarted(
   treasureAmounts: i32[],
   difficultyIndex: i32
 ): void {
-  const user = getOrCreateUser(userAddress);
-  user.craftsStarted += 1;
-  user.save();
-
   const craft = new _Craft(getCraftId(tokenId));
   const difficulty = CRAFT_DIFFICULTIES[difficultyIndex];
   craft.difficulty = difficulty;
@@ -45,20 +41,29 @@ function handleCraftingStarted(
   for (let i = 0; i < stats.length; i++) {
     const stat = stats[i];
     stat.craftsStarted += 1;
-    if (!stat._activeAddresses.includes(user.id)) {
-      stat._activeAddresses = stat._activeAddresses.concat([user.id]);
-      stat.activeAddressesCount = stat._activeAddresses.length;
-    }
 
-    if (!stat._allAddresses.includes(user.id)) {
-      stat._allAddresses = stat._allAddresses.concat([user.id]);
-      stat.allAddressesCount = stat._allAddresses.length;
+    const userStat = getOrCreateUserStat(
+      stat.id,
+      userAddress,
+      stat.startTimestamp,
+      stat.endTimestamp,
+      stat.interval
+    );
+    userStat.craftsStarted += 1;
+    userStat.save();
+
+    if (userStat.craftsStarted == 1) {
+      stat.activeAddressesCount += 1;
+      stat.allAddressesCount += 1;
     }
 
     if (legion) {
-      const legionStat = getOrCreateLegionStat(stat.id, legion);
-      legionStat.startTimestamp = stat.startTimestamp;
-      legionStat.endTimestamp = stat.endTimestamp;
+      const legionStat = getOrCreateLegionStat(
+        stat.id,
+        legion,
+        stat.startTimestamp,
+        stat.endTimestamp
+      );
       legionStat.craftingStat = stat.id;
       legionStat.craftsStarted += 1;
       legionStat.save();
@@ -66,19 +71,22 @@ function handleCraftingStarted(
 
     const difficultyStat = getOrCreateCraftingDifficultyStat(
       stat.id,
-      difficulty
+      difficulty,
+      stat.startTimestamp,
+      stat.endTimestamp
     );
-    difficultyStat.startTimestamp = stat.startTimestamp;
-    difficultyStat.endTimestamp = stat.endTimestamp;
     difficultyStat.craftsStarted += 1;
     difficultyStat.save();
 
     for (let j = 0; j < treasureIds.length; j++) {
       const treasureId = treasureIds[j];
       if (treasureId.gt(BigInt.zero())) {
-        const treasureStat = getOrCreateTreasureStat(stat.id, treasureId);
-        treasureStat.startTimestamp = stat.startTimestamp;
-        treasureStat.endTimestamp = stat.endTimestamp;
+        const treasureStat = getOrCreateTreasureStat(
+          stat.id,
+          treasureId,
+          stat.startTimestamp,
+          stat.endTimestamp
+        );
         treasureStat.craftingStat = stat.id;
         treasureStat.craftingUsed += treasureAmounts[j];
         treasureStat.save();
@@ -130,12 +138,6 @@ export function handleCraftingRevealed(event: CraftingRevealed): void {
     brokenTreasuresCount += brokenAmounts[i].toI32();
   }
 
-  const user = getOrCreateUser(params._owner);
-  user.craftsSucceeded += wasSuccessful ? 1 : 0;
-  user.craftsFailed += wasSuccessful ? 0 : 1;
-  user.brokenTreasuresCount += brokenTreasuresCount;
-  user.save();
-
   const legion = getLegion(tokenId);
   if (!legion) {
     log.error("[crafting] Legion not found: {}", [tokenId.toString()]);
@@ -156,10 +158,27 @@ export function handleCraftingRevealed(event: CraftingRevealed): void {
     stat.craftsSucceeded += wasSuccessful ? 1 : 0;
     stat.craftsFailed += wasSuccessful ? 0 : 1;
     stat.brokenTreasuresCount += brokenTreasuresCount;
-    stat.save();
+
+    const userStat = getOrCreateUserStat(
+      stat.id,
+      params._owner,
+      stat.startTimestamp,
+      stat.endTimestamp,
+      stat.interval
+    );
+    userStat.craftsSucceeded += wasSuccessful ? 1 : 0;
+    userStat.craftsFailed += wasSuccessful ? 0 : 1;
+    userStat.brokenTreasuresCount += brokenTreasuresCount;
+    userStat.save();
 
     if (legion) {
-      const legionStat = getOrCreateLegionStat(stat.id, legion);
+      const legionStat = getOrCreateLegionStat(
+        stat.id,
+        legion,
+        stat.startTimestamp,
+        stat.endTimestamp
+      );
+      legionStat.craftingStat = stat.id;
       legionStat.craftsSucceeded += wasSuccessful ? 1 : 0;
       legionStat.craftsFailed += wasSuccessful ? 0 : 1;
       legionStat.save();
@@ -168,7 +187,9 @@ export function handleCraftingRevealed(event: CraftingRevealed): void {
     if (craft) {
       const difficultyStat = getOrCreateCraftingDifficultyStat(
         stat.id,
-        craft.difficulty
+        craft.difficulty,
+        stat.startTimestamp,
+        stat.endTimestamp
       );
       difficultyStat.magicConsumed = difficultyStat.magicConsumed.plus(
         etherToWei(5).minus(result.magicReturned)
@@ -185,25 +206,25 @@ export function handleCraftingRevealed(event: CraftingRevealed): void {
     for (let j = 0; j < brokenTreasureIds.length; j++) {
       const treasureId = brokenTreasureIds[j];
       if (treasureId.gt(BigInt.zero())) {
-        const treasureStat = getOrCreateTreasureStat(stat.id, treasureId);
-        treasureStat.startTimestamp = stat.startTimestamp;
-        treasureStat.endTimestamp = stat.endTimestamp;
+        const treasureStat = getOrCreateTreasureStat(
+          stat.id,
+          treasureId,
+          stat.startTimestamp,
+          stat.endTimestamp
+        );
         treasureStat.craftingStat = stat.id;
         treasureStat.craftingBroken += brokenAmounts[j].toI32();
         treasureStat.save();
       }
     }
+
+    stat.save();
   }
 }
 
 export function handleCraftingFinished(event: CraftingFinished): void {
   const params = event.params;
   const tokenId = params._tokenId;
-
-  const user = getOrCreateUser(params._owner);
-  user.craftsFinished += 1;
-  user.save();
-  const isUserCrafting = user.craftsStarted > user.craftsFinished;
 
   const legion = getLegion(tokenId);
   if (!legion) {
@@ -219,19 +240,29 @@ export function handleCraftingFinished(event: CraftingFinished): void {
   for (let i = 0; i < stats.length; i++) {
     const stat = stats[i];
     stat.craftsFinished += 1;
-    if (!isUserCrafting) {
-      const addressIndex = stat._activeAddresses.indexOf(user.id);
-      if (addressIndex >= 0) {
-        const addresses = stat._activeAddresses;
-        addresses.splice(addressIndex, 1);
-        stat._activeAddresses = addresses;
-        stat.activeAddressesCount = addresses.length;
-      }
+
+    const userStat = getOrCreateUserStat(
+      stat.id,
+      params._owner,
+      stat.startTimestamp,
+      stat.endTimestamp,
+      stat.interval
+    );
+    userStat.craftsFinished += 1;
+    userStat.save();
+
+    if (userStat.craftsStarted == userStat.craftsFinished) {
+      stat.activeAddressesCount -= 1;
     }
-    stat.save();
 
     if (legion) {
-      const legionStat = getOrCreateLegionStat(stat.id, legion);
+      const legionStat = getOrCreateLegionStat(
+        stat.id,
+        legion,
+        stat.startTimestamp,
+        stat.endTimestamp
+      );
+      legionStat.craftingStat = stat.id;
       legionStat.craftsFinished += 1;
       legionStat.save();
     }
@@ -244,6 +275,8 @@ export function handleCraftingFinished(event: CraftingFinished): void {
       difficultyStat.craftsFinished += 1;
       difficultyStat.save();
     }
+
+    stat.save();
   }
 
   if (craft) {

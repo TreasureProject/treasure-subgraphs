@@ -1,21 +1,23 @@
 import { assert, clearStore, test } from "matchstick-as";
 
+import { Address } from "@graphprotocol/graph-ts";
+
 import {
   handleDeposit,
   handleHarvest,
   handleWithdraw,
 } from "../../src/mappings/atlas-mine";
 import {
+  ATLAS_MINE_LOCK_STAT_ENTITY_TYPE,
+  ATLAS_MINE_STAT_ENTITY_TYPE,
+  USER_ADDRESS,
+  USER_STAT_ENTITY_TYPE,
+} from "../utils";
+import {
   createDepositEvent,
   createHarvestEvent,
   createWithdrawEvent,
 } from "./utils";
-
-const ATLAS_MINE_STAT_ENTITY_TYPE = "AtlasMineStat";
-const ATLAS_MIN_LOCK_STAT_ENTITY_TYPE = "AtlasMineLockStat";
-const USER_ENTITY_TYPE = "User";
-const USER_ADDRESS = "0x461950b159366edcd2bcbee8126d973ac49238e0";
-const USER_ADDRESS2 = "0x461950b159366edcd2bcbee8126d973ac49238e1";
 
 // Feb 9 22, 7:15
 const timestamp = 1644390900;
@@ -78,13 +80,13 @@ test("atlas mine stats count deposits", () => {
 
     // Assert all time intervals for lock period are created
     assert.fieldEquals(
-      ATLAS_MIN_LOCK_STAT_ENTITY_TYPE,
+      ATLAS_MINE_LOCK_STAT_ENTITY_TYPE,
       `${statIds[i]}-lock0`,
       "magicDepositCount",
       "1"
     );
     assert.fieldEquals(
-      ATLAS_MIN_LOCK_STAT_ENTITY_TYPE,
+      ATLAS_MINE_LOCK_STAT_ENTITY_TYPE,
       `${statIds[i]}-lock0`,
       "magicDeposited",
       "500"
@@ -154,7 +156,12 @@ test("atlas mine stats count deposits", () => {
   );
 
   // Jan 20 22, 23:15
-  const depositEvent2 = createDepositEvent(1642720500, USER_ADDRESS2, 100, 1);
+  const depositEvent2 = createDepositEvent(
+    1642720500,
+    Address.zero().toHexString(),
+    100,
+    1
+  );
   handleDeposit(depositEvent2);
 
   // Assert previous intervals are unaffected
@@ -320,10 +327,6 @@ test("atlas mine stats count harvests", () => {
   const harvestEvent = createHarvestEvent(timestamp, USER_ADDRESS, 10);
   handleHarvest(harvestEvent);
 
-  // Assert user was created
-  assert.fieldEquals(USER_ENTITY_TYPE, USER_ADDRESS, "magicHarvestCount", "1");
-  assert.fieldEquals(USER_ENTITY_TYPE, USER_ADDRESS, "magicHarvested", "10");
-
   for (let i = 0; i < statIds.length; i++) {
     // Assert all time intervals are created
     assert.fieldEquals(
@@ -335,6 +338,20 @@ test("atlas mine stats count harvests", () => {
     assert.fieldEquals(
       ATLAS_MINE_STAT_ENTITY_TYPE,
       statIds[i],
+      "magicHarvested",
+      "10"
+    );
+
+    // Assert all time intervals for user are created
+    assert.fieldEquals(
+      USER_STAT_ENTITY_TYPE,
+      `${statIds[i]}-${USER_ADDRESS}`,
+      "magicHarvestCount",
+      "1"
+    );
+    assert.fieldEquals(
+      USER_STAT_ENTITY_TYPE,
+      `${statIds[i]}-${USER_ADDRESS}`,
       "magicHarvested",
       "10"
     );

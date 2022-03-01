@@ -15,7 +15,7 @@ import {
   QUESTING_STAT_ENTITY_TYPE,
   TREASURE_STAT_ENTITY_TYPE,
   USER_ADDRESS,
-  USER_ENTITY_TYPE,
+  USER_STAT_ENTITY_TYPE,
 } from "../utils";
 import {
   createQuestFinishedEvent,
@@ -49,9 +49,6 @@ test("questing stats count quests started", () => {
   );
   handleQuestStartedWithDifficulty(questStartedEvent);
 
-  // Assert user data is updated
-  assert.fieldEquals(USER_ENTITY_TYPE, USER_ADDRESS, "questsStarted", "1");
-
   const intervals = [
     "Hourly",
     "Daily",
@@ -78,7 +75,21 @@ test("questing stats count quests started", () => {
     assert.fieldEquals(
       QUESTING_STAT_ENTITY_TYPE,
       statIds[i],
+      "allAddressesCount",
+      "1"
+    );
+    assert.fieldEquals(
+      QUESTING_STAT_ENTITY_TYPE,
+      statIds[i],
       "activeAddressesCount",
+      "1"
+    );
+
+    // Assert all time intervals for user are created
+    assert.fieldEquals(
+      USER_STAT_ENTITY_TYPE,
+      `${statIds[i]}-${USER_ADDRESS}`,
+      "questsStarted",
       "1"
     );
 
@@ -260,32 +271,6 @@ test("questing stats count consumables earned", () => {
   );
   handleQuestRevealed(questRevealedEvent);
 
-  // Assert user data is updated
-  assert.fieldEquals(
-    USER_ENTITY_TYPE,
-    USER_ADDRESS,
-    "questingShardsEarned",
-    "3"
-  );
-  assert.fieldEquals(
-    USER_ENTITY_TYPE,
-    USER_ADDRESS,
-    "questingStarlightEarned",
-    "3"
-  );
-  assert.fieldEquals(
-    USER_ENTITY_TYPE,
-    USER_ADDRESS,
-    "questingUniversalLocksEarned",
-    "1"
-  );
-  assert.fieldEquals(
-    USER_ENTITY_TYPE,
-    USER_ADDRESS,
-    "questingTreasuresEarned",
-    "0"
-  );
-
   for (let i = 0; i < statIds.length; i++) {
     // Assert all time intervals are created
     assert.fieldEquals(
@@ -309,6 +294,32 @@ test("questing stats count consumables earned", () => {
     assert.fieldEquals(
       QUESTING_STAT_ENTITY_TYPE,
       statIds[i],
+      "questingTreasuresEarned",
+      "0"
+    );
+
+    // Assert all time intervals for user are created
+    assert.fieldEquals(
+      USER_STAT_ENTITY_TYPE,
+      `${statIds[i]}-${USER_ADDRESS}`,
+      "questingShardsEarned",
+      "3"
+    );
+    assert.fieldEquals(
+      USER_STAT_ENTITY_TYPE,
+      `${statIds[i]}-${USER_ADDRESS}`,
+      "questingStarlightEarned",
+      "3"
+    );
+    assert.fieldEquals(
+      USER_STAT_ENTITY_TYPE,
+      `${statIds[i]}-${USER_ADDRESS}`,
+      "questingUniversalLocksEarned",
+      "1"
+    );
+    assert.fieldEquals(
+      USER_STAT_ENTITY_TYPE,
+      `${statIds[i]}-${USER_ADDRESS}`,
       "questingTreasuresEarned",
       "0"
     );
@@ -393,19 +404,19 @@ test("questing stats count treasures earned", () => {
   );
   handleQuestRevealed(questRevealedEvent);
 
-  // Assert user data is updated
-  assert.fieldEquals(
-    USER_ENTITY_TYPE,
-    USER_ADDRESS,
-    "questingTreasuresEarned",
-    "1"
-  );
-
   for (let i = 0; i < statIds.length; i++) {
     // Assert all time intervals are created
     assert.fieldEquals(
       QUESTING_STAT_ENTITY_TYPE,
       statIds[i],
+      "questingTreasuresEarned",
+      "1"
+    );
+
+    // Assert all time intervals for user are created
+    assert.fieldEquals(
+      USER_STAT_ENTITY_TYPE,
+      `${statIds[i]}-${USER_ADDRESS}`,
       "questingTreasuresEarned",
       "1"
     );
@@ -451,38 +462,6 @@ test("questing stats count quests finished", () => {
   );
   handleQuestStartedWithDifficulty(questStartedEvent);
 
-  for (let i = 0; i < statIds.length; i++) {
-    // Assert all time intervals are created
-    assert.fieldEquals(
-      QUESTING_STAT_ENTITY_TYPE,
-      statIds[i],
-      "questsStarted",
-      "1"
-    );
-    assert.fieldEquals(
-      QUESTING_STAT_ENTITY_TYPE,
-      statIds[i],
-      "activeAddressesCount",
-      "1"
-    );
-
-    // Assert all time intervals for legion type are created
-    assert.fieldEquals(
-      LEGION_STAT_ENTITY_TYPE,
-      `${statIds[i]}-genesis-common`,
-      "questsStarted",
-      "1"
-    );
-
-    // Assert all time intervals for difficulty are created
-    assert.fieldEquals(
-      QUESTING_DIFFICULTY_STAT_ENTITY_TYPE,
-      `${statIds[i]}-difficultyEasy`,
-      "questsStarted",
-      "1"
-    );
-  }
-
   const questFinishedEvent = createQuestFinishedEvent(
     timestamp,
     USER_ADDRESS,
@@ -501,8 +480,22 @@ test("questing stats count quests finished", () => {
     assert.fieldEquals(
       QUESTING_STAT_ENTITY_TYPE,
       statIds[i],
+      "allAddressesCount",
+      "1"
+    );
+    assert.fieldEquals(
+      QUESTING_STAT_ENTITY_TYPE,
+      statIds[i],
       "activeAddressesCount",
       "0"
+    );
+
+    // Assert all time intervals for user are created
+    assert.fieldEquals(
+      USER_STAT_ENTITY_TYPE,
+      `${statIds[i]}-${USER_ADDRESS}`,
+      "questsFinished",
+      "1"
     );
 
     // Assert all time intervals for legion type are created
