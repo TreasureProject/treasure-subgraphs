@@ -12,6 +12,7 @@ import {
   LEGION_STAT_ENTITY_TYPE,
   SUMMONING_STAT_ENTITY_TYPE,
   USER_ADDRESS,
+  USER_STAT_ENTITY_TYPE,
 } from "../utils";
 import {
   createSummoningFinishedEvent,
@@ -75,6 +76,14 @@ test("summoning stats count summons started", () => {
       SUMMONING_STAT_ENTITY_TYPE,
       statIds[i],
       "activeAddressesCount",
+      "1"
+    );
+
+    // Assert all time intervals for user are created
+    assert.fieldEquals(
+      USER_STAT_ENTITY_TYPE,
+      `${statIds[i]}-${USER_ADDRESS}`,
+      "summonsStarted",
       "1"
     );
 
@@ -177,6 +186,12 @@ test("summoning stats count summons started", () => {
     "1"
   );
   assert.fieldEquals(
+    USER_STAT_ENTITY_TYPE,
+    `${statIds[0]}-${USER_ADDRESS}`,
+    "summonsStarted",
+    "1"
+  );
+  assert.fieldEquals(
     SUMMONING_STAT_ENTITY_TYPE,
     statIds[1],
     "magicSpent",
@@ -189,6 +204,12 @@ test("summoning stats count summons started", () => {
     "1"
   );
   assert.fieldEquals(
+    USER_STAT_ENTITY_TYPE,
+    `${statIds[1]}-${USER_ADDRESS}`,
+    "summonsStarted",
+    "1"
+  );
+  assert.fieldEquals(
     SUMMONING_STAT_ENTITY_TYPE,
     statIds[2],
     "magicSpent",
@@ -197,6 +218,12 @@ test("summoning stats count summons started", () => {
   assert.fieldEquals(
     SUMMONING_STAT_ENTITY_TYPE,
     statIds[2],
+    "summonsStarted",
+    "1"
+  );
+  assert.fieldEquals(
+    USER_STAT_ENTITY_TYPE,
+    `${statIds[2]}-${USER_ADDRESS}`,
     "summonsStarted",
     "1"
   );
@@ -220,6 +247,12 @@ test("summoning stats count summons started", () => {
     "activeAddressesCount",
     "1"
   );
+  assert.fieldEquals(
+    USER_STAT_ENTITY_TYPE,
+    `20220116-weekly-${Address.zero().toHexString()}`,
+    "summonsStarted",
+    "1"
+  );
 
   // Assert new monthly interval was created
   assert.fieldEquals(
@@ -238,6 +271,12 @@ test("summoning stats count summons started", () => {
     SUMMONING_STAT_ENTITY_TYPE,
     "202201-monthly",
     "activeAddressesCount",
+    "1"
+  );
+  assert.fieldEquals(
+    USER_STAT_ENTITY_TYPE,
+    `202201-monthly-${Address.zero().toHexString()}`,
+    "summonsStarted",
     "1"
   );
 
@@ -260,6 +299,18 @@ test("summoning stats count summons started", () => {
     "activeAddressesCount",
     "2"
   );
+  assert.fieldEquals(
+    USER_STAT_ENTITY_TYPE,
+    `2022-yearly-${USER_ADDRESS}`,
+    "summonsStarted",
+    "1"
+  );
+  assert.fieldEquals(
+    USER_STAT_ENTITY_TYPE,
+    `2022-yearly-${Address.zero().toHexString()}`,
+    "summonsStarted",
+    "1"
+  );
 });
 
 test("summoning stats count summons finished", () => {
@@ -277,22 +328,6 @@ test("summoning stats count summons finished", () => {
     1
   );
   handleSummoningStarted(summoningStartedEvent);
-
-  for (let i = 0; i < statIds.length; i++) {
-    // Assert all time intervals are created
-    assert.fieldEquals(
-      SUMMONING_STAT_ENTITY_TYPE,
-      statIds[i],
-      "summonsStarted",
-      "1"
-    );
-    assert.fieldEquals(
-      SUMMONING_STAT_ENTITY_TYPE,
-      statIds[i],
-      "activeAddressesCount",
-      "1"
-    );
-  }
 
   const summoningFinishedEvent = createSummoningFinishedEvent(
     timestamp,
@@ -316,14 +351,22 @@ test("summoning stats count summons finished", () => {
       "activeAddressesCount",
       "0"
     );
-
-    // Assert all time intervals for legion type are created
     assert.fieldEquals(
-      LEGION_STAT_ENTITY_TYPE,
-      `${statIds[i]}-genesis-common`,
-      "summonsStarted",
+      SUMMONING_STAT_ENTITY_TYPE,
+      statIds[i],
+      "allAddressesCount",
       "1"
     );
+
+    // Assert all time intervals for user are created
+    assert.fieldEquals(
+      USER_STAT_ENTITY_TYPE,
+      `${statIds[i]}-${USER_ADDRESS}`,
+      "summonsFinished",
+      "1"
+    );
+
+    // Assert all time intervals for legion type are created
     assert.fieldEquals(
       LEGION_STAT_ENTITY_TYPE,
       `${statIds[i]}-genesis-common`,

@@ -16,7 +16,7 @@ import {
   LEGION_STAT_ENTITY_TYPE,
   TREASURE_STAT_ENTITY_TYPE,
   USER_ADDRESS,
-  USER_ENTITY_TYPE,
+  USER_STAT_ENTITY_TYPE,
 } from "../utils";
 import {
   createCraftingFinishedEvent,
@@ -50,9 +50,6 @@ test("crafting stats count crafts started", () => {
   );
   handleCraftingStartedWithDifficulty(craftingStartedEvent);
 
-  // Assert user data is updated
-  assert.fieldEquals(USER_ENTITY_TYPE, USER_ADDRESS, "craftsStarted", "1");
-
   const intervals = [
     "Hourly",
     "Daily",
@@ -80,6 +77,14 @@ test("crafting stats count crafts started", () => {
       CRAFTING_STAT_ENTITY_TYPE,
       statIds[i],
       "activeAddressesCount",
+      "1"
+    );
+
+    // Assert all time intervals for user are created
+    assert.fieldEquals(
+      USER_STAT_ENTITY_TYPE,
+      `${statIds[i]}-${USER_ADDRESS}`,
+      "craftsStarted",
       "1"
     );
 
@@ -163,17 +168,23 @@ test("crafting stats count crafts started", () => {
   );
 
   // Jan 20 22, 23:15
-  const craftinggStartedEvent2 = createCraftingStartedEvent(
+  const craftingStartedEvent2 = createCraftingStartedEvent(
     1642720500,
     Address.zero().toHexString(),
     1
   );
-  handleCraftingStartedWithDifficulty(craftinggStartedEvent2);
+  handleCraftingStartedWithDifficulty(craftingStartedEvent2);
 
   // Assert previous intervals are unaffected
   assert.fieldEquals(
     CRAFTING_STAT_ENTITY_TYPE,
     statIds[0],
+    "craftsStarted",
+    "1"
+  );
+  assert.fieldEquals(
+    USER_STAT_ENTITY_TYPE,
+    `${statIds[0]}-${USER_ADDRESS}`,
     "craftsStarted",
     "1"
   );
@@ -184,8 +195,20 @@ test("crafting stats count crafts started", () => {
     "1"
   );
   assert.fieldEquals(
+    USER_STAT_ENTITY_TYPE,
+    `${statIds[1]}-${USER_ADDRESS}`,
+    "craftsStarted",
+    "1"
+  );
+  assert.fieldEquals(
     CRAFTING_STAT_ENTITY_TYPE,
     statIds[2],
+    "craftsStarted",
+    "1"
+  );
+  assert.fieldEquals(
+    USER_STAT_ENTITY_TYPE,
+    `${statIds[2]}-${USER_ADDRESS}`,
     "craftsStarted",
     "1"
   );
@@ -203,6 +226,12 @@ test("crafting stats count crafts started", () => {
     "activeAddressesCount",
     "1"
   );
+  assert.fieldEquals(
+    USER_STAT_ENTITY_TYPE,
+    `20220116-weekly-${Address.zero().toHexString()}`,
+    "craftsStarted",
+    "1"
+  );
 
   // Assert new monthly interval was created
   assert.fieldEquals(
@@ -215,6 +244,12 @@ test("crafting stats count crafts started", () => {
     CRAFTING_STAT_ENTITY_TYPE,
     "202201-monthly",
     "activeAddressesCount",
+    "1"
+  );
+  assert.fieldEquals(
+    USER_STAT_ENTITY_TYPE,
+    `202201-monthly-${Address.zero().toHexString()}`,
+    "craftsStarted",
     "1"
   );
 
@@ -230,6 +265,18 @@ test("crafting stats count crafts started", () => {
     "2022-yearly",
     "activeAddressesCount",
     "2"
+  );
+  assert.fieldEquals(
+    USER_STAT_ENTITY_TYPE,
+    `2022-yearly-${USER_ADDRESS}`,
+    "craftsStarted",
+    "1"
+  );
+  assert.fieldEquals(
+    USER_STAT_ENTITY_TYPE,
+    `2022-yearly-${Address.zero().toHexString()}`,
+    "craftsStarted",
+    "1"
   );
 });
 
@@ -383,14 +430,19 @@ test("crafting stats count crafts succeeded", () => {
   );
   handleCraftingRevealed(craftingRevealedEvent);
 
-  // Assert user data is updated
-  assert.fieldEquals(USER_ENTITY_TYPE, USER_ADDRESS, "craftsSucceeded", "1");
-
   for (let i = 0; i < statIds.length; i++) {
     // Assert all time intervals are created
     assert.fieldEquals(
       CRAFTING_STAT_ENTITY_TYPE,
       statIds[i],
+      "craftsSucceeded",
+      "1"
+    );
+
+    // Assert all time intervals for user are created
+    assert.fieldEquals(
+      USER_STAT_ENTITY_TYPE,
+      `${statIds[i]}-${USER_ADDRESS}`,
       "craftsSucceeded",
       "1"
     );
@@ -434,14 +486,19 @@ test("crafting stats count crafts failed", () => {
   );
   handleCraftingRevealed(craftingRevealedEvent);
 
-  // Assert user data is updated
-  assert.fieldEquals(USER_ENTITY_TYPE, USER_ADDRESS, "craftsFailed", "1");
-
   for (let i = 0; i < statIds.length; i++) {
     // Assert all time intervals are created
     assert.fieldEquals(
       CRAFTING_STAT_ENTITY_TYPE,
       statIds[i],
+      "craftsFailed",
+      "1"
+    );
+
+    // Assert all time intervals for user are created
+    assert.fieldEquals(
+      USER_STAT_ENTITY_TYPE,
+      `${statIds[i]}-${USER_ADDRESS}`,
       "craftsFailed",
       "1"
     );
@@ -489,19 +546,19 @@ test("crafting stats count broken treasures", () => {
   );
   handleCraftingRevealed(craftingRevealedEvent);
 
-  // Assert user data is updated
-  assert.fieldEquals(
-    USER_ENTITY_TYPE,
-    USER_ADDRESS,
-    "brokenTreasuresCount",
-    "3"
-  );
-
   for (let i = 0; i < statIds.length; i++) {
     // Assert all time intervals are created
     assert.fieldEquals(
       CRAFTING_STAT_ENTITY_TYPE,
       statIds[i],
+      "brokenTreasuresCount",
+      "3"
+    );
+
+    // Assert all time intervals for user are created
+    assert.fieldEquals(
+      USER_STAT_ENTITY_TYPE,
+      `${statIds[i]}-${USER_ADDRESS}`,
       "brokenTreasuresCount",
       "3"
     );
@@ -543,38 +600,6 @@ test("crafting stats count crafts finished", () => {
   );
   handleCraftingStartedWithDifficulty(craftingStartedEvent);
 
-  for (let i = 0; i < statIds.length; i++) {
-    // Assert all time intervals are created
-    assert.fieldEquals(
-      CRAFTING_STAT_ENTITY_TYPE,
-      statIds[i],
-      "craftsStarted",
-      "1"
-    );
-    assert.fieldEquals(
-      CRAFTING_STAT_ENTITY_TYPE,
-      statIds[i],
-      "activeAddressesCount",
-      "1"
-    );
-
-    // Assert all time intervals for legion type are created
-    assert.fieldEquals(
-      LEGION_STAT_ENTITY_TYPE,
-      `${statIds[i]}-genesis-common`,
-      "craftsStarted",
-      "1"
-    );
-
-    // Assert all time intervals for difficulty are created
-    assert.fieldEquals(
-      CRAFTING_DIFFICULTY_STAT_ENTITY_TYPE,
-      `${statIds[i]}-difficultyPrism`,
-      "craftsStarted",
-      "1"
-    );
-  }
-
   const craftingFinishedEvent = createCraftingFinishedEvent(
     timestamp,
     USER_ADDRESS,
@@ -595,6 +620,20 @@ test("crafting stats count crafts finished", () => {
       statIds[i],
       "activeAddressesCount",
       "0"
+    );
+    assert.fieldEquals(
+      CRAFTING_STAT_ENTITY_TYPE,
+      statIds[i],
+      "allAddressesCount",
+      "1"
+    );
+
+    // Assert all time intervals for user are created
+    assert.fieldEquals(
+      USER_STAT_ENTITY_TYPE,
+      `${statIds[i]}-${USER_ADDRESS}`,
+      "craftsFinished",
+      "1"
     );
 
     // Assert all time intervals for legion type are created

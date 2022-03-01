@@ -14,7 +14,7 @@ import {
   getOrCreateLegionStat,
   getOrCreateQuestingDifficultyStat,
   getOrCreateTreasureStat,
-  getOrCreateUser,
+  getOrCreateUserStat,
   getTimeIntervalQuestingStats,
 } from "../helpers/models";
 
@@ -24,10 +24,6 @@ function handleQuestStarted(
   tokenId: BigInt,
   difficultyIndex: i32
 ): void {
-  const user = getOrCreateUser(userAddress);
-  user.questsStarted += 1;
-  user.save();
-
   const quest = new _Quest(getQuestId(tokenId));
   const difficulty = QUEST_DIFFICULTIES[difficultyIndex];
   quest.difficulty = difficulty;
@@ -42,29 +38,38 @@ function handleQuestStarted(
   for (let i = 0; i < stats.length; i++) {
     const stat = stats[i];
     stat.questsStarted += 1;
-    if (!stat._activeAddresses.includes(user.id)) {
-      stat._activeAddresses = stat._activeAddresses.concat([user.id]);
-      stat.activeAddressesCount = stat._activeAddresses.length;
-    }
 
-    if (!stat._allAddresses.includes(user.id)) {
-      stat._allAddresses = stat._allAddresses.concat([user.id]);
-      stat.allAddressesCount = stat._allAddresses.length;
+    const userStat = getOrCreateUserStat(
+      stat.id,
+      userAddress,
+      stat.startTimestamp,
+      stat.endTimestamp,
+      stat.interval
+    );
+    userStat.questsStarted += 1;
+    userStat.save();
+
+    if (userStat.questsStarted == 1) {
+      stat.activeAddressesCount += 1;
+      stat.allAddressesCount += 1;
     }
 
     const difficultyStat = getOrCreateQuestingDifficultyStat(
       stat.id,
-      difficulty
+      difficulty,
+      stat.startTimestamp,
+      stat.endTimestamp
     );
-    difficultyStat.startTimestamp = stat.startTimestamp;
-    difficultyStat.endTimestamp = stat.endTimestamp;
     difficultyStat.questsStarted += 1;
     difficultyStat.save();
 
     if (legion) {
-      const legionStat = getOrCreateLegionStat(stat.id, legion);
-      legionStat.startTimestamp = stat.startTimestamp;
-      legionStat.endTimestamp = stat.endTimestamp;
+      const legionStat = getOrCreateLegionStat(
+        stat.id,
+        legion,
+        stat.startTimestamp,
+        stat.endTimestamp
+      );
       legionStat.questingStat = stat.id;
       legionStat.questsStarted += 1;
       legionStat.save();
@@ -105,13 +110,6 @@ export function handleQuestRevealed(event: QuestRevealed): void {
   const universalLocksEarned = result.universalLockAmount;
   const treasuresEarned = result.treasureId.gt(BigInt.zero()) ? 1 : 0;
 
-  const user = getOrCreateUser(params._owner);
-  user.questingShardsEarned += shardsEarned;
-  user.questingStarlightEarned += starlightEarned;
-  user.questingUniversalLocksEarned += universalLocksEarned;
-  user.questingTreasuresEarned += treasuresEarned;
-  user.save();
-
   const legion = getLegion(tokenId);
   if (!legion) {
     log.error("[questing] Legion not found: {}", [tokenId.toString()]);
@@ -129,10 +127,28 @@ export function handleQuestRevealed(event: QuestRevealed): void {
     stat.questingStarlightEarned += starlightEarned;
     stat.questingUniversalLocksEarned += universalLocksEarned;
     stat.questingTreasuresEarned += treasuresEarned;
-    stat.save();
+
+    const userStat = getOrCreateUserStat(
+      stat.id,
+      params._owner,
+      stat.startTimestamp,
+      stat.endTimestamp,
+      stat.interval
+    );
+    userStat.questingShardsEarned += shardsEarned;
+    userStat.questingStarlightEarned += starlightEarned;
+    userStat.questingUniversalLocksEarned += universalLocksEarned;
+    userStat.questingTreasuresEarned += treasuresEarned;
+    userStat.save();
 
     if (legion) {
-      const legionStat = getOrCreateLegionStat(stat.id, legion);
+      const legionStat = getOrCreateLegionStat(
+        stat.id,
+        legion,
+        stat.startTimestamp,
+        stat.endTimestamp
+      );
+      legionStat.questingStat = stat.id;
       legionStat.questingShardsEarned += shardsEarned;
       legionStat.questingStarlightEarned += starlightEarned;
       legionStat.questingUniversalLocksEarned += universalLocksEarned;
@@ -143,7 +159,9 @@ export function handleQuestRevealed(event: QuestRevealed): void {
     if (quest) {
       const difficultyStat = getOrCreateQuestingDifficultyStat(
         stat.id,
-        quest.difficulty
+        quest.difficulty,
+        stat.startTimestamp,
+        stat.endTimestamp
       );
       difficultyStat.questingShardsEarned += shardsEarned;
       difficultyStat.questingStarlightEarned += starlightEarned;
@@ -153,24 +171,24 @@ export function handleQuestRevealed(event: QuestRevealed): void {
     }
 
     if (treasuresEarned > 0) {
-      const treasureStat = getOrCreateTreasureStat(stat.id, result.treasureId);
-      treasureStat.startTimestamp = stat.startTimestamp;
-      treasureStat.endTimestamp = stat.endTimestamp;
+      const treasureStat = getOrCreateTreasureStat(
+        stat.id,
+        result.treasureId,
+        stat.startTimestamp,
+        stat.endTimestamp
+      );
       treasureStat.questingStat = stat.id;
       treasureStat.questingEarned += treasuresEarned;
       treasureStat.save();
     }
+
+    stat.save();
   }
 }
 
 export function handleQuestFinished(event: QuestFinished): void {
   const params = event.params;
   const tokenId = params._tokenId;
-
-  const user = getOrCreateUser(params._owner);
-  user.questsFinished += 1;
-  user.save();
-  const isUserQuesting = user.questsStarted > user.questsFinished;
 
   const quest = _Quest.load(getQuestId(tokenId));
   if (!quest) {
@@ -186,31 +204,45 @@ export function handleQuestFinished(event: QuestFinished): void {
   for (let i = 0; i < stats.length; i++) {
     const stat = stats[i];
     stat.questsFinished += 1;
-    if (!isUserQuesting) {
-      const addressIndex = stat._activeAddresses.indexOf(user.id);
-      if (addressIndex >= 0) {
-        const addresses = stat._activeAddresses;
-        addresses.splice(addressIndex, 1);
-        stat._activeAddresses = addresses;
-        stat.activeAddressesCount = addresses.length;
-      }
+
+    const userStat = getOrCreateUserStat(
+      stat.id,
+      params._owner,
+      stat.startTimestamp,
+      stat.endTimestamp,
+      stat.interval
+    );
+    userStat.questsFinished += 1;
+    userStat.save();
+
+    if (userStat.questsStarted == userStat.questsFinished) {
+      stat.activeAddressesCount -= 1;
     }
-    stat.save();
 
     if (quest) {
       const difficultyStat = getOrCreateQuestingDifficultyStat(
         stat.id,
-        quest.difficulty
+        quest.difficulty,
+        stat.startTimestamp,
+        stat.endTimestamp
       );
       difficultyStat.questsFinished += 1;
       difficultyStat.save();
     }
 
     if (legion) {
-      const legionStat = getOrCreateLegionStat(stat.id, legion);
+      const legionStat = getOrCreateLegionStat(
+        stat.id,
+        legion,
+        stat.startTimestamp,
+        stat.endTimestamp
+      );
+      legionStat.questingStat = stat.id;
       legionStat.questsFinished += 1;
       legionStat.save();
     }
+
+    stat.save();
   }
 
   if (quest) {
