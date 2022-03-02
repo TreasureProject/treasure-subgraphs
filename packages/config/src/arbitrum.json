@@ -62,6 +62,11 @@
   "smol_treasures_address": "0xc5295C6a183F29b7c962dF076819D44E0076860E",
   "smol_treasures_start_block": 6399183,
 
+  "battlefly_address": "0x0af85a5624d24e2c6e7af3c0a0b102a28e36cea3",
+  "battlefly_start_block": 7242277,
+  "battlefly_founders_address": "0xc43104775bd9f6076808b5f8df6cbdbeac96d7de",
+  "battlefly_founders_start_block": 7242255,
+
   "treasure_marketplace_buyer_address": "0x812cda2181ed7c45a35a691e0c85e231d218e273",
   "treasure_marketplace_address": "0x2E3b85F85628301a0Bce300Dee3A6B04195A15Ee",
   "treasure_marketplace_start_block": 2983469,
