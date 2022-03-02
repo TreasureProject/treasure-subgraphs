@@ -15,7 +15,7 @@ import {
   QuestingStat,
   SummoningStat,
   TreasureStat,
-  User,
+  UserStat,
 } from "../../generated/schema";
 import { LEGION_GENERATIONS, LEGION_RARITIES } from "./constants";
 import { getConsumableName } from "./consumable";
@@ -41,17 +41,6 @@ import {
 } from "./ids";
 import { etherToWei } from "./number";
 import { getTier, getTreasureName } from "./treasure";
-
-export function getOrCreateUser(address: Address): User {
-  const id = address.toHexString();
-  let user = User.load(id);
-  if (!user) {
-    user = new User(id);
-    user.save();
-  }
-
-  return user;
-}
 
 export function getLegion(tokenId: BigInt): Legion | null {
   return Legion.load(getLegionId(tokenId));
@@ -125,7 +114,7 @@ export function getTimeIntervalAtlasMineStats(
     const hourlyId = getHourlyId(timestamp);
     let hourlyStat = AtlasMineStat.load(hourlyId);
     if (!hourlyStat) {
-      hourlyStat = createAtlasMineStat(hourlyId);
+      hourlyStat = new AtlasMineStat(hourlyId);
       const startOfHour = getStartOfHour(timestamp);
       hourlyStat.interval = "Hourly";
       hourlyStat.startTimestamp = BigInt.fromI64(startOfHour);
@@ -142,7 +131,7 @@ export function getTimeIntervalAtlasMineStats(
   const dailyId = getDailyId(timestamp);
   let dailyStat = AtlasMineStat.load(dailyId);
   if (!dailyStat) {
-    dailyStat = createAtlasMineStat(dailyId);
+    dailyStat = new AtlasMineStat(dailyId);
     const startOfDay = getStartOfDay(timestamp);
     dailyStat.interval = "Daily";
     dailyStat.startTimestamp = BigInt.fromI64(startOfDay);
@@ -155,7 +144,7 @@ export function getTimeIntervalAtlasMineStats(
   const weeklyId = getWeeklyId(timestamp);
   let weeklyStat = AtlasMineStat.load(weeklyId);
   if (!weeklyStat) {
-    weeklyStat = createAtlasMineStat(weeklyId);
+    weeklyStat = new AtlasMineStat(weeklyId);
     const startOfWeek = getStartOfWeek(timestamp);
     weeklyStat.interval = "Weekly";
     weeklyStat.startTimestamp = BigInt.fromI64(startOfWeek);
@@ -170,7 +159,7 @@ export function getTimeIntervalAtlasMineStats(
   const monthlyId = getMonthlyId(timestamp);
   let monthlyStat = AtlasMineStat.load(monthlyId);
   if (!monthlyStat) {
-    monthlyStat = createAtlasMineStat(monthlyId);
+    monthlyStat = new AtlasMineStat(monthlyId);
     const startOfMonth = getStartOfMonth(timestamp);
     monthlyStat.interval = "Monthly";
     monthlyStat.startTimestamp = BigInt.fromI64(startOfMonth);
@@ -185,7 +174,7 @@ export function getTimeIntervalAtlasMineStats(
   const yearlyId = getYearlyId(timestamp);
   let yearlyStat = AtlasMineStat.load(yearlyId);
   if (!yearlyStat) {
-    yearlyStat = createAtlasMineStat(yearlyId);
+    yearlyStat = new AtlasMineStat(yearlyId);
     const startOfYear = getStartOfYear(timestamp);
     yearlyStat.interval = "Yearly";
     yearlyStat.startTimestamp = BigInt.fromI64(startOfYear);
@@ -200,7 +189,7 @@ export function getTimeIntervalAtlasMineStats(
   const allTimeId = getAllTimeId();
   let allTimeStat = AtlasMineStat.load(allTimeId);
   if (!allTimeStat) {
-    allTimeStat = createAtlasMineStat(allTimeId);
+    allTimeStat = new AtlasMineStat(allTimeId);
     allTimeStat.interval = "AllTime";
     allTimeStat.save();
   }
@@ -209,22 +198,18 @@ export function getTimeIntervalAtlasMineStats(
   return stats;
 }
 
-export function createAtlasMineStat(id: string): AtlasMineStat {
-  const stat = new AtlasMineStat(id);
-  stat._activeAddresses = [];
-  stat._allAddresses = [];
-  stat.save();
-  return stat;
-}
-
 export function getOrCreateAtlasMineLockStat(
   atlasMineStatId: string,
-  lock: i32
+  lock: i32,
+  startTimeStamp: BigInt | null = null,
+  endTimestamp: BigInt | null = null
 ): AtlasMineLockStat {
   const id = `${atlasMineStatId}-lock${lock}`;
   let lockStat = AtlasMineLockStat.load(id);
   if (!lockStat) {
     lockStat = new AtlasMineLockStat(id);
+    lockStat.startTimestamp = startTimeStamp;
+    lockStat.endTimestamp = endTimestamp;
     lockStat.atlasMineStat = atlasMineStatId;
     lockStat.lock = lock;
     lockStat.save();
@@ -247,7 +232,7 @@ export function getTimeIntervalCraftingStats(
     const hourlyId = getHourlyId(timestamp);
     let hourlyStat = CraftingStat.load(hourlyId);
     if (!hourlyStat) {
-      hourlyStat = createCraftingStat(hourlyId);
+      hourlyStat = new CraftingStat(hourlyId);
       const startOfHour = getStartOfHour(timestamp);
       hourlyStat.interval = "Hourly";
       hourlyStat.startTimestamp = BigInt.fromI64(startOfHour);
@@ -264,7 +249,7 @@ export function getTimeIntervalCraftingStats(
   const dailyId = getDailyId(timestamp);
   let dailyStat = CraftingStat.load(dailyId);
   if (!dailyStat) {
-    dailyStat = createCraftingStat(dailyId);
+    dailyStat = new CraftingStat(dailyId);
     const startOfDay = getStartOfDay(timestamp);
     dailyStat.interval = "Daily";
     dailyStat.startTimestamp = BigInt.fromI64(startOfDay);
@@ -277,7 +262,7 @@ export function getTimeIntervalCraftingStats(
   const weeklyId = getWeeklyId(timestamp);
   let weeklyStat = CraftingStat.load(weeklyId);
   if (!weeklyStat) {
-    weeklyStat = createCraftingStat(weeklyId);
+    weeklyStat = new CraftingStat(weeklyId);
     const startOfWeek = getStartOfWeek(timestamp);
     weeklyStat.interval = "Weekly";
     weeklyStat.startTimestamp = BigInt.fromI64(startOfWeek);
@@ -292,7 +277,7 @@ export function getTimeIntervalCraftingStats(
   const monthlyId = getMonthlyId(timestamp);
   let monthlyStat = CraftingStat.load(monthlyId);
   if (!monthlyStat) {
-    monthlyStat = createCraftingStat(monthlyId);
+    monthlyStat = new CraftingStat(monthlyId);
     const startOfMonth = getStartOfMonth(timestamp);
     monthlyStat.interval = "Monthly";
     monthlyStat.startTimestamp = BigInt.fromI64(startOfMonth);
@@ -307,7 +292,7 @@ export function getTimeIntervalCraftingStats(
   const yearlyId = getYearlyId(timestamp);
   let yearlyStat = CraftingStat.load(yearlyId);
   if (!yearlyStat) {
-    yearlyStat = createCraftingStat(yearlyId);
+    yearlyStat = new CraftingStat(yearlyId);
     const startOfYear = getStartOfYear(timestamp);
     yearlyStat.interval = "Yearly";
     yearlyStat.startTimestamp = BigInt.fromI64(startOfYear);
@@ -322,7 +307,7 @@ export function getTimeIntervalCraftingStats(
   const allTimeId = getAllTimeId();
   let allTimeStat = CraftingStat.load(allTimeId);
   if (!allTimeStat) {
-    allTimeStat = createCraftingStat(allTimeId);
+    allTimeStat = new CraftingStat(allTimeId);
     allTimeStat.interval = "AllTime";
     allTimeStat.save();
   }
@@ -331,22 +316,18 @@ export function getTimeIntervalCraftingStats(
   return stats;
 }
 
-export function createCraftingStat(id: string): CraftingStat {
-  const stat = new CraftingStat(id);
-  stat._activeAddresses = [];
-  stat._allAddresses = [];
-  stat.save();
-  return stat;
-}
-
 export function getOrCreateCraftingDifficultyStat(
   craftingStatId: string,
-  difficulty: string
+  difficulty: string,
+  startTimeStamp: BigInt | null = null,
+  endTimestamp: BigInt | null = null
 ): CraftingDifficultyStat {
   const id = `${craftingStatId}-difficulty${difficulty}`;
   let stat = CraftingDifficultyStat.load(id);
   if (!stat) {
     stat = new CraftingDifficultyStat(id);
+    stat.startTimestamp = startTimeStamp;
+    stat.endTimestamp = endTimestamp;
     stat.craftingStat = craftingStatId;
     stat.difficulty = difficulty;
     stat.save();
@@ -369,7 +350,7 @@ export function getTimeIntervalPilgrimageStats(
     const hourlyId = getHourlyId(timestamp);
     let hourlyStat = PilgrimageStat.load(hourlyId);
     if (!hourlyStat) {
-      hourlyStat = createPilgrimageStat(hourlyId);
+      hourlyStat = new PilgrimageStat(hourlyId);
       const startOfHour = getStartOfHour(timestamp);
       hourlyStat.interval = "Hourly";
       hourlyStat.startTimestamp = BigInt.fromI64(startOfHour);
@@ -386,7 +367,7 @@ export function getTimeIntervalPilgrimageStats(
   const dailyId = getDailyId(timestamp);
   let dailyStat = PilgrimageStat.load(dailyId);
   if (!dailyStat) {
-    dailyStat = createPilgrimageStat(dailyId);
+    dailyStat = new PilgrimageStat(dailyId);
     const startOfDay = getStartOfDay(timestamp);
     dailyStat.interval = "Daily";
     dailyStat.startTimestamp = BigInt.fromI64(startOfDay);
@@ -399,7 +380,7 @@ export function getTimeIntervalPilgrimageStats(
   const weeklyId = getWeeklyId(timestamp);
   let weeklyStat = PilgrimageStat.load(weeklyId);
   if (!weeklyStat) {
-    weeklyStat = createPilgrimageStat(weeklyId);
+    weeklyStat = new PilgrimageStat(weeklyId);
     const startOfWeek = getStartOfWeek(timestamp);
     weeklyStat.interval = "Weekly";
     weeklyStat.startTimestamp = BigInt.fromI64(startOfWeek);
@@ -414,7 +395,7 @@ export function getTimeIntervalPilgrimageStats(
   const monthlyId = getMonthlyId(timestamp);
   let monthlyStat = PilgrimageStat.load(monthlyId);
   if (!monthlyStat) {
-    monthlyStat = createPilgrimageStat(monthlyId);
+    monthlyStat = new PilgrimageStat(monthlyId);
     const startOfMonth = getStartOfMonth(timestamp);
     monthlyStat.interval = "Monthly";
     monthlyStat.startTimestamp = BigInt.fromI64(startOfMonth);
@@ -429,7 +410,7 @@ export function getTimeIntervalPilgrimageStats(
   const yearlyId = getYearlyId(timestamp);
   let yearlyStat = PilgrimageStat.load(yearlyId);
   if (!yearlyStat) {
-    yearlyStat = createPilgrimageStat(yearlyId);
+    yearlyStat = new PilgrimageStat(yearlyId);
     const startOfYear = getStartOfYear(timestamp);
     yearlyStat.interval = "Yearly";
     yearlyStat.startTimestamp = BigInt.fromI64(startOfYear);
@@ -444,21 +425,13 @@ export function getTimeIntervalPilgrimageStats(
   const allTimeId = getAllTimeId();
   let allTimeStat = PilgrimageStat.load(allTimeId);
   if (!allTimeStat) {
-    allTimeStat = createPilgrimageStat(allTimeId);
+    allTimeStat = new PilgrimageStat(allTimeId);
     allTimeStat.interval = "AllTime";
     allTimeStat.save();
   }
   stats.push(allTimeStat);
 
   return stats;
-}
-
-export function createPilgrimageStat(id: string): PilgrimageStat {
-  const stat = new PilgrimageStat(id);
-  stat._activeAddresses = [];
-  stat._allAddresses = [];
-  stat.save();
-  return stat;
 }
 
 export function getTimeIntervalQuestingStats(
@@ -475,7 +448,7 @@ export function getTimeIntervalQuestingStats(
     const hourlyId = getHourlyId(timestamp);
     let hourlyStat = QuestingStat.load(hourlyId);
     if (!hourlyStat) {
-      hourlyStat = createQuestingStat(hourlyId);
+      hourlyStat = new QuestingStat(hourlyId);
       const startOfHour = getStartOfHour(timestamp);
       hourlyStat.interval = "Hourly";
       hourlyStat.startTimestamp = BigInt.fromI64(startOfHour);
@@ -492,7 +465,7 @@ export function getTimeIntervalQuestingStats(
   const dailyId = getDailyId(timestamp);
   let dailyStat = QuestingStat.load(dailyId);
   if (!dailyStat) {
-    dailyStat = createQuestingStat(dailyId);
+    dailyStat = new QuestingStat(dailyId);
     const startOfDay = getStartOfDay(timestamp);
     dailyStat.interval = "Daily";
     dailyStat.startTimestamp = BigInt.fromI64(startOfDay);
@@ -505,7 +478,7 @@ export function getTimeIntervalQuestingStats(
   const weeklyId = getWeeklyId(timestamp);
   let weeklyStat = QuestingStat.load(weeklyId);
   if (!weeklyStat) {
-    weeklyStat = createQuestingStat(weeklyId);
+    weeklyStat = new QuestingStat(weeklyId);
     const startOfWeek = getStartOfWeek(timestamp);
     weeklyStat.interval = "Weekly";
     weeklyStat.startTimestamp = BigInt.fromI64(startOfWeek);
@@ -520,7 +493,7 @@ export function getTimeIntervalQuestingStats(
   const monthlyId = getMonthlyId(timestamp);
   let monthlyStat = QuestingStat.load(monthlyId);
   if (!monthlyStat) {
-    monthlyStat = createQuestingStat(monthlyId);
+    monthlyStat = new QuestingStat(monthlyId);
     const startOfMonth = getStartOfMonth(timestamp);
     monthlyStat.interval = "Monthly";
     monthlyStat.startTimestamp = BigInt.fromI64(startOfMonth);
@@ -535,7 +508,7 @@ export function getTimeIntervalQuestingStats(
   const yearlyId = getYearlyId(timestamp);
   let yearlyStat = QuestingStat.load(yearlyId);
   if (!yearlyStat) {
-    yearlyStat = createQuestingStat(yearlyId);
+    yearlyStat = new QuestingStat(yearlyId);
     const startOfYear = getStartOfYear(timestamp);
     yearlyStat.interval = "Yearly";
     yearlyStat.startTimestamp = BigInt.fromI64(startOfYear);
@@ -550,7 +523,7 @@ export function getTimeIntervalQuestingStats(
   const allTimeId = getAllTimeId();
   let allTimeStat = QuestingStat.load(allTimeId);
   if (!allTimeStat) {
-    allTimeStat = createQuestingStat(allTimeId);
+    allTimeStat = new QuestingStat(allTimeId);
     allTimeStat.interval = "AllTime";
     allTimeStat.save();
   }
@@ -559,22 +532,18 @@ export function getTimeIntervalQuestingStats(
   return stats;
 }
 
-export function createQuestingStat(id: string): QuestingStat {
-  const stat = new QuestingStat(id);
-  stat._activeAddresses = [];
-  stat._allAddresses = [];
-  stat.save();
-  return stat;
-}
-
 export function getOrCreateQuestingDifficultyStat(
   questingStatId: string,
-  difficulty: string
+  difficulty: string,
+  startTimeStamp: BigInt | null = null,
+  endTimestamp: BigInt | null = null
 ): QuestingDifficultyStat {
   const id = `${questingStatId}-difficulty${difficulty}`;
   let stat = QuestingDifficultyStat.load(id);
   if (!stat) {
     stat = new QuestingDifficultyStat(id);
+    stat.startTimestamp = startTimeStamp;
+    stat.endTimestamp = endTimestamp;
     stat.questingStat = questingStatId;
     stat.difficulty = difficulty;
     stat.save();
@@ -597,7 +566,7 @@ export function getTimeIntervalSummoningStats(
     const hourlyId = getHourlyId(timestamp);
     let hourlyStat = SummoningStat.load(hourlyId);
     if (!hourlyStat) {
-      hourlyStat = createSummoningStat(hourlyId);
+      hourlyStat = new SummoningStat(hourlyId);
       const startOfHour = getStartOfHour(timestamp);
       hourlyStat.interval = "Hourly";
       hourlyStat.startTimestamp = BigInt.fromI64(startOfHour);
@@ -614,7 +583,7 @@ export function getTimeIntervalSummoningStats(
   const dailyId = getDailyId(timestamp);
   let dailyStat = SummoningStat.load(dailyId);
   if (!dailyStat) {
-    dailyStat = createSummoningStat(dailyId);
+    dailyStat = new SummoningStat(dailyId);
     const startOfDay = getStartOfDay(timestamp);
     dailyStat.interval = "Daily";
     dailyStat.startTimestamp = BigInt.fromI64(startOfDay);
@@ -627,7 +596,7 @@ export function getTimeIntervalSummoningStats(
   const weeklyId = getWeeklyId(timestamp);
   let weeklyStat = SummoningStat.load(weeklyId);
   if (!weeklyStat) {
-    weeklyStat = createSummoningStat(weeklyId);
+    weeklyStat = new SummoningStat(weeklyId);
     const startOfWeek = getStartOfWeek(timestamp);
     weeklyStat.interval = "Weekly";
     weeklyStat.startTimestamp = BigInt.fromI64(startOfWeek);
@@ -642,7 +611,7 @@ export function getTimeIntervalSummoningStats(
   const monthlyId = getMonthlyId(timestamp);
   let monthlyStat = SummoningStat.load(monthlyId);
   if (!monthlyStat) {
-    monthlyStat = createSummoningStat(monthlyId);
+    monthlyStat = new SummoningStat(monthlyId);
     const startOfMonth = getStartOfMonth(timestamp);
     monthlyStat.interval = "Monthly";
     monthlyStat.startTimestamp = BigInt.fromI64(startOfMonth);
@@ -657,7 +626,7 @@ export function getTimeIntervalSummoningStats(
   const yearlyId = getYearlyId(timestamp);
   let yearlyStat = SummoningStat.load(yearlyId);
   if (!yearlyStat) {
-    yearlyStat = createSummoningStat(yearlyId);
+    yearlyStat = new SummoningStat(yearlyId);
     const startOfYear = getStartOfYear(timestamp);
     yearlyStat.interval = "Yearly";
     yearlyStat.startTimestamp = BigInt.fromI64(startOfYear);
@@ -672,7 +641,7 @@ export function getTimeIntervalSummoningStats(
   const allTimeId = getAllTimeId();
   let allTimeStat = SummoningStat.load(allTimeId);
   if (!allTimeStat) {
-    allTimeStat = createSummoningStat(allTimeId);
+    allTimeStat = new SummoningStat(allTimeId);
     allTimeStat.interval = "AllTime";
     allTimeStat.save();
   }
@@ -681,17 +650,32 @@ export function getTimeIntervalSummoningStats(
   return stats;
 }
 
-export function createSummoningStat(id: string): SummoningStat {
-  const stat = new SummoningStat(id);
-  stat._activeAddresses = [];
-  stat._allAddresses = [];
-  stat.save();
+export function getOrCreateUserStat(
+  statId: string,
+  address: Address,
+  startTimestamp: BigInt | null = null,
+  endTimestamp: BigInt | null = null,
+  interval: string | null = null
+): UserStat {
+  const id = `${statId}-${address.toHexString()}`;
+  let stat = UserStat.load(id);
+  if (!stat) {
+    stat = new UserStat(id);
+    stat.address = address.toHexString();
+    stat.startTimestamp = startTimestamp;
+    stat.endTimestamp = endTimestamp;
+    stat.interval = (interval || "AllTime") as string;
+    stat.save();
+  }
+
   return stat;
 }
 
 export function getOrCreateLegionStat(
   summoningStatId: string,
   legion: Legion,
+  startTimestamp: BigInt | null = null,
+  endTimestamp: BigInt | null = null,
   withClass: boolean = false
 ): LegionStat {
   const id = [
@@ -704,6 +688,8 @@ export function getOrCreateLegionStat(
   let stat = LegionStat.load(id);
   if (!stat) {
     stat = new LegionStat(id);
+    stat.startTimestamp = startTimestamp;
+    stat.endTimestamp = endTimestamp;
     stat.generation = legion.generation;
     stat.rarity = legion.rarity;
     if (withClass) {
@@ -734,12 +720,16 @@ export function getOrCreateConsumableStat(
 
 export function getOrCreateTreasureStat(
   statId: string,
-  tokenId: BigInt
+  tokenId: BigInt,
+  startTimestamp: BigInt | null = null,
+  endTimestamp: BigInt | null = null
 ): TreasureStat {
   const id = `${statId}-${tokenId.toHexString()}`;
   let stat = TreasureStat.load(id);
   if (!stat) {
     stat = new TreasureStat(id);
+    stat.startTimestamp = startTimestamp;
+    stat.endTimestamp = endTimestamp;
     stat.tokenId = tokenId;
     stat.name = getTreasureName(tokenId);
     stat.tier = getTier(tokenId);

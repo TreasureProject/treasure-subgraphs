@@ -8,16 +8,12 @@ import {
   getLegion,
   getLegionSummonCost,
   getOrCreateLegionStat,
-  getOrCreateUser,
+  getOrCreateUserStat,
   getTimeIntervalSummoningStats,
 } from "../helpers/models";
 
 export function handleSummoningStarted(event: SummoningStarted): void {
   const params = event.params;
-
-  const user = getOrCreateUser(params._user);
-  user.summonsStarted += 1;
-  user.save();
 
   const legion = getLegion(params._tokenId);
   if (!legion) {
@@ -28,23 +24,32 @@ export function handleSummoningStarted(event: SummoningStarted): void {
   for (let i = 0; i < stats.length; i++) {
     const stat = stats[i];
     stat.summonsStarted += 1;
-    if (!stat._activeAddresses.includes(user.id)) {
-      stat._activeAddresses = stat._activeAddresses.concat([user.id]);
-      stat.activeAddressesCount = stat._activeAddresses.length;
-    }
 
-    if (!stat._allAddresses.includes(user.id)) {
-      stat._allAddresses = stat._allAddresses.concat([user.id]);
-      stat.allAddressesCount = stat._allAddresses.length;
+    const userStat = getOrCreateUserStat(
+      stat.id,
+      params._user,
+      stat.startTimestamp,
+      stat.endTimestamp,
+      stat.interval
+    );
+    userStat.summonsStarted += 1;
+    userStat.save();
+
+    if (userStat.summonsStarted == 1) {
+      stat.activeAddressesCount += 1;
+      stat.allAddressesCount += 1;
     }
 
     if (legion) {
       const summonCost = getLegionSummonCost(legion.generation);
       stat.magicSpent = stat.magicSpent.plus(summonCost);
 
-      const legionStat = getOrCreateLegionStat(stat.id, legion);
-      legionStat.startTimestamp = stat.startTimestamp;
-      legionStat.endTimestamp = stat.endTimestamp;
+      const legionStat = getOrCreateLegionStat(
+        stat.id,
+        legion,
+        stat.startTimestamp,
+        stat.endTimestamp
+      );
       legionStat.summoningStat = stat.id;
       legionStat.summoningMagicSpent =
         legionStat.summoningMagicSpent.plus(summonCost);
@@ -58,11 +63,6 @@ export function handleSummoningStarted(event: SummoningStarted): void {
 
 export function handleSummoningFinished(event: SummoningFinished): void {
   const params = event.params;
-
-  const user = getOrCreateUser(params._user);
-  user.summonsFinished += 1;
-  user.save();
-  const isUserSummoning = user.summonsStarted > user.summonsFinished;
 
   const legion = getLegion(params._returnedId);
   if (!legion) {
@@ -82,30 +82,45 @@ export function handleSummoningFinished(event: SummoningFinished): void {
   for (let i = 0; i < stats.length; i++) {
     const stat = stats[i];
     stat.summonsFinished += 1;
-    if (!isUserSummoning) {
-      const addressIndex = stat._activeAddresses.indexOf(user.id);
-      if (addressIndex >= 0) {
-        const addresses = stat._activeAddresses;
-        addresses.splice(addressIndex, 1);
-        stat._activeAddresses = addresses;
-        stat.activeAddressesCount = addresses.length;
-      }
+
+    const userStat = getOrCreateUserStat(
+      stat.id,
+      params._user,
+      stat.startTimestamp,
+      stat.endTimestamp,
+      stat.interval
+    );
+    userStat.summonsFinished += 1;
+    userStat.save();
+
+    if (userStat.summonsStarted == userStat.summonsFinished) {
+      stat.activeAddressesCount -= 1;
     }
-    stat.save();
 
     if (legion) {
-      const legionStat = getOrCreateLegionStat(stat.id, legion);
+      const legionStat = getOrCreateLegionStat(
+        stat.id,
+        legion,
+        stat.startTimestamp,
+        stat.endTimestamp
+      );
+      legionStat.summoningStat = stat.id;
       legionStat.summonsFinished += 1;
       legionStat.save();
     }
 
     if (newLegion) {
-      const newLegionStat = getOrCreateLegionStat(stat.id, newLegion);
-      newLegionStat.startTimestamp = stat.startTimestamp;
-      newLegionStat.endTimestamp = stat.endTimestamp;
+      const newLegionStat = getOrCreateLegionStat(
+        stat.id,
+        newLegion,
+        stat.startTimestamp,
+        stat.endTimestamp
+      );
       newLegionStat.summoningStat = stat.id;
       newLegionStat.summonedCount += 1;
       newLegionStat.save();
     }
+
+    stat.save();
   }
 }
