@@ -32,13 +32,17 @@ export function handleSummoningStarted(event: SummoningStarted): void {
       stat.endTimestamp,
       stat.interval
     );
-    userStat.summonsStarted += 1;
-    userStat.save();
 
-    if (userStat.summonsStarted == 1) {
-      stat.activeAddressesCount += 1;
+    if (userStat.summonsStarted == 0) {
       stat.allAddressesCount += 1;
     }
+
+    if (userStat.summonsStarted == userStat.summonsFinished) {
+      stat.activeAddressesCount += 1;
+    }
+
+    userStat.summonsStarted += 1;
+    userStat.save();
 
     if (legion) {
       const summonCost = getLegionSummonCost(legion.generation);
@@ -94,7 +98,10 @@ export function handleSummoningFinished(event: SummoningFinished): void {
     userStat.save();
 
     if (userStat.summonsStarted == userStat.summonsFinished) {
-      stat.activeAddressesCount -= 1;
+      stat.activeAddressesCount = Math.max(
+        stat.activeAddressesCount - 1,
+        0
+      ) as i32;
     }
 
     if (legion) {

@@ -50,13 +50,17 @@ function handleCraftingStarted(
       stat.endTimestamp,
       stat.interval
     );
-    userStat.craftsStarted += 1;
-    userStat.save();
 
-    if (userStat.craftsStarted == 1) {
-      stat.activeAddressesCount += 1;
+    if (userStat.craftsStarted == 0) {
       stat.allAddressesCount += 1;
     }
+
+    if (userStat.craftsStarted == userStat.craftsFinished) {
+      stat.activeAddressesCount += 1;
+    }
+
+    userStat.craftsStarted += 1;
+    userStat.save();
 
     if (legion) {
       const legionStat = getOrCreateLegionStat(
@@ -266,7 +270,10 @@ export function handleCraftingFinished(event: CraftingFinished): void {
     userStat.save();
 
     if (userStat.craftsStarted == userStat.craftsFinished) {
-      stat.activeAddressesCount -= 1;
+      stat.activeAddressesCount = Math.max(
+        stat.activeAddressesCount - 1,
+        0
+      ) as i32;
     }
 
     if (legion) {

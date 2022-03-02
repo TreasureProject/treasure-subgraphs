@@ -33,6 +33,15 @@ export function handlePilgrimagesStarted(event: PilgrimagesStarted): void {
       stat.endTimestamp,
       stat.interval
     );
+
+    if (userStat.pilgrimagesStarted == 0) {
+      stat.allAddressesCount += 1;
+    }
+
+    if (userStat.pilgrimagesStarted == userStat.pilgrimagesFinished) {
+      stat.activeAddressesCount += 1;
+    }
+
     userStat.pilgrimagesStarted += pilgrimagesCount;
     userStat.save();
 
@@ -58,6 +67,13 @@ export function handlePilgrimagesFinished(event: PilgrimagesFinished): void {
     );
     userStat.pilgrimagesFinished += tokenIds.length;
     userStat.save();
+
+    if (userStat.pilgrimagesStarted == userStat.pilgrimagesFinished) {
+      stat.activeAddressesCount = Math.max(
+        stat.activeAddressesCount - 1,
+        0
+      ) as i32;
+    }
 
     for (let j = 0; j < tokenIds.length; j++) {
       const legion = getLegion(tokenIds[j]);
