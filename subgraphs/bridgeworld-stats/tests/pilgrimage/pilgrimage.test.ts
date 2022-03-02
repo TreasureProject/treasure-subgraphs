@@ -12,6 +12,7 @@ import {
   LEGION_STAT_ENTITY_TYPE,
   PILGRIMAGE_STAT_ENTITY_TYPE,
   USER_ADDRESS,
+  USER_ADDRESS2,
   USER_STAT_ENTITY_TYPE,
 } from "../utils";
 import {
@@ -29,6 +30,8 @@ const statIds = [
   "2022-yearly",
   "all-time",
 ];
+
+const STAT_ENTITY_TYPE = PILGRIMAGE_STAT_ENTITY_TYPE;
 
 test("pilgrimage stats count pilgrimages started", () => {
   clearStore();
@@ -55,18 +58,8 @@ test("pilgrimage stats count pilgrimages started", () => {
 
   for (let i = 0; i < statIds.length; i++) {
     // Assert all time intervals are created
-    assert.fieldEquals(
-      PILGRIMAGE_STAT_ENTITY_TYPE,
-      statIds[i],
-      "interval",
-      intervals[i]
-    );
-    assert.fieldEquals(
-      PILGRIMAGE_STAT_ENTITY_TYPE,
-      statIds[i],
-      "pilgrimagesStarted",
-      "4"
-    );
+    assert.fieldEquals(STAT_ENTITY_TYPE, statIds[i], "interval", intervals[i]);
+    assert.fieldEquals(STAT_ENTITY_TYPE, statIds[i], "pilgrimagesStarted", "4");
 
     // Assert all time intervals for user are created
     assert.fieldEquals(
@@ -79,61 +72,61 @@ test("pilgrimage stats count pilgrimages started", () => {
 
   // Assert start and end times are correct
   assert.fieldEquals(
-    PILGRIMAGE_STAT_ENTITY_TYPE,
+    STAT_ENTITY_TYPE,
     statIds[0],
     "startTimestamp",
     "1644390000"
   );
   assert.fieldEquals(
-    PILGRIMAGE_STAT_ENTITY_TYPE,
+    STAT_ENTITY_TYPE,
     statIds[0],
     "endTimestamp",
     "1644393599"
   );
   assert.fieldEquals(
-    PILGRIMAGE_STAT_ENTITY_TYPE,
+    STAT_ENTITY_TYPE,
     statIds[1],
     "startTimestamp",
     "1644364800"
   );
   assert.fieldEquals(
-    PILGRIMAGE_STAT_ENTITY_TYPE,
+    STAT_ENTITY_TYPE,
     statIds[1],
     "endTimestamp",
     "1644451199"
   );
   assert.fieldEquals(
-    PILGRIMAGE_STAT_ENTITY_TYPE,
+    STAT_ENTITY_TYPE,
     statIds[2],
     "startTimestamp",
     "1644105600"
   );
   assert.fieldEquals(
-    PILGRIMAGE_STAT_ENTITY_TYPE,
+    STAT_ENTITY_TYPE,
     statIds[2],
     "endTimestamp",
     "1644710399"
   );
   assert.fieldEquals(
-    PILGRIMAGE_STAT_ENTITY_TYPE,
+    STAT_ENTITY_TYPE,
     statIds[3],
     "startTimestamp",
     "1643673600"
   );
   assert.fieldEquals(
-    PILGRIMAGE_STAT_ENTITY_TYPE,
+    STAT_ENTITY_TYPE,
     statIds[3],
     "endTimestamp",
     "1646092799"
   );
   assert.fieldEquals(
-    PILGRIMAGE_STAT_ENTITY_TYPE,
+    STAT_ENTITY_TYPE,
     statIds[4],
     "startTimestamp",
     "1640995200"
   );
   assert.fieldEquals(
-    PILGRIMAGE_STAT_ENTITY_TYPE,
+    STAT_ENTITY_TYPE,
     statIds[4],
     "endTimestamp",
     "1672531199"
@@ -152,28 +145,13 @@ test("pilgrimage stats count pilgrimages started", () => {
   handlePilgrimagesStarted(pilgrimagesStartedEvent2);
 
   // Assert previous intervals are unaffected
-  assert.fieldEquals(
-    PILGRIMAGE_STAT_ENTITY_TYPE,
-    statIds[0],
-    "pilgrimagesStarted",
-    "4"
-  );
-  assert.fieldEquals(
-    PILGRIMAGE_STAT_ENTITY_TYPE,
-    statIds[1],
-    "pilgrimagesStarted",
-    "4"
-  );
-  assert.fieldEquals(
-    PILGRIMAGE_STAT_ENTITY_TYPE,
-    statIds[2],
-    "pilgrimagesStarted",
-    "4"
-  );
+  assert.fieldEquals(STAT_ENTITY_TYPE, statIds[0], "pilgrimagesStarted", "4");
+  assert.fieldEquals(STAT_ENTITY_TYPE, statIds[1], "pilgrimagesStarted", "4");
+  assert.fieldEquals(STAT_ENTITY_TYPE, statIds[2], "pilgrimagesStarted", "4");
 
   // Assert new weekly interval was created
   assert.fieldEquals(
-    PILGRIMAGE_STAT_ENTITY_TYPE,
+    STAT_ENTITY_TYPE,
     "20220116-weekly",
     "pilgrimagesStarted",
     "3"
@@ -181,7 +159,7 @@ test("pilgrimage stats count pilgrimages started", () => {
 
   // Assert new monthly interval was created
   assert.fieldEquals(
-    PILGRIMAGE_STAT_ENTITY_TYPE,
+    STAT_ENTITY_TYPE,
     "202201-monthly",
     "pilgrimagesStarted",
     "3"
@@ -189,7 +167,7 @@ test("pilgrimage stats count pilgrimages started", () => {
 
   // Assert yearly interval contains both
   assert.fieldEquals(
-    PILGRIMAGE_STAT_ENTITY_TYPE,
+    STAT_ENTITY_TYPE,
     "2022-yearly",
     "pilgrimagesStarted",
     "7"
@@ -199,11 +177,8 @@ test("pilgrimage stats count pilgrimages started", () => {
 test("pilgrimage stats count pilgrimages finished", () => {
   clearStore();
 
-  const legionCreatedEvent = createLegionCreatedEvent(1, 1, 4, 3);
-  handleLegionCreated(legionCreatedEvent);
-
-  const legionCreatedEvent2 = createLegionCreatedEvent(2, 1, 4, 3);
-  handleLegionCreated(legionCreatedEvent2);
+  handleLegionCreated(createLegionCreatedEvent(1, 1, 4, 3));
+  handleLegionCreated(createLegionCreatedEvent(2, 1, 4, 3));
 
   const pilgrimagesStartedEvent = createPilgrimagesStartedEvent(
     timestamp,
@@ -227,7 +202,7 @@ test("pilgrimage stats count pilgrimages finished", () => {
   for (let i = 0; i < statIds.length; i++) {
     // Assert all time intervals are created
     assert.fieldEquals(
-      PILGRIMAGE_STAT_ENTITY_TYPE,
+      STAT_ENTITY_TYPE,
       statIds[i],
       "pilgrimagesFinished",
       "2"
@@ -249,4 +224,79 @@ test("pilgrimage stats count pilgrimages finished", () => {
       "2"
     );
   }
+});
+
+test("pilgrimage stats track addresses", () => {
+  clearStore();
+
+  handleLegionCreated(createLegionCreatedEvent(1, 1, 4, 3));
+  handleLegionCreated(createLegionCreatedEvent(2, 1, 4, 3));
+  handleLegionCreated(createLegionCreatedEvent(3, 1, 4, 3));
+
+  // Two users become active
+  handlePilgrimagesStarted(
+    createPilgrimagesStartedEvent(
+      timestamp,
+      USER_ADDRESS,
+      Address.zero().toHexString(),
+      0,
+      [1],
+      [1],
+      [0]
+    )
+  );
+  handlePilgrimagesStarted(
+    createPilgrimagesStartedEvent(
+      timestamp,
+      USER_ADDRESS2,
+      Address.zero().toHexString(),
+      0,
+      [2],
+      [1],
+      [1]
+    )
+  );
+
+  assert.fieldEquals(STAT_ENTITY_TYPE, "all-time", "allAddressesCount", "2");
+  assert.fieldEquals(STAT_ENTITY_TYPE, "all-time", "activeAddressesCount", "2");
+
+  // One user becomes inactive
+  handlePilgrimagesFinished(
+    createPilgrimagesFinishedEvent(timestamp, USER_ADDRESS, [1], [0])
+  );
+
+  assert.fieldEquals(STAT_ENTITY_TYPE, "all-time", "allAddressesCount", "2");
+  assert.fieldEquals(STAT_ENTITY_TYPE, "all-time", "activeAddressesCount", "1");
+
+  // One active user stays active
+  handlePilgrimagesStarted(
+    createPilgrimagesStartedEvent(
+      timestamp,
+      USER_ADDRESS2,
+      Address.zero().toHexString(),
+      0,
+      [3],
+      [1],
+      [2]
+    )
+  );
+
+  assert.fieldEquals(STAT_ENTITY_TYPE, "all-time", "allAddressesCount", "2");
+  assert.fieldEquals(STAT_ENTITY_TYPE, "all-time", "activeAddressesCount", "1");
+
+  // One inactive user becomes active again
+  handlePilgrimagesStarted(
+    createPilgrimagesStartedEvent(
+      timestamp,
+      USER_ADDRESS,
+      Address.zero().toHexString(),
+      0,
+      [1],
+      [1],
+      [4]
+    )
+  );
+
+  assert.fieldEquals(STAT_ENTITY_TYPE, "all-time", "allAddressesCount", "2");
+  assert.fieldEquals(STAT_ENTITY_TYPE, "all-time", "activeAddressesCount", "2");
 });
