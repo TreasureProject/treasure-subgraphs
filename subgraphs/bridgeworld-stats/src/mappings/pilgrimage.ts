@@ -7,7 +7,7 @@ import {
 import {
   getLegion,
   getOrCreateLegionStat,
-  getOrCreateUser,
+  getOrCreateUserStat,
   getTimeIntervalPilgrimageStats,
 } from "../helpers/models";
 
@@ -21,23 +21,20 @@ export function handlePilgrimagesStarted(event: PilgrimagesStarted): void {
     pilgrimagesCount += tokenAmounts[i].toI32();
   }
 
-  const user = getOrCreateUser(params._user);
-  user.pilgrimagesStarted += pilgrimagesCount;
-  user.save();
-
   const stats = getTimeIntervalPilgrimageStats(event.block);
   for (let i = 0; i < stats.length; i++) {
     const stat = stats[i];
     stat.pilgrimagesStarted += pilgrimagesCount;
-    if (!stat._activeAddresses.includes(user.id)) {
-      stat._activeAddresses = stat._activeAddresses.concat([user.id]);
-      stat.activeAddressesCount = stat._activeAddresses.length;
-    }
 
-    if (!stat._allAddresses.includes(user.id)) {
-      stat._allAddresses = stat._allAddresses.concat([user.id]);
-      stat.allAddressesCount = stat._allAddresses.length;
-    }
+    const userStat = getOrCreateUserStat(
+      stat.id,
+      params._user,
+      stat.startTimestamp,
+      stat.endTimestamp,
+      stat.interval
+    );
+    userStat.pilgrimagesStarted += pilgrimagesCount;
+    userStat.save();
 
     stat.save();
   }
@@ -47,24 +44,20 @@ export function handlePilgrimagesFinished(event: PilgrimagesFinished): void {
   const params = event.params;
   const tokenIds = params._tokenIds;
 
-  const user = getOrCreateUser(params._user);
-  user.pilgrimagesFinished += tokenIds.length;
-  user.save();
-  const isUserPilgrimaging = user.pilgrimagesStarted > user.pilgrimagesFinished;
-
   const stats = getTimeIntervalPilgrimageStats(event.block);
   for (let i = 0; i < stats.length; i++) {
     const stat = stats[i];
     stat.pilgrimagesFinished += tokenIds.length;
-    if (!isUserPilgrimaging) {
-      const addressIndex = stat._activeAddresses.indexOf(user.id);
-      if (addressIndex >= 0) {
-        const addresses = stat._activeAddresses;
-        addresses.splice(addressIndex, 1);
-        stat._activeAddresses = addresses;
-        stat.activeAddressesCount = addresses.length;
-      }
-    }
+
+    const userStat = getOrCreateUserStat(
+      stat.id,
+      params._user,
+      stat.startTimestamp,
+      stat.endTimestamp,
+      stat.interval
+    );
+    userStat.pilgrimagesFinished += tokenIds.length;
+    userStat.save();
 
     for (let j = 0; j < tokenIds.length; j++) {
       const legion = getLegion(tokenIds[j]);
@@ -75,7 +68,13 @@ export function handlePilgrimagesFinished(event: PilgrimagesFinished): void {
         continue;
       }
 
-      const legionStat = getOrCreateLegionStat(stat.id, legion, true);
+      const legionStat = getOrCreateLegionStat(
+        stat.id,
+        legion,
+        stat.startTimestamp,
+        stat.endTimestamp,
+        true
+      );
       legionStat.pilgrimagesResulted += 1;
       legionStat.save();
     }

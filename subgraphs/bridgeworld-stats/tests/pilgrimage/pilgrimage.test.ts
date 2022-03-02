@@ -12,7 +12,7 @@ import {
   LEGION_STAT_ENTITY_TYPE,
   PILGRIMAGE_STAT_ENTITY_TYPE,
   USER_ADDRESS,
-  USER_ENTITY_TYPE,
+  USER_STAT_ENTITY_TYPE,
 } from "../utils";
 import {
   createPilgrimagesFinishedEvent,
@@ -44,9 +44,6 @@ test("pilgrimage stats count pilgrimages started", () => {
   );
   handlePilgrimagesStarted(pilgrimagesStartedEvent);
 
-  // Assert user data is updated
-  assert.fieldEquals(USER_ENTITY_TYPE, USER_ADDRESS, "pilgrimagesStarted", "4");
-
   const intervals = [
     "Hourly",
     "Daily",
@@ -70,11 +67,13 @@ test("pilgrimage stats count pilgrimages started", () => {
       "pilgrimagesStarted",
       "4"
     );
+
+    // Assert all time intervals for user are created
     assert.fieldEquals(
-      PILGRIMAGE_STAT_ENTITY_TYPE,
-      statIds[i],
-      "activeAddressesCount",
-      "1"
+      USER_STAT_ENTITY_TYPE,
+      `${statIds[i]}-${USER_ADDRESS}`,
+      "pilgrimagesStarted",
+      "4"
     );
   }
 
@@ -179,12 +178,6 @@ test("pilgrimage stats count pilgrimages started", () => {
     "pilgrimagesStarted",
     "3"
   );
-  assert.fieldEquals(
-    PILGRIMAGE_STAT_ENTITY_TYPE,
-    "20220116-weekly",
-    "activeAddressesCount",
-    "1"
-  );
 
   // Assert new monthly interval was created
   assert.fieldEquals(
@@ -193,12 +186,6 @@ test("pilgrimage stats count pilgrimages started", () => {
     "pilgrimagesStarted",
     "3"
   );
-  assert.fieldEquals(
-    PILGRIMAGE_STAT_ENTITY_TYPE,
-    "202201-monthly",
-    "activeAddressesCount",
-    "1"
-  );
 
   // Assert yearly interval contains both
   assert.fieldEquals(
@@ -206,12 +193,6 @@ test("pilgrimage stats count pilgrimages started", () => {
     "2022-yearly",
     "pilgrimagesStarted",
     "7"
-  );
-  assert.fieldEquals(
-    PILGRIMAGE_STAT_ENTITY_TYPE,
-    "2022-yearly",
-    "activeAddressesCount",
-    "2"
   );
 });
 
@@ -235,22 +216,6 @@ test("pilgrimage stats count pilgrimages finished", () => {
   );
   handlePilgrimagesStarted(pilgrimagesStartedEvent);
 
-  for (let i = 0; i < statIds.length; i++) {
-    // Assert all time intervals are created
-    assert.fieldEquals(
-      PILGRIMAGE_STAT_ENTITY_TYPE,
-      statIds[i],
-      "pilgrimagesStarted",
-      "2"
-    );
-    assert.fieldEquals(
-      PILGRIMAGE_STAT_ENTITY_TYPE,
-      statIds[i],
-      "activeAddressesCount",
-      "1"
-    );
-  }
-
   const pilgrimageFinishedEvent = createPilgrimagesFinishedEvent(
     timestamp,
     USER_ADDRESS,
@@ -267,11 +232,13 @@ test("pilgrimage stats count pilgrimages finished", () => {
       "pilgrimagesFinished",
       "2"
     );
+
+    // Assert all time intervals for user are created
     assert.fieldEquals(
-      PILGRIMAGE_STAT_ENTITY_TYPE,
-      statIds[i],
-      "activeAddressesCount",
-      "0"
+      USER_STAT_ENTITY_TYPE,
+      `${statIds[i]}-${USER_ADDRESS}`,
+      "pilgrimagesFinished",
+      "2"
     );
 
     // Assert all time intervals for legion type are created
