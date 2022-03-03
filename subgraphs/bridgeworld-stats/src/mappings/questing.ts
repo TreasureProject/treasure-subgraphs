@@ -46,13 +46,17 @@ function handleQuestStarted(
       stat.endTimestamp,
       stat.interval
     );
-    userStat.questsStarted += 1;
-    userStat.save();
 
-    if (userStat.questsStarted == 1) {
-      stat.activeAddressesCount += 1;
+    if (userStat.questsStarted == 0) {
       stat.allAddressesCount += 1;
     }
+
+    if (userStat.questsStarted == userStat.questsFinished) {
+      stat.activeAddressesCount += 1;
+    }
+
+    userStat.questsStarted += 1;
+    userStat.save();
 
     const difficultyStat = getOrCreateQuestingDifficultyStat(
       stat.id,
@@ -216,7 +220,10 @@ export function handleQuestFinished(event: QuestFinished): void {
     userStat.save();
 
     if (userStat.questsStarted == userStat.questsFinished) {
-      stat.activeAddressesCount -= 1;
+      stat.activeAddressesCount = Math.max(
+        stat.activeAddressesCount - 1,
+        0
+      ) as i32;
     }
 
     if (quest) {

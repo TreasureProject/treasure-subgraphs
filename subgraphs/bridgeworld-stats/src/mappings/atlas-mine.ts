@@ -25,14 +25,18 @@ export function handleDeposit(event: Deposit): void {
       stat.endTimestamp,
       stat.interval
     );
+
+    if (userStat.magicDepositCount == 0) {
+      stat.allAddressesCount += 1;
+    }
+
+    if (userStat.magicDepositCount == userStat.magicWithdrawCount) {
+      stat.activeAddressesCount += 1;
+    }
+
     userStat.magicDepositCount += 1;
     userStat.magicDeposited = userStat.magicDeposited.plus(params.amount);
     userStat.save();
-
-    if (userStat.magicDepositCount == 1) {
-      stat.activeAddressesCount += 1;
-      stat.allAddressesCount += 1;
-    }
 
     const lockStat = getOrCreateAtlasMineLockStat(
       stat.id,
@@ -69,7 +73,10 @@ export function handleWithdraw(event: Withdraw): void {
     userStat.save();
 
     if (userStat.magicDepositCount == userStat.magicWithdrawCount) {
-      stat.activeAddressesCount -= 1;
+      stat.activeAddressesCount = Math.max(
+        stat.activeAddressesCount - 1,
+        0
+      ) as i32;
     }
 
     stat.save();

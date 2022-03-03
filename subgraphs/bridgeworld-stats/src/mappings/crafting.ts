@@ -11,6 +11,7 @@ import { CRAFT_DIFFICULTIES } from "../helpers/constants";
 import { getCraftId } from "../helpers/ids";
 import {
   getLegion,
+  getOrCreateConsumableStat,
   getOrCreateCraftingDifficultyStat,
   getOrCreateLegionStat,
   getOrCreateTreasureStat,
@@ -49,13 +50,17 @@ function handleCraftingStarted(
       stat.endTimestamp,
       stat.interval
     );
-    userStat.craftsStarted += 1;
-    userStat.save();
 
-    if (userStat.craftsStarted == 1) {
-      stat.activeAddressesCount += 1;
+    if (userStat.craftsStarted == 0) {
       stat.allAddressesCount += 1;
     }
+
+    if (userStat.craftsStarted == userStat.craftsFinished) {
+      stat.activeAddressesCount += 1;
+    }
+
+    userStat.craftsStarted += 1;
+    userStat.save();
 
     if (legion) {
       const legionStat = getOrCreateLegionStat(
@@ -129,9 +134,10 @@ export function handleCraftingRevealed(event: CraftingRevealed): void {
   const params = event.params;
   const tokenId = params._tokenId;
   const result = params._outcome;
-  const wasSuccessful = result.wasSuccessful;
   const brokenTreasureIds = result.brokenTreasureIds;
   const brokenAmounts = result.brokenAmounts;
+  const succeededCount = result.wasSuccessful ? 1 : 0;
+  const failedCount = result.wasSuccessful ? 0 : 1;
 
   let brokenTreasuresCount = 0;
   for (let i = 0; i < brokenAmounts.length; i++) {
@@ -155,8 +161,8 @@ export function handleCraftingRevealed(event: CraftingRevealed): void {
       etherToWei(5).minus(result.magicReturned)
     );
     stat.magicReturned = stat.magicReturned.plus(result.magicReturned);
-    stat.craftsSucceeded += wasSuccessful ? 1 : 0;
-    stat.craftsFailed += wasSuccessful ? 0 : 1;
+    stat.craftsSucceeded += succeededCount;
+    stat.craftsFailed += failedCount;
     stat.brokenTreasuresCount += brokenTreasuresCount;
 
     const userStat = getOrCreateUserStat(
@@ -166,8 +172,8 @@ export function handleCraftingRevealed(event: CraftingRevealed): void {
       stat.endTimestamp,
       stat.interval
     );
-    userStat.craftsSucceeded += wasSuccessful ? 1 : 0;
-    userStat.craftsFailed += wasSuccessful ? 0 : 1;
+    userStat.craftsSucceeded += succeededCount;
+    userStat.craftsFailed += failedCount;
     userStat.brokenTreasuresCount += brokenTreasuresCount;
     userStat.save();
 
@@ -179,8 +185,8 @@ export function handleCraftingRevealed(event: CraftingRevealed): void {
         stat.endTimestamp
       );
       legionStat.craftingStat = stat.id;
-      legionStat.craftsSucceeded += wasSuccessful ? 1 : 0;
-      legionStat.craftsFailed += wasSuccessful ? 0 : 1;
+      legionStat.craftsSucceeded += succeededCount;
+      legionStat.craftsFailed += failedCount;
       legionStat.save();
     }
 
@@ -197,10 +203,22 @@ export function handleCraftingRevealed(event: CraftingRevealed): void {
       difficultyStat.magicReturned = difficultyStat.magicReturned.plus(
         result.magicReturned
       );
-      difficultyStat.craftsSucceeded += wasSuccessful ? 1 : 0;
-      difficultyStat.craftsFailed += wasSuccessful ? 0 : 1;
+      difficultyStat.craftsSucceeded += succeededCount;
+      difficultyStat.craftsFailed += failedCount;
       difficultyStat.brokenTreasuresCount += brokenTreasuresCount;
       difficultyStat.save();
+    }
+
+    if (result.rewardId) {
+      const consumableStat = getOrCreateConsumableStat(
+        stat.id,
+        result.rewardId
+      );
+      consumableStat.startTimestamp = stat.startTimestamp;
+      consumableStat.endTimestamp = stat.endTimestamp;
+      consumableStat.craftingStat = stat.id;
+      consumableStat.craftingEarned += result.rewardAmount;
+      consumableStat.save();
     }
 
     for (let j = 0; j < brokenTreasureIds.length; j++) {
@@ -252,7 +270,10 @@ export function handleCraftingFinished(event: CraftingFinished): void {
     userStat.save();
 
     if (userStat.craftsStarted == userStat.craftsFinished) {
-      stat.activeAddressesCount -= 1;
+      stat.activeAddressesCount = Math.max(
+        stat.activeAddressesCount - 1,
+        0
+      ) as i32;
     }
 
     if (legion) {
