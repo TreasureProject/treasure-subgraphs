@@ -11,7 +11,7 @@ export const LEGION_CLASSES = [
   "Spellcaster",
   "Riverman",
   "Numeraire",
-  "All-Class",
+  "AllClass",
   "Origin",
 ];
 

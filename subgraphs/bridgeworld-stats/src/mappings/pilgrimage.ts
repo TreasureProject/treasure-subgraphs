@@ -91,6 +91,7 @@ export function handlePilgrimagesFinished(event: PilgrimagesFinished): void {
         stat.endTimestamp,
         true
       );
+      legionStat.pilgrimageStat = stat.id;
       legionStat.pilgrimagesResulted += 1;
       legionStat.save();
     }

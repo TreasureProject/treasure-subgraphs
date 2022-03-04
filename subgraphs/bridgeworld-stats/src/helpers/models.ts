@@ -85,7 +85,12 @@ export function getLegionName(
     return customName;
   }
 
-  return `${LEGION_GENERATIONS[generation]} ${LEGION_RARITIES[rarity]}`;
+  const generationStr = LEGION_GENERATIONS[generation];
+  if (generationStr == "Recruit") {
+    return generationStr;
+  }
+
+  return `${generationStr} ${LEGION_RARITIES[rarity]}`;
 }
 
 export function getLegionSummonCost(generation: string): BigInt {
