@@ -1,4 +1,10 @@
-import { Address, BigInt, TypedMap, store } from "@graphprotocol/graph-ts";
+import {
+  Address,
+  BigInt,
+  TypedMap,
+  ethereum,
+  store,
+} from "@graphprotocol/graph-ts";
 
 import {
   EXPLORER,
@@ -96,7 +102,12 @@ function getUser(address: Address): User {
   return user;
 }
 
-function handleStake(user: Address, contract: Address, tokenId: BigInt): void {
+function handleStake(
+  user: Address,
+  contract: Address,
+  tokenId: BigInt,
+  timestamp: i64
+): void {
   let id = getStakedTokenId(user, contract, tokenId);
   let stakedToken = StakedToken.load(id);
 
@@ -118,7 +129,7 @@ function handleStake(user: Address, contract: Address, tokenId: BigInt): void {
         listing.status = "Inactive";
         listing.save();
 
-        updateCollectionFloorAndTotal(listing.collection);
+        updateCollectionFloorAndTotal(listing.collection, timestamp);
       }
     }
 
@@ -149,7 +160,8 @@ function handleTransfer(
   from: Address,
   to: Address,
   tokenId: BigInt,
-  quantity: i32
+  quantity: i32,
+  timestamp: i64
 ): void {
   let user = getUser(to);
   let token = getToken(contract, tokenId);
@@ -165,7 +177,7 @@ function handleTransfer(
       listing.status = "Inactive";
       listing.save();
 
-      updateCollectionFloorAndTotal(listing.collection);
+      updateCollectionFloorAndTotal(listing.collection, timestamp);
     }
   }
 
@@ -194,7 +206,7 @@ function handleTransfer(
   toUserToken.save();
 }
 
-function updateCollectionFloorAndTotal(id: string): void {
+function updateCollectionFloorAndTotal(id: string, timestamp: i64): void {
   let collection = getCollection(id);
   let floorPrices = new TypedMap<string, BigInt>();
   let listings = collection.listings;
@@ -213,6 +225,14 @@ function updateCollectionFloorAndTotal(id: string): void {
       if (listing.status == "Active") {
         let floorPrice = collection.floorPrice;
         let pricePerItem = listing.pricePerItem;
+
+        // Check to see if we need to expire the listing
+        if (listing.expires.lt(BigInt.fromI64(timestamp))) {
+          listing.status = "Expired";
+          listing.save();
+
+          continue;
+        }
 
         if (collection.standard == "ERC1155") {
           let tokenFloorPrice = floorPrices.get(listing.token);
@@ -255,6 +275,10 @@ function normalizeTime(value: BigInt): BigInt {
     : value;
 }
 
+function getTime(event: ethereum.Event): i64 {
+  return event.block.timestamp.toI64() * 1000;
+}
+
 export function handleItemCanceled(event: ItemCanceled): void {
   let params = event.params;
   let address = params.nftAddress;
@@ -267,7 +291,7 @@ export function handleItemCanceled(event: ItemCanceled): void {
 
   removeIfExists("Listing", listing.id);
 
-  updateCollectionFloorAndTotal(listing.collection);
+  updateCollectionFloorAndTotal(listing.collection, getTime(event));
 }
 
 export function handleItemListed(event: ItemListed): void {
@@ -300,7 +324,7 @@ export function handleItemListed(event: ItemListed): void {
   collection.listings = collection.listings.concat([listing.id]);
   collection.save();
 
-  updateCollectionFloorAndTotal(collection.id);
+  updateCollectionFloorAndTotal(collection.id, getTime(event));
 }
 
 export function handleItemSold(event: ItemSold): void {
@@ -359,7 +383,7 @@ export function handleItemSold(event: ItemSold): void {
 
   collection.save();
 
-  updateCollectionFloorAndTotal(collection.id);
+  updateCollectionFloorAndTotal(collection.id, getTime(event));
 }
 
 export function handleItemUpdated(event: ItemUpdated): void {
@@ -388,7 +412,7 @@ export function handleItemUpdated(event: ItemUpdated): void {
     listing.save();
   }
 
-  updateCollectionFloorAndTotal(listing.collection);
+  updateCollectionFloorAndTotal(listing.collection, getTime(event));
 }
 
 export function handleTransfer721(event: Transfer): void {
@@ -400,7 +424,8 @@ export function handleTransfer721(event: Transfer): void {
     params.from,
     params.to,
     params.tokenId,
-    1
+    1,
+    getTime(event)
   );
 }
 
@@ -423,7 +448,8 @@ export function handleTransferBatch(event: TransferBatch): void {
       params.from,
       params.to,
       id,
-      amounts[index].toI32()
+      amounts[index].toI32(),
+      getTime(event)
     );
   }
 }
@@ -441,7 +467,8 @@ export function handleTransferSingle(event: TransferSingle): void {
     params.from,
     params.to,
     params.id,
-    params.value.toI32()
+    params.value.toI32(),
+    getTime(event)
   );
 }
 
@@ -452,7 +479,12 @@ export function handleDropGym(event: DropGym): void {
 }
 
 export function handleJoinGym(event: JoinGym): void {
-  handleStake(event.transaction.from, event.address, event.params.tokenId);
+  handleStake(
+    event.transaction.from,
+    event.address,
+    event.params.tokenId,
+    getTime(event)
+  );
 }
 
 // Smol Brains
@@ -462,5 +494,10 @@ export function handleDropSchool(event: DropSchool): void {
 }
 
 export function handleJoinSchool(event: JoinSchool): void {
-  handleStake(event.transaction.from, event.address, event.params.tokenId);
+  handleStake(
+    event.transaction.from,
+    event.address,
+    event.params.tokenId,
+    getTime(event)
+  );
 }
