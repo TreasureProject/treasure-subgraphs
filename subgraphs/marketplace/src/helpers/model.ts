@@ -3,7 +3,7 @@ import { Address, BigInt, log } from "@graphprotocol/graph-ts";
 import { LEGION_ADDRESS } from "@treasure/constants";
 
 import { getAddressId, getName } from ".";
-import { Collection, Token } from "../../generated/schema";
+import { Collection, StatsData, Token } from "../../generated/schema";
 
 function createCollection(
   contract: Address,
@@ -21,6 +21,9 @@ function createCollection(
     collection.listings = [];
     collection.name = name;
     collection.standard = standard;
+    collection.stats = id;
+
+    new StatsData(id).save();
 
     collection.save();
   }
@@ -55,6 +58,16 @@ export function getCollection(id: string): Collection {
   return collection;
 }
 
+export function getStats(id: string): StatsData {
+  let stats = StatsData.load(id);
+
+  if (!stats) {
+    stats = new StatsData(id);
+  }
+
+  return stats;
+}
+
 export function getToken(contract: Address, tokenId: BigInt): Token {
   let id = getAddressId(contract, tokenId);
   let token = Token.load(id);
@@ -72,6 +85,9 @@ export function getToken(contract: Address, tokenId: BigInt): Token {
         token.name = `${collection.name} #${tokenId.toString()}`;
       } else {
         token.name = getName(contract, tokenId);
+        token.stats = id;
+
+        new StatsData(id).save();
       }
     }
 
