@@ -5,7 +5,7 @@ import { LEGION_ADDRESS } from "@treasure/constants";
 import { LegionCreated } from "../../generated/Legion Metadata Store/LegionMetadataStore";
 import { Transfer } from "../../generated/TreasureMarketplace/ERC721";
 import { Token } from "../../generated/schema";
-import { createLegionsCollection, getAddressId } from "../helpers";
+import { createLegionsCollection, getAddressId, getStats } from "../helpers";
 import * as common from "../mapping";
 
 const RARITY = [
@@ -64,6 +64,11 @@ export function handleLegionCreated(event: LegionCreated): void {
     `${TYPE[generation]} ${RARITY[params._rarity]}`;
 
   token.save();
+
+  let stats = getStats(token.collection);
+
+  stats.items += 1;
+  stats.save();
 }
 
 export function handleTransfer(event: Transfer): void {

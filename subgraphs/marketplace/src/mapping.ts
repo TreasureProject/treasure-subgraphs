@@ -27,6 +27,7 @@ import {
   ItemUpdated,
 } from "../generated/TreasureMarketplace/TreasureMarketplace";
 import {
+  Collection,
   Listing,
   StakedToken,
   Token,
@@ -37,8 +38,10 @@ import {
   exists,
   getAddressId,
   getCollection,
+  getStats,
   getToken,
   getUserAddressId,
+  isMint,
   removeFromArray,
   removeIfExists,
 } from "./helpers";
@@ -181,6 +184,25 @@ function handleTransfer(
     }
   }
 
+  if (isMint(from)) {
+    let collection = Collection.load(token.collection);
+
+    // Will be null from legions collection
+    if (collection != null) {
+      if (collection.standard == "ERC1155") {
+        let stats = getStats(token.id);
+
+        stats.items += quantity;
+        stats.save();
+      }
+
+      let stats = getStats(collection.id);
+
+      stats.items += quantity;
+      stats.save();
+    }
+  }
+
   let fromUserToken = UserToken.load(`${from.toHexString()}-${token.id}`);
 
   if (fromUserToken) {
@@ -209,11 +231,13 @@ function handleTransfer(
 function updateCollectionFloorAndTotal(id: string, timestamp: i64): void {
   let collection = getCollection(id);
   let floorPrices = new TypedMap<string, BigInt>();
+  let tokenListings = new Map<string, number>();
   let listings = collection.listings;
   let length = listings.length;
+  let stats = getStats(id);
 
-  collection.floorPrice = BigInt.zero();
-  collection.totalListings = 0;
+  collection.floorPrice = stats.floorPrice = BigInt.zero();
+  collection.totalListings = stats.listings = 0;
 
   for (let index = 0; index < length; index++) {
     let id = listings[index];
@@ -236,6 +260,14 @@ function updateCollectionFloorAndTotal(id: string, timestamp: i64): void {
 
         if (collection.standard == "ERC1155") {
           let tokenFloorPrice = floorPrices.get(listing.token);
+          let currentTokenListings = tokenListings.has(listing.token)
+            ? tokenListings.get(listing.token)
+            : 0;
+
+          tokenListings.set(
+            listing.token,
+            (currentTokenListings += listing.quantity)
+          );
 
           if (
             !tokenFloorPrice ||
@@ -246,10 +278,10 @@ function updateCollectionFloorAndTotal(id: string, timestamp: i64): void {
         }
 
         if (floorPrice.isZero() || floorPrice.gt(pricePerItem)) {
-          collection.floorPrice = pricePerItem;
+          collection.floorPrice = stats.floorPrice = pricePerItem;
         }
 
-        collection.totalListings += listing.quantity;
+        collection.totalListings = stats.listings += listing.quantity;
       }
     }
   }
@@ -259,6 +291,10 @@ function updateCollectionFloorAndTotal(id: string, timestamp: i64): void {
   for (let index = 0; index < entries.length; index++) {
     let entry = entries[index];
     let token = Token.load(entry.key);
+    let stats = getStats(entry.key);
+
+    stats.floorPrice = entry.value;
+    stats.save();
 
     if (token) {
       token.floorPrice = entry.value;
@@ -266,7 +302,18 @@ function updateCollectionFloorAndTotal(id: string, timestamp: i64): void {
     }
   }
 
+  let keys = tokenListings.keys();
+
+  for (let index = 0; index < keys.length; index++) {
+    let key = keys[index];
+    let stats = getStats(key);
+
+    stats.listings = tokenListings.get(key) as i32;
+    stats.save();
+  }
+
   collection.save();
+  stats.save();
 }
 
 function normalizeTime(value: BigInt): BigInt {
@@ -290,6 +337,21 @@ export function handleItemCanceled(event: ItemCanceled): void {
   }
 
   removeIfExists("Listing", listing.id);
+
+  let collection = getCollection(listing.collection);
+
+  // Update ERC1155 stats
+  if (collection.standard == "ERC1155") {
+    let stats = getStats(listing.token);
+
+    // Last listing was removed. Clear floor price.
+    if (stats.listings == listing.quantity) {
+      stats.floorPrice = BigInt.zero();
+      stats.listings = 0;
+    }
+
+    stats.save();
+  }
 
   updateCollectionFloorAndTotal(listing.collection, getTime(event));
 }
@@ -370,18 +432,40 @@ export function handleItemSold(event: ItemSold): void {
   sold.save();
 
   let collection = getCollection(listing.collection);
+  let stats = getStats(collection.stats);
 
   collection.totalSales = collection.totalSales.plus(BigInt.fromI32(1));
-  collection.totalVolume = collection.totalVolume.plus(
+  collection.totalVolume = stats.volume = collection.totalVolume.plus(
     listing.pricePerItem.times(BigInt.fromI32(quantity))
   );
 
-  // TODO: Not sure if this is needeed, but put it in for now.
+  stats.sales = collection.totalSales.toI32();
+
+  // TODO: Not sure if this is needed, but put it in for now.
   if (listing.quantity == 0) {
     collection.listings = removeFromArray(collection.listings, listing.id);
   }
 
   collection.save();
+  stats.save();
+
+  // Update ERC1155 stats
+  if (collection.standard == "ERC1155") {
+    let stats = getStats(listing.token);
+
+    stats.sales += 1;
+    stats.volume = stats.volume.plus(
+      listing.pricePerItem.times(BigInt.fromI32(quantity))
+    );
+
+    // Last listing was removed. Clear floor price.
+    if (stats.listings == quantity) {
+      stats.floorPrice = BigInt.zero();
+      stats.listings = 0;
+    }
+
+    stats.save();
+  }
 
   updateCollectionFloorAndTotal(collection.id, getTime(event));
 }

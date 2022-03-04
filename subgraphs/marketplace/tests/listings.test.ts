@@ -1,8 +1,12 @@
 import { assert, clearStore, test } from "matchstick-as/assembly";
 
-import { Address } from "@graphprotocol/graph-ts";
+import { Address, BigInt } from "@graphprotocol/graph-ts";
 
-import { LEGION_ADDRESS, MARKETPLACE_BUYER_ADDRESS } from "@treasure/constants";
+import {
+  LEGION_ADDRESS,
+  MARKETPLACE_BUYER_ADDRESS,
+  TREASURE_ADDRESS,
+} from "@treasure/constants";
 
 import {
   handleItemCanceled,
@@ -15,6 +19,7 @@ import {
   handleTransfer as handleLegionTransfer,
 } from "../src/mappings/legions";
 import { handleTransfer as handleSmolBrainsTransfer } from "../src/mappings/smol-brains";
+import { handleTransferSingle } from "../src/mappings/treasures";
 import {
   createItemCanceledEvent,
   createItemListedEvent,
@@ -22,10 +27,12 @@ import {
   createItemUpdatedEvent,
   createLegionCreatedEvent,
   createTransferEvent,
+  createTransferSingleEvent,
 } from "./utils";
 
 const COLLECTION_ENTITY_TYPE = "Collection";
 const LISTING_ENTITY_TYPE = "Listing";
+const STATS_ENTITY_TYPE = "StatsData";
 const USER_TOKEN_ENTITY_TYPE = "UserToken";
 const USER_ADDRESS = "0x461950b159366edcd2bcbee8126d973ac49238e0";
 const BUYER_ADDRESS = "0x999950b159366edcd2bcbee8126d973ac4923111";
@@ -699,5 +706,196 @@ test("expire listing when block timestamp is past", () => {
     collectionId,
     "listings",
     `[${firstListingId}, ${secondListingId}]`
+  );
+});
+
+test("handles the stats properly", () => {
+  clearStore();
+
+  let mintEvent = createTransferSingleEvent(
+    TREASURE_ADDRESS,
+    Address.zero().toHexString(),
+    USER_ADDRESS,
+    95
+  );
+
+  handleTransferSingle(mintEvent);
+
+  mintEvent = createTransferSingleEvent(
+    TREASURE_ADDRESS,
+    Address.zero().toHexString(),
+    USER_ADDRESS,
+    95
+  );
+
+  handleTransferSingle(mintEvent);
+
+  mintEvent = createTransferSingleEvent(
+    TREASURE_ADDRESS,
+    Address.zero().toHexString(),
+    USER_ADDRESS,
+    94
+  );
+
+  handleTransferSingle(mintEvent);
+
+  let itemListedEvent = createItemListedEvent(
+    USER_ADDRESS,
+    TREASURE_ADDRESS,
+    95,
+    1,
+    50
+  );
+
+  handleItemListed(itemListedEvent);
+
+  const collectionId = TREASURE_ADDRESS.toHexString();
+  const firstId = `${collectionId}-0x5f`;
+  const secondId = `${collectionId}-0x5e`;
+
+  // Token 95 specific
+  assert.fieldEquals(STATS_ENTITY_TYPE, firstId, "floorPrice", "50");
+  assert.fieldEquals(STATS_ENTITY_TYPE, firstId, "items", "2");
+  assert.fieldEquals(STATS_ENTITY_TYPE, firstId, "listings", "1");
+  assert.fieldEquals(STATS_ENTITY_TYPE, firstId, "sales", "0");
+  assert.fieldEquals(STATS_ENTITY_TYPE, firstId, "volume", "0");
+
+  // Token 94 specific
+  assert.fieldEquals(STATS_ENTITY_TYPE, secondId, "floorPrice", "0");
+  assert.fieldEquals(STATS_ENTITY_TYPE, secondId, "items", "1");
+  assert.fieldEquals(STATS_ENTITY_TYPE, secondId, "listings", "0");
+  assert.fieldEquals(STATS_ENTITY_TYPE, secondId, "sales", "0");
+  assert.fieldEquals(STATS_ENTITY_TYPE, secondId, "volume", "0");
+
+  // Collection specific
+  assert.fieldEquals(STATS_ENTITY_TYPE, collectionId, "floorPrice", "50");
+  assert.fieldEquals(STATS_ENTITY_TYPE, collectionId, "items", "3");
+  assert.fieldEquals(STATS_ENTITY_TYPE, collectionId, "listings", "1");
+  assert.fieldEquals(STATS_ENTITY_TYPE, collectionId, "sales", "0");
+  assert.fieldEquals(STATS_ENTITY_TYPE, collectionId, "volume", "0");
+
+  itemListedEvent = createItemListedEvent(
+    USER_ADDRESS,
+    TREASURE_ADDRESS,
+    94,
+    1,
+    500
+  );
+
+  handleItemListed(itemListedEvent);
+
+  const itemUpdatedEvent = createItemUpdatedEvent(
+    USER_ADDRESS,
+    TREASURE_ADDRESS,
+    95,
+    2,
+    200
+  );
+
+  handleItemUpdated(itemUpdatedEvent);
+
+  let itemSoldEvent = createItemSoldEvent(
+    USER_ADDRESS,
+    BUYER_ADDRESS,
+    TREASURE_ADDRESS,
+    95,
+    1,
+    200
+  );
+
+  handleItemSold(itemSoldEvent);
+
+  let volume = BigInt.fromI32(200);
+
+  // Token 95 specific
+  assert.fieldEquals(STATS_ENTITY_TYPE, firstId, "floorPrice", "200");
+  assert.fieldEquals(STATS_ENTITY_TYPE, firstId, "items", "2");
+  assert.fieldEquals(STATS_ENTITY_TYPE, firstId, "listings", "1");
+  assert.fieldEquals(STATS_ENTITY_TYPE, firstId, "sales", "1");
+  assert.fieldEquals(STATS_ENTITY_TYPE, firstId, "volume", volume.toString());
+
+  // Token 94 specific
+  assert.fieldEquals(STATS_ENTITY_TYPE, secondId, "floorPrice", "500");
+  assert.fieldEquals(STATS_ENTITY_TYPE, secondId, "items", "1");
+  assert.fieldEquals(STATS_ENTITY_TYPE, secondId, "listings", "1");
+  assert.fieldEquals(STATS_ENTITY_TYPE, secondId, "sales", "0");
+  assert.fieldEquals(STATS_ENTITY_TYPE, secondId, "volume", "0");
+
+  // Collection specific
+  assert.fieldEquals(STATS_ENTITY_TYPE, collectionId, "floorPrice", "200");
+  assert.fieldEquals(STATS_ENTITY_TYPE, collectionId, "items", "3");
+  assert.fieldEquals(STATS_ENTITY_TYPE, collectionId, "listings", "2");
+  assert.fieldEquals(STATS_ENTITY_TYPE, collectionId, "sales", "1");
+  assert.fieldEquals(
+    STATS_ENTITY_TYPE,
+    collectionId,
+    "volume",
+    volume.toString()
+  );
+
+  itemSoldEvent = createItemSoldEvent(
+    USER_ADDRESS,
+    BUYER_ADDRESS,
+    TREASURE_ADDRESS,
+    95,
+    1,
+    200
+  );
+
+  handleItemSold(itemSoldEvent);
+
+  volume = volume.plus(BigInt.fromI32(200));
+
+  // Token 95 specific
+  assert.fieldEquals(STATS_ENTITY_TYPE, firstId, "floorPrice", "0");
+  assert.fieldEquals(STATS_ENTITY_TYPE, firstId, "items", "2");
+  assert.fieldEquals(STATS_ENTITY_TYPE, firstId, "listings", "0");
+  assert.fieldEquals(STATS_ENTITY_TYPE, firstId, "sales", "2");
+  assert.fieldEquals(STATS_ENTITY_TYPE, firstId, "volume", volume.toString());
+
+  // Token 94 specific
+  assert.fieldEquals(STATS_ENTITY_TYPE, secondId, "floorPrice", "500");
+  assert.fieldEquals(STATS_ENTITY_TYPE, secondId, "items", "1");
+  assert.fieldEquals(STATS_ENTITY_TYPE, secondId, "listings", "1");
+  assert.fieldEquals(STATS_ENTITY_TYPE, secondId, "sales", "0");
+  assert.fieldEquals(STATS_ENTITY_TYPE, secondId, "volume", "0");
+
+  // Collection specific
+  assert.fieldEquals(STATS_ENTITY_TYPE, collectionId, "floorPrice", "500");
+  assert.fieldEquals(STATS_ENTITY_TYPE, collectionId, "items", "3");
+  assert.fieldEquals(STATS_ENTITY_TYPE, collectionId, "listings", "1");
+  assert.fieldEquals(STATS_ENTITY_TYPE, collectionId, "sales", "2");
+  assert.fieldEquals(
+    STATS_ENTITY_TYPE,
+    collectionId,
+    "volume",
+    volume.toString()
+  );
+
+  const itemCanceledEvent = createItemCanceledEvent(
+    USER_ADDRESS,
+    TREASURE_ADDRESS,
+    94
+  );
+
+  handleItemCanceled(itemCanceledEvent);
+
+  // Token 94 specific
+  assert.fieldEquals(STATS_ENTITY_TYPE, secondId, "floorPrice", "0");
+  assert.fieldEquals(STATS_ENTITY_TYPE, secondId, "items", "1");
+  assert.fieldEquals(STATS_ENTITY_TYPE, secondId, "listings", "0");
+  assert.fieldEquals(STATS_ENTITY_TYPE, secondId, "sales", "0");
+  assert.fieldEquals(STATS_ENTITY_TYPE, secondId, "volume", "0");
+
+  // Collection specific
+  assert.fieldEquals(STATS_ENTITY_TYPE, collectionId, "floorPrice", "0");
+  assert.fieldEquals(STATS_ENTITY_TYPE, collectionId, "items", "3");
+  assert.fieldEquals(STATS_ENTITY_TYPE, collectionId, "listings", "0");
+  assert.fieldEquals(STATS_ENTITY_TYPE, collectionId, "sales", "2");
+  assert.fieldEquals(
+    STATS_ENTITY_TYPE,
+    collectionId,
+    "volume",
+    volume.toString()
   );
 });
