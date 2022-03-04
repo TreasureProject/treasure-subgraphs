@@ -1,4 +1,4 @@
-import { Address, BigInt, TypedMap } from "@graphprotocol/graph-ts";
+import { Address, BigInt, TypedMap, store } from "@graphprotocol/graph-ts";
 
 import {
   EXPLORER,
@@ -374,7 +374,13 @@ export function handleItemUpdated(event: ItemUpdated): void {
   listing.quantity = params.quantity.toI32();
   listing.pricePerItem = params.pricePerItem;
 
-  listing.save();
+  // Bug existed in contract that allowed quantity to be updated to 0, but then couldn't be sold.
+  // Remove this listing as it is invalid.
+  if (listing.quantity == 0) {
+    store.remove("Listing", listing.id);
+  } else {
+    listing.save();
+  }
 
   updateCollectionFloorAndTotal(listing.collection);
 }
