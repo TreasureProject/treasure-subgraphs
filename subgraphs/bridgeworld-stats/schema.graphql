@@ -31,7 +31,7 @@ enum LegionClass {
   Spellcaster
   Riverman
   Numeraire
-  "All-Class"
+  AllClass
   Origin
 }
 
