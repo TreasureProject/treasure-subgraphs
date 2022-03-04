@@ -1,6 +1,6 @@
 import { newMockEvent } from "matchstick-as/assembly";
 
-import { Address, ethereum } from "@graphprotocol/graph-ts";
+import { Address, BigInt, ethereum } from "@graphprotocol/graph-ts";
 
 import {
   MARKETPLACE_ADDRESS,
@@ -48,10 +48,12 @@ export const createItemListedEvent = (
   tokenId: i32,
   quantity: i32,
   price: i32,
-  expires: i32 = 0
+  expires: i32 = 1656403681,
+  timestamp: i32 = expires
 ): ItemListed => {
   const newEvent = changetype<ItemListed>(newMockEvent());
   newEvent.address = MARKETPLACE_ADDRESS;
+  newEvent.block.timestamp = BigInt.fromI32(timestamp);
   newEvent.parameters = [
     new ethereum.EventParam(
       "seller",
@@ -102,10 +104,12 @@ export const createItemUpdatedEvent = (
   tokenId: i32,
   quantity: i32,
   price: i32,
-  expires: i32 = 0
+  expires: i32 = 1656403681,
+  timestamp: i32 = expires
 ): ItemUpdated => {
   const newEvent = changetype<ItemUpdated>(newMockEvent());
   newEvent.address = MARKETPLACE_ADDRESS;
+  newEvent.block.timestamp = BigInt.fromI32(timestamp);
   newEvent.parameters = [
     new ethereum.EventParam(
       "seller",

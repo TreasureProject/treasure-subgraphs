@@ -435,7 +435,8 @@ test("supports expires in milliseconds", () => {
     1,
     1,
     50,
-    expires
+    expires,
+    expires / 1000
   );
 
   handleItemListed(itemListedEvent);
@@ -567,5 +568,136 @@ test("supports expires in seconds", () => {
     listingId,
     "expires",
     `${expires + 10}000`
+  );
+});
+
+test("expire listing when block timestamp is past", () => {
+  clearStore();
+
+  let mintEvent = createTransferEvent(
+    SMOL_BRAINS_ADDRESS,
+    Address.zero().toHexString(),
+    USER_ADDRESS,
+    1
+  );
+
+  handleSmolBrainsTransfer(mintEvent);
+
+  mintEvent = createTransferEvent(
+    SMOL_BRAINS_ADDRESS,
+    Address.zero().toHexString(),
+    USER_ADDRESS,
+    2
+  );
+
+  handleSmolBrainsTransfer(mintEvent);
+
+  let itemListedEvent = createItemListedEvent(
+    USER_ADDRESS,
+    SMOL_BRAINS_ADDRESS,
+    1,
+    1,
+    50
+  );
+
+  handleItemListed(itemListedEvent);
+
+  const contract = SMOL_BRAINS_ADDRESS.toHexString();
+  const collectionId = contract;
+  const firstId = `${contract}-0x1`;
+  const firstListingId = `${USER_ADDRESS}-${firstId}`;
+
+  assert.fieldEquals(LISTING_ENTITY_TYPE, firstListingId, "status", "Active");
+  assert.fieldEquals(LISTING_ENTITY_TYPE, firstListingId, "token", firstId);
+  assert.fieldEquals(LISTING_ENTITY_TYPE, firstListingId, "quantity", "1");
+  assert.fieldEquals(LISTING_ENTITY_TYPE, firstListingId, "pricePerItem", "50");
+  assert.fieldEquals(
+    LISTING_ENTITY_TYPE,
+    firstListingId,
+    "collection",
+    collectionId
+  );
+  assert.fieldEquals(
+    LISTING_ENTITY_TYPE,
+    firstListingId,
+    "seller",
+    USER_ADDRESS
+  );
+  assert.fieldEquals(
+    LISTING_ENTITY_TYPE,
+    firstListingId,
+    "expires",
+    "1656403681000"
+  );
+
+  assert.fieldEquals(
+    COLLECTION_ENTITY_TYPE,
+    collectionId,
+    "totalListings",
+    "1"
+  );
+  assert.fieldEquals(
+    COLLECTION_ENTITY_TYPE,
+    collectionId,
+    "listings",
+    `[${firstListingId}]`
+  );
+
+  itemListedEvent = createItemListedEvent(
+    USER_ADDRESS,
+    SMOL_BRAINS_ADDRESS,
+    2,
+    1,
+    50,
+    1656403682 as i32
+  );
+
+  handleItemListed(itemListedEvent);
+
+  const secondId = `${contract}-0x2`;
+  const secondListingId = `${USER_ADDRESS}-${secondId}`;
+
+  // First listing is now expired
+  assert.fieldEquals(LISTING_ENTITY_TYPE, firstListingId, "status", "Expired");
+
+  assert.fieldEquals(LISTING_ENTITY_TYPE, secondListingId, "status", "Active");
+  assert.fieldEquals(LISTING_ENTITY_TYPE, secondListingId, "token", secondId);
+  assert.fieldEquals(LISTING_ENTITY_TYPE, secondListingId, "quantity", "1");
+  assert.fieldEquals(
+    LISTING_ENTITY_TYPE,
+    secondListingId,
+    "pricePerItem",
+    "50"
+  );
+  assert.fieldEquals(
+    LISTING_ENTITY_TYPE,
+    secondListingId,
+    "collection",
+    collectionId
+  );
+  assert.fieldEquals(
+    LISTING_ENTITY_TYPE,
+    secondListingId,
+    "seller",
+    USER_ADDRESS
+  );
+  assert.fieldEquals(
+    LISTING_ENTITY_TYPE,
+    secondListingId,
+    "expires",
+    "1656403682000"
+  );
+
+  assert.fieldEquals(
+    COLLECTION_ENTITY_TYPE,
+    collectionId,
+    "totalListings",
+    "1"
+  );
+  assert.fieldEquals(
+    COLLECTION_ENTITY_TYPE,
+    collectionId,
+    "listings",
+    `[${firstListingId}, ${secondListingId}]`
   );
 });
