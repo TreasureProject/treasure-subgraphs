@@ -47,7 +47,8 @@ export const createItemListedEvent = (
   contract: Address,
   tokenId: i32,
   quantity: i32,
-  price: i32
+  price: i32,
+  expires: i32 = 0
 ): ItemListed => {
   const newEvent = changetype<ItemListed>(newMockEvent());
   newEvent.address = MARKETPLACE_ADDRESS;
@@ -60,7 +61,7 @@ export const createItemListedEvent = (
     new ethereum.EventParam("tokenId", ethereum.Value.fromI32(tokenId)),
     new ethereum.EventParam("quantity", ethereum.Value.fromI32(quantity)),
     new ethereum.EventParam("pricePerItem", ethereum.Value.fromI32(price)),
-    new ethereum.EventParam("expirationTime", ethereum.Value.fromI32(0)),
+    new ethereum.EventParam("expirationTime", ethereum.Value.fromI32(expires)),
   ];
 
   return newEvent;
@@ -100,7 +101,8 @@ export const createItemUpdatedEvent = (
   contract: Address,
   tokenId: i32,
   quantity: i32,
-  price: i32
+  price: i32,
+  expires: i32 = 0
 ): ItemUpdated => {
   const newEvent = changetype<ItemUpdated>(newMockEvent());
   newEvent.address = MARKETPLACE_ADDRESS;
@@ -113,7 +115,7 @@ export const createItemUpdatedEvent = (
     new ethereum.EventParam("tokenId", ethereum.Value.fromI32(tokenId)),
     new ethereum.EventParam("quantity", ethereum.Value.fromI32(quantity)),
     new ethereum.EventParam("pricePerItem", ethereum.Value.fromI32(price)),
-    new ethereum.EventParam("expirationTime", ethereum.Value.fromI32(0)),
+    new ethereum.EventParam("expirationTime", ethereum.Value.fromI32(expires)),
   ];
 
   return newEvent;

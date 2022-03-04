@@ -249,6 +249,12 @@ function updateCollectionFloorAndTotal(id: string): void {
   collection.save();
 }
 
+function normalizeTime(value: BigInt): BigInt {
+  return value.toString().length == 10
+    ? value.times(BigInt.fromI32(1000))
+    : value;
+}
+
 export function handleItemCanceled(event: ItemCanceled): void {
   let params = event.params;
   let address = params.nftAddress;
@@ -283,7 +289,7 @@ export function handleItemListed(event: ItemListed): void {
 
   listing.blockTimestamp = event.block.timestamp;
   listing.collection = token.collection;
-  listing.expires = params.expirationTime;
+  listing.expires = normalizeTime(params.expirationTime);
   listing.pricePerItem = pricePerItem;
   listing.quantity = quantity.toI32();
 
@@ -369,7 +375,7 @@ export function handleItemUpdated(event: ItemUpdated): void {
     listing.blockTimestamp = event.block.timestamp;
   }
 
-  listing.expires = params.expirationTime;
+  listing.expires = normalizeTime(params.expirationTime);
   listing.status = exists("StakedToken", listing.id) ? "Inactive" : "Active";
   listing.quantity = params.quantity.toI32();
   listing.pricePerItem = params.pricePerItem;

@@ -414,3 +414,158 @@ test("removes listing when quantity updated to 0", () => {
 
   assert.notInStore(LISTING_ENTITY_TYPE, listingId);
 });
+
+test("supports expires in milliseconds", () => {
+  clearStore();
+
+  const expires = 1641042689000 as i32;
+
+  const mintEvent = createTransferEvent(
+    SMOL_BRAINS_ADDRESS,
+    Address.zero().toHexString(),
+    USER_ADDRESS,
+    1
+  );
+
+  handleSmolBrainsTransfer(mintEvent);
+
+  const itemListedEvent = createItemListedEvent(
+    USER_ADDRESS,
+    SMOL_BRAINS_ADDRESS,
+    1,
+    1,
+    50,
+    expires
+  );
+
+  handleItemListed(itemListedEvent);
+
+  const contract = SMOL_BRAINS_ADDRESS.toHexString();
+  const collectionId = contract;
+  const id = `${contract}-0x1`;
+  const listingId = `${USER_ADDRESS}-${id}`;
+
+  assert.fieldEquals(LISTING_ENTITY_TYPE, listingId, "status", "Active");
+  assert.fieldEquals(LISTING_ENTITY_TYPE, listingId, "token", id);
+  assert.fieldEquals(LISTING_ENTITY_TYPE, listingId, "quantity", "1");
+  assert.fieldEquals(LISTING_ENTITY_TYPE, listingId, "pricePerItem", "50");
+  assert.fieldEquals(
+    LISTING_ENTITY_TYPE,
+    listingId,
+    "collection",
+    collectionId
+  );
+  assert.fieldEquals(LISTING_ENTITY_TYPE, listingId, "seller", USER_ADDRESS);
+  assert.fieldEquals(LISTING_ENTITY_TYPE, listingId, "expires", `${expires}`);
+
+  assert.fieldEquals(
+    COLLECTION_ENTITY_TYPE,
+    collectionId,
+    "totalListings",
+    "1"
+  );
+  assert.fieldEquals(
+    COLLECTION_ENTITY_TYPE,
+    collectionId,
+    "listings",
+    `[${listingId}]`
+  );
+
+  const itemUpdatedEvent = createItemUpdatedEvent(
+    USER_ADDRESS,
+    SMOL_BRAINS_ADDRESS,
+    1,
+    1,
+    100,
+    expires + 10_000
+  );
+
+  handleItemUpdated(itemUpdatedEvent);
+
+  assert.fieldEquals(
+    LISTING_ENTITY_TYPE,
+    listingId,
+    "expires",
+    `${expires + 10_000}`
+  );
+});
+
+test("supports expires in seconds", () => {
+  clearStore();
+
+  const expires = 1641042689 as i32;
+
+  const mintEvent = createTransferEvent(
+    SMOL_BRAINS_ADDRESS,
+    Address.zero().toHexString(),
+    USER_ADDRESS,
+    1
+  );
+
+  handleSmolBrainsTransfer(mintEvent);
+
+  const itemListedEvent = createItemListedEvent(
+    USER_ADDRESS,
+    SMOL_BRAINS_ADDRESS,
+    1,
+    1,
+    50,
+    expires
+  );
+
+  handleItemListed(itemListedEvent);
+
+  const contract = SMOL_BRAINS_ADDRESS.toHexString();
+  const collectionId = contract;
+  const id = `${contract}-0x1`;
+  const listingId = `${USER_ADDRESS}-${id}`;
+
+  assert.fieldEquals(LISTING_ENTITY_TYPE, listingId, "status", "Active");
+  assert.fieldEquals(LISTING_ENTITY_TYPE, listingId, "token", id);
+  assert.fieldEquals(LISTING_ENTITY_TYPE, listingId, "quantity", "1");
+  assert.fieldEquals(LISTING_ENTITY_TYPE, listingId, "pricePerItem", "50");
+  assert.fieldEquals(
+    LISTING_ENTITY_TYPE,
+    listingId,
+    "collection",
+    collectionId
+  );
+  assert.fieldEquals(LISTING_ENTITY_TYPE, listingId, "seller", USER_ADDRESS);
+  assert.fieldEquals(
+    LISTING_ENTITY_TYPE,
+    listingId,
+    "expires",
+    `${expires}000`
+  );
+
+  assert.fieldEquals(
+    COLLECTION_ENTITY_TYPE,
+    collectionId,
+    "totalListings",
+    "1"
+  );
+  assert.fieldEquals(
+    COLLECTION_ENTITY_TYPE,
+    collectionId,
+    "listings",
+    `[${listingId}]`
+  );
+
+  const itemUpdatedEvent = createItemUpdatedEvent(
+    USER_ADDRESS,
+    SMOL_BRAINS_ADDRESS,
+    1,
+    1,
+    100,
+    expires + 10
+  );
+
+  handleItemUpdated(itemUpdatedEvent);
+
+  assert.fieldEquals(
+    LISTING_ENTITY_TYPE,
+    listingId,
+    "expires",
+    `${expires + 10}000`
+  );
+});
