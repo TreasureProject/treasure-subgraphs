@@ -408,7 +408,7 @@ export function handleItemSold(event: ItemSold): void {
 
   listing.quantity = listing.quantity - quantity;
 
-  if (listing.quantity == 0) {
+  if (listing.quantity == 0 || quantity == 0) {
     // Remove sold listing.
     removeIfExists("Listing", listing.id);
   } else {
@@ -425,7 +425,7 @@ export function handleItemSold(event: ItemSold): void {
   sold.expires = BigInt.zero();
   sold.pricePerItem = listing.pricePerItem;
   sold.quantity = quantity;
-  sold.status = "Sold";
+  sold.status = quantity == 0 ? "Invalid" : "Sold";
   sold.transactionLink = `https://${EXPLORER}/tx/${hash}`;
   sold.token = listing.token;
 
@@ -434,7 +434,9 @@ export function handleItemSold(event: ItemSold): void {
   let collection = getCollection(listing.collection);
   let stats = getStats(collection.stats);
 
-  collection.totalSales = collection.totalSales.plus(BigInt.fromI32(1));
+  collection.totalSales = collection.totalSales.plus(
+    BigInt.fromI32(quantity == 0 ? 0 : 1)
+  );
   collection.totalVolume = stats.volume = collection.totalVolume.plus(
     listing.pricePerItem.times(BigInt.fromI32(quantity))
   );
@@ -442,7 +444,7 @@ export function handleItemSold(event: ItemSold): void {
   stats.sales = collection.totalSales.toI32();
 
   // TODO: Not sure if this is needed, but put it in for now.
-  if (listing.quantity == 0) {
+  if (listing.quantity == 0 || quantity == 0) {
     collection.listings = removeFromArray(collection.listings, listing.id);
   }
 
