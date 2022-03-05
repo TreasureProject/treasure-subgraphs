@@ -15,6 +15,7 @@ jobs:
       bridgeworld_stats: ${{ steps.filter.outputs.bridgeworld_stats }}
       marketplace: ${{ steps.filter.outputs.marketplace }}
       migration: ${{ steps.filter.outputs.migration }}
+      seed_of_life: ${{ steps.filter.outputs.seed_of_life }}
       smolverse: ${{ steps.filter.outputs.smolverse }}
       snapshot: ${{ steps.filter.outputs.snapshot }}
     steps:
@@ -36,6 +37,9 @@ jobs:
           migration:
             - "packages/**"
             - "subgraphs/migration/**"
+          seed_of_life:
+            - "packages/**"
+            - "subgraphs/seed-of-life/**"
           smolverse:
             - "packages/**"
             - "subgraphs/smolverse/**"
@@ -181,6 +185,44 @@ jobs:
         env:
           GRAPH_ACCESS_TOKEN: ${{ secrets.GRAPH_ACCESS_TOKEN }}
         run: yarn graph auth --product hosted-service "$GRAPH_ACCESS_TOKEN"
+      - name: Deploy to PROD
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        run: yarn deploy:prod
+
+  seed_of_life:
+    name: Seed of Life Subgraph
+    if: ${{ needs.changes.outputs.seed_of_life == 'true' }}
+    needs: changes
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./subgraphs/seed-of-life
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: Install Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14
+      - name: Install dependencies
+        run: yarn --frozen-lockfile
+      - name: Prepare for DEV
+        if: github.event_name == 'pull_request' && github.event.pull_request.draft == false
+        run: yarn prepare:dev
+      - name: Prepare for PROD
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        run: yarn prepare:prod
+      - name: Generate code
+        run: yarn codegen
+      - name: Test
+        run: yarn test
+      - name: Authenticate
+        env:
+          GRAPH_ACCESS_TOKEN: ${{ secrets.GRAPH_ACCESS_TOKEN }}
+        run: yarn graph auth --product hosted-service "$GRAPH_ACCESS_TOKEN"
+      - name: Deploy to DEV
+        if: github.event_name == 'pull_request' && github.event.pull_request.draft == false
+        run: yarn deploy:dev
       - name: Deploy to PROD
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         run: yarn deploy:prod
