@@ -6,7 +6,8 @@ import {
   SEED_OF_LIFE_ADDRESS,
   SEED_OF_LIFE_ITEM_ADDRESS,
   SEED_OF_LIFE_TREASURES_ADDRESS,
-} from "../../../../packages/constants/src/index.template";
+} from "@treasure/constants";
+
 import { Collection, Token } from "../../generated/schema";
 import {
   BALANCER_CRYSTAL_NAME,

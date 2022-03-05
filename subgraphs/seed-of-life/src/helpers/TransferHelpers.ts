@@ -20,7 +20,7 @@ export class TransferHelpers {
     let user = UserHelpers.getOrCreateUser(to.toHexString());
 
     let collection = CollectionHelpers.getOrCreateCollection(contract);
-    let token = TokenHelpers.getOrCreateToken(collection, tokenId, "Blah");
+    let token = TokenHelpers.getOrCreateToken(collection, tokenId, tokenName);
 
     let fromUserToken = UserToken.load(`${from.toHexString()}-${token.id}`);
 

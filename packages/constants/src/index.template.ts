@@ -39,7 +39,7 @@ export const SEED_OF_LIFE_ADDRESS = Address.fromString(
   "{{ seed_of_life_address }}"
 );
 export const SEED_OF_LIFE_ITEM_ADDRESS = Address.fromString(
-  "{{ seed_of_life_item_address }}"
+  "{{ sol_item_address }}"
 );
 export const IMBUED_SOUL_ADDRESS = Address.fromString(
   "{{ imbued_soul_address }}"
