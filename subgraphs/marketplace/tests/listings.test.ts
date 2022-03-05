@@ -899,3 +899,66 @@ test("handles the stats properly", () => {
     volume.toString()
   );
 });
+
+test("mark listings sold with 0 quantity as invalid", () => {
+  clearStore();
+
+  const mintEvent = createTransferEvent(
+    SMOL_BRAINS_ADDRESS,
+    Address.zero().toHexString(),
+    USER_ADDRESS,
+    1
+  );
+
+  handleSmolBrainsTransfer(mintEvent);
+
+  const itemListedEvent = createItemListedEvent(
+    USER_ADDRESS,
+    SMOL_BRAINS_ADDRESS,
+    1,
+    1,
+    50
+  );
+
+  handleItemListed(itemListedEvent);
+
+  const itemSoldEvent = createItemSoldEvent(
+    USER_ADDRESS,
+    BUYER_ADDRESS,
+    SMOL_BRAINS_ADDRESS,
+    1,
+    0,
+    50
+  );
+
+  handleItemSold(itemSoldEvent);
+
+  const contract = SMOL_BRAINS_ADDRESS.toHexString();
+  const collectionId = contract;
+  const id = `${contract}-0x1`;
+  const listingId = `${USER_ADDRESS}-${id}`;
+  const soldId = `${listingId}-0xa16081f360e3847006db660bae1c6d1b2e17ec2a`;
+
+  assert.notInStore(LISTING_ENTITY_TYPE, listingId);
+
+  assert.fieldEquals(LISTING_ENTITY_TYPE, soldId, "status", "Invalid");
+  assert.fieldEquals(LISTING_ENTITY_TYPE, soldId, "token", id);
+  assert.fieldEquals(LISTING_ENTITY_TYPE, soldId, "quantity", "0");
+  assert.fieldEquals(LISTING_ENTITY_TYPE, soldId, "pricePerItem", "50");
+
+  assert.fieldEquals(
+    COLLECTION_ENTITY_TYPE,
+    collectionId,
+    "totalListings",
+    "0"
+  );
+  assert.fieldEquals(COLLECTION_ENTITY_TYPE, collectionId, "totalSales", "0");
+  assert.fieldEquals(COLLECTION_ENTITY_TYPE, collectionId, "totalVolume", "0");
+  assert.fieldEquals(COLLECTION_ENTITY_TYPE, collectionId, "listings", "[]");
+
+  assert.fieldEquals(STATS_ENTITY_TYPE, collectionId, "floorPrice", "0");
+  assert.fieldEquals(STATS_ENTITY_TYPE, collectionId, "items", "1");
+  assert.fieldEquals(STATS_ENTITY_TYPE, collectionId, "listings", "0");
+  assert.fieldEquals(STATS_ENTITY_TYPE, collectionId, "sales", "0");
+  assert.fieldEquals(STATS_ENTITY_TYPE, collectionId, "volume", "0");
+});
