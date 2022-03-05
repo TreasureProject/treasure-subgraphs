@@ -10,38 +10,34 @@ export const TOKEN_STANDARD_ERC721 = "ERC721";
 export const TOKEN_STANDARD_ERC1155 = "ERC1155";
 
 export class Path {
-    private static _names: Array<string> = [
-        "NO_MAGIC",
-        "MAGIC",
-        "MAGIC_AND_BC"
-    ]
+  private static _names: Array<string> = ["NO_MAGIC", "MAGIC", "MAGIC_AND_BC"];
 
-    public static getName(intValue: number): string {
-        if (intValue >= this._names.length) {
-            throw new Error(`Bad enum value: ${intValue}`)
-        }
-
-        return this._names.at(intValue as i32);
+  public static getName(intValue: number): string {
+    if (intValue >= this._names.length) {
+      throw new Error(`Bad enum value: ${intValue}`);
     }
+
+    return this._names.at(intValue as i32);
+  }
 }
 
 export class LifeformRealm {
-    private static _names: Array<string> = [
-        "VESPER",
-        "SHERWOOD",
-        "THOUSAND_ISLES",
-        "TUL_NIELOHG_DESERT",
-        "DULKHAN_MOUNTAINS",
-        "MOLTANIA",
-        "NETHEREALM",
-        "MAGINCIA"
-    ]
+  private static _names: Array<string> = [
+    "VESPER",
+    "SHERWOOD",
+    "THOUSAND_ISLES",
+    "TUL_NIELOHG_DESERT",
+    "DULKHAN_MOUNTAINS",
+    "MOLTANIA",
+    "NETHEREALM",
+    "MAGINCIA",
+  ];
 
-    public static getName(intValue: number): string {
-        if (intValue >= this._names.length) {
-            throw new Error(`Bad enum value: ${intValue}`)
-        }
-
-        return this._names.at(intValue as i32);
+  public static getName(intValue: number): string {
+    if (intValue >= this._names.length) {
+      throw new Error(`Bad enum value: ${intValue}`);
     }
+
+    return this._names.at(intValue as i32);
+  }
 }

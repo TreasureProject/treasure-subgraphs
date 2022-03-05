@@ -1,65 +1,80 @@
-import { LifeformCreated, StartedClaimingImbuedSoul, ImbuedSoulClaimed } from "../../generated/SeedEvolution/SeedEvolution";
-import { TransferHelpers } from "../helpers/TransferHelpers";
 import { BigInt, log, store } from "@graphprotocol/graph-ts";
-import { UserHelpers } from "../helpers/UserHelpers";
-import { ClaimLifeform, Lifeform, Random, StakedTreasure, UserApproval } from "../../generated/schema";
-import { LifeformRealm, Path } from "../helpers/constants";
+
+import {
+  ImbuedSoulClaimed,
+  LifeformCreated,
+  StartedClaimingImbuedSoul,
+} from "../../generated/SeedEvolution/SeedEvolution";
+import {
+  ClaimLifeform,
+  Lifeform,
+  Random,
+  StakedTreasure,
+  UserApproval,
+} from "../../generated/schema";
 import { RandomHelpers } from "../helpers/RandomHelpers";
+import { TransferHelpers } from "../helpers/TransferHelpers";
+import { UserHelpers } from "../helpers/UserHelpers";
+import { LifeformRealm, Path } from "../helpers/constants";
 
 export function handleLifeformCreated(event: LifeformCreated): void {
-    let evolutionInfo = event.params._evolutionInfo;
+  let evolutionInfo = event.params._evolutionInfo;
 
-    let user = UserHelpers.getOrCreateUser(evolutionInfo.owner.toHexString());
+  let user = UserHelpers.getOrCreateUser(evolutionInfo.owner.toHexString());
 
-    let lifeform = new Lifeform(event.params._lifeformId.toHexString());
+  let lifeform = new Lifeform(event.params._lifeformId.toHexString());
 
-    let random = RandomHelpers.getOrCreateRandom(evolutionInfo.requestId);
-    random._lifeformId = lifeform.id;
-    random.save();
+  let random = RandomHelpers.getOrCreateRandom(evolutionInfo.requestId);
+  random._lifeformId = lifeform.id;
+  random.save();
 
-    lifeform.creationTimestamp = evolutionInfo.startTime;
-    lifeform.user = user.id;
-    lifeform.isReadyToRevealClass = false;
-    lifeform.path = Path.getName(evolutionInfo.path);
-    lifeform.firstRealm = LifeformRealm.getName(evolutionInfo.firstRealm);
-    lifeform.secondRealm = LifeformRealm.getName(evolutionInfo.secondRealm);
+  lifeform.creationTimestamp = evolutionInfo.startTime;
+  lifeform.user = user.id;
+  lifeform.isReadyToRevealClass = false;
+  lifeform.path = Path.getName(evolutionInfo.path);
+  lifeform.firstRealm = LifeformRealm.getName(evolutionInfo.firstRealm);
+  lifeform.secondRealm = LifeformRealm.getName(evolutionInfo.secondRealm);
 
-    for (let i = 0; i < evolutionInfo.stakedTreasureIds.length; i++) {
-        let stakedTreasure = new StakedTreasure(`${event.params._lifeformId.toHexString()} - ${i}`);
+  for (let i = 0; i < evolutionInfo.stakedTreasureIds.length; i++) {
+    let stakedTreasure = new StakedTreasure(
+      `${event.params._lifeformId.toHexString()} - ${i}`
+    );
 
-        stakedTreasure.treasureId = evolutionInfo.stakedTreasureIds[i];
-        stakedTreasure.treasureAmount = evolutionInfo.stakedTreasureAmounts[i];
+    stakedTreasure.treasureId = evolutionInfo.stakedTreasureIds[i];
+    stakedTreasure.treasureAmount = evolutionInfo.stakedTreasureAmounts[i];
 
-        stakedTreasure.save();
+    stakedTreasure.save();
 
-        lifeform.stakedTreasure.concat([stakedTreasure.id]);
-    }
+    lifeform.stakedTreasure.concat([stakedTreasure.id]);
+  }
 
-    lifeform.save();
+  lifeform.save();
 }
 
-export function handleStartedClaimingImbuedSoul(event: StartedClaimingImbuedSoul): void {
-    let lifeform = Lifeform.load(event.params._lifeformId.toHexString())!;
+export function handleStartedClaimingImbuedSoul(
+  event: StartedClaimingImbuedSoul
+): void {
+  let lifeform = Lifeform.load(event.params._lifeformId.toHexString())!;
 
-    let random = RandomHelpers.getOrCreateRandom(event.params._claimRequestId);
+  let random = RandomHelpers.getOrCreateRandom(event.params._claimRequestId);
 
-    let claimLifeform = new ClaimLifeform(lifeform.id);
-    claimLifeform.lifeform = lifeform.id;
-    claimLifeform.claimStatus = "NOT_READY";
+  let claimLifeform = new ClaimLifeform(lifeform.id);
+  claimLifeform.lifeform = lifeform.id;
+  claimLifeform.claimStatus = "NOT_READY";
 
-    claimLifeform.save();
+  claimLifeform.save();
 
-    random._claimLifeformId = claimLifeform.id;
+  random._claimLifeformId = claimLifeform.id;
 
-    random.save();
+  random.save();
 }
 
 export function handleImbuedSoulClaimed(event: ImbuedSoulClaimed): void {
-    let lifeform = Lifeform.load(event.params._lifeformId.toHexString());
-    if(!lifeform) {
-        return;
-    }
+  let lifeform = Lifeform.load(event.params._lifeformId.toHexString());
+  if (!lifeform) {
+    return;
+  }
 
-    store.remove("Lifeform", lifeform.id);
-    store.remove("ClaimLifeform", lifeform.id);
+  store.remove("Lifeform", lifeform.id);
+  store.remove("ClaimLifeform", lifeform.id);
 }

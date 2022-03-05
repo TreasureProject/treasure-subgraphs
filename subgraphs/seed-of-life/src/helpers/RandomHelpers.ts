@@ -1,41 +1,38 @@
-import { Collection, Random, Seeded, Token } from "../../generated/schema";
 import { BigInt } from "@graphprotocol/graph-ts";
 
+import { Collection, Random, Seeded, Token } from "../../generated/schema";
+
 export class RandomHelpers {
+  public static getOrCreateRandom(requestId: BigInt): Random {
+    const id = RandomHelpers.getRandomId(requestId);
+    let random = Random.load(id);
 
-    public static getOrCreateRandom(requestId: BigInt): Random {
-        const id = RandomHelpers.getRandomId(requestId);
-        let random = Random.load(id);
-
-        if (!random) {
-            random = new Random(id);
-            random.save();
-        }
-
-        return random;
+    if (!random) {
+      random = new Random(id);
+      random.save();
     }
 
-    public static getOrCreateSeeded(commitId: BigInt): Seeded {
-        const id = RandomHelpers.getSeededId(commitId);
-        let seeded = Seeded.load(id);
+    return random;
+  }
 
-        if (!seeded) {
-            seeded = new Seeded(id);
-            seeded._randomIds = [];
-            seeded.save();
-        }
+  public static getOrCreateSeeded(commitId: BigInt): Seeded {
+    const id = RandomHelpers.getSeededId(commitId);
+    let seeded = Seeded.load(id);
 
-        return seeded;
+    if (!seeded) {
+      seeded = new Seeded(id);
+      seeded._randomIds = [];
+      seeded.save();
     }
 
-    public static getRandomId(requestId: BigInt): string {
-        return requestId.toHexString();
-    }
+    return seeded;
+  }
 
-    public static getSeededId(commitId: BigInt): string {
-        return commitId.toHexString();
+  public static getRandomId(requestId: BigInt): string {
+    return requestId.toHexString();
+  }
 
-    }
-
-
+  public static getSeededId(commitId: BigInt): string {
+    return commitId.toHexString();
+  }
 }
