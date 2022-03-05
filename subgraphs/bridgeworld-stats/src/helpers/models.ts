@@ -1,19 +1,24 @@
-import { Address, BigInt } from "@graphprotocol/graph-ts";
+import { Address, BigInt, ethereum } from "@graphprotocol/graph-ts";
+
+import { HOURLY_STAT_INTERVAL_START_BLOCK } from "@treasure/constants";
 
 import {
   AtlasMineLockStat,
   AtlasMineStat,
+  ConsumableStat,
   CraftingDifficultyStat,
   CraftingStat,
   Legion,
   LegionStat,
+  PilgrimageStat,
   QuestingDifficultyStat,
   QuestingStat,
   SummoningStat,
   TreasureStat,
-  User,
+  UserStat,
 } from "../../generated/schema";
 import { LEGION_GENERATIONS, LEGION_RARITIES } from "./constants";
+import { getConsumableName } from "./consumable";
 import {
   SECONDS_IN_DAY,
   SECONDS_IN_HOUR,
@@ -35,18 +40,7 @@ import {
   getYearlyId,
 } from "./ids";
 import { etherToWei } from "./number";
-import { getName, getTier } from "./treasure";
-
-export function getOrCreateUser(address: Address): User {
-  const id = address.toHexString();
-  let user = User.load(id);
-  if (!user) {
-    user = new User(id);
-    user.save();
-  }
-
-  return user;
-}
+import { getTier, getTreasureName } from "./treasure";
 
 export function getLegion(tokenId: BigInt): Legion | null {
   return Legion.load(getLegionId(tokenId));
@@ -91,7 +85,12 @@ export function getLegionName(
     return customName;
   }
 
-  return `${LEGION_GENERATIONS[generation]} ${LEGION_RARITIES[rarity]}`;
+  const generationStr = LEGION_GENERATIONS[generation];
+  if (generationStr == "Recruit") {
+    return generationStr;
+  }
+
+  return `${generationStr} ${LEGION_RARITIES[rarity]}`;
 }
 
 export function getLegionSummonCost(generation: string): BigInt {
@@ -107,102 +106,115 @@ export function getLegionSummonCost(generation: string): BigInt {
 }
 
 export function getTimeIntervalAtlasMineStats(
-  eventTimestamp: BigInt
+  block: ethereum.Block
 ): AtlasMineStat[] {
-  const timestamp = eventTimestamp.toI64() * 1000;
+  const stats: AtlasMineStat[] = [];
+  const timestamp = block.timestamp.toI64() * 1000;
   const date = new Date(timestamp);
   const month = date.getUTCMonth();
   const year = date.getUTCFullYear();
 
-  // Hourly
-  const hourlyId = getHourlyId(timestamp);
-  const hourlyStat = (AtlasMineStat.load(hourlyId) ||
-    createAtlasMineStat(hourlyId)) as AtlasMineStat;
-  const startOfHour = getStartOfHour(timestamp);
-  hourlyStat.interval = "Hourly";
-  hourlyStat.startTimestamp = BigInt.fromI64(startOfHour);
-  hourlyStat.endTimestamp = BigInt.fromI64(startOfHour + SECONDS_IN_HOUR - 1);
-  hourlyStat.save();
+  if (!block.number.lt(HOURLY_STAT_INTERVAL_START_BLOCK)) {
+    // Hourly
+    const hourlyId = getHourlyId(timestamp);
+    let hourlyStat = AtlasMineStat.load(hourlyId);
+    if (!hourlyStat) {
+      hourlyStat = new AtlasMineStat(hourlyId);
+      const startOfHour = getStartOfHour(timestamp);
+      hourlyStat.interval = "Hourly";
+      hourlyStat.startTimestamp = BigInt.fromI64(startOfHour);
+      hourlyStat.endTimestamp = BigInt.fromI64(
+        startOfHour + SECONDS_IN_HOUR - 1
+      );
+      hourlyStat.save();
+    }
+
+    stats.push(hourlyStat);
+  }
 
   // Daily
   const dailyId = getDailyId(timestamp);
-  const dailyStat = (AtlasMineStat.load(dailyId) ||
-    createAtlasMineStat(dailyId)) as AtlasMineStat;
-  const startOfDay = getStartOfDay(timestamp);
-  dailyStat.interval = "Daily";
-  dailyStat.startTimestamp = BigInt.fromI64(startOfDay);
-  dailyStat.endTimestamp = BigInt.fromI64(startOfDay + SECONDS_IN_DAY - 1);
-  dailyStat.save();
+  let dailyStat = AtlasMineStat.load(dailyId);
+  if (!dailyStat) {
+    dailyStat = new AtlasMineStat(dailyId);
+    const startOfDay = getStartOfDay(timestamp);
+    dailyStat.interval = "Daily";
+    dailyStat.startTimestamp = BigInt.fromI64(startOfDay);
+    dailyStat.endTimestamp = BigInt.fromI64(startOfDay + SECONDS_IN_DAY - 1);
+    dailyStat.save();
+  }
+  stats.push(dailyStat);
 
   // Weekly
   const weeklyId = getWeeklyId(timestamp);
-  const weeklyStat = (AtlasMineStat.load(weeklyId) ||
-    createAtlasMineStat(weeklyId)) as AtlasMineStat;
-  const startOfWeek = getStartOfWeek(timestamp);
-  weeklyStat.interval = "Weekly";
-  weeklyStat.startTimestamp = BigInt.fromI64(startOfWeek);
-  weeklyStat.endTimestamp = BigInt.fromI64(
-    startOfWeek + SECONDS_IN_DAY * 7 - 1
-  );
-  weeklyStat.save();
+  let weeklyStat = AtlasMineStat.load(weeklyId);
+  if (!weeklyStat) {
+    weeklyStat = new AtlasMineStat(weeklyId);
+    const startOfWeek = getStartOfWeek(timestamp);
+    weeklyStat.interval = "Weekly";
+    weeklyStat.startTimestamp = BigInt.fromI64(startOfWeek);
+    weeklyStat.endTimestamp = BigInt.fromI64(
+      startOfWeek + SECONDS_IN_DAY * 7 - 1
+    );
+    weeklyStat.save();
+  }
+  stats.push(weeklyStat);
 
   // Monthly
   const monthlyId = getMonthlyId(timestamp);
-  const monthlyStat = (AtlasMineStat.load(monthlyId) ||
-    createAtlasMineStat(monthlyId)) as AtlasMineStat;
-  const startOfMonth = getStartOfMonth(timestamp);
-  monthlyStat.interval = "Monthly";
-  monthlyStat.startTimestamp = BigInt.fromI64(startOfMonth);
-  monthlyStat.endTimestamp = BigInt.fromI64(
-    startOfMonth + SECONDS_IN_DAY * getDaysInMonth(month, year) - 1
-  );
-  monthlyStat.save();
+  let monthlyStat = AtlasMineStat.load(monthlyId);
+  if (!monthlyStat) {
+    monthlyStat = new AtlasMineStat(monthlyId);
+    const startOfMonth = getStartOfMonth(timestamp);
+    monthlyStat.interval = "Monthly";
+    monthlyStat.startTimestamp = BigInt.fromI64(startOfMonth);
+    monthlyStat.endTimestamp = BigInt.fromI64(
+      startOfMonth + SECONDS_IN_DAY * getDaysInMonth(month, year) - 1
+    );
+    monthlyStat.save();
+  }
+  stats.push(monthlyStat);
 
   // Yearly
   const yearlyId = getYearlyId(timestamp);
-  const yearlyStat = (AtlasMineStat.load(yearlyId) ||
-    createAtlasMineStat(yearlyId)) as AtlasMineStat;
-  const startOfYear = getStartOfYear(timestamp);
-  yearlyStat.interval = "Yearly";
-  yearlyStat.startTimestamp = BigInt.fromI64(startOfYear);
-  yearlyStat.endTimestamp = BigInt.fromI64(
-    startOfYear + SECONDS_IN_DAY * getDaysInYear(year) - 1
-  );
-  yearlyStat.save();
+  let yearlyStat = AtlasMineStat.load(yearlyId);
+  if (!yearlyStat) {
+    yearlyStat = new AtlasMineStat(yearlyId);
+    const startOfYear = getStartOfYear(timestamp);
+    yearlyStat.interval = "Yearly";
+    yearlyStat.startTimestamp = BigInt.fromI64(startOfYear);
+    yearlyStat.endTimestamp = BigInt.fromI64(
+      startOfYear + SECONDS_IN_DAY * getDaysInYear(year) - 1
+    );
+    yearlyStat.save();
+  }
+  stats.push(yearlyStat);
 
   // All-time
   const allTimeId = getAllTimeId();
-  const allTimeStat = (AtlasMineStat.load(allTimeId) ||
-    createAtlasMineStat(allTimeId)) as AtlasMineStat;
-  allTimeStat.interval = "AllTime";
-  allTimeStat.save();
+  let allTimeStat = AtlasMineStat.load(allTimeId);
+  if (!allTimeStat) {
+    allTimeStat = new AtlasMineStat(allTimeId);
+    allTimeStat.interval = "AllTime";
+    allTimeStat.save();
+  }
+  stats.push(allTimeStat);
 
-  return [
-    hourlyStat,
-    dailyStat,
-    weeklyStat,
-    monthlyStat,
-    yearlyStat,
-    allTimeStat,
-  ];
-}
-
-export function createAtlasMineStat(id: string): AtlasMineStat {
-  const stat = new AtlasMineStat(id);
-  stat._activeAddresses = [];
-  stat._allAddresses = [];
-  stat.save();
-  return stat;
+  return stats;
 }
 
 export function getOrCreateAtlasMineLockStat(
   atlasMineStatId: string,
-  lock: i32
+  lock: i32,
+  startTimeStamp: BigInt | null = null,
+  endTimestamp: BigInt | null = null
 ): AtlasMineLockStat {
   const id = `${atlasMineStatId}-lock${lock}`;
   let lockStat = AtlasMineLockStat.load(id);
   if (!lockStat) {
     lockStat = new AtlasMineLockStat(id);
+    lockStat.startTimestamp = startTimeStamp;
+    lockStat.endTimestamp = endTimestamp;
     lockStat.atlasMineStat = atlasMineStatId;
     lockStat.lock = lock;
     lockStat.save();
@@ -212,102 +224,115 @@ export function getOrCreateAtlasMineLockStat(
 }
 
 export function getTimeIntervalCraftingStats(
-  eventTimestamp: BigInt
+  block: ethereum.Block
 ): CraftingStat[] {
-  const timestamp = eventTimestamp.toI64() * 1000;
+  const stats: CraftingStat[] = [];
+  const timestamp = block.timestamp.toI64() * 1000;
   const date = new Date(timestamp);
   const month = date.getUTCMonth();
   const year = date.getUTCFullYear();
 
-  // Hourly
-  const hourlyId = getHourlyId(timestamp);
-  const hourlyStat = (CraftingStat.load(hourlyId) ||
-    createCraftingStat(hourlyId)) as CraftingStat;
-  const startOfHour = getStartOfHour(timestamp);
-  hourlyStat.interval = "Hourly";
-  hourlyStat.startTimestamp = BigInt.fromI64(startOfHour);
-  hourlyStat.endTimestamp = BigInt.fromI64(startOfHour + SECONDS_IN_HOUR - 1);
-  hourlyStat.save();
+  if (!block.number.lt(HOURLY_STAT_INTERVAL_START_BLOCK)) {
+    // Hourly
+    const hourlyId = getHourlyId(timestamp);
+    let hourlyStat = CraftingStat.load(hourlyId);
+    if (!hourlyStat) {
+      hourlyStat = new CraftingStat(hourlyId);
+      const startOfHour = getStartOfHour(timestamp);
+      hourlyStat.interval = "Hourly";
+      hourlyStat.startTimestamp = BigInt.fromI64(startOfHour);
+      hourlyStat.endTimestamp = BigInt.fromI64(
+        startOfHour + SECONDS_IN_HOUR - 1
+      );
+      hourlyStat.save();
+    }
+
+    stats.push(hourlyStat);
+  }
 
   // Daily
   const dailyId = getDailyId(timestamp);
-  const dailyStat = (CraftingStat.load(dailyId) ||
-    createCraftingStat(dailyId)) as CraftingStat;
-  const startOfDay = getStartOfDay(timestamp);
-  dailyStat.interval = "Daily";
-  dailyStat.startTimestamp = BigInt.fromI64(startOfDay);
-  dailyStat.endTimestamp = BigInt.fromI64(startOfDay + SECONDS_IN_DAY - 1);
-  dailyStat.save();
+  let dailyStat = CraftingStat.load(dailyId);
+  if (!dailyStat) {
+    dailyStat = new CraftingStat(dailyId);
+    const startOfDay = getStartOfDay(timestamp);
+    dailyStat.interval = "Daily";
+    dailyStat.startTimestamp = BigInt.fromI64(startOfDay);
+    dailyStat.endTimestamp = BigInt.fromI64(startOfDay + SECONDS_IN_DAY - 1);
+    dailyStat.save();
+  }
+  stats.push(dailyStat);
 
   // Weekly
   const weeklyId = getWeeklyId(timestamp);
-  const weeklyStat = (CraftingStat.load(weeklyId) ||
-    createCraftingStat(weeklyId)) as CraftingStat;
-  const startOfWeek = getStartOfWeek(timestamp);
-  weeklyStat.interval = "Weekly";
-  weeklyStat.startTimestamp = BigInt.fromI64(startOfWeek);
-  weeklyStat.endTimestamp = BigInt.fromI64(
-    startOfWeek + SECONDS_IN_DAY * 7 - 1
-  );
-  weeklyStat.save();
+  let weeklyStat = CraftingStat.load(weeklyId);
+  if (!weeklyStat) {
+    weeklyStat = new CraftingStat(weeklyId);
+    const startOfWeek = getStartOfWeek(timestamp);
+    weeklyStat.interval = "Weekly";
+    weeklyStat.startTimestamp = BigInt.fromI64(startOfWeek);
+    weeklyStat.endTimestamp = BigInt.fromI64(
+      startOfWeek + SECONDS_IN_DAY * 7 - 1
+    );
+    weeklyStat.save();
+  }
+  stats.push(weeklyStat);
 
   // Monthly
   const monthlyId = getMonthlyId(timestamp);
-  const monthlyStat = (CraftingStat.load(monthlyId) ||
-    createCraftingStat(monthlyId)) as CraftingStat;
-  const startOfMonth = getStartOfMonth(timestamp);
-  monthlyStat.interval = "Monthly";
-  monthlyStat.startTimestamp = BigInt.fromI64(startOfMonth);
-  monthlyStat.endTimestamp = BigInt.fromI64(
-    startOfMonth + SECONDS_IN_DAY * getDaysInMonth(month, year) - 1
-  );
-  monthlyStat.save();
+  let monthlyStat = CraftingStat.load(monthlyId);
+  if (!monthlyStat) {
+    monthlyStat = new CraftingStat(monthlyId);
+    const startOfMonth = getStartOfMonth(timestamp);
+    monthlyStat.interval = "Monthly";
+    monthlyStat.startTimestamp = BigInt.fromI64(startOfMonth);
+    monthlyStat.endTimestamp = BigInt.fromI64(
+      startOfMonth + SECONDS_IN_DAY * getDaysInMonth(month, year) - 1
+    );
+    monthlyStat.save();
+  }
+  stats.push(monthlyStat);
 
   // Yearly
   const yearlyId = getYearlyId(timestamp);
-  const yearlyStat = (CraftingStat.load(yearlyId) ||
-    createCraftingStat(yearlyId)) as CraftingStat;
-  const startOfYear = getStartOfYear(timestamp);
-  yearlyStat.interval = "Yearly";
-  yearlyStat.startTimestamp = BigInt.fromI64(startOfYear);
-  yearlyStat.endTimestamp = BigInt.fromI64(
-    startOfYear + SECONDS_IN_DAY * getDaysInYear(year) - 1
-  );
-  yearlyStat.save();
+  let yearlyStat = CraftingStat.load(yearlyId);
+  if (!yearlyStat) {
+    yearlyStat = new CraftingStat(yearlyId);
+    const startOfYear = getStartOfYear(timestamp);
+    yearlyStat.interval = "Yearly";
+    yearlyStat.startTimestamp = BigInt.fromI64(startOfYear);
+    yearlyStat.endTimestamp = BigInt.fromI64(
+      startOfYear + SECONDS_IN_DAY * getDaysInYear(year) - 1
+    );
+    yearlyStat.save();
+  }
+  stats.push(yearlyStat);
 
   // All-time
   const allTimeId = getAllTimeId();
-  const allTimeStat = (CraftingStat.load(allTimeId) ||
-    createCraftingStat(allTimeId)) as CraftingStat;
-  allTimeStat.interval = "AllTime";
-  allTimeStat.save();
+  let allTimeStat = CraftingStat.load(allTimeId);
+  if (!allTimeStat) {
+    allTimeStat = new CraftingStat(allTimeId);
+    allTimeStat.interval = "AllTime";
+    allTimeStat.save();
+  }
+  stats.push(allTimeStat);
 
-  return [
-    hourlyStat,
-    dailyStat,
-    weeklyStat,
-    monthlyStat,
-    yearlyStat,
-    allTimeStat,
-  ];
-}
-
-export function createCraftingStat(id: string): CraftingStat {
-  const stat = new CraftingStat(id);
-  stat._activeAddresses = [];
-  stat._allAddresses = [];
-  stat.save();
-  return stat;
+  return stats;
 }
 
 export function getOrCreateCraftingDifficultyStat(
   craftingStatId: string,
-  difficulty: string
+  difficulty: string,
+  startTimeStamp: BigInt | null = null,
+  endTimestamp: BigInt | null = null
 ): CraftingDifficultyStat {
   const id = `${craftingStatId}-difficulty${difficulty}`;
   let stat = CraftingDifficultyStat.load(id);
   if (!stat) {
     stat = new CraftingDifficultyStat(id);
+    stat.startTimestamp = startTimeStamp;
+    stat.endTimestamp = endTimestamp;
     stat.craftingStat = craftingStatId;
     stat.difficulty = difficulty;
     stat.save();
@@ -316,103 +341,214 @@ export function getOrCreateCraftingDifficultyStat(
   return stat;
 }
 
-export function getTimeIntervalQuestingStats(
-  eventTimestamp: BigInt
-): QuestingStat[] {
-  const timestamp = eventTimestamp.toI64() * 1000;
+export function getTimeIntervalPilgrimageStats(
+  block: ethereum.Block
+): PilgrimageStat[] {
+  const stats: PilgrimageStat[] = [];
+  const timestamp = block.timestamp.toI64() * 1000;
   const date = new Date(timestamp);
   const month = date.getUTCMonth();
   const year = date.getUTCFullYear();
 
-  // Hourly
-  const hourlyId = getHourlyId(timestamp);
-  const hourlyStat = (QuestingStat.load(hourlyId) ||
-    createQuestingStat(hourlyId)) as QuestingStat;
-  const startOfHour = getStartOfHour(timestamp);
-  hourlyStat.interval = "Hourly";
-  hourlyStat.startTimestamp = BigInt.fromI64(startOfHour);
-  hourlyStat.endTimestamp = BigInt.fromI64(startOfHour + SECONDS_IN_HOUR - 1);
-  hourlyStat.save();
+  if (!block.number.lt(HOURLY_STAT_INTERVAL_START_BLOCK)) {
+    // Hourly
+    const hourlyId = getHourlyId(timestamp);
+    let hourlyStat = PilgrimageStat.load(hourlyId);
+    if (!hourlyStat) {
+      hourlyStat = new PilgrimageStat(hourlyId);
+      const startOfHour = getStartOfHour(timestamp);
+      hourlyStat.interval = "Hourly";
+      hourlyStat.startTimestamp = BigInt.fromI64(startOfHour);
+      hourlyStat.endTimestamp = BigInt.fromI64(
+        startOfHour + SECONDS_IN_HOUR - 1
+      );
+      hourlyStat.save();
+    }
+
+    stats.push(hourlyStat);
+  }
 
   // Daily
   const dailyId = getDailyId(timestamp);
-  const dailyStat = (QuestingStat.load(dailyId) ||
-    createQuestingStat(dailyId)) as QuestingStat;
-  const startOfDay = getStartOfDay(timestamp);
-  dailyStat.interval = "Daily";
-  dailyStat.startTimestamp = BigInt.fromI64(startOfDay);
-  dailyStat.endTimestamp = BigInt.fromI64(startOfDay + SECONDS_IN_DAY - 1);
-  dailyStat.save();
+  let dailyStat = PilgrimageStat.load(dailyId);
+  if (!dailyStat) {
+    dailyStat = new PilgrimageStat(dailyId);
+    const startOfDay = getStartOfDay(timestamp);
+    dailyStat.interval = "Daily";
+    dailyStat.startTimestamp = BigInt.fromI64(startOfDay);
+    dailyStat.endTimestamp = BigInt.fromI64(startOfDay + SECONDS_IN_DAY - 1);
+    dailyStat.save();
+  }
+  stats.push(dailyStat);
 
   // Weekly
   const weeklyId = getWeeklyId(timestamp);
-  const weeklyStat = (QuestingStat.load(weeklyId) ||
-    createQuestingStat(weeklyId)) as QuestingStat;
-  const startOfWeek = getStartOfWeek(timestamp);
-  weeklyStat.interval = "Weekly";
-  weeklyStat.startTimestamp = BigInt.fromI64(startOfWeek);
-  weeklyStat.endTimestamp = BigInt.fromI64(
-    startOfWeek + SECONDS_IN_DAY * 7 - 1
-  );
-  weeklyStat.save();
+  let weeklyStat = PilgrimageStat.load(weeklyId);
+  if (!weeklyStat) {
+    weeklyStat = new PilgrimageStat(weeklyId);
+    const startOfWeek = getStartOfWeek(timestamp);
+    weeklyStat.interval = "Weekly";
+    weeklyStat.startTimestamp = BigInt.fromI64(startOfWeek);
+    weeklyStat.endTimestamp = BigInt.fromI64(
+      startOfWeek + SECONDS_IN_DAY * 7 - 1
+    );
+    weeklyStat.save();
+  }
+  stats.push(weeklyStat);
 
   // Monthly
   const monthlyId = getMonthlyId(timestamp);
-  const monthlyStat = (QuestingStat.load(monthlyId) ||
-    createQuestingStat(monthlyId)) as QuestingStat;
-  const startOfMonth = getStartOfMonth(timestamp);
-  monthlyStat.interval = "Monthly";
-  monthlyStat.startTimestamp = BigInt.fromI64(startOfMonth);
-  monthlyStat.endTimestamp = BigInt.fromI64(
-    startOfMonth + SECONDS_IN_DAY * getDaysInMonth(month, year) - 1
-  );
-  monthlyStat.save();
+  let monthlyStat = PilgrimageStat.load(monthlyId);
+  if (!monthlyStat) {
+    monthlyStat = new PilgrimageStat(monthlyId);
+    const startOfMonth = getStartOfMonth(timestamp);
+    monthlyStat.interval = "Monthly";
+    monthlyStat.startTimestamp = BigInt.fromI64(startOfMonth);
+    monthlyStat.endTimestamp = BigInt.fromI64(
+      startOfMonth + SECONDS_IN_DAY * getDaysInMonth(month, year) - 1
+    );
+    monthlyStat.save();
+  }
+  stats.push(monthlyStat);
 
   // Yearly
   const yearlyId = getYearlyId(timestamp);
-  const yearlyStat = (QuestingStat.load(yearlyId) ||
-    createQuestingStat(yearlyId)) as QuestingStat;
-  const startOfYear = getStartOfYear(timestamp);
-  yearlyStat.interval = "Yearly";
-  yearlyStat.startTimestamp = BigInt.fromI64(startOfYear);
-  yearlyStat.endTimestamp = BigInt.fromI64(
-    startOfYear + SECONDS_IN_DAY * getDaysInYear(year) - 1
-  );
-  yearlyStat.save();
+  let yearlyStat = PilgrimageStat.load(yearlyId);
+  if (!yearlyStat) {
+    yearlyStat = new PilgrimageStat(yearlyId);
+    const startOfYear = getStartOfYear(timestamp);
+    yearlyStat.interval = "Yearly";
+    yearlyStat.startTimestamp = BigInt.fromI64(startOfYear);
+    yearlyStat.endTimestamp = BigInt.fromI64(
+      startOfYear + SECONDS_IN_DAY * getDaysInYear(year) - 1
+    );
+    yearlyStat.save();
+  }
+  stats.push(yearlyStat);
 
   // All-time
   const allTimeId = getAllTimeId();
-  const allTimeStat = (QuestingStat.load(allTimeId) ||
-    createQuestingStat(allTimeId)) as QuestingStat;
-  allTimeStat.interval = "AllTime";
-  allTimeStat.save();
+  let allTimeStat = PilgrimageStat.load(allTimeId);
+  if (!allTimeStat) {
+    allTimeStat = new PilgrimageStat(allTimeId);
+    allTimeStat.interval = "AllTime";
+    allTimeStat.save();
+  }
+  stats.push(allTimeStat);
 
-  return [
-    hourlyStat,
-    dailyStat,
-    weeklyStat,
-    monthlyStat,
-    yearlyStat,
-    allTimeStat,
-  ];
+  return stats;
 }
 
-export function createQuestingStat(id: string): QuestingStat {
-  const stat = new QuestingStat(id);
-  stat._activeAddresses = [];
-  stat._allAddresses = [];
-  stat.save();
-  return stat;
+export function getTimeIntervalQuestingStats(
+  block: ethereum.Block
+): QuestingStat[] {
+  const stats: QuestingStat[] = [];
+  const timestamp = block.timestamp.toI64() * 1000;
+  const date = new Date(timestamp);
+  const month = date.getUTCMonth();
+  const year = date.getUTCFullYear();
+
+  if (!block.number.lt(HOURLY_STAT_INTERVAL_START_BLOCK)) {
+    // Hourly
+    const hourlyId = getHourlyId(timestamp);
+    let hourlyStat = QuestingStat.load(hourlyId);
+    if (!hourlyStat) {
+      hourlyStat = new QuestingStat(hourlyId);
+      const startOfHour = getStartOfHour(timestamp);
+      hourlyStat.interval = "Hourly";
+      hourlyStat.startTimestamp = BigInt.fromI64(startOfHour);
+      hourlyStat.endTimestamp = BigInt.fromI64(
+        startOfHour + SECONDS_IN_HOUR - 1
+      );
+      hourlyStat.save();
+    }
+
+    stats.push(hourlyStat);
+  }
+
+  // Daily
+  const dailyId = getDailyId(timestamp);
+  let dailyStat = QuestingStat.load(dailyId);
+  if (!dailyStat) {
+    dailyStat = new QuestingStat(dailyId);
+    const startOfDay = getStartOfDay(timestamp);
+    dailyStat.interval = "Daily";
+    dailyStat.startTimestamp = BigInt.fromI64(startOfDay);
+    dailyStat.endTimestamp = BigInt.fromI64(startOfDay + SECONDS_IN_DAY - 1);
+    dailyStat.save();
+  }
+  stats.push(dailyStat);
+
+  // Weekly
+  const weeklyId = getWeeklyId(timestamp);
+  let weeklyStat = QuestingStat.load(weeklyId);
+  if (!weeklyStat) {
+    weeklyStat = new QuestingStat(weeklyId);
+    const startOfWeek = getStartOfWeek(timestamp);
+    weeklyStat.interval = "Weekly";
+    weeklyStat.startTimestamp = BigInt.fromI64(startOfWeek);
+    weeklyStat.endTimestamp = BigInt.fromI64(
+      startOfWeek + SECONDS_IN_DAY * 7 - 1
+    );
+    weeklyStat.save();
+  }
+  stats.push(weeklyStat);
+
+  // Monthly
+  const monthlyId = getMonthlyId(timestamp);
+  let monthlyStat = QuestingStat.load(monthlyId);
+  if (!monthlyStat) {
+    monthlyStat = new QuestingStat(monthlyId);
+    const startOfMonth = getStartOfMonth(timestamp);
+    monthlyStat.interval = "Monthly";
+    monthlyStat.startTimestamp = BigInt.fromI64(startOfMonth);
+    monthlyStat.endTimestamp = BigInt.fromI64(
+      startOfMonth + SECONDS_IN_DAY * getDaysInMonth(month, year) - 1
+    );
+    monthlyStat.save();
+  }
+  stats.push(monthlyStat);
+
+  // Yearly
+  const yearlyId = getYearlyId(timestamp);
+  let yearlyStat = QuestingStat.load(yearlyId);
+  if (!yearlyStat) {
+    yearlyStat = new QuestingStat(yearlyId);
+    const startOfYear = getStartOfYear(timestamp);
+    yearlyStat.interval = "Yearly";
+    yearlyStat.startTimestamp = BigInt.fromI64(startOfYear);
+    yearlyStat.endTimestamp = BigInt.fromI64(
+      startOfYear + SECONDS_IN_DAY * getDaysInYear(year) - 1
+    );
+    yearlyStat.save();
+  }
+  stats.push(yearlyStat);
+
+  // All-time
+  const allTimeId = getAllTimeId();
+  let allTimeStat = QuestingStat.load(allTimeId);
+  if (!allTimeStat) {
+    allTimeStat = new QuestingStat(allTimeId);
+    allTimeStat.interval = "AllTime";
+    allTimeStat.save();
+  }
+  stats.push(allTimeStat);
+
+  return stats;
 }
 
 export function getOrCreateQuestingDifficultyStat(
   questingStatId: string,
-  difficulty: string
+  difficulty: string,
+  startTimeStamp: BigInt | null = null,
+  endTimestamp: BigInt | null = null
 ): QuestingDifficultyStat {
   const id = `${questingStatId}-difficulty${difficulty}`;
   let stat = QuestingDifficultyStat.load(id);
   if (!stat) {
     stat = new QuestingDifficultyStat(id);
+    stat.startTimestamp = startTimeStamp;
+    stat.endTimestamp = endTimestamp;
     stat.questingStat = questingStatId;
     stat.difficulty = difficulty;
     stat.save();
@@ -422,108 +558,165 @@ export function getOrCreateQuestingDifficultyStat(
 }
 
 export function getTimeIntervalSummoningStats(
-  eventTimestamp: BigInt
+  block: ethereum.Block
 ): SummoningStat[] {
-  const timestamp = eventTimestamp.toI64() * 1000;
+  const stats: SummoningStat[] = [];
+  const timestamp = block.timestamp.toI64() * 1000;
   const date = new Date(timestamp);
   const month = date.getUTCMonth();
   const year = date.getUTCFullYear();
 
-  // Hourly
-  const hourlyId = getHourlyId(timestamp);
-  const hourlyStat = (SummoningStat.load(hourlyId) ||
-    createSummoningStat(hourlyId)) as SummoningStat;
-  const startOfHour = getStartOfHour(timestamp);
-  hourlyStat.interval = "Hourly";
-  hourlyStat.startTimestamp = BigInt.fromI64(startOfHour);
-  hourlyStat.endTimestamp = BigInt.fromI64(startOfHour + SECONDS_IN_HOUR - 1);
-  hourlyStat.save();
+  if (!block.number.lt(HOURLY_STAT_INTERVAL_START_BLOCK)) {
+    // Hourly
+    const hourlyId = getHourlyId(timestamp);
+    let hourlyStat = SummoningStat.load(hourlyId);
+    if (!hourlyStat) {
+      hourlyStat = new SummoningStat(hourlyId);
+      const startOfHour = getStartOfHour(timestamp);
+      hourlyStat.interval = "Hourly";
+      hourlyStat.startTimestamp = BigInt.fromI64(startOfHour);
+      hourlyStat.endTimestamp = BigInt.fromI64(
+        startOfHour + SECONDS_IN_HOUR - 1
+      );
+      hourlyStat.save();
+    }
+
+    stats.push(hourlyStat);
+  }
 
   // Daily
   const dailyId = getDailyId(timestamp);
-  const dailyStat = (SummoningStat.load(dailyId) ||
-    createSummoningStat(dailyId)) as SummoningStat;
-  const startOfDay = getStartOfDay(timestamp);
-  dailyStat.interval = "Daily";
-  dailyStat.startTimestamp = BigInt.fromI64(startOfDay);
-  dailyStat.endTimestamp = BigInt.fromI64(startOfDay + SECONDS_IN_DAY - 1);
-  dailyStat.save();
+  let dailyStat = SummoningStat.load(dailyId);
+  if (!dailyStat) {
+    dailyStat = new SummoningStat(dailyId);
+    const startOfDay = getStartOfDay(timestamp);
+    dailyStat.interval = "Daily";
+    dailyStat.startTimestamp = BigInt.fromI64(startOfDay);
+    dailyStat.endTimestamp = BigInt.fromI64(startOfDay + SECONDS_IN_DAY - 1);
+    dailyStat.save();
+  }
+  stats.push(dailyStat);
 
   // Weekly
   const weeklyId = getWeeklyId(timestamp);
-  const weeklyStat = (SummoningStat.load(weeklyId) ||
-    createSummoningStat(weeklyId)) as SummoningStat;
-  const startOfWeek = getStartOfWeek(timestamp);
-  weeklyStat.interval = "Weekly";
-  weeklyStat.startTimestamp = BigInt.fromI64(startOfWeek);
-  weeklyStat.endTimestamp = BigInt.fromI64(
-    startOfWeek + SECONDS_IN_DAY * 7 - 1
-  );
-  weeklyStat.save();
+  let weeklyStat = SummoningStat.load(weeklyId);
+  if (!weeklyStat) {
+    weeklyStat = new SummoningStat(weeklyId);
+    const startOfWeek = getStartOfWeek(timestamp);
+    weeklyStat.interval = "Weekly";
+    weeklyStat.startTimestamp = BigInt.fromI64(startOfWeek);
+    weeklyStat.endTimestamp = BigInt.fromI64(
+      startOfWeek + SECONDS_IN_DAY * 7 - 1
+    );
+    weeklyStat.save();
+  }
+  stats.push(weeklyStat);
 
   // Monthly
   const monthlyId = getMonthlyId(timestamp);
-  const monthlyStat = (SummoningStat.load(monthlyId) ||
-    createSummoningStat(monthlyId)) as SummoningStat;
-  const startOfMonth = getStartOfMonth(timestamp);
-  monthlyStat.interval = "Monthly";
-  monthlyStat.startTimestamp = BigInt.fromI64(startOfMonth);
-  monthlyStat.endTimestamp = BigInt.fromI64(
-    startOfMonth + SECONDS_IN_DAY * getDaysInMonth(month, year) - 1
-  );
-  monthlyStat.save();
+  let monthlyStat = SummoningStat.load(monthlyId);
+  if (!monthlyStat) {
+    monthlyStat = new SummoningStat(monthlyId);
+    const startOfMonth = getStartOfMonth(timestamp);
+    monthlyStat.interval = "Monthly";
+    monthlyStat.startTimestamp = BigInt.fromI64(startOfMonth);
+    monthlyStat.endTimestamp = BigInt.fromI64(
+      startOfMonth + SECONDS_IN_DAY * getDaysInMonth(month, year) - 1
+    );
+    monthlyStat.save();
+  }
+  stats.push(monthlyStat);
 
   // Yearly
   const yearlyId = getYearlyId(timestamp);
-  const yearlyStat = (SummoningStat.load(yearlyId) ||
-    createSummoningStat(yearlyId)) as SummoningStat;
-  const startOfYear = getStartOfYear(timestamp);
-  yearlyStat.interval = "Yearly";
-  yearlyStat.startTimestamp = BigInt.fromI64(startOfYear);
-  yearlyStat.endTimestamp = BigInt.fromI64(
-    startOfYear + SECONDS_IN_DAY * getDaysInYear(year) - 1
-  );
-  yearlyStat.save();
+  let yearlyStat = SummoningStat.load(yearlyId);
+  if (!yearlyStat) {
+    yearlyStat = new SummoningStat(yearlyId);
+    const startOfYear = getStartOfYear(timestamp);
+    yearlyStat.interval = "Yearly";
+    yearlyStat.startTimestamp = BigInt.fromI64(startOfYear);
+    yearlyStat.endTimestamp = BigInt.fromI64(
+      startOfYear + SECONDS_IN_DAY * getDaysInYear(year) - 1
+    );
+    yearlyStat.save();
+  }
+  stats.push(yearlyStat);
 
   // All-time
   const allTimeId = getAllTimeId();
-  const allTimeStat = (SummoningStat.load(allTimeId) ||
-    createSummoningStat(allTimeId)) as SummoningStat;
-  allTimeStat.interval = "AllTime";
-  allTimeStat.save();
+  let allTimeStat = SummoningStat.load(allTimeId);
+  if (!allTimeStat) {
+    allTimeStat = new SummoningStat(allTimeId);
+    allTimeStat.interval = "AllTime";
+    allTimeStat.save();
+  }
+  stats.push(allTimeStat);
 
-  return [
-    hourlyStat,
-    dailyStat,
-    weeklyStat,
-    monthlyStat,
-    yearlyStat,
-    allTimeStat,
-  ];
+  return stats;
 }
 
-export function createSummoningStat(id: string): SummoningStat {
-  const stat = new SummoningStat(id);
-  stat._activeAddresses = [];
-  stat._allAddresses = [];
-  stat.save();
+export function getOrCreateUserStat(
+  statId: string,
+  address: Address,
+  startTimestamp: BigInt | null = null,
+  endTimestamp: BigInt | null = null,
+  interval: string | null = null
+): UserStat {
+  const id = `${statId}-${address.toHexString()}`;
+  let stat = UserStat.load(id);
+  if (!stat) {
+    stat = new UserStat(id);
+    stat.address = address.toHexString();
+    stat.startTimestamp = startTimestamp;
+    stat.endTimestamp = endTimestamp;
+    stat.interval = (interval || "AllTime") as string;
+    stat.save();
+  }
+
   return stat;
 }
 
 export function getOrCreateLegionStat(
   summoningStatId: string,
-  legion: Legion
+  legion: Legion,
+  startTimestamp: BigInt | null = null,
+  endTimestamp: BigInt | null = null,
+  withClass: boolean = false
 ): LegionStat {
-  const id = `${summoningStatId}-${legion.name
-    .toLowerCase()
-    .split(" ")
-    .join("-")}`;
+  const id = [
+    summoningStatId,
+    legion.name.toLowerCase().split(" ").join("-"),
+    withClass ? legion.legionClass.toLowerCase() : null,
+  ]
+    .filter((x) => !!x)
+    .join("-");
   let stat = LegionStat.load(id);
   if (!stat) {
     stat = new LegionStat(id);
+    stat.startTimestamp = startTimestamp;
+    stat.endTimestamp = endTimestamp;
     stat.generation = legion.generation;
     stat.rarity = legion.rarity;
+    if (withClass) {
+      stat.legionClass = legion.legionClass;
+    }
     stat.name = legion.name;
+    stat.save();
+  }
+
+  return stat;
+}
+
+export function getOrCreateConsumableStat(
+  statId: string,
+  tokenId: BigInt
+): ConsumableStat {
+  const id = `${statId}-${tokenId.toHexString()}`;
+  let stat = ConsumableStat.load(id);
+  if (!stat) {
+    stat = new ConsumableStat(id);
+    stat.tokenId = tokenId;
+    stat.name = getConsumableName(tokenId);
     stat.save();
   }
 
@@ -532,14 +725,18 @@ export function getOrCreateLegionStat(
 
 export function getOrCreateTreasureStat(
   statId: string,
-  tokenId: BigInt
+  tokenId: BigInt,
+  startTimestamp: BigInt | null = null,
+  endTimestamp: BigInt | null = null
 ): TreasureStat {
   const id = `${statId}-${tokenId.toHexString()}`;
   let stat = TreasureStat.load(id);
   if (!stat) {
     stat = new TreasureStat(id);
+    stat.startTimestamp = startTimestamp;
+    stat.endTimestamp = endTimestamp;
     stat.tokenId = tokenId;
-    stat.name = getName(tokenId);
+    stat.name = getTreasureName(tokenId);
     stat.tier = getTier(tokenId);
     stat.save();
   }

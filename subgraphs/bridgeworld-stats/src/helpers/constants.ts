@@ -1,6 +1,19 @@
-import { BigDecimal, BigInt } from "@graphprotocol/graph-ts";
+import { BigDecimal } from "@graphprotocol/graph-ts";
 
 export const CRAFT_DIFFICULTIES = ["Prism", "HarvesterPart", "Extractor"];
+
+export const LEGION_CLASSES = [
+  "Recruit",
+  "Siege",
+  "Fighter",
+  "Assassin",
+  "Ranged",
+  "Spellcaster",
+  "Riverman",
+  "Numeraire",
+  "AllClass",
+  "Origin",
+];
 
 export const LEGION_GENERATIONS = ["Genesis", "Auxiliary", "Recruit"];
 

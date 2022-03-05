@@ -2,6 +2,8 @@ import { newMockEvent } from "matchstick-as";
 
 import { Address, BigInt, ethereum } from "@graphprotocol/graph-ts";
 
+import { HOURLY_STAT_INTERVAL_START_BLOCK } from "@treasure/constants";
+
 import {
   Deposit,
   Harvest,
@@ -15,6 +17,7 @@ export function createDepositEvent(
   lock: i32
 ): Deposit {
   const event = changetype<Deposit>(newMockEvent());
+  event.block.number = HOURLY_STAT_INTERVAL_START_BLOCK;
   event.block.timestamp = BigInt.fromI32(timestamp);
   event.parameters = [
     new ethereum.EventParam(
@@ -35,6 +38,7 @@ export function createWithdrawEvent(
   amount: i32
 ): Withdraw {
   const event = changetype<Withdraw>(newMockEvent());
+  event.block.number = HOURLY_STAT_INTERVAL_START_BLOCK;
   event.block.timestamp = BigInt.fromI32(timestamp);
   event.parameters = [
     new ethereum.EventParam(
@@ -54,6 +58,7 @@ export function createHarvestEvent(
   amount: i32
 ): Harvest {
   const event = changetype<Harvest>(newMockEvent());
+  event.block.number = HOURLY_STAT_INTERVAL_START_BLOCK;
   event.block.timestamp = BigInt.fromI32(timestamp);
   event.parameters = [
     new ethereum.EventParam(

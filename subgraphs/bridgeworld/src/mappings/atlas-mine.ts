@@ -1,4 +1,11 @@
-import { BigDecimal, BigInt, log, store } from "@graphprotocol/graph-ts";
+import {
+  Address,
+  BigDecimal,
+  BigInt,
+  ethereum,
+  log,
+  store,
+} from "@graphprotocol/graph-ts";
 
 import {
   Deposit as DepositEvent,
@@ -34,6 +41,16 @@ const TIMESTAMPS = [
   TWELVE_MONTHS,
 ];
 
+function getUserOrMultisig(event: ethereum.Event): string {
+  let transaction = event.transaction;
+  let transactionTo = transaction.to;
+  let to = transactionTo === null ? Address.zero() : transactionTo;
+  let isMultisig = to.notEqual(event.address);
+  let user = isMultisig ? to : transaction.from;
+
+  return user.toHexString();
+}
+
 export function handleDeposit(event: DepositEvent): void {
   let mine = event.address.toHexString();
   let params = event.params;
@@ -66,7 +83,7 @@ export function handleStaked(event: Staked): void {
   let quantity = params.amount;
   let boost = params.currentBoost;
   let addressId = getAddressId(nft, tokenId);
-  let userId = event.transaction.from.toHexString();
+  let userId = getUserOrMultisig(event);
   let stakedTokenId = `${userId}-${addressId}`;
 
   let user = User.load(userId);
@@ -97,7 +114,7 @@ export function handleUnstaked(event: Unstaked): void {
   let quantity = params.amount;
   let boost = params.currentBoost;
   let addressId = getAddressId(nft, tokenId);
-  let userId = event.transaction.from.toHexString();
+  let userId = getUserOrMultisig(event);
   let stakedTokenId = `${userId}-${addressId}`;
 
   let user = User.load(userId);

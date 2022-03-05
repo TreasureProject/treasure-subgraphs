@@ -19,7 +19,7 @@ export function getTier(tokenId: BigInt): i32 {
   }
 }
 
-export function getName(tokenId: BigInt): string {
+export function getTreasureName(tokenId: BigInt): string {
   let id = tokenId.toI32();
   switch (id) {
     case 1:
@@ -255,7 +255,7 @@ export function getName(tokenId: BigInt): string {
     case 164:
       return "Witches Broom";
     default:
-      log.error(`Name not handled: {}`, [id.toString()]);
+      log.error("Unhandled treasure name: {}", [id.toString()]);
       return "";
   }
 }

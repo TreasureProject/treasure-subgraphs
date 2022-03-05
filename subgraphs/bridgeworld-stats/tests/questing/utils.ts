@@ -2,6 +2,8 @@ import { newMockEvent } from "matchstick-as/assembly";
 
 import { Address, BigInt, ethereum } from "@graphprotocol/graph-ts";
 
+import { HOURLY_STAT_INTERVAL_START_BLOCK } from "@treasure/constants";
+
 import {
   QuestFinished,
   QuestRevealed,
@@ -16,6 +18,7 @@ export const createQuestStartedEvent = (
   difficulty: i32
 ): QuestStarted => {
   const event = changetype<QuestStarted>(newMockEvent());
+  event.block.number = HOURLY_STAT_INTERVAL_START_BLOCK;
   event.block.timestamp = BigInt.fromI32(timestamp);
   event.parameters = [
     new ethereum.EventParam(
@@ -41,6 +44,7 @@ export const createQuestRevealedEvent = (
   treasureId: i32 = 0
 ): QuestRevealed => {
   const event = changetype<QuestRevealed>(newMockEvent());
+  event.block.number = HOURLY_STAT_INTERVAL_START_BLOCK;
   event.block.timestamp = BigInt.fromI32(timestamp);
   event.parameters = [
     new ethereum.EventParam(
@@ -70,6 +74,7 @@ export const createQuestFinishedEvent = (
   tokenId: i32
 ): QuestFinished => {
   const event = changetype<QuestFinished>(newMockEvent());
+  event.block.number = HOURLY_STAT_INTERVAL_START_BLOCK;
   event.block.timestamp = BigInt.fromI32(timestamp);
   event.parameters = [
     new ethereum.EventParam(

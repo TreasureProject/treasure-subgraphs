@@ -3,9 +3,8 @@ import { assert, clearStore, test } from "matchstick-as";
 import { LEGION_ADDRESS } from "@treasure/constants";
 
 import { handleLegionCreated } from "../../src/mappings/legion";
+import { LEGION_ENTITY_TYPE } from "../utils";
 import { createLegionCreatedEvent } from "./utils";
-
-const LEGION_ENTITY_TYPE = "Legion";
 
 test("legion is created", () => {
   clearStore();

@@ -123,8 +123,6 @@ dataSources:
           handler: handlePilgrimagesStarted
         - event: PilgrimagesFinished(indexed address,uint256[],uint256[])
           handler: handlePilgrimagesFinished
-        - event: NoPilgrimagesToFinish(indexed address)
-          handler: handleNoPilgrimagesToFinish
       file: ./src/mappings/pilgrimage.ts
   - name: Questing
     kind: ethereum/contract

@@ -4,21 +4,10 @@
   "description": "Subgraph that powers Bridgeworld Statistics",
   "license": "MIT",
   "scripts": {
-    "build:arbitrum-testnet": "graph build",
-    "build:arbitrum": "graph build",
-    "build:mainnet": "true",
-    "codegen:arbitrum-testnet": "graph codegen",
-    "codegen:arbitrum": "graph codegen",
-    "codegen:mainnet": "true",
-    "deploy:arbitrum-testnet": "true",
-    "deploy:arbitrum": "graph deploy --product hosted-service treasureproject/bridgeworld-stats",
-    "deploy:mainnet": "true",
-    "prepare:arbitrum-testnet": "mustache ../../node_modules/@treasure/subgraph-config/src/arbitrum-testnet.json template.yaml > subgraph.yaml",
-    "prepare:arbitrum": "mustache ../../node_modules/@treasure/subgraph-config/src/arbitrum.json template.yaml > subgraph.yaml",
-    "prepare:mainnet": "true",
-    "test": "graph test",
-    "test:arbitrum-testnet": "yarn test",
-    "test:arbitrum": "yarn test",
-    "test:mainnet": "true"
+    "codegen": "graph codegen",
+    "deploy:prod": "graph deploy --product hosted-service treasureproject/bridgeworld-stats",
+    "prepare:dev": "yarn --cwd ../../packages/constants prepare:arbitrum-testnet && mustache ../../node_modules/@treasure/subgraph-config/src/arbitrum-testnet.json template.yaml > subgraph.yaml",
+    "prepare:prod": "yarn --cwd ../../packages/constants prepare:arbitrum && mustache ../../node_modules/@treasure/subgraph-config/src/arbitrum.json template.yaml > subgraph.yaml",
+    "test": "graph test"
   }
 }

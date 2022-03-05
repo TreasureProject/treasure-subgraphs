@@ -15,7 +15,8 @@ import {
   QUESTING_STAT_ENTITY_TYPE,
   TREASURE_STAT_ENTITY_TYPE,
   USER_ADDRESS,
-  USER_ENTITY_TYPE,
+  USER_ADDRESS2,
+  USER_STAT_ENTITY_TYPE,
 } from "../utils";
 import {
   createQuestFinishedEvent,
@@ -34,6 +35,8 @@ const statIds = [
   "all-time",
 ];
 
+const STAT_ENTITY_TYPE = QUESTING_STAT_ENTITY_TYPE;
+
 test("questing stats count quests started", () => {
   clearStore();
 
@@ -49,9 +52,6 @@ test("questing stats count quests started", () => {
   );
   handleQuestStartedWithDifficulty(questStartedEvent);
 
-  // Assert user data is updated
-  assert.fieldEquals(USER_ENTITY_TYPE, USER_ADDRESS, "questsStarted", "1");
-
   const intervals = [
     "Hourly",
     "Daily",
@@ -63,22 +63,14 @@ test("questing stats count quests started", () => {
 
   for (let i = 0; i < statIds.length; i++) {
     // Assert all time intervals are created
+    assert.fieldEquals(STAT_ENTITY_TYPE, statIds[i], "interval", intervals[i]);
+    assert.fieldEquals(STAT_ENTITY_TYPE, statIds[i], "questsStarted", "1");
+
+    // Assert all time intervals for user are created
     assert.fieldEquals(
-      QUESTING_STAT_ENTITY_TYPE,
-      statIds[i],
-      "interval",
-      intervals[i]
-    );
-    assert.fieldEquals(
-      QUESTING_STAT_ENTITY_TYPE,
-      statIds[i],
+      USER_STAT_ENTITY_TYPE,
+      `${statIds[i]}-${USER_ADDRESS}`,
       "questsStarted",
-      "1"
-    );
-    assert.fieldEquals(
-      QUESTING_STAT_ENTITY_TYPE,
-      statIds[i],
-      "activeAddressesCount",
       "1"
     );
 
@@ -101,61 +93,61 @@ test("questing stats count quests started", () => {
 
   // Assert start and end times are correct
   assert.fieldEquals(
-    QUESTING_STAT_ENTITY_TYPE,
+    STAT_ENTITY_TYPE,
     statIds[0],
     "startTimestamp",
     "1644390000"
   );
   assert.fieldEquals(
-    QUESTING_STAT_ENTITY_TYPE,
+    STAT_ENTITY_TYPE,
     statIds[0],
     "endTimestamp",
     "1644393599"
   );
   assert.fieldEquals(
-    QUESTING_STAT_ENTITY_TYPE,
+    STAT_ENTITY_TYPE,
     statIds[1],
     "startTimestamp",
     "1644364800"
   );
   assert.fieldEquals(
-    QUESTING_STAT_ENTITY_TYPE,
+    STAT_ENTITY_TYPE,
     statIds[1],
     "endTimestamp",
     "1644451199"
   );
   assert.fieldEquals(
-    QUESTING_STAT_ENTITY_TYPE,
+    STAT_ENTITY_TYPE,
     statIds[2],
     "startTimestamp",
     "1644105600"
   );
   assert.fieldEquals(
-    QUESTING_STAT_ENTITY_TYPE,
+    STAT_ENTITY_TYPE,
     statIds[2],
     "endTimestamp",
     "1644710399"
   );
   assert.fieldEquals(
-    QUESTING_STAT_ENTITY_TYPE,
+    STAT_ENTITY_TYPE,
     statIds[3],
     "startTimestamp",
     "1643673600"
   );
   assert.fieldEquals(
-    QUESTING_STAT_ENTITY_TYPE,
+    STAT_ENTITY_TYPE,
     statIds[3],
     "endTimestamp",
     "1646092799"
   );
   assert.fieldEquals(
-    QUESTING_STAT_ENTITY_TYPE,
+    STAT_ENTITY_TYPE,
     statIds[4],
     "startTimestamp",
     "1640995200"
   );
   assert.fieldEquals(
-    QUESTING_STAT_ENTITY_TYPE,
+    STAT_ENTITY_TYPE,
     statIds[4],
     "endTimestamp",
     "1672531199"
@@ -172,66 +164,18 @@ test("questing stats count quests started", () => {
   handleQuestStartedWithDifficulty(questStartedEvent2);
 
   // Assert previous intervals are unaffected
-  assert.fieldEquals(
-    QUESTING_STAT_ENTITY_TYPE,
-    statIds[0],
-    "questsStarted",
-    "1"
-  );
-  assert.fieldEquals(
-    QUESTING_STAT_ENTITY_TYPE,
-    statIds[1],
-    "questsStarted",
-    "1"
-  );
-  assert.fieldEquals(
-    QUESTING_STAT_ENTITY_TYPE,
-    statIds[2],
-    "questsStarted",
-    "1"
-  );
+  assert.fieldEquals(STAT_ENTITY_TYPE, statIds[0], "questsStarted", "1");
+  assert.fieldEquals(STAT_ENTITY_TYPE, statIds[1], "questsStarted", "1");
+  assert.fieldEquals(STAT_ENTITY_TYPE, statIds[2], "questsStarted", "1");
 
   // Assert new weekly interval was created
-  assert.fieldEquals(
-    QUESTING_STAT_ENTITY_TYPE,
-    "20220116-weekly",
-    "questsStarted",
-    "1"
-  );
-  assert.fieldEquals(
-    QUESTING_STAT_ENTITY_TYPE,
-    "20220116-weekly",
-    "activeAddressesCount",
-    "1"
-  );
+  assert.fieldEquals(STAT_ENTITY_TYPE, "20220116-weekly", "questsStarted", "1");
 
   // Assert new monthly interval was created
-  assert.fieldEquals(
-    QUESTING_STAT_ENTITY_TYPE,
-    "202201-monthly",
-    "questsStarted",
-    "1"
-  );
-  assert.fieldEquals(
-    QUESTING_STAT_ENTITY_TYPE,
-    "202201-monthly",
-    "activeAddressesCount",
-    "1"
-  );
+  assert.fieldEquals(STAT_ENTITY_TYPE, "202201-monthly", "questsStarted", "1");
 
   // Assert yearly interval contains both
-  assert.fieldEquals(
-    QUESTING_STAT_ENTITY_TYPE,
-    "2022-yearly",
-    "questsStarted",
-    "2"
-  );
-  assert.fieldEquals(
-    QUESTING_STAT_ENTITY_TYPE,
-    "2022-yearly",
-    "activeAddressesCount",
-    "2"
-  );
+  assert.fieldEquals(STAT_ENTITY_TYPE, "2022-yearly", "questsStarted", "2");
 });
 
 test("questing stats count consumables earned", () => {
@@ -260,48 +204,22 @@ test("questing stats count consumables earned", () => {
   );
   handleQuestRevealed(questRevealedEvent);
 
-  // Assert user data is updated
-  assert.fieldEquals(
-    USER_ENTITY_TYPE,
-    USER_ADDRESS,
-    "questingShardsEarned",
-    "3"
-  );
-  assert.fieldEquals(
-    USER_ENTITY_TYPE,
-    USER_ADDRESS,
-    "questingStarlightEarned",
-    "3"
-  );
-  assert.fieldEquals(
-    USER_ENTITY_TYPE,
-    USER_ADDRESS,
-    "questingUniversalLocksEarned",
-    "1"
-  );
-  assert.fieldEquals(
-    USER_ENTITY_TYPE,
-    USER_ADDRESS,
-    "questingTreasuresEarned",
-    "0"
-  );
-
   for (let i = 0; i < statIds.length; i++) {
     // Assert all time intervals are created
     assert.fieldEquals(
-      QUESTING_STAT_ENTITY_TYPE,
+      STAT_ENTITY_TYPE,
       statIds[i],
       "questingShardsEarned",
       "3"
     );
     assert.fieldEquals(
-      QUESTING_STAT_ENTITY_TYPE,
+      STAT_ENTITY_TYPE,
       statIds[i],
       "questingStarlightEarned",
       "3"
     );
     assert.fieldEquals(
-      QUESTING_STAT_ENTITY_TYPE,
+      STAT_ENTITY_TYPE,
       statIds[i],
       "questingUniversalLocksEarned",
       "1"
@@ -309,6 +227,32 @@ test("questing stats count consumables earned", () => {
     assert.fieldEquals(
       QUESTING_STAT_ENTITY_TYPE,
       statIds[i],
+      "questingTreasuresEarned",
+      "0"
+    );
+
+    // Assert all time intervals for user are created
+    assert.fieldEquals(
+      USER_STAT_ENTITY_TYPE,
+      `${statIds[i]}-${USER_ADDRESS}`,
+      "questingShardsEarned",
+      "3"
+    );
+    assert.fieldEquals(
+      USER_STAT_ENTITY_TYPE,
+      `${statIds[i]}-${USER_ADDRESS}`,
+      "questingStarlightEarned",
+      "3"
+    );
+    assert.fieldEquals(
+      USER_STAT_ENTITY_TYPE,
+      `${statIds[i]}-${USER_ADDRESS}`,
+      "questingUniversalLocksEarned",
+      "1"
+    );
+    assert.fieldEquals(
+      USER_STAT_ENTITY_TYPE,
+      `${statIds[i]}-${USER_ADDRESS}`,
       "questingTreasuresEarned",
       "0"
     );
@@ -393,19 +337,19 @@ test("questing stats count treasures earned", () => {
   );
   handleQuestRevealed(questRevealedEvent);
 
-  // Assert user data is updated
-  assert.fieldEquals(
-    USER_ENTITY_TYPE,
-    USER_ADDRESS,
-    "questingTreasuresEarned",
-    "1"
-  );
-
   for (let i = 0; i < statIds.length; i++) {
     // Assert all time intervals are created
     assert.fieldEquals(
       QUESTING_STAT_ENTITY_TYPE,
       statIds[i],
+      "questingTreasuresEarned",
+      "1"
+    );
+
+    // Assert all time intervals for user are created
+    assert.fieldEquals(
+      USER_STAT_ENTITY_TYPE,
+      `${statIds[i]}-${USER_ADDRESS}`,
       "questingTreasuresEarned",
       "1"
     );
@@ -451,38 +395,6 @@ test("questing stats count quests finished", () => {
   );
   handleQuestStartedWithDifficulty(questStartedEvent);
 
-  for (let i = 0; i < statIds.length; i++) {
-    // Assert all time intervals are created
-    assert.fieldEquals(
-      QUESTING_STAT_ENTITY_TYPE,
-      statIds[i],
-      "questsStarted",
-      "1"
-    );
-    assert.fieldEquals(
-      QUESTING_STAT_ENTITY_TYPE,
-      statIds[i],
-      "activeAddressesCount",
-      "1"
-    );
-
-    // Assert all time intervals for legion type are created
-    assert.fieldEquals(
-      LEGION_STAT_ENTITY_TYPE,
-      `${statIds[i]}-genesis-common`,
-      "questsStarted",
-      "1"
-    );
-
-    // Assert all time intervals for difficulty are created
-    assert.fieldEquals(
-      QUESTING_DIFFICULTY_STAT_ENTITY_TYPE,
-      `${statIds[i]}-difficultyEasy`,
-      "questsStarted",
-      "1"
-    );
-  }
-
   const questFinishedEvent = createQuestFinishedEvent(
     timestamp,
     USER_ADDRESS,
@@ -498,11 +410,13 @@ test("questing stats count quests finished", () => {
       "questsFinished",
       "1"
     );
+
+    // Assert all time intervals for user are created
     assert.fieldEquals(
-      QUESTING_STAT_ENTITY_TYPE,
-      statIds[i],
-      "activeAddressesCount",
-      "0"
+      USER_STAT_ENTITY_TYPE,
+      `${statIds[i]}-${USER_ADDRESS}`,
+      "questsFinished",
+      "1"
     );
 
     // Assert all time intervals for legion type are created
@@ -521,4 +435,45 @@ test("questing stats count quests finished", () => {
       "1"
     );
   }
+});
+
+test("questing stats track addresses", () => {
+  clearStore();
+
+  handleLegionCreated(createLegionCreatedEvent(1, 1, 4, 3));
+  handleLegionCreated(createLegionCreatedEvent(2, 1, 4, 3));
+  handleLegionCreated(createLegionCreatedEvent(3, 1, 4, 3));
+
+  // Two users become active
+  handleQuestStartedWithDifficulty(
+    createQuestStartedEvent(timestamp, USER_ADDRESS, 1, 0, 0)
+  );
+  handleQuestStartedWithDifficulty(
+    createQuestStartedEvent(timestamp, USER_ADDRESS2, 2, 1, 0)
+  );
+
+  assert.fieldEquals(STAT_ENTITY_TYPE, "all-time", "allAddressesCount", "2");
+  assert.fieldEquals(STAT_ENTITY_TYPE, "all-time", "activeAddressesCount", "2");
+
+  // One user becomes inactive
+  handleQuestFinished(createQuestFinishedEvent(timestamp, USER_ADDRESS, 1));
+
+  assert.fieldEquals(STAT_ENTITY_TYPE, "all-time", "allAddressesCount", "2");
+  assert.fieldEquals(STAT_ENTITY_TYPE, "all-time", "activeAddressesCount", "1");
+
+  // One active user stays active
+  handleQuestStartedWithDifficulty(
+    createQuestStartedEvent(timestamp, USER_ADDRESS2, 3, 2, 0)
+  );
+
+  assert.fieldEquals(STAT_ENTITY_TYPE, "all-time", "allAddressesCount", "2");
+  assert.fieldEquals(STAT_ENTITY_TYPE, "all-time", "activeAddressesCount", "1");
+
+  // One inactive user becomes active again
+  handleQuestStartedWithDifficulty(
+    createQuestStartedEvent(timestamp, USER_ADDRESS, 1, 3, 0)
+  );
+
+  assert.fieldEquals(STAT_ENTITY_TYPE, "all-time", "allAddressesCount", "2");
+  assert.fieldEquals(STAT_ENTITY_TYPE, "all-time", "activeAddressesCount", "2");
 });

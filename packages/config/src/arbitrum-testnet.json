@@ -76,7 +76,14 @@
   "seed_of_life_treasures_address": "0xA51E43Ef87A3AfDe712c0F25E731378c9285e3D9",
   "seed_of_life_treasures_start_block": 9623637,
 
+  "battlefly_address": "0x1148206e845bff6ca2dcad3d901305e8ee8e027d",
+  "battlefly_start_block": 9779858,
+  "battlefly_founders_address": "0x219600bd4a1250b14530e057a6ff682649818128",
+  "battlefly_founders_start_block": 9779848,
+
   "treasure_marketplace_buyer_address": "0x24b7377Bf073E54eC42ec6CC8F4CDA6e3deB32A8",
   "treasure_marketplace_address": "0x2426acC898C5E1241904fCEf6E5643241192272D",
-  "treasure_marketplace_start_block": 9264815
+  "treasure_marketplace_start_block": 9264815,
+
+  "hourly_stat_interval_start_block": 8952193
 }

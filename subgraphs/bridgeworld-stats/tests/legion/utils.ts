@@ -7,7 +7,8 @@ import { LegionCreated } from "../../generated/Legion Metadata Store/LegionMetad
 export function createLegionCreatedEvent(
   tokenId: i32,
   generation: i32,
-  rarity: i32
+  rarity: i32,
+  legionClass: i32 = 0
 ): LegionCreated {
   const event = changetype<LegionCreated>(newMockEvent());
   event.parameters = [
@@ -17,7 +18,7 @@ export function createLegionCreatedEvent(
     ),
     new ethereum.EventParam("_tokenId", ethereum.Value.fromI32(tokenId)),
     new ethereum.EventParam("_generation", ethereum.Value.fromI32(generation)),
-    new ethereum.EventParam("_class", ethereum.Value.fromI32(0)),
+    new ethereum.EventParam("_class", ethereum.Value.fromI32(legionClass)),
     new ethereum.EventParam("_rarity", ethereum.Value.fromI32(rarity)),
   ];
 
