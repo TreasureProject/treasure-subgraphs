@@ -99,11 +99,11 @@ type Lifeform @entity {
 
   creationTimestamp: BigInt!
   user: User!
-  isReadyToRevealClass: Boolean!
   path: Path!
   firstRealm: LifeformRealm!
   secondRealm: LifeformRealm!
   stakedTreasure: [StakedTreasure!]!
+  lifeformClass: LifeformClass
 
   claimLifeform: ClaimLifeform @derivedFrom(field: "lifeform")
 }

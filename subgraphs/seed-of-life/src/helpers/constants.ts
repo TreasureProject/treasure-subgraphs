@@ -41,3 +41,24 @@ export class LifeformRealm {
     return this._names.at(intValue as i32);
   }
 }
+
+export class LifeformClass {
+  private static _names: Array<string> = [
+    "WARRIOR",
+    "MAGE",
+    "PRIEST",
+    "SHARPSHOOTER",
+    "SUMMONER",
+    "PALADIN",
+    "ASURA",
+    "SLAYER",
+  ];
+
+  public static getName(intValue: number): string {
+    if (intValue >= this._names.length) {
+      throw new Error(`Bad enum value: ${intValue}`);
+    }
+
+    return this._names.at(intValue as i32);
+  }
+}

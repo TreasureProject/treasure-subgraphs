@@ -30,7 +30,6 @@ export function handleLifeformCreated(event: LifeformCreated): void {
 
   lifeform.creationTimestamp = evolutionInfo.startTime;
   lifeform.user = user.id;
-  lifeform.isReadyToRevealClass = false;
   lifeform.path = Path.getName(evolutionInfo.path);
   lifeform.firstRealm = LifeformRealm.getName(evolutionInfo.firstRealm);
   lifeform.secondRealm = LifeformRealm.getName(evolutionInfo.secondRealm);

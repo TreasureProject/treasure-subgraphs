@@ -1,9 +1,12 @@
-import { log, store } from "@graphprotocol/graph-ts";
+import { BigInt, log, store } from "@graphprotocol/graph-ts";
+
+import { SEED_EVOLUTION_ADDRESS } from "@treasure/constants";
 
 import {
   RandomRequest,
   RandomSeeded,
 } from "../../generated/Randomizer/Randomizer";
+import { SeedEvolution } from "../../generated/SeedEvolution/SeedEvolution";
 import {
   ClaimLifeform,
   Lifeform,
@@ -11,6 +14,7 @@ import {
   Seeded,
 } from "../../generated/schema";
 import { RandomHelpers } from "../helpers/RandomHelpers";
+import { LifeformClass } from "../helpers/constants";
 
 export function handleRandomRequest(event: RandomRequest): void {
   const params = event.params;
@@ -51,7 +55,13 @@ export function handleRandomSeeded(event: RandomSeeded): void {
       claimLifeform.save();
     } else if (random._lifeformId) {
       const lifeform = Lifeform.load(random._lifeformId as string)!;
-      lifeform.isReadyToRevealClass = true;
+      const contract = SeedEvolution.bind(SEED_EVOLUTION_ADDRESS);
+      const classCall = contract.try_classForLifeform(
+        BigInt.fromI32(parseInt(lifeform.id, 16) as i32)
+      );
+      if (!classCall.reverted) {
+        lifeform.lifeformClass = LifeformClass.getName(classCall.value);
+      }
       lifeform.save();
     }
 
