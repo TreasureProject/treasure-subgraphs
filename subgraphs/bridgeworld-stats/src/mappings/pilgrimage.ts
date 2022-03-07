@@ -1,4 +1,4 @@
-import { log } from "@graphprotocol/graph-ts";
+import { BigInt, log } from "@graphprotocol/graph-ts";
 
 import {
   PilgrimagesFinished,
@@ -51,7 +51,11 @@ export function handlePilgrimagesStarted(event: PilgrimagesStarted): void {
 export function handlePilgrimagesFinished(event: PilgrimagesFinished): void {
   const params = event.params;
   const tokenIds = params._tokenIds;
-  const pilgrimagesCount = params._finishedPilgrimageIds.length;
+
+  // Only include non-zero pilgrimage IDs in finished count
+  const pilgrimagesCount = params._finishedPilgrimageIds.filter((id) =>
+    id.gt(BigInt.zero())
+  ).length;
 
   const stats = getTimeIntervalPilgrimageStats(event.block);
   for (let i = 0; i < stats.length; i++) {
