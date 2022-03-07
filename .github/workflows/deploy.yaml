@@ -109,7 +109,6 @@ jobs:
       - name: Test
         run: yarn test
       - name: Authenticate
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         env:
           GRAPH_ACCESS_TOKEN: ${{ secrets.GRAPH_ACCESS_TOKEN }}
         run: yarn graph auth --product hosted-service "$GRAPH_ACCESS_TOKEN"
