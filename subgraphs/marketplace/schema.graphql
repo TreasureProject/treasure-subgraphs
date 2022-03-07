@@ -1,5 +1,6 @@
 enum Status {
   Active
+  Expired
   Inactive
   Invalid
   Sold

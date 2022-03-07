@@ -25,6 +25,7 @@ import {
   ItemListed,
   ItemSold,
   ItemUpdated,
+  UpdateOracle,
 } from "../generated/TreasureMarketplace/TreasureMarketplace";
 import {
   Collection,
@@ -37,11 +38,13 @@ import {
 import {
   exists,
   getAddressId,
+  getAllCollections,
   getCollection,
   getStats,
   getToken,
   getUserAddressId,
   isMint,
+  isPaused,
   removeFromArray,
   removeIfExists,
 } from "./helpers";
@@ -327,6 +330,11 @@ function getTime(event: ethereum.Event): i64 {
 }
 
 export function handleItemCanceled(event: ItemCanceled): void {
+  // Do nothing if paused
+  if (isPaused(event)) {
+    return;
+  }
+
   let params = event.params;
   let address = params.nftAddress;
   let listing = getListing(params.seller, address, params.tokenId);
@@ -357,6 +365,11 @@ export function handleItemCanceled(event: ItemCanceled): void {
 }
 
 export function handleItemListed(event: ItemListed): void {
+  // Do nothing if paused
+  if (isPaused(event)) {
+    return;
+  }
+
   let params = event.params;
   let pricePerItem = params.pricePerItem;
   let quantity = params.quantity;
@@ -473,6 +486,11 @@ export function handleItemSold(event: ItemSold): void {
 }
 
 export function handleItemUpdated(event: ItemUpdated): void {
+  // Do nothing if paused
+  if (isPaused(event)) {
+    return;
+  }
+
   let params = event.params;
   let listing = getListing(params.seller, params.nftAddress, params.tokenId);
 
@@ -499,6 +517,68 @@ export function handleItemUpdated(event: ItemUpdated): void {
   }
 
   updateCollectionFloorAndTotal(listing.collection, getTime(event));
+}
+
+export function handleOracleUpdate(event: UpdateOracle): void {
+  // Safety first
+  if (event.params.oracle.notEqual(Address.zero())) {
+    return;
+  }
+
+  // Cancel all listings.
+  let collections = getAllCollections();
+  let length = collections.length;
+
+  for (let index = 0; index < length; index++) {
+    let id = collections[index];
+
+    // Should never happen, but cleans up warnings in test.
+    if (!exists("Collection", id)) {
+      continue;
+    }
+
+    let collection = getCollection(id);
+
+    let listings = collection.listings.filter(
+      (item) => item.split("-").length == 3
+    );
+    let innerLength = listings.length;
+
+    for (let innerIndex = 0; innerIndex < innerLength; innerIndex++) {
+      store.remove("Listing", listings[innerIndex]);
+    }
+
+    let stats = getStats(id);
+
+    collection.floorPrice = stats.floorPrice = BigInt.zero();
+    collection.listings = [];
+    collection.totalListings = stats.listings = 0;
+
+    collection.save();
+    stats.save();
+
+    if (collection.standard == "ERC1155") {
+      for (let tokenIndex = 1; tokenIndex < 165; tokenIndex++) {
+        let tokenId = `${collection.id}-0x${tokenIndex.toString(16)}`;
+
+        if (exists("Token", tokenId)) {
+          let token = Token.load(tokenId);
+
+          if (!token) {
+            continue;
+          }
+
+          let stats = getStats(tokenId);
+
+          token.floorPrice = stats.floorPrice = BigInt.zero();
+          token.save();
+
+          stats.listings = 0;
+          stats.save();
+        }
+      }
+    }
+  }
 }
 
 export function handleTransfer721(event: Transfer): void {
