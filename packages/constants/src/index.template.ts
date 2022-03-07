@@ -37,3 +37,27 @@ export const MARKETPLACE_BUYER_ADDRESS = Address.fromString(
 export const HOURLY_STAT_INTERVAL_START_BLOCK = BigInt.fromString(
   "{{ hourly_stat_interval_start_block }}"
 );
+
+export const SEED_OF_LIFE_ADDRESS = Address.fromString(
+  "{{ seed_of_life_address }}"
+);
+export const EXTRA_LIFE_ADDRESS = Address.fromString(
+  "{{ extra_life_address }}"
+);
+export const KEYS_ADDRESS = Address.fromString("{{ keys_address }}");
+export const SMOL_CARS_ADDRESS = Address.fromString("{{ smol_cars_address }}");
+export const BATTLEFLY_ADDRESS = Address.fromString("{{ battlefly_address }}");
+export const BATTLEFLY_FOUNDERS_ADDRESS = Address.fromString(
+  "{{ battlefly_founders_address }}"
+);
+
+export const LEGACY_LEGION_ADDRESS = Address.fromString(
+  "{{ legacy_legion_address }}"
+);
+export const LEGACY_LEGION_GENESIS_ADDRESS = Address.fromString(
+  "{{ legacy_legion_genesis_address }}"
+);
+
+export const TREASURE_MARKETPLACE_PAUSE_START_BLOCK = BigInt.fromString(
+  "{{ treasure_marketplace_pause_start_block }}"
+);

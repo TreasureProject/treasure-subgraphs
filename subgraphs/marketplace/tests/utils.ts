@@ -18,6 +18,7 @@ import {
   ItemListed,
   ItemSold,
   ItemUpdated,
+  UpdateOracle,
 } from "../generated/TreasureMarketplace/TreasureMarketplace";
 
 export const LEGION_METADATA_STORE_ADDRESS =
@@ -220,6 +221,19 @@ export const createTransferSingleEvent = (
     ),
     new ethereum.EventParam("id", ethereum.Value.fromI32(tokenId)),
     new ethereum.EventParam("value", ethereum.Value.fromI32(quantity)),
+  ];
+
+  return newEvent;
+};
+
+export const createUpdateOracleEvent = (
+  oracle: Address = Address.zero()
+): UpdateOracle => {
+  const newEvent = changetype<UpdateOracle>(newMockEvent());
+
+  newEvent.address = MARKETPLACE_ADDRESS;
+  newEvent.parameters = [
+    new ethereum.EventParam("oracle", ethereum.Value.fromAddress(oracle)),
   ];
 
   return newEvent;

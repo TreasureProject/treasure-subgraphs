@@ -34,6 +34,8 @@ dataSources:
           handler: handleItemSold
         - event: ItemUpdated(address,address,uint256,uint256,uint256,uint256)
           handler: handleItemUpdated
+        - event: UpdateOracle(address)
+          handler: handleOracleUpdate
       file: ./src/mapping.ts
   - name: Legacy Legion
     kind: ethereum/contract

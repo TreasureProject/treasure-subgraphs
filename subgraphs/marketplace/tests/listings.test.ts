@@ -5,7 +5,9 @@ import { Address, BigInt } from "@graphprotocol/graph-ts";
 import {
   LEGION_ADDRESS,
   MARKETPLACE_BUYER_ADDRESS,
+  SMOL_BRAINS_ADDRESS,
   TREASURE_ADDRESS,
+  TREASURE_MARKETPLACE_PAUSE_START_BLOCK,
 } from "@treasure/constants";
 
 import {
@@ -13,6 +15,7 @@ import {
   handleItemListed,
   handleItemSold,
   handleItemUpdated,
+  handleOracleUpdate,
 } from "../src/mapping";
 import {
   handleLegionCreated,
@@ -28,6 +31,7 @@ import {
   createLegionCreatedEvent,
   createTransferEvent,
   createTransferSingleEvent,
+  createUpdateOracleEvent,
 } from "./utils";
 
 const COLLECTION_ENTITY_TYPE = "Collection";
@@ -36,9 +40,6 @@ const STATS_ENTITY_TYPE = "StatsData";
 const USER_TOKEN_ENTITY_TYPE = "UserToken";
 const USER_ADDRESS = "0x461950b159366edcd2bcbee8126d973ac49238e0";
 const BUYER_ADDRESS = "0x999950b159366edcd2bcbee8126d973ac4923111";
-const SMOL_BRAINS_ADDRESS = Address.fromString(
-  "0x6325439389E0797Ab35752B4F43a14C004f22A9c"
-);
 
 // Handles listing, updating, canceled via contract.
 // Sold would never execute as contract would revert on transfer
@@ -961,4 +962,111 @@ test("mark listings sold with 0 quantity as invalid", () => {
   assert.fieldEquals(STATS_ENTITY_TYPE, collectionId, "listings", "0");
   assert.fieldEquals(STATS_ENTITY_TYPE, collectionId, "sales", "0");
   assert.fieldEquals(STATS_ENTITY_TYPE, collectionId, "volume", "0");
+});
+
+test("handle when marketplace purchasing was shut off", () => {
+  clearStore();
+
+  let mintEvent = createTransferEvent(
+    SMOL_BRAINS_ADDRESS,
+    Address.zero().toHexString(),
+    USER_ADDRESS,
+    1
+  );
+
+  handleSmolBrainsTransfer(mintEvent);
+
+  mintEvent = createTransferEvent(
+    SMOL_BRAINS_ADDRESS,
+    Address.zero().toHexString(),
+    USER_ADDRESS,
+    2
+  );
+
+  handleSmolBrainsTransfer(mintEvent);
+
+  let itemListedEvent = createItemListedEvent(
+    USER_ADDRESS,
+    SMOL_BRAINS_ADDRESS,
+    1,
+    1,
+    50
+  );
+
+  handleItemListed(itemListedEvent);
+
+  itemListedEvent = createItemListedEvent(
+    USER_ADDRESS,
+    SMOL_BRAINS_ADDRESS,
+    2,
+    1,
+    50
+  );
+
+  handleItemListed(itemListedEvent);
+
+  const itemSoldEvent = createItemSoldEvent(
+    USER_ADDRESS,
+    BUYER_ADDRESS,
+    SMOL_BRAINS_ADDRESS,
+    1,
+    1,
+    50
+  );
+
+  handleItemSold(itemSoldEvent);
+
+  const updateOracleEvent = createUpdateOracleEvent();
+
+  handleOracleUpdate(updateOracleEvent);
+
+  itemListedEvent = createItemListedEvent(
+    USER_ADDRESS,
+    SMOL_BRAINS_ADDRESS,
+    2,
+    1,
+    50
+  );
+
+  // Ignores new listings after block number of pause
+  itemListedEvent.block.number = TREASURE_MARKETPLACE_PAUSE_START_BLOCK.plus(
+    BigInt.fromI32(1)
+  );
+
+  handleItemListed(itemListedEvent);
+
+  const contract = SMOL_BRAINS_ADDRESS.toHexString();
+  const collectionId = contract;
+  const id = `${contract}-0x1`;
+  const listingId = `${USER_ADDRESS}-${id}`;
+  const secondListingId = `${USER_ADDRESS}-${contract}-0x2`;
+
+  assert.notInStore(LISTING_ENTITY_TYPE, listingId);
+  assert.notInStore(LISTING_ENTITY_TYPE, secondListingId);
+
+  assert.fieldEquals(
+    COLLECTION_ENTITY_TYPE,
+    collectionId,
+    "totalListings",
+    "0"
+  );
+  assert.fieldEquals(COLLECTION_ENTITY_TYPE, collectionId, "totalSales", "1");
+  assert.fieldEquals(
+    COLLECTION_ENTITY_TYPE,
+    collectionId,
+    "totalVolume",
+    BigInt.fromI32(50).toString()
+  );
+  assert.fieldEquals(COLLECTION_ENTITY_TYPE, collectionId, "listings", "[]");
+
+  assert.fieldEquals(STATS_ENTITY_TYPE, collectionId, "floorPrice", "0");
+  assert.fieldEquals(STATS_ENTITY_TYPE, collectionId, "items", "2");
+  assert.fieldEquals(STATS_ENTITY_TYPE, collectionId, "listings", "0");
+  assert.fieldEquals(STATS_ENTITY_TYPE, collectionId, "sales", "1");
+  assert.fieldEquals(
+    STATS_ENTITY_TYPE,
+    collectionId,
+    "volume",
+    BigInt.fromI32(50).toString()
+  );
 });
