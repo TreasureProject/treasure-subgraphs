@@ -75,7 +75,6 @@ function getListing(
     listing = new Listing(id);
 
     listing.seller = getUser(seller).id;
-    listing.status = exists("StakedToken", id) ? "Inactive" : "Active";
     listing.token = getAddressId(contract, tokenId);
   }
 
@@ -391,13 +390,16 @@ export function handleItemListed(event: ItemListed): void {
   listing.expires = normalizeTime(params.expirationTime);
   listing.pricePerItem = pricePerItem;
   listing.quantity = quantity.toI32();
+  listing.status = exists("StakedToken", listing.id) ? "Inactive" : "Active";
 
   listing.save();
 
   let collection = getCollection(token.collection);
 
-  collection.listings = collection.listings.concat([listing.id]);
-  collection.save();
+  if (collection.listings.indexOf(listing.id) == -1) {
+    collection.listings = collection.listings.concat([listing.id]);
+    collection.save();
+  }
 
   updateCollectionFloorAndTotal(collection.id, getTime(event));
 }
