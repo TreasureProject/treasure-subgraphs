@@ -4,6 +4,7 @@ import { Address, BigInt } from "@graphprotocol/graph-ts";
 
 import {
   LEGION_ADDRESS,
+  MARKETPLACE_ADDRESS,
   MARKETPLACE_BUYER_ADDRESS,
   SMOL_BRAINS_ADDRESS,
   TREASURE_ADDRESS,
@@ -1069,4 +1070,130 @@ test("handle when marketplace purchasing was shut off", () => {
     "volume",
     BigInt.fromI32(50).toString()
   );
+});
+
+test("item listed works for updates as well", () => {
+  clearStore();
+
+  const MP_ADDRESS = Address.fromString(
+    `${MARKETPLACE_ADDRESS.toHexString().slice(0, -1)}0`
+  );
+
+  const mintEvent = createTransferEvent(
+    SMOL_BRAINS_ADDRESS,
+    Address.zero().toHexString(),
+    USER_ADDRESS,
+    1
+  );
+
+  handleSmolBrainsTransfer(mintEvent);
+
+  let itemListedEvent = createItemListedEvent(
+    USER_ADDRESS,
+    SMOL_BRAINS_ADDRESS,
+    1,
+    1,
+    50
+  );
+
+  itemListedEvent.address = MP_ADDRESS;
+
+  handleItemListed(itemListedEvent);
+
+  const contract = SMOL_BRAINS_ADDRESS.toHexString();
+  const collectionId = contract;
+  const id = `${contract}-0x1`;
+  const listingId = `${USER_ADDRESS}-${id}`;
+
+  let price = BigInt.fromI32(50).toString();
+
+  assert.fieldEquals(
+    LISTING_ENTITY_TYPE,
+    listingId,
+    "blockTimestamp",
+    "1656403681"
+  );
+  assert.fieldEquals(
+    LISTING_ENTITY_TYPE,
+    listingId,
+    "expires",
+    "1656403681000"
+  );
+  assert.fieldEquals(LISTING_ENTITY_TYPE, listingId, "pricePerItem", price);
+  assert.fieldEquals(LISTING_ENTITY_TYPE, listingId, "quantity", "1");
+  assert.fieldEquals(LISTING_ENTITY_TYPE, listingId, "status", "Active");
+
+  assert.fieldEquals(
+    COLLECTION_ENTITY_TYPE,
+    collectionId,
+    "totalListings",
+    "1"
+  );
+  assert.fieldEquals(COLLECTION_ENTITY_TYPE, collectionId, "totalSales", "0");
+  assert.fieldEquals(COLLECTION_ENTITY_TYPE, collectionId, "totalVolume", "0");
+  assert.fieldEquals(
+    COLLECTION_ENTITY_TYPE,
+    collectionId,
+    "listings",
+    `[${listingId}]`
+  );
+
+  assert.fieldEquals(STATS_ENTITY_TYPE, collectionId, "floorPrice", price);
+  assert.fieldEquals(STATS_ENTITY_TYPE, collectionId, "items", "1");
+  assert.fieldEquals(STATS_ENTITY_TYPE, collectionId, "listings", "1");
+  assert.fieldEquals(STATS_ENTITY_TYPE, collectionId, "sales", "0");
+  assert.fieldEquals(STATS_ENTITY_TYPE, collectionId, "volume", "0");
+
+  // Serves as an update
+  itemListedEvent = createItemListedEvent(
+    USER_ADDRESS,
+    SMOL_BRAINS_ADDRESS,
+    1,
+    1,
+    500,
+    1656404681
+  );
+
+  itemListedEvent.address = MP_ADDRESS;
+
+  handleItemListed(itemListedEvent);
+
+  price = BigInt.fromI32(500).toString();
+
+  assert.fieldEquals(
+    LISTING_ENTITY_TYPE,
+    listingId,
+    "blockTimestamp",
+    "1656404681"
+  );
+  assert.fieldEquals(
+    LISTING_ENTITY_TYPE,
+    listingId,
+    "expires",
+    "1656404681000"
+  );
+  assert.fieldEquals(LISTING_ENTITY_TYPE, listingId, "pricePerItem", price);
+  assert.fieldEquals(LISTING_ENTITY_TYPE, listingId, "quantity", "1");
+  assert.fieldEquals(LISTING_ENTITY_TYPE, listingId, "status", "Active");
+
+  assert.fieldEquals(
+    COLLECTION_ENTITY_TYPE,
+    collectionId,
+    "totalListings",
+    "1"
+  );
+  assert.fieldEquals(COLLECTION_ENTITY_TYPE, collectionId, "totalSales", "0");
+  assert.fieldEquals(COLLECTION_ENTITY_TYPE, collectionId, "totalVolume", "0");
+  assert.fieldEquals(
+    COLLECTION_ENTITY_TYPE,
+    collectionId,
+    "listings",
+    `[${listingId}]`
+  );
+
+  assert.fieldEquals(STATS_ENTITY_TYPE, collectionId, "floorPrice", price);
+  assert.fieldEquals(STATS_ENTITY_TYPE, collectionId, "items", "1");
+  assert.fieldEquals(STATS_ENTITY_TYPE, collectionId, "listings", "1");
+  assert.fieldEquals(STATS_ENTITY_TYPE, collectionId, "sales", "0");
+  assert.fieldEquals(STATS_ENTITY_TYPE, collectionId, "volume", "0");
 });
