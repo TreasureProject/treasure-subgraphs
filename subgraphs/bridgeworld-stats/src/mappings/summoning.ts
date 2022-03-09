@@ -15,9 +15,9 @@ import {
 export function handleSummoningStarted(event: SummoningStarted): void {
   const params = event.params;
 
-  const legion = getLegion(params._tokenId);
+  const legion = getLegion(params.tokenId);
   if (!legion) {
-    log.error("[summoning] Legion not found: {}", [params._tokenId.toString()]);
+    log.error("[summoning] Legion not found: {}", [params.tokenId.toString()]);
   }
 
   const stats = getTimeIntervalSummoningStats(event.block);
@@ -27,7 +27,7 @@ export function handleSummoningStarted(event: SummoningStarted): void {
 
     const userStat = getOrCreateUserStat(
       stat.id,
-      params._user,
+      params.user,
       stat.startTimestamp,
       stat.endTimestamp,
       stat.interval
@@ -68,17 +68,17 @@ export function handleSummoningStarted(event: SummoningStarted): void {
 export function handleSummoningFinished(event: SummoningFinished): void {
   const params = event.params;
 
-  const legion = getLegion(params._returnedId);
+  const legion = getLegion(params.returnedId);
   if (!legion) {
     log.error("[summoning] Legion not found: {}", [
-      params._returnedId.toString(),
+      params.returnedId.toString(),
     ]);
   }
 
-  const newLegion = getLegion(params._newTokenId);
+  const newLegion = getLegion(params.newTokenId);
   if (!legion) {
     log.error("[summoning] Legion not found: {}", [
-      params._newTokenId.toString(),
+      params.newTokenId.toString(),
     ]);
   }
 
@@ -89,7 +89,7 @@ export function handleSummoningFinished(event: SummoningFinished): void {
 
     const userStat = getOrCreateUserStat(
       stat.id,
-      params._user,
+      params.user,
       stat.startTimestamp,
       stat.endTimestamp,
       stat.interval

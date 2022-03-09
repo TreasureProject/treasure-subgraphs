@@ -8,6 +8,7 @@ export const CRAFTING_ADDRESS = Address.fromString("{{ crafting_address }}");
 export const EXPLORER = "{{ explorer }}";
 export const LEGION_ADDRESS = Address.fromString("{{ legion_address }}");
 export const QUESTING_ADDRESS = Address.fromString("{{ questing_address }}");
+export const SUMMONING_ADDRESS = Address.fromString("{{ summoning_address }}");
 export const TREASURE_ADDRESS = Address.fromString("{{ treasure_address }}");
 export const SMOL_BODIES_ADDRESS = Address.fromString(
   "{{ smol_bodies_address }}"

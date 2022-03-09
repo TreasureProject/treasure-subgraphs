@@ -1,6 +1,6 @@
 import { BigInt, log, store } from "@graphprotocol/graph-ts";
 
-import { LEGION_ADDRESS } from "@treasure/constants";
+import { CONSUMABLE_ADDRESS, LEGION_ADDRESS } from "@treasure/constants";
 
 import {
   SummoningFinished,
@@ -12,6 +12,11 @@ import {
   Summon,
   _SummonFatigue,
 } from "../../generated/schema";
+import {
+  addSummonerToCircle,
+  parse,
+  removeSummonerFromCircle,
+} from "../helpers";
 import { getAddressId } from "../helpers/utils";
 
 function getMetadataId(tokenId: BigInt): string {
@@ -22,10 +27,10 @@ function getMetadataId(tokenId: BigInt): string {
 
 export function handleSummoningStarted(event: SummoningStarted): void {
   let params = event.params;
-  let tokenId = params._tokenId;
-  let requestId = params._requestId;
-  let finishTime = params._finishTime;
-  let user = params._user;
+  let tokenId = params.tokenId;
+  let requestId = params.requestId;
+  let finishTime = params.finishTime;
+  let user = params.user;
 
   let random = Random.load(requestId.toHexString());
   let summon = new Summon(getAddressId(event.address, tokenId));
@@ -44,14 +49,25 @@ export function handleSummoningStarted(event: SummoningStarted): void {
     return;
   }
 
+  addSummonerToCircle();
+
+  // Parse input to get prism used
+  let parsed = parse(event.transaction.input);
+  let index = parsed.tokenIds.indexOf(tokenId);
+  let prismId = parsed.prismIds[index];
+
   metadata.summons = metadata.summons.plus(BigInt.fromI32(1));
   metadata.save();
 
   summon.endTimestamp = finishTime.times(BigInt.fromI32(1000));
-  summon.token = metadata.id.replace("-metadata", "");
   summon.random = random.id;
   summon.status = "Idle";
+  summon.token = metadata.id.replace("-metadata", "");
   summon.user = user.toHexString();
+
+  if (!prismId.isZero()) {
+    summon.prismUsed = getAddressId(CONSUMABLE_ADDRESS, prismId);
+  }
 
   random.summon = summon.id;
   random.requestId = requestId;
@@ -62,10 +78,10 @@ export function handleSummoningStarted(event: SummoningStarted): void {
 
 export function handleSummoningFinished(event: SummoningFinished): void {
   let params = event.params;
-  let tokenId = params._newTokenId;
-  let cooldown = params._newTokenSummoningCooldown.times(BigInt.fromI32(1000));
+  let tokenId = params.newTokenId;
+  let cooldown = params.summoningFatigue.times(BigInt.fromI32(1000));
 
-  let id = getAddressId(event.address, params._returnedId);
+  let id = getAddressId(event.address, params.returnedId);
   let metadata = LegionInfo.load(getMetadataId(tokenId));
 
   if (!metadata) {
@@ -76,6 +92,8 @@ export function handleSummoningFinished(event: SummoningFinished): void {
 
   metadata.cooldown = cooldown;
   metadata.save();
+
+  removeSummonerFromCircle();
 
   // Store cooldown to clear later
   let fatigue = _SummonFatigue.load("all");
