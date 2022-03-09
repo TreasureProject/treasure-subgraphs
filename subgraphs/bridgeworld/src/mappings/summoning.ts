@@ -82,32 +82,6 @@ export function handleSummoningFinished(event: SummoningFinished): void {
   let cooldown = params.summoningFatigue.times(BigInt.fromI32(1000));
 
   let id = getAddressId(event.address, params.returnedId);
-  let metadata = LegionInfo.load(getMetadataId(tokenId));
-
-  if (!metadata) {
-    log.error("[summon-finished] Unknown legion: {}", [tokenId.toString()]);
-
-    return;
-  }
-
-  metadata.cooldown = cooldown;
-  metadata.save();
-
-  removeSummonerFromCircle();
-
-  // Store cooldown to clear later
-  let fatigue = _SummonFatigue.load("all");
-
-  if (!fatigue) {
-    fatigue = new _SummonFatigue("all");
-
-    // The first check will happen 5 minutes after the first cooldown.
-    fatigue.timestamp = cooldown.plus(BigInt.fromI32(300_000));
-  }
-
-  fatigue.data = fatigue.data.concat([`${metadata.id},${cooldown.toString()}`]);
-  fatigue.save();
-
   let summon = Summon.load(id);
 
   if (!summon) {
@@ -116,9 +90,41 @@ export function handleSummoningFinished(event: SummoningFinished): void {
     return;
   }
 
+  if (tokenId.gt(BigInt.zero())) {
+    let metadata = LegionInfo.load(getMetadataId(tokenId));
+
+    if (!metadata) {
+      log.error("[summon-finished] Unknown legion: {}", [tokenId.toString()]);
+
+      return;
+    }
+
+    metadata.cooldown = cooldown;
+    metadata.save();
+
+    // Store cooldown to clear later
+    let fatigue = _SummonFatigue.load("all");
+
+    if (!fatigue) {
+      fatigue = new _SummonFatigue("all");
+
+      // The first check will happen 5 minutes after the first cooldown.
+      fatigue.timestamp = cooldown.plus(BigInt.fromI32(300_000));
+    }
+
+    fatigue.data = fatigue.data.concat([
+      `${metadata.id},${cooldown.toString()}`,
+    ]);
+    fatigue.save();
+
+    // Add result token to summoning entity
+    summon.resultToken = metadata.id.replace("-metadata", "");
+  }
+
+  removeSummonerFromCircle();
+
   summon.id = `${summon.id}-${summon.random}`;
   summon.status = "Finished";
-  summon.resultToken = metadata.id.replace("-metadata", "");
   summon.save();
 
   store.remove("Summon", id);
