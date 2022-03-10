@@ -41,13 +41,13 @@ export function handleSummoningStarted(event: SummoningStarted): void {
     return;
   }
 
-  let metadata = LegionInfo.load(getMetadataId(tokenId));
+  // let metadata = LegionInfo.load(getMetadataId(tokenId));
 
-  if (!metadata) {
-    log.error("[summon-started] Unknown legion: {}", [tokenId.toString()]);
+  // if (!metadata) {
+  //   log.error("[summon-started] Unknown legion: {}", [tokenId.toString()]);
 
-    return;
-  }
+  //   return;
+  // }
 
   addSummonerToCircle();
 
@@ -56,13 +56,13 @@ export function handleSummoningStarted(event: SummoningStarted): void {
   let index = parsed.tokenIds.indexOf(tokenId);
   let prismId = parsed.prismIds[index];
 
-  metadata.summons = metadata.summons.plus(BigInt.fromI32(1));
-  metadata.save();
+  // metadata.summons = metadata.summons.plus(BigInt.fromI32(1));
+  // metadata.save();
 
   summon.endTimestamp = finishTime.times(BigInt.fromI32(1000));
   summon.random = random.id;
   summon.status = "Idle";
-  summon.token = metadata.id.replace("-metadata", "");
+  summon.token = getMetadataId(tokenId).replace("-metadata", "");
   summon.user = user.toHexString();
 
   if (!prismId.isZero()) {
@@ -78,7 +78,8 @@ export function handleSummoningStarted(event: SummoningStarted): void {
 
 export function handleSummoningFinished(event: SummoningFinished): void {
   let params = event.params;
-  let tokenId = params.newTokenId;
+  let newTokenId = params.newTokenId;
+  let existingTokenId = params.returnedId;
   let cooldown = params.summoningFatigue.times(BigInt.fromI32(1000));
 
   let id = getAddressId(event.address, params.returnedId);
@@ -90,17 +91,32 @@ export function handleSummoningFinished(event: SummoningFinished): void {
     return;
   }
 
-  if (tokenId.gt(BigInt.zero())) {
-    let metadata = LegionInfo.load(getMetadataId(tokenId));
+  if (newTokenId.gt(BigInt.zero())) {
+    let newLegion = LegionInfo.load(getMetadataId(newTokenId));
 
-    if (!metadata) {
-      log.error("[summon-finished] Unknown legion: {}", [tokenId.toString()]);
+    if (!newLegion) {
+      log.error("[summon-finished] Unknown new legion: {}", [
+        newTokenId.toString(),
+      ]);
 
       return;
     }
 
-    metadata.cooldown = cooldown;
-    metadata.save();
+    newLegion.cooldown = cooldown;
+    newLegion.save();
+
+    let summoningLegion = LegionInfo.load(getMetadataId(existingTokenId));
+
+    if (!summoningLegion) {
+      log.error("[summon-finished] Unknown summoning legion: {}", [
+        existingTokenId.toString(),
+      ]);
+
+      return;
+    }
+
+    summoningLegion.summons = summoningLegion.summons.plus(BigInt.fromI32(1));
+    summoningLegion.save();
 
     // Store cooldown to clear later
     let fatigue = _SummonFatigue.load("all");
@@ -113,12 +129,12 @@ export function handleSummoningFinished(event: SummoningFinished): void {
     }
 
     fatigue.data = fatigue.data.concat([
-      `${metadata.id},${cooldown.toString()}`,
+      `${newLegion.id},${cooldown.toString()}`,
     ]);
     fatigue.save();
 
     // Add result token to summoning entity
-    summon.resultToken = metadata.id.replace("-metadata", "");
+    summon.resultToken = newLegion.id.replace("-metadata", "");
   }
 
   removeSummonerFromCircle();

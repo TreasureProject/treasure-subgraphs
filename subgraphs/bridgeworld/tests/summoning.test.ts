@@ -76,9 +76,6 @@ test("summon is started and finished with result token", () => {
   const id = `${LEGION_ADDRESS.toHexString()}-0x7`;
   assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "category", "Legion");
 
-  const metadata = `${id}-metadata`;
-  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "summons", "1");
-
   const summon = `${summoningStartedEvent.address.toHexString()}-0x7`;
   assert.fieldEquals(SUMMON_ENTITY_TYPE, summon, "token", id);
   assert.fieldEquals(SUMMON_ENTITY_TYPE, summon, "status", "Idle");
@@ -130,6 +127,9 @@ test("summon is started and finished with result token", () => {
     0
   );
   handleSummoningFinished(summoningFinishedEvent);
+
+  const metadata = `${id}-metadata`;
+  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "summons", "1");
 
   assert.fieldEquals(
     SUMMON_ENTITY_TYPE,
@@ -188,10 +188,6 @@ test("summon fatigue is tracked and cleared properly", () => {
 
   assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "category", "Legion");
 
-  const metadata = `${id}-metadata`;
-
-  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "summons", "1");
-
   const summon = `${summoningStartedEvent.address.toHexString()}-0x7`;
 
   assert.fieldEquals(SUMMON_ENTITY_TYPE, summon, "token", id);
@@ -249,6 +245,10 @@ test("summon fatigue is tracked and cleared properly", () => {
     "1591808700000"
   );
 
+  const metadata = `${id}-metadata`;
+
+  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "summons", "1");
+
   // Now fire a random request and should clear summon fatigue
   const anotherRandomRequestEvent = createRandomRequestEvent(1, 2);
 
@@ -299,9 +299,6 @@ test("handles when a summon fails", () => {
   const id = `${LEGION_ADDRESS.toHexString()}-0x7`;
   assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "category", "Legion");
 
-  const metadata = `${id}-metadata`;
-  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "summons", "1");
-
   const summon = `${summoningStartedEvent.address.toHexString()}-0x7`;
   assert.fieldEquals(SUMMON_ENTITY_TYPE, summon, "token", id);
   assert.fieldEquals(SUMMON_ENTITY_TYPE, summon, "status", "Idle");
@@ -330,22 +327,6 @@ test("handles when a summon fails", () => {
     "0.5"
   );
 
-  // const newMintEvent = createLegionTransferEvent(
-  //   Address.zero().toHexString(),
-  //   USER_ADDRESS,
-  //   1
-  // );
-  // handleTransfer(newMintEvent);
-
-  // const newLegionCreatedEvent = createLegionCreatedEvent(
-  //   USER_ADDRESS,
-  //   1,
-  //   1,
-  //   1,
-  //   4
-  // );
-  // handleLegionCreated(newLegionCreatedEvent);
-
   const summoningFinishedEvent = createdSummoningFinishedEvent(
     USER_ADDRESS,
     7,
@@ -354,12 +335,6 @@ test("handles when a summon fails", () => {
   );
   handleSummoningFinished(summoningFinishedEvent);
 
-  // assert.fieldEquals(
-  //   SUMMON_ENTITY_TYPE,
-  //   `${summon}-0x0`,
-  //   "prismUsed",
-  //   `${CONSUMABLE_ADDRESS.toHexString()}-0x2`
-  // );
   assert.fieldEquals(
     SUMMON_ENTITY_TYPE,
     `${summon}-0x0`,
@@ -368,6 +343,9 @@ test("handles when a summon fails", () => {
   );
   assert.fieldEquals(SUMMON_ENTITY_TYPE, `${summon}-0x0`, "success", "false");
   assert.fieldEquals(SUMMON_ENTITY_TYPE, `${summon}-0x0`, "status", "Finished");
+
+  const metadata = `${id}-metadata`;
+  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "summons", "0");
 
   let summonEntity = Summon.load(`${summon}-0x0`);
 
