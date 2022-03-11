@@ -8,10 +8,6 @@ enum Entity {
   Summoner,
 }
 
-function toBigDecimal(value: i32): BigDecimal {
-  return BigDecimal.fromString(`${value}`);
-}
-
 function getSummoningCircle(): SummoningCircle {
   let circle = SummoningCircle.load("only");
 
@@ -38,16 +34,12 @@ function updateSummoningCircle(entity: Entity, value: i32): void {
       throw new Error("Unknown entity for summoning circle.");
   }
 
-  let crafters = circle.crafters == 0 ? 1 : circle.crafters;
-  let summoners = circle.summoners == 0 ? 1 : circle.summoners;
-  let rate =
-    10 ** 25 /
-    (10 ** 20 +
-      (((summoners * 10 ** 5) / crafters) *
-        ((SUMMONING_SUCCESS_SENSITIVITY * 10 ** 5) / 100_000)) **
-        2);
+  let crafters: f32 = circle.crafters == 0 ? 1 : (circle.crafters as f32);
+  let summoners: f32 = circle.summoners as f32;
+  let rate: f32 =
+    1 / (1 + (summoners / (crafters * SUMMONING_SUCCESS_SENSITIVITY)) ** 2);
 
-  circle.successRate = toBigDecimal(rate).div(toBigDecimal(100_000)).toString();
+  circle.successRate = `${rate}`;
   circle.save();
 }
 

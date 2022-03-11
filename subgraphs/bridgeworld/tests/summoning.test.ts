@@ -101,7 +101,7 @@ test("summon is started and finished with result token", () => {
     SUMMONING_CIRCLE_ENTITY_TYPE,
     "only",
     "successRate",
-    "0.00008"
+    "0.5"
   );
 
   const newMintEvent = createLegionTransferEvent(
@@ -158,7 +158,7 @@ test("summon is started and finished with result token", () => {
     SUMMONING_CIRCLE_ENTITY_TYPE,
     "only",
     "successRate",
-    "0.00008"
+    "1.0"
   );
 });
 
@@ -329,7 +329,7 @@ test("handles when a summon fails", () => {
     SUMMONING_CIRCLE_ENTITY_TYPE,
     "only",
     "successRate",
-    "0.00008"
+    "0.5"
   );
 
   const summoningFinishedEvent = createdSummoningFinishedEvent(
@@ -367,6 +367,6 @@ test("handles when a summon fails", () => {
     SUMMONING_CIRCLE_ENTITY_TYPE,
     "only",
     "successRate",
-    "0.00008"
+    "1.0"
   );
 });
