@@ -101,7 +101,7 @@ test("summon is started and finished with result token", () => {
     SUMMONING_CIRCLE_ENTITY_TYPE,
     "only",
     "successRate",
-    "0.5"
+    "0.00008"
   );
 
   const newMintEvent = createLegionTransferEvent(
@@ -154,7 +154,12 @@ test("summon is started and finished with result token", () => {
 
   assert.fieldEquals(SUMMONING_CIRCLE_ENTITY_TYPE, "only", "crafters", "0");
   assert.fieldEquals(SUMMONING_CIRCLE_ENTITY_TYPE, "only", "summoners", "0");
-  assert.fieldEquals(SUMMONING_CIRCLE_ENTITY_TYPE, "only", "successRate", "1");
+  assert.fieldEquals(
+    SUMMONING_CIRCLE_ENTITY_TYPE,
+    "only",
+    "successRate",
+    "0.00008"
+  );
 });
 
 test("summon fatigue is tracked and cleared properly", () => {
@@ -324,7 +329,7 @@ test("handles when a summon fails", () => {
     SUMMONING_CIRCLE_ENTITY_TYPE,
     "only",
     "successRate",
-    "0.5"
+    "0.00008"
   );
 
   const summoningFinishedEvent = createdSummoningFinishedEvent(
@@ -358,5 +363,10 @@ test("handles when a summon fails", () => {
 
   assert.fieldEquals(SUMMONING_CIRCLE_ENTITY_TYPE, "only", "crafters", "0");
   assert.fieldEquals(SUMMONING_CIRCLE_ENTITY_TYPE, "only", "summoners", "0");
-  assert.fieldEquals(SUMMONING_CIRCLE_ENTITY_TYPE, "only", "successRate", "1");
+  assert.fieldEquals(
+    SUMMONING_CIRCLE_ENTITY_TYPE,
+    "only",
+    "successRate",
+    "0.00008"
+  );
 });

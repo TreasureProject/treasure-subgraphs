@@ -39,11 +39,12 @@ function updateSummoningCircle(entity: Entity, value: i32): void {
   }
 
   let crafters = circle.crafters == 0 ? 1 : circle.crafters;
+  let summoners = circle.summoners == 0 ? 1 : circle.summoners;
   let rate =
-    100_000 /
-    (1 +
-      ((circle.summoners / crafters) *
-        (SUMMONING_SUCCESS_SENSITIVITY / 100_000)) **
+    10 ** 25 /
+    (10 ** 20 +
+      (((summoners * 10 ** 5) / crafters) *
+        ((SUMMONING_SUCCESS_SENSITIVITY * 10 ** 5) / 100_000)) **
         2);
 
   circle.successRate = toBigDecimal(rate).div(toBigDecimal(100_000)).toString();
