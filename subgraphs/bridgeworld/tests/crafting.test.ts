@@ -81,7 +81,7 @@ test("crafting increases xp when completed successfully", () => {
       SUMMONING_CIRCLE_ENTITY_TYPE,
       "only",
       "successRate",
-      "1"
+      "1.0"
     );
 
     const randomSeededEvent = createRandomSeededEvent(index + 1);
