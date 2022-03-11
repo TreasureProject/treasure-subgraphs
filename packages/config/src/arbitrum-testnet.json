@@ -70,6 +70,8 @@
   "treasure_marketplace_buyer_address": "0x24b7377Bf073E54eC42ec6CC8F4CDA6e3deB32A8",
   "treasure_marketplace_address": "0x2426acC898C5E1241904fCEf6E5643241192272D",
   "treasure_marketplace_start_block": 9264815,
+  "treasure_marketplace_v2_address": "0x09986B4e255B3c548041a30A2Ee312Fe176731c2",
+  "treasure_marketplace_v2_start_block": 10295849,
   "treasure_marketplace_pause_start_block": 10166487,
 
   "hourly_stat_interval_start_block": 8952193

@@ -32,6 +32,9 @@ export const SMOL_TREASURES_ADDRESS = Address.fromString(
 export const MARKETPLACE_ADDRESS = Address.fromString(
   "{{ treasure_marketplace_address }}"
 );
+export const MARKETPLACE_V2_ADDRESS = Address.fromString(
+  "{{ treasure_marketplace_v2_address }}"
+);
 export const MARKETPLACE_BUYER_ADDRESS = Address.fromString(
   "{{ treasure_marketplace_buyer_address }}"
 );
