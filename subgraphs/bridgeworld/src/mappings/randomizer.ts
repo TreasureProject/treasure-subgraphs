@@ -1,11 +1,18 @@
-import { log } from "@graphprotocol/graph-ts";
+import { BigInt, log } from "@graphprotocol/graph-ts";
+
+import { SUMMONING_ADDRESS } from "@treasure/constants";
 
 import {
   RandomRequest,
   RandomSeeded,
 } from "../../generated/Randomizer/Randomizer";
+import { Summoning } from "../../generated/Summoning/Summoning";
 import { Craft, Quest, Random, Seeded, Summon } from "../../generated/schema";
 import { checkSummonFatigue } from "../helpers";
+
+function toI32(value: string): i32 {
+  return parseInt(value, 16) as i32;
+}
 
 export function handleRandomRequest(event: RandomRequest): void {
   let params = event.params;
@@ -86,6 +93,15 @@ export function handleRandomSeeded(event: RandomSeeded): void {
       let summon = Summon.load(summonId);
 
       if (summon) {
+        let summoning = Summoning.bind(SUMMONING_ADDRESS);
+        let tokenId = BigInt.fromI32(toI32(summon.token.slice(45)));
+        let result = summoning.try_didSummoningSucceed(tokenId);
+
+        if (!result.reverted) {
+          summon.success = result.value.value0;
+          summon.endTimestamp = result.value.value1.times(BigInt.fromI32(1000));
+        }
+
         summon.status = "Revealable";
         summon.save();
 
