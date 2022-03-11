@@ -10,6 +10,7 @@ import {
   EXPLORER,
   MARKETPLACE_ADDRESS,
   MARKETPLACE_BUYER_ADDRESS,
+  MARKETPLACE_V2_ADDRESS,
   TREASURE_ADDRESS,
 } from "@treasure/constants";
 
@@ -173,6 +174,7 @@ function handleTransfer(
   let isMarketplace = [
     MARKETPLACE_ADDRESS.toHexString(),
     MARKETPLACE_BUYER_ADDRESS.toHexString(),
+    MARKETPLACE_V2_ADDRESS.toHexString(),
   ].includes(operator.toHexString());
 
   if (!isMarketplace) {
