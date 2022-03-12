@@ -42,7 +42,7 @@ dataSources:
     network: {{ network }}
     source:
       address: "{{ treasure_marketplace_v2_address }}"
-      abi: TreasureMarketplace
+      abi: Marketplace
       startBlock: {{ treasure_marketplace_v2_start_block }}
     mapping:
       kind: ethereum/events
@@ -58,16 +58,16 @@ dataSources:
           file: {{{ abis }}}/721.json
         - name: ERC1155
           file: {{{ abis }}}/1155.json
-        - name: TreasureMarketplace
-          file: {{{ abis }}}/TreasureMarketplace.json
+        - name: Marketplace
+          file: {{{ abis }}}/Marketplace.json
       eventHandlers:
-        - event: ItemCanceled(address,address,uint256)
+        - event: ItemCanceled(indexed address,indexed address,indexed uint256)
           handler: handleItemCanceled
-        - event: ItemListed(address,address,uint256,uint256,uint256,uint256)
+        - event: ItemListed(address,address,uint256,uint64,uint128,uint64)
           handler: handleItemListed
-        - event: ItemSold(address,address,address,uint256,uint256,uint256)
+        - event: ItemSold(address,address,address,uint256,uint64,uint128)
           handler: handleItemSold
-        - event: ItemUpdated(address,address,uint256,uint256,uint256,uint256)
+        - event: ItemUpdated(address,address,uint256,uint64,uint128,uint64)
           handler: handleItemUpdated
       file: ./src/mapping.ts
   - name: Legacy Legion
