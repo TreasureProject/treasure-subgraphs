@@ -3,6 +3,7 @@ import {
   BigInt,
   TypedMap,
   ethereum,
+  log,
   store,
 } from "@graphprotocol/graph-ts";
 
@@ -368,6 +369,7 @@ export function handleItemCanceled(event: ItemCanceled): void {
 export function handleItemListed(event: ItemListed): void {
   // Do nothing if paused
   if (isPaused(event)) {
+    log.warning("pause triggered", []);
     return;
   }
 
