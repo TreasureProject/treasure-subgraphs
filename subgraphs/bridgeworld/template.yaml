@@ -58,6 +58,32 @@ dataSources:
         - event: TransferSingle(indexed address,indexed address,indexed address,uint256,uint256)
           handler: handleTransferSingle
       file: ./src/mappings/consumable.ts
+  - name: Balancer Crystal
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ balancer_crystal_address }}"
+      abi: ERC1155
+      startBlock: {{ balancer_crystal_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Token
+        - User
+        - UserToken
+      abis:
+        - name: ERC1155
+          file: ../../node_modules/@treasure/subgraph-abis/src/1155.json
+      eventHandlers:
+        - event: ApprovalForAll(indexed address,indexed address,bool)
+          handler: handleApprovalForAll
+        - event: TransferBatch(indexed address,indexed address,indexed address,uint256[],uint256[])
+          handler: handleTransferBatch
+        - event: TransferSingle(indexed address,indexed address,indexed address,uint256,uint256)
+          handler: handleTransferSingle
+      file: ./src/mappings/balancer-crystal.ts
   - name: Crafting
     kind: ethereum/contract
     network: {{ network }}

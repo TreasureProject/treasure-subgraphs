@@ -7,6 +7,8 @@
 
   "atlas_mine_address": "0x34919698cD91aaF30a3ce5B2FF4EE5Ccb59fdc88",
   "atlas_mine_start_block": 8952193,
+  "balancer_crystal_address": "0xc088fd9272ca23c32df5c8d6c8c2faab028b705a",
+  "balancer_crystal_start_block": 9623621,
   "consumable_address": "0x906369481B258Ca3C21A6737Bce052d85572a8F3",
   "consumable_start_block": 8568830,
   "crafting_address": "0xd5Ea0A9C24f8271927B13588E265F6A62C3bfBA4",
