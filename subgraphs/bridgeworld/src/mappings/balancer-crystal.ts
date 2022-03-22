@@ -5,13 +5,7 @@ import {
   TransferBatch,
   TransferSingle,
 } from "../../generated/Consumable/ERC1155";
-import {
-  Approval,
-  ConsumableInfo,
-  Token,
-  User,
-  UserApproval,
-} from "../../generated/schema";
+import { Approval, Token, User, UserApproval } from "../../generated/schema";
 import { getAddressId, isMint } from "../helpers";
 import * as common from "../mapping";
 
@@ -20,7 +14,7 @@ function getName(tokenId: i32): string {
     case 1:
       return "Balancer Crystal";
     default:
-      log.error("Unhandled consumable name: {}", [tokenId.toString()]);
+      log.error("Unhandled balancer crystal name: {}", [tokenId.toString()]);
 
       return "";
   }
@@ -30,7 +24,7 @@ function setMetadata(contract: Address, tokenId: BigInt): void {
   let token = Token.load(getAddressId(contract, tokenId));
 
   if (!token) {
-    log.error("Unknown consumable token: {}", [tokenId.toString()]);
+    log.error("Unknown balancer crystal token: {}", [tokenId.toString()]);
 
     return;
   }
