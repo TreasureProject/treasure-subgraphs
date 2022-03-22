@@ -1,0 +1,2 @@
+// Cron jobs
+export const MISSING_METADATA_UPDATE_INTERVAL = 3600;

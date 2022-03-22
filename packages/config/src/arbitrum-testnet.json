@@ -76,5 +76,8 @@
   "treasure_marketplace_v2_start_block": 10295849,
   "treasure_marketplace_pause_start_block": 10166487,
 
+  "peek_a_boo_address": "0xb07303217c392e29aa46bbf58f42a9d30cb5b9c8",
+  "peek_a_boo_start_block": 10513807,
+
   "hourly_stat_interval_start_block": 8952193
 }

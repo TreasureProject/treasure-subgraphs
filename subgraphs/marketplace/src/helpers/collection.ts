@@ -21,7 +21,6 @@ import {
 export function getAllCollections(): string[] {
   return [
     BATTLEFLY_ADDRESS,
-    BATTLEFLY_FOUNDERS_ADDRESS,
     CONSUMABLE_ADDRESS,
     EXTRA_LIFE_ADDRESS,
     KEYS_ADDRESS,
@@ -42,5 +41,21 @@ export function getAllCollections(): string[] {
       [0, 1, 2].map<string>(
         (suffix) => `${LEGION_ADDRESS.toHexString()}-${suffix}`
       )
+    )
+    .concat(
+      [1, 2].map<string>(
+        (suffix) => `${BATTLEFLY_FOUNDERS_ADDRESS.toHexString()}-${suffix}`
+      )
     );
+}
+
+export function getBattleflyFounderVersion(tokenId: i32): i32 {
+  switch (true) {
+    case tokenId > 0 && tokenId < 221:
+      return 1;
+    case tokenId > 220 && tokenId < 4221:
+      return 2;
+    default:
+      return 0;
+  }
 }
