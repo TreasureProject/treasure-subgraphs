@@ -3,6 +3,7 @@ abis/
 build/
 generated/
 node_modules/
+**/helpers/base64.ts
 *.yaml
 .lintstagedrc
 .prettierignore
