@@ -1,6 +1,9 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts";
 
 export const BURNER_ADDRESS = Address.fromString("{{ burner_address }}");
+export const BALANCER_CRYSTAL_ADDRESS = Address.fromString(
+  "{{ balancer_crystal_address }}"
+);
 export const CONSUMABLE_ADDRESS = Address.fromString(
   "{{ consumable_address }}"
 );

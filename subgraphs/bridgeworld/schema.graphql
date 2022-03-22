@@ -1,5 +1,6 @@
 enum Category {
   Consumable
+  Crystal
   Legion
   Treasure
 }
