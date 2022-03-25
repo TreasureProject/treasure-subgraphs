@@ -1,6 +1,6 @@
 import { assert, clearStore, createMockedFunction, test } from "matchstick-as";
 
-import { Address, ethereum } from "@graphprotocol/graph-ts";
+import { Address, BigInt, ethereum } from "@graphprotocol/graph-ts";
 
 import {
   CONSUMABLE_ADDRESS,
@@ -85,7 +85,7 @@ test("summon is started and finished with result token", () => {
     "didSummoningSucceed",
     "didSummoningSucceed(uint256):(bool,uint256)"
   )
-    .withArgs([ethereum.Value.fromI32(7)])
+    .withArgs([ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(7))])
     .returns([
       ethereum.Value.fromBoolean(true),
       ethereum.Value.fromI32(1644659676),
@@ -313,7 +313,7 @@ test("handles when a summon fails", () => {
     "didSummoningSucceed",
     "didSummoningSucceed(uint256):(bool,uint256)"
   )
-    .withArgs([ethereum.Value.fromI32(7)])
+    .withArgs([ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(7))])
     .returns([
       ethereum.Value.fromBoolean(false),
       ethereum.Value.fromI32(1644659676),

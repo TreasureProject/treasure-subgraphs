@@ -1,4 +1,4 @@
-import { Address, BigInt, log, store } from "@graphprotocol/graph-ts";
+import { Address, BigInt, ethereum, log, store } from "@graphprotocol/graph-ts";
 
 import {
   CONSUMABLE_ADDRESS,
@@ -26,6 +26,10 @@ import {
   getXpPerLevel,
   removeCrafterFromCircle,
 } from "../helpers";
+
+function isXpPaused(event: ethereum.Event): boolean {
+  return event.block.number.gt(BigInt.fromI32(8456580));
+}
 
 function handleCraftingStarted(
   address: Address,
@@ -136,7 +140,7 @@ export function handleCraftingRevealed(event: CraftingRevealed): void {
   outcome.save();
 
   // Increase Xp if successfull
-  if (outcome.success == true) {
+  if (outcome.success == true && !isXpPaused(event)) {
     let metadata = LegionInfo.load(`${craft.token}-metadata`);
 
     if (metadata && metadata.crafting != 6) {

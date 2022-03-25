@@ -379,6 +379,11 @@ export function handleItemListed(event: ItemListed): void {
   let seller = params.seller;
 
   let token = getToken(tokenAddress, tokenId);
+  let collection = getCollection(token.collection);
+
+  if (collection.standard == "") {
+    return;
+  }
 
   // We don't allow listing Recruits on the marketplace
   if (token.name == "Recruit") {
@@ -395,8 +400,6 @@ export function handleItemListed(event: ItemListed): void {
   listing.status = exists("StakedToken", listing.id) ? "Inactive" : "Active";
 
   listing.save();
-
-  let collection = getCollection(token.collection);
 
   if (collection.listings.indexOf(listing.id) == -1) {
     collection.listings = collection.listings.concat([listing.id]);
