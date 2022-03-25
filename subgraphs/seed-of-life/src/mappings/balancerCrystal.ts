@@ -1,10 +1,15 @@
-import { BigInt, log } from "@graphprotocol/graph-ts";
+import { BigInt, log, store } from "@graphprotocol/graph-ts";
 
 import {
+  ApprovalForAll,
   TransferBatch,
   TransferSingle,
 } from "../../generated/BalancerCrystal/ERC1155";
+import { UserApproval } from "../../generated/schema";
+import { ApprovalHelpers } from "../helpers/ApprovalHelpers";
 import { TransferHelpers } from "../helpers/TransferHelpers";
+import { UserApprovalHelpers } from "../helpers/UserApprovalHelpers";
+import { UserHelpers } from "../helpers/UserHelpers";
 
 export function handleTransferBatch(event: TransferBatch): void {
   let params = event.params;
@@ -32,6 +37,28 @@ export function handleTransferSingle(event: TransferSingle): void {
     nameForId(event.params.id),
     event.params.value
   );
+}
+
+export function handleApprovalForAll(event: ApprovalForAll): void {
+  let user = UserHelpers.getOrCreateUser(event.params.account.toHexString());
+
+  let contract = event.address;
+  let operator = event.params.operator;
+
+  let approval = ApprovalHelpers.getOrCreateApproval(contract, operator);
+
+  let userApprovalId = UserApprovalHelpers.getUserApprovalId(user, approval);
+
+  if (event.params.approved) {
+    let userApproval = new UserApproval(userApprovalId);
+
+    userApproval.approval = approval.id;
+    userApproval.user = user.id;
+
+    userApproval.save();
+  } else {
+    store.remove("UserApproval", userApprovalId);
+  }
 }
 
 function nameForId(id: BigInt): string {

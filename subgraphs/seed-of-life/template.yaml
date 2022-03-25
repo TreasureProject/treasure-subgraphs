@@ -51,6 +51,8 @@ dataSources:
         - name: ERC1155
           file: ../../node_modules/@treasure/subgraph-abis/src/1155.json
       eventHandlers:
+        - event: ApprovalForAll(indexed address,indexed address,bool)
+          handler: handleApprovalForAll
         - event: TransferSingle(indexed address,indexed address,indexed address,uint256,uint256)
           handler: handleTransferSingle
         - event: TransferBatch(indexed address,indexed address,indexed address,uint256[],uint256[])
