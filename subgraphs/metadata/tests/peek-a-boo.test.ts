@@ -21,7 +21,6 @@ import { Attribute, Collection, Token } from "../generated/schema";
 import { encode } from "../src/helpers/base64";
 import { updateTokenMetadata } from "../src/helpers/metadata";
 import { handleTransfer } from "../src/mappings/peek-a-boo";
-// import { createTransferEvent } from "../smol-bodies/utils";
 import {
   ATTRIBUTE_ENTITY_TYPE,
   TOKEN_ENTITY_TYPE,
