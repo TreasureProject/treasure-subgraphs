@@ -82,10 +82,10 @@
   "realm_address": "0xa8e074044d7205369b9c6b8c29bd38d1c6d42fd2",
   "realm_start_block": 8096632,
 
-  "tales_of_elleria_address": "0x4216f70e9cb800e88453a93568bd1922a77d22fe",
-  "tales_of_elleria_start_block": 10247596,
-  "tales_of_elleria_data_address": "0xdc6b7aa219da544a999e6e713bee5c6c1809cbd0",
-  "tales_of_elleria_data_start_block": 10247607,
+  "tales_of_elleria_address": "0x901b5062054ed6b5d30967d15499381f4d0ce721",
+  "tales_of_elleria_start_block": 10642355,
+  "tales_of_elleria_data_address": "0xbdf92d81e2c1e1fa44d62c50d256b2dd64bde1e6",
+  "tales_of_elleria_data_start_block": 10642357,
 
   "hourly_stat_interval_start_block": 8952193
 }

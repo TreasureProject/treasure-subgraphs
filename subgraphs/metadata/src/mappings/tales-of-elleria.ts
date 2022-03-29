@@ -1,12 +1,9 @@
-import {
-  Address,
-  Bytes,
-  TypedMap,
-  dataSource,
-  json,
-} from "@graphprotocol/graph-ts";
+import { Address, Bytes, json } from "@graphprotocol/graph-ts";
 
-import { LevelChange } from "../../generated/Tales of Elleria Data/TalesOfElleria";
+import {
+  AttributeChange,
+  LevelChange,
+} from "../../generated/Tales of Elleria Data/TalesOfElleria";
 import { ERC721, Transfer } from "../../generated/Tales of Elleria/ERC721";
 import { Collection, Token } from "../../generated/schema";
 import {
@@ -22,13 +19,6 @@ import { isMint } from "../helpers/utils";
 import * as common from "../mapping";
 
 const RARITY = ["Common", "Epic", "Legendary"];
-
-const classToId = new TypedMap<string, string>();
-
-classToId.set("Warrior", "1");
-classToId.set("Assassin", "2");
-classToId.set("Mage", "3");
-classToId.set("Ranger", "4");
 
 class Stat {
   constructor(public name: string, public value: string) {}
@@ -124,26 +114,7 @@ function fetchTokenMetadata(collection: Collection, token: Token): void {
   const tokenUri = contract.try_tokenURI(token.tokenId);
 
   if (!tokenUri.reverted) {
-    let metadata = tokenUri.value.split(";");
-
-    if (dataSource.network() == "arbitrum-rinkeby") {
-      metadata.unshift(tokenIdString);
-
-      const className = metadata[Metadata.ClassId];
-      const timeSummoned = metadata[Metadata.ClassName];
-      const classId = (classToId.get(className) || "Warrior") as string;
-
-      metadata = metadata.slice(0, -2);
-      metadata = metadata.concat([
-        classId,
-        className,
-        "1",
-        "0",
-        timeSummoned,
-        "0",
-      ]);
-    }
-
+    const metadata = tokenUri.value.split(";");
     const image = metadata[Metadata.Image].replace(
       "https://ipfs.moralis.io:2053/ipfs",
       "ipfs://"
@@ -216,6 +187,8 @@ export function handleTransfer(event: Transfer): void {
 
   common.handleTransfer(transfer, fetchTokenMetadata);
 }
+
+export function handleAttributeChange(event: AttributeChange): void {}
 
 export function handleLevelChange(event: LevelChange): void {
   const params = event.params;
