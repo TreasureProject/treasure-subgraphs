@@ -82,5 +82,10 @@
   "realm_address": "0x4de95c1e202102e22e801590c51d7b979f167fbb",
   "realm_start_block": 758297,
 
+  "tales_of_elleria_address": "0x7480224ec2b98f28cee3740c80940a2f489bf352",
+  "tales_of_elleria_start_block": 8701560,
+  "tales_of_elleria_data_address": "0x7A0D491469fb5D7D3aDbF186221891AfE3b5d028",
+  "tales_of_elleria_data_start_block": 8701736,
+
   "hourly_stat_interval_start_block": 6470000
 }
