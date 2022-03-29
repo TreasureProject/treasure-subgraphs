@@ -6,7 +6,7 @@ import {
 } from "@treasure/constants";
 
 import { getAddressId, getBattleflyFounderVersion, getName } from ".";
-import { Collection, StatsData, Token } from "../../generated/schema";
+import { Collection, StatsData, Token, User } from "../../generated/schema";
 
 function createCollection(
   contract: Address,
@@ -113,4 +113,15 @@ export function getToken(contract: Address, tokenId: BigInt): Token {
   }
 
   return token;
+}
+
+export function getUser(address: Address): User {
+  let user = User.load(address.toHexString());
+
+  if (!user) {
+    user = new User(address.toHexString());
+    user.save();
+  }
+
+  return user;
 }

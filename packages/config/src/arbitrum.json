@@ -79,5 +79,8 @@
   "peek_a_boo_address": "0xbb5e6438336187ef87e21798dcda8fc98fcfa65a",
   "peek_a_boo_start_block": 8279648,
 
+  "realm_address": "0x4de95c1e202102e22e801590c51d7b979f167fbb",
+  "realm_start_block": 758297,
+
   "hourly_stat_interval_start_block": 6470000
 }

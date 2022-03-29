@@ -43,6 +43,7 @@ import {
   getCollection,
   getStats,
   getToken,
+  getUser,
   getUserAddressId,
   isMint,
   isPaused,
@@ -95,17 +96,6 @@ function getStakedTokenId(
   );
 
   return id;
-}
-
-function getUser(address: Address): User {
-  let user = User.load(address.toHexString());
-
-  if (!user) {
-    user = new User(address.toHexString());
-    user.save();
-  }
-
-  return user;
 }
 
 function handleStake(
