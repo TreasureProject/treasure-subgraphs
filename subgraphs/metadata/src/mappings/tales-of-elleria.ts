@@ -50,7 +50,7 @@ enum Metadata {
   RarityId,
 }
 
-function getMaxStats(class_: string): Stats {
+function getMaxStats(classId: i32): Stats {
   let stats = new Stats(
     new Stat("Max Strength", "0"),
     new Stat("Max Agility", "0"),
@@ -60,8 +60,17 @@ function getMaxStats(class_: string): Stats {
     new Stat("Max Will", "0")
   );
 
-  switch (class_) {
-    case "Assassin":
+  switch (classId) {
+    case 1: // Warrior
+      stats.strength.value = "100";
+      stats.agility.value = "75";
+      stats.vitality.value = "90";
+      stats.endurance.value = "80";
+      stats.intelligence.value = "50";
+      stats.will.value = "50";
+
+      break;
+    case 2: // Assassin
       stats.strength.value = "90";
       stats.agility.value = "100";
       stats.vitality.value = "75";
@@ -70,7 +79,7 @@ function getMaxStats(class_: string): Stats {
       stats.will.value = "80";
 
       break;
-    case "Mage":
+    case 3: // Mage
       stats.strength.value = "50";
       stats.agility.value = "80";
       stats.vitality.value = "50";
@@ -79,22 +88,13 @@ function getMaxStats(class_: string): Stats {
       stats.will.value = "90";
 
       break;
-    case "Ranger":
+    case 4: // Ranger
       stats.strength.value = "100";
       stats.agility.value = "90";
       stats.vitality.value = "75";
       stats.endurance.value = "50";
       stats.intelligence.value = "50";
       stats.will.value = "80";
-
-      break;
-    case "Warrior":
-      stats.strength.value = "100";
-      stats.agility.value = "75";
-      stats.vitality.value = "90";
-      stats.endurance.value = "80";
-      stats.intelligence.value = "50";
-      stats.will.value = "50";
 
       break;
   }
@@ -131,7 +131,7 @@ function fetchTokenMetadata(collection: Collection, token: Token): void {
       metadata[Metadata.Intelligence]
     );
     const will = new Stat("Will", metadata[Metadata.Will]);
-    const max = getMaxStats(class_.value);
+    const max = getMaxStats(parseInt(metadata[Metadata.ClassId]) as i32);
 
     const attributes = [
       class_,
