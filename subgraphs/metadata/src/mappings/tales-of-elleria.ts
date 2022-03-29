@@ -1,4 +1,4 @@
-import { Address, Bytes, json } from "@graphprotocol/graph-ts";
+import { Address, Bytes, TypedMap, json } from "@graphprotocol/graph-ts";
 
 import {
   AttributeChange,
@@ -19,6 +19,57 @@ import { isMint } from "../helpers/utils";
 import * as common from "../mapping";
 
 const RARITY = ["Common", "Epic", "Legendary"];
+
+const FALLBACK_IMAGES = new TypedMap<string, string>();
+
+FALLBACK_IMAGES.set(
+  "Archer1",
+  "https://ipfs.moralis.io:2053/ipfs/QmZZGVv1rHm6KQ5ng7ehT9Dd38wnSCFZD9tWFfKgRpyeMa"
+);
+FALLBACK_IMAGES.set(
+  "Assassin1",
+  "https://ipfs.moralis.io:2053/ipfs/QmVVGAmNvUgUhyLy3HPKmwbzCnRfjGrV9kjW1G6ALUZUNF"
+);
+FALLBACK_IMAGES.set(
+  "Mage1",
+  "https://ipfs.moralis.io:2053/ipfs/QmVWzYTi7pYBZcMrzoHJ82ucRxPxVyEUNPZDtjbewzhfEC"
+);
+FALLBACK_IMAGES.set(
+  "Warrior1",
+  "https://ipfs.moralis.io:2053/ipfs/QmXdUDFBCx3MfCMZK9nK3AeFayxCYi7SiKU4xz98MdMC49"
+);
+FALLBACK_IMAGES.set(
+  "Archer2",
+  "https://ipfs.moralis.io:2053/ipfs/QmSvcrDYijxrZ5Fpz97P3t2dChEnq2syNwLQ6qGZ2nDzKc"
+);
+FALLBACK_IMAGES.set(
+  "Assassin2",
+  "https://ipfs.moralis.io:2053/ipfs/Qmd66PRkYUWN78VUSzYyxmZeP4zLpC8Wroif3QNCyofvj7"
+);
+FALLBACK_IMAGES.set(
+  "Mage2",
+  "https://ipfs.moralis.io:2053/ipfs/QmQuAxvgQP9r8cuV8sJxrjA7ttZYb2UdM4JdC17PgWv29U"
+);
+FALLBACK_IMAGES.set(
+  "Warrior2",
+  "https://ipfs.moralis.io:2053/ipfs/QmbXmaaWNFx8jK9DaxGF3x4Zj9RbTaRKQF3UkhuLfQLheG"
+);
+FALLBACK_IMAGES.set(
+  "Archer3",
+  "https://ipfs.moralis.io:2053/ipfs/QmWBudHCS6wcSeJTVbHSYPddnLaBGdPJbHynwYG95Ambs3"
+);
+FALLBACK_IMAGES.set(
+  "Assassin3",
+  "https://ipfs.moralis.io:2053/ipfs/QmP8X5uSrp6D4HGCkQ7asTQAaRxsn2eVS4TcapEf5evk4f"
+);
+FALLBACK_IMAGES.set(
+  "Mage3",
+  "https://ipfs.moralis.io:2053/ipfs/QmVdphWGBK78DupEntsxDut2mks9ihitxzu21hkpQJGVQ8"
+);
+FALLBACK_IMAGES.set(
+  "Warrior3",
+  "https://ipfs.moralis.io:2053/ipfs/QmXB9VvdGXGu7gbmcKGamhJpTLYrtJFrtyeGf2YzgFHA3J"
+);
 
 class Stat {
   constructor(public name: string, public value: string) {}
@@ -115,7 +166,10 @@ function fetchTokenMetadata(collection: Collection, token: Token): void {
 
   if (!tokenUri.reverted) {
     const metadata = tokenUri.value.split(";");
-    const image = metadata[Metadata.Image].replace(
+    const fallbackImage = (FALLBACK_IMAGES.get(
+      `${metadata[Metadata.ClassName]}${metadata[Metadata.RarityId]}`
+    ) || "") as string;
+    const image = (metadata[Metadata.Image] || fallbackImage).replace(
       "https://ipfs.moralis.io:2053/ipfs",
       "ipfs://"
     );
