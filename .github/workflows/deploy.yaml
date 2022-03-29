@@ -161,7 +161,7 @@ jobs:
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         run: yarn deploy:prod
 
-  marketplace:
+  metadata:
     name: Metadata Subgraph
     if: ${{ needs.changes.outputs.metadata == 'true' }}
     needs: changes
