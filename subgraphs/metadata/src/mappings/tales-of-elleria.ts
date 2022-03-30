@@ -180,9 +180,9 @@ function fetchTokenMetadata(
 
   if (!tokenUri.reverted) {
     const metadata = tokenUri.value.split(";");
-    const fallbackKey = `${metadata[Metadata.ClassName]}${
-      metadata[Metadata.RarityId]
-    }`;
+    const totalStats = parseInt(metadata[Metadata.TotalAttributes]) as i32;
+    const rarityId = totalStats < 300 ? 0 : totalStats > 375 ? 2 : 1;
+    const fallbackKey = `${metadata[Metadata.ClassName]}${rarityId}`;
     const fallbackImage = (FALLBACK_IMAGES.get(fallbackKey) || "") as string;
     const metadataImage = metadata[Metadata.Image];
     const image = (
@@ -192,10 +192,7 @@ function fetchTokenMetadata(
         : metadataImage
     ).replace("https://ipfs.moralis.io:2053/ipfs/", "ipfs://");
     const class_ = new Stat("Class", metadata[Metadata.ClassName]);
-    const rarity = new Stat(
-      "Rarity",
-      RARITY[parseInt(metadata[Metadata.RarityId]) as i32]
-    );
+    const rarity = new Stat("Rarity", RARITY[rarityId]);
     const level = new Stat("Level", metadata[Metadata.Level]);
     const strength = new Stat("Strength", metadata[Metadata.Strength]);
     const agility = new Stat("Agility", metadata[Metadata.Agility]);
