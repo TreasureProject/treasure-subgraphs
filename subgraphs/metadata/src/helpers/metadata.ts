@@ -1,6 +1,7 @@
-import { log } from "@graphprotocol/graph-ts";
+import { BigInt, log } from "@graphprotocol/graph-ts";
 
 import { Attribute, Collection, Token } from "../../generated/schema";
+import { ATTRIBUTE_CALCULATION_UPDATE_INTERVAL } from "./constants";
 import { JSON, getJsonStringValue } from "./json";
 import { getOrCreateAttribute } from "./models";
 import { toBigDecimal } from "./number";
@@ -42,6 +43,7 @@ export function updateTokenMetadata(
   collection: Collection,
   token: Token,
   data: JSON,
+  timestamp: BigInt,
   normalizeAttribute: (
     name: string,
     value: string
@@ -105,8 +107,19 @@ export function updateTokenMetadata(
 
     token.attributes = attributes.map<string>((attribute) => attribute.id);
 
-    // Update attribute percentages
-    updateAttributePercentages(collection);
+    if (
+      timestamp.gt(
+        collection._attributePercentageLastUpdated.plus(
+          BigInt.fromI32(ATTRIBUTE_CALCULATION_UPDATE_INTERVAL)
+        )
+      )
+    ) {
+      // Update attribute percentages
+      updateAttributePercentages(collection);
+
+      collection._attributePercentageLastUpdated = timestamp;
+      collection.save();
+    }
   }
 
   token.save();

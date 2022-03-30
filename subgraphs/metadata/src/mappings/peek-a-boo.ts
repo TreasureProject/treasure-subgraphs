@@ -1,4 +1,4 @@
-import { Address, Bytes, json } from "@graphprotocol/graph-ts";
+import { Address, BigInt, Bytes, json } from "@graphprotocol/graph-ts";
 
 import { ERC721, Transfer } from "../../generated/Peek-A-Boo/ERC721";
 import { Collection, Token } from "../../generated/schema";
@@ -13,7 +13,11 @@ function normalizeAttribute(name: string, value: string): NormalizedAttribute {
   return new NormalizedAttribute(replacement, value.replace(`${name} `, ""));
 }
 
-function fetchTokenMetadata(collection: Collection, token: Token): void {
+function fetchTokenMetadata(
+  collection: Collection,
+  token: Token,
+  timestamp: BigInt
+): void {
   const tokenIdString = token.tokenId.toString();
 
   token.name = `Peek-A-Boo #${tokenIdString}`;
@@ -55,7 +59,13 @@ function fetchTokenMetadata(collection: Collection, token: Token): void {
     const data = json.fromString(uri).toObject();
 
     if (data) {
-      updateTokenMetadata(collection, token, data, normalizeAttribute);
+      updateTokenMetadata(
+        collection,
+        token,
+        data,
+        timestamp,
+        normalizeAttribute
+      );
     } else {
       collection._missingMetadataTokens =
         collection._missingMetadataTokens.concat([token.id]);

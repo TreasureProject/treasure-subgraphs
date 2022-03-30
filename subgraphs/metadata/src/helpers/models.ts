@@ -18,6 +18,7 @@ export function getOrCreateAttribute(
   if (!attribute) {
     attribute = new Attribute(id);
 
+    attribute.collection = collection.id;
     attribute.name = name;
     attribute.value = value;
     attribute._tokenIds = [];

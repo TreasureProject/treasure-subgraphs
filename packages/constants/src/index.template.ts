@@ -68,3 +68,7 @@ export const LEGACY_LEGION_GENESIS_ADDRESS = Address.fromString(
 export const TREASURE_MARKETPLACE_PAUSE_START_BLOCK = BigInt.fromString(
   "{{ treasure_marketplace_pause_start_block }}"
 );
+
+export const TALES_OF_ELLERIA_ADDRESS = Address.fromString(
+  "{{ tales_of_elleria_address }}"
+);

@@ -15,7 +15,11 @@ export class TransferEvent {
 
 export function handleTransfer(
   event: TransferEvent,
-  fetchTokenMetadata: (collection: Collection, token: Token) => void
+  fetchTokenMetadata: (
+    collection: Collection,
+    token: Token,
+    timestamp: BigInt
+  ) => void
 ): void {
   const timestamp = event.timestamp;
 
@@ -23,7 +27,7 @@ export function handleTransfer(
   const token = getOrCreateToken(collection, event.tokenId);
 
   if (event.isMint) {
-    fetchTokenMetadata(collection, token);
+    fetchTokenMetadata(collection, token, timestamp);
   }
 
   // Should we run missing metadata cron job?
@@ -47,7 +51,7 @@ export function handleTransfer(
       const token = Token.load(tokenIds[index]);
 
       if (token) {
-        fetchTokenMetadata(collection, token);
+        fetchTokenMetadata(collection, token, timestamp);
       }
     }
 

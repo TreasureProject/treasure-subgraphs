@@ -1,4 +1,12 @@
-import { Address, Bytes, TypedMap, json } from "@graphprotocol/graph-ts";
+import {
+  Address,
+  BigInt,
+  Bytes,
+  TypedMap,
+  json,
+} from "@graphprotocol/graph-ts";
+
+import { TALES_OF_ELLERIA_ADDRESS } from "@treasure/constants";
 
 import {
   AttributeChange,
@@ -6,6 +14,7 @@ import {
 } from "../../generated/Tales of Elleria Data/TalesOfElleria";
 import { ERC721, Transfer } from "../../generated/Tales of Elleria/ERC721";
 import { Collection, Token } from "../../generated/schema";
+import { getAttributeId } from "../helpers/ids";
 import {
   updateAttributePercentages,
   updateTokenMetadata,
@@ -23,51 +32,51 @@ const RARITY = ["Common", "Epic", "Legendary"];
 const FALLBACK_IMAGES = new TypedMap<string, string>();
 
 FALLBACK_IMAGES.set(
-  "Archer1",
+  "Ranger0",
   "https://ipfs.moralis.io:2053/ipfs/QmZZGVv1rHm6KQ5ng7ehT9Dd38wnSCFZD9tWFfKgRpyeMa"
 );
 FALLBACK_IMAGES.set(
-  "Assassin1",
+  "Assassin0",
   "https://ipfs.moralis.io:2053/ipfs/QmVVGAmNvUgUhyLy3HPKmwbzCnRfjGrV9kjW1G6ALUZUNF"
 );
 FALLBACK_IMAGES.set(
-  "Mage1",
+  "Mage0",
   "https://ipfs.moralis.io:2053/ipfs/QmVWzYTi7pYBZcMrzoHJ82ucRxPxVyEUNPZDtjbewzhfEC"
 );
 FALLBACK_IMAGES.set(
-  "Warrior1",
+  "Warrior0",
   "https://ipfs.moralis.io:2053/ipfs/QmXdUDFBCx3MfCMZK9nK3AeFayxCYi7SiKU4xz98MdMC49"
 );
 FALLBACK_IMAGES.set(
-  "Archer2",
+  "Ranger1",
   "https://ipfs.moralis.io:2053/ipfs/QmSvcrDYijxrZ5Fpz97P3t2dChEnq2syNwLQ6qGZ2nDzKc"
 );
 FALLBACK_IMAGES.set(
-  "Assassin2",
+  "Assassin1",
   "https://ipfs.moralis.io:2053/ipfs/Qmd66PRkYUWN78VUSzYyxmZeP4zLpC8Wroif3QNCyofvj7"
 );
 FALLBACK_IMAGES.set(
-  "Mage2",
+  "Mage1",
   "https://ipfs.moralis.io:2053/ipfs/QmQuAxvgQP9r8cuV8sJxrjA7ttZYb2UdM4JdC17PgWv29U"
 );
 FALLBACK_IMAGES.set(
-  "Warrior2",
+  "Warrior1",
   "https://ipfs.moralis.io:2053/ipfs/QmbXmaaWNFx8jK9DaxGF3x4Zj9RbTaRKQF3UkhuLfQLheG"
 );
 FALLBACK_IMAGES.set(
-  "Archer3",
+  "Ranger2",
   "https://ipfs.moralis.io:2053/ipfs/QmWBudHCS6wcSeJTVbHSYPddnLaBGdPJbHynwYG95Ambs3"
 );
 FALLBACK_IMAGES.set(
-  "Assassin3",
+  "Assassin2",
   "https://ipfs.moralis.io:2053/ipfs/QmP8X5uSrp6D4HGCkQ7asTQAaRxsn2eVS4TcapEf5evk4f"
 );
 FALLBACK_IMAGES.set(
-  "Mage3",
+  "Mage2",
   "https://ipfs.moralis.io:2053/ipfs/QmVdphWGBK78DupEntsxDut2mks9ihitxzu21hkpQJGVQ8"
 );
 FALLBACK_IMAGES.set(
-  "Warrior3",
+  "Warrior2",
   "https://ipfs.moralis.io:2053/ipfs/QmXB9VvdGXGu7gbmcKGamhJpTLYrtJFrtyeGf2YzgFHA3J"
 );
 
@@ -102,6 +111,7 @@ enum Metadata {
   Experience,
   TimeSummoned,
   RarityId,
+  IsStaked,
 }
 
 function getMaxStats(classId: i32): Stats {
@@ -156,7 +166,11 @@ function getMaxStats(classId: i32): Stats {
   return stats;
 }
 
-function fetchTokenMetadata(collection: Collection, token: Token): void {
+function fetchTokenMetadata(
+  collection: Collection,
+  token: Token,
+  timestamp: BigInt
+): void {
   const tokenIdString = token.tokenId.toString();
 
   token.name = `Hero #${tokenIdString}`;
@@ -166,13 +180,17 @@ function fetchTokenMetadata(collection: Collection, token: Token): void {
 
   if (!tokenUri.reverted) {
     const metadata = tokenUri.value.split(";");
-    const fallbackImage = (FALLBACK_IMAGES.get(
-      `${metadata[Metadata.ClassName]}${metadata[Metadata.RarityId]}`
-    ) || "") as string;
-    const image = (metadata[Metadata.Image] || fallbackImage).replace(
-      "https://ipfs.moralis.io:2053/ipfs",
-      "ipfs://"
-    );
+    const fallbackKey = `${metadata[Metadata.ClassName]}${
+      metadata[Metadata.RarityId]
+    }`;
+    const fallbackImage = (FALLBACK_IMAGES.get(fallbackKey) || "") as string;
+    const metadataImage = metadata[Metadata.Image];
+    const image = (
+      metadataImage == "" ||
+      metadataImage.startsWith("https://cdn.talesofelleria.com")
+        ? fallbackImage
+        : metadataImage
+    ).replace("https://ipfs.moralis.io:2053/ipfs/", "ipfs://");
     const class_ = new Stat("Class", metadata[Metadata.ClassName]);
     const rarity = new Stat(
       "Rarity",
@@ -222,7 +240,7 @@ function fetchTokenMetadata(collection: Collection, token: Token): void {
     const data = json.fromBytes(bytes).toObject();
 
     if (data) {
-      updateTokenMetadata(collection, token, data);
+      updateTokenMetadata(collection, token, data, timestamp);
     } else {
       collection._missingMetadataTokens =
         collection._missingMetadataTokens.concat([token.id]);
@@ -242,11 +260,64 @@ export function handleTransfer(event: Transfer): void {
   common.handleTransfer(transfer, fetchTokenMetadata);
 }
 
-export function handleAttributeChange(event: AttributeChange): void {}
+export function handleAttributeChange(event: AttributeChange): void {
+  const params = event.params;
+  const collection = getOrCreateCollection(TALES_OF_ELLERIA_ADDRESS);
+  const token = getOrCreateToken(collection, params.tokenId);
+
+  let attributes = token.attributes;
+
+  const existing = new TypedMap<string, string>();
+  const stats = [
+    new Stat("Strength", params.strength.toString()),
+    new Stat("Agility", params.agility.toString()),
+    new Stat("Vitality", params.vitality.toString()),
+    new Stat("Endurance", params.endurance.toString()),
+    new Stat("Intelligence", params.intelligence.toString()),
+    new Stat("Will", params.will.toString()),
+  ];
+
+  for (let index = 0; index < attributes.length; index++) {
+    const attribute = attributes[index];
+    const parts = attribute.split("-");
+
+    existing.set(parts[1], index.toString());
+  }
+
+  for (let index = 0; index < stats.length; index++) {
+    const stat = stats[index];
+    const attributeId = getAttributeId(collection, stat.name, stat.value);
+
+    // No change
+    if (attributes.indexOf(attributeId) > -1) {
+      continue;
+    }
+
+    const existingAttributeIndex = parseInt(
+      existing.get(stat.name.toLowerCase()) as string
+    ) as i32;
+
+    if (existingAttributeIndex == -1) {
+      continue;
+    }
+
+    attributes = attributes
+      .slice(0, existingAttributeIndex)
+      .concat([attributeId])
+      .concat(attributes.slice(existingAttributeIndex + 1));
+
+    getOrCreateAttribute(collection, token, stat.name, stat.value).save();
+  }
+
+  token.attributes = attributes;
+  token.save();
+
+  updateAttributePercentages(collection);
+}
 
 export function handleLevelChange(event: LevelChange): void {
   const params = event.params;
-  const collection = getOrCreateCollection(event.address);
+  const collection = getOrCreateCollection(TALES_OF_ELLERIA_ADDRESS);
   const token = getOrCreateToken(collection, params.tokenId);
   const attribute = getOrCreateAttribute(
     collection,

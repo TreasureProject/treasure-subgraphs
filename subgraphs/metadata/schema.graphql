@@ -8,6 +8,10 @@ type Collection @entity {
   _missingMetadataTokens: [Token!]!
   _missingMetadataLastUpdated: BigInt!
 
+  "Internal for tracking attibutes to be calculated"
+  _attributePercentageLastUpdated: BigInt!
+
+  attributes: [Attribute!]! @derivedFrom(field: "collection")
   tokensCount: Int!
 }
 
@@ -17,6 +21,7 @@ type Attribute @entity {
   "Internal for tracking tokenIds calculated"
   _tokenIds: [String!]!
 
+  collection: Collection!
   name: String!
   percentage: BigDecimal
   tokens: [Token!]! @derivedFrom(field: "attributes")
