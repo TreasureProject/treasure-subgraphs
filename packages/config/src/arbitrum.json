@@ -87,5 +87,8 @@
   "tales_of_elleria_data_address": "0x7A0D491469fb5D7D3aDbF186221891AfE3b5d028",
   "tales_of_elleria_data_start_block": 8701736,
 
+  "smithonia_weapons_address": "0x00000000016c35e3613ad3ed484aa48f161b67fd",
+  "smithonia_weapons_start_block": 8971700,
+
   "hourly_stat_interval_start_block": 6470000
 }
