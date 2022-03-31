@@ -208,8 +208,6 @@ test("token attributes are updated", () => {
   const id = `${address}-0x1`;
   assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "name", "Hero #1");
 
-  //84;94;75;25;25;5
-
   const attributeChangeEvent = createAttributeChangeEvent(
     USER_ADDRESS,
     1,

@@ -4,6 +4,7 @@ import {
   Bytes,
   TypedMap,
   json,
+  log,
 } from "@graphprotocol/graph-ts";
 
 import { TALES_OF_ELLERIA_ADDRESS } from "@treasure/constants";
@@ -183,14 +184,7 @@ function fetchTokenMetadata(
     const totalStats = parseInt(metadata[Metadata.TotalAttributes]) as i32;
     const rarityId = totalStats < 300 ? 0 : totalStats > 375 ? 2 : 1;
     const fallbackKey = `${metadata[Metadata.ClassName]}${rarityId}`;
-    const fallbackImage = (FALLBACK_IMAGES.get(fallbackKey) || "") as string;
-    const metadataImage = metadata[Metadata.Image];
-    const image = (
-      metadataImage == "" ||
-      metadataImage.startsWith("https://cdn.talesofelleria.com")
-        ? fallbackImage
-        : metadataImage
-    ).replace("https://ipfs.moralis.io:2053/ipfs/", "ipfs://");
+    const image = (FALLBACK_IMAGES.get(fallbackKey) || "") as string;
     const class_ = new Stat("Class", metadata[Metadata.ClassName]);
     const rarity = new Stat("Rarity", RARITY[rarityId]);
     const level = new Stat("Level", metadata[Metadata.Level]);
@@ -203,6 +197,8 @@ function fetchTokenMetadata(
       metadata[Metadata.Intelligence]
     );
     const will = new Stat("Will", metadata[Metadata.Will]);
+    const total = new Stat("Total Stats", metadata[Metadata.TotalAttributes]);
+    const maxTotal = new Stat("Max Total Stats", "445");
     const max = getMaxStats(parseInt(metadata[Metadata.ClassId]) as i32);
 
     const attributes = [
@@ -221,6 +217,8 @@ function fetchTokenMetadata(
       max.intelligence,
       will,
       max.will,
+      total,
+      maxTotal,
     ].map<string>(
       (stat) => `"trait_type": "${stat.name}", "value": "${stat.value}"`
     );
@@ -263,6 +261,16 @@ export function handleAttributeChange(event: AttributeChange): void {
   const token = getOrCreateToken(collection, params.tokenId);
 
   let attributes = token.attributes;
+  let changed = 0;
+
+  const values = [
+    params.strength,
+    params.agility,
+    params.vitality,
+    params.endurance,
+    params.intelligence,
+    params.will,
+  ].reduce((total, value) => total.plus(value), BigInt.zero());
 
   const existing = new TypedMap<string, string>();
   const stats = [
@@ -272,6 +280,7 @@ export function handleAttributeChange(event: AttributeChange): void {
     new Stat("Endurance", params.endurance.toString()),
     new Stat("Intelligence", params.intelligence.toString()),
     new Stat("Will", params.will.toString()),
+    new Stat("Total Stats", values.toString()),
   ];
 
   for (let index = 0; index < attributes.length; index++) {
@@ -298,6 +307,8 @@ export function handleAttributeChange(event: AttributeChange): void {
       continue;
     }
 
+    changed++;
+
     attributes = attributes
       .slice(0, existingAttributeIndex)
       .concat([attributeId])
@@ -306,10 +317,17 @@ export function handleAttributeChange(event: AttributeChange): void {
     getOrCreateAttribute(collection, token, stat.name, stat.value).save();
   }
 
-  token.attributes = attributes;
-  token.save();
+  if (changed > 0) {
+    log.warning("{} attributes changed for token {}", [
+      changed.toString(),
+      params.tokenId.toString(),
+    ]);
 
-  updateAttributePercentages(collection);
+    token.attributes = attributes;
+    token.save();
+
+    updateAttributePercentages(collection);
+  }
 }
 
 export function handleLevelChange(event: LevelChange): void {

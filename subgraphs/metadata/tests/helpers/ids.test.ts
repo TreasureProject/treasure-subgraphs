@@ -23,5 +23,5 @@ test("token unique id is generated", () => {
 test("attribute unique id is generated", () => {
   const collection = new Collection("test-collection");
   const id = getAttributeId(collection, "Test Name", "Value");
-  assert.stringEquals(id, "test-collection-test-name-value");
+  assert.stringEquals(id, "test-collection-test name-value");
 });
