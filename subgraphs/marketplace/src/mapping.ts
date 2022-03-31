@@ -22,6 +22,10 @@ import {
   TransferSingle,
 } from "../generated/TreasureMarketplace/ERC1155";
 import {
+  Staked,
+  Unstaked,
+} from "../generated/TreasureMarketplace/NonEscrowStaking";
+import {
   ItemCanceled,
   ItemListed,
   ItemSold,
@@ -63,6 +67,12 @@ stakers.set(
 stakers.set(
   "0x602e50ed10a90d324b35930ec0f8e5d3b28cd509",
   "0x6325439389e0797ab35752b4f43a14c004f22a9c"
+);
+
+// Tales of Elleria
+stakers.set(
+  "0x7a0d491469fb5d7d3adbf186221891afe3b5d028",
+  "0x7480224ec2b98f28cee3740c80940a2f489bf352"
 );
 
 function getListing(
@@ -663,4 +673,19 @@ export function handleJoinSchool(event: JoinSchool): void {
     event.params.tokenId,
     getTime(event)
   );
+}
+
+// Tales of Elleria/Generic
+
+export function handleStake721(event: Staked): void {
+  handleStake(
+    event.transaction.from,
+    event.address,
+    event.params.tokenId,
+    getTime(event)
+  );
+}
+
+export function handleUnstake721(event: Unstaked): void {
+  handleUnstake(event.transaction.from, event.address, event.params.tokenId);
 }

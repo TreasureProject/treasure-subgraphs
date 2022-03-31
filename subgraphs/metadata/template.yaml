@@ -1,0 +1,72 @@
+specVersion: 0.0.4
+schema:
+  file: ./schema.graphql
+dataSources:
+  - name: Peek-A-Boo
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ peek_a_boo_address }}"
+      abi: ERC721
+      startBlock: {{ peek_a_boo_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Attribute
+        - Collection
+        - Token
+      abis:
+        - name: ERC721
+          file: {{{ abis }}}/721.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,indexed uint256)
+          handler: handleTransfer
+      file: ./src/mappings/peek-a-boo.ts
+  - name: Tales of Elleria
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ tales_of_elleria_address }}"
+      abi: ERC721
+      startBlock: {{ tales_of_elleria_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Attribute
+        - Collection
+        - Token
+      abis:
+        - name: ERC721
+          file: {{{ abis }}}/721.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,indexed uint256)
+          handler: handleTransfer
+      file: ./src/mappings/tales-of-elleria.ts
+  - name: Tales of Elleria Data
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ tales_of_elleria_data_address }}"
+      abi: TalesOfElleria
+      startBlock: {{ tales_of_elleria_data_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Attribute
+        - Collection
+        - Token
+      abis:
+        - name: TalesOfElleria
+          file: {{{ abis }}}/TalesOfElleria.json
+      eventHandlers:
+        - event: AttributeChange(address,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256)
+          handler: handleAttributeChange
+        - event: LevelChange(address,uint256,uint256,uint256,uint256)
+          handler: handleLevelChange
+      file: ./src/mappings/tales-of-elleria.ts

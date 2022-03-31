@@ -23,6 +23,8 @@ dataSources:
           file: {{{ abis }}}/721.json
         - name: ERC1155
           file: {{{ abis }}}/1155.json
+        - name: NonEscrowStaking
+          file: {{{ abis }}}/NonEscrowStaking.json
         - name: TreasureMarketplace
           file: {{{ abis }}}/TreasureMarketplace.json
       eventHandlers:
@@ -585,3 +587,49 @@ dataSources:
         - event: Transfer(indexed address,indexed address,indexed uint256)
           handler: handleTransfer
       file: ./src/mappings/realm.ts
+  - name: Tales of Elleria
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ tales_of_elleria_address }}"
+      abi: ERC721
+      startBlock: {{ tales_of_elleria_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Token
+        - User
+        - UserToken
+      abis:
+        - name: ERC721
+          file: {{{ abis }}}/721.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,indexed uint256)
+          handler: handleTransfer
+      file: ./src/mappings/tales-of-elleria.ts
+  - name: Tales of Elleria Data
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ tales_of_elleria_data_address }}"
+      abi: NonEscrowStaking
+      startBlock: {{ tales_of_elleria_data_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Token
+        - User
+        - UserToken
+      abis:
+        - name: NonEscrowStaking
+          file: {{{ abis }}}/NonEscrowStaking.json
+      eventHandlers:
+        - event: Staked(uint256)
+          handler: handleStake721
+        - event: Unstaked(uint256)
+          handler: handleUnstake721
+      file: ./src/mapping.ts

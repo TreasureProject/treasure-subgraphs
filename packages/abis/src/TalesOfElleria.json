@@ -1,0 +1,46 @@
+[
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": false, "internalType": "address", "name": "from", "type": "address" },
+      { "indexed": false, "internalType": "uint256", "name": "tokenId", "type": "uint256" },
+      { "indexed": false, "internalType": "uint256", "name": "strength", "type": "uint256" },
+      { "indexed": false, "internalType": "uint256", "name": "agility", "type": "uint256" },
+      { "indexed": false, "internalType": "uint256", "name": "vitality", "type": "uint256" },
+      { "indexed": false, "internalType": "uint256", "name": "endurance", "type": "uint256" },
+      { "indexed": false, "internalType": "uint256", "name": "intelligence", "type": "uint256" },
+      { "indexed": false, "internalType": "uint256", "name": "will", "type": "uint256" },
+      { "indexed": false, "internalType": "uint256", "name": "class_", "type": "uint256" }
+    ],
+    "name": "AttributeChange",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": false, "internalType": "address", "name": "from", "type": "address" },
+      { "indexed": false, "internalType": "uint256", "name": "tokenId", "type": "uint256" },
+      { "indexed": false, "internalType": "uint256", "name": "level", "type": "uint256" },
+      { "indexed": false, "internalType": "uint256", "name": "gold", "type": "uint256" },
+      { "indexed": false, "internalType": "uint256", "name": "token", "type": "uint256" }
+    ],
+    "name": "LevelChange",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": false, "internalType": "uint256", "name": "tokenId", "type": "uint256" }
+    ],
+    "name": "Staked",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": false, "internalType": "uint256", "name": "tokenId", "type": "uint256" }
+    ],
+    "name": "Unstaked",
+    "type": "event"
+  }
+]
