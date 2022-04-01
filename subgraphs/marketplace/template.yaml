@@ -633,3 +633,25 @@ dataSources:
         - event: Unstaked(uint256)
           handler: handleUnstake721
       file: ./src/mapping.ts
+  - name: Smithonia Weapons
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ smithonia_weapons_address }}"
+      abi: ERC721
+      startBlock: {{ smithonia_weapons_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Token
+        - User
+        - UserToken
+      abis:
+        - name: ERC721
+          file: {{{ abis }}}/721.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,indexed uint256)
+          handler: handleTransfer
+      file: ./src/mappings/smithonia-weapons.ts
