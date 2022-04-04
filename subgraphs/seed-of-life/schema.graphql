@@ -82,6 +82,7 @@ type User @entity {
   tokens: [UserToken!]! @derivedFrom(field: "user")
   lifeforms: [Lifeform!]! @derivedFrom(field: "user")
   imbuedSouls: [ImbuedSoul!]! @derivedFrom(field: "user")
+  stakedTokens: [StakedToken!] @derivedFrom(field: "user")
 }
 
 type ImbuedSoul @entity {
@@ -102,17 +103,19 @@ type Lifeform @entity {
   path: Path!
   firstRealm: LifeformRealm!
   secondRealm: LifeformRealm!
-  stakedTreasure: [StakedTreasure!]!
+  stakedTokens: [StakedToken!] @derivedFrom(field: "lifeform")
   lifeformClass: LifeformClass
 
   claimLifeform: ClaimLifeform @derivedFrom(field: "lifeform")
 }
 
-type StakedTreasure @entity {
+type StakedToken @entity {
   id: ID!
 
-  treasureId: BigInt!
-  treasureAmount: BigInt!
+  lifeform: Lifeform
+  quantity: BigInt!
+  token: Token!
+  user: User!
 }
 
 type ClaimLifeform @entity {

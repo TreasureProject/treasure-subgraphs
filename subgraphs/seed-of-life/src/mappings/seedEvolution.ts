@@ -1,19 +1,17 @@
-import { BigInt, log, store } from "@graphprotocol/graph-ts";
+import { store } from "@graphprotocol/graph-ts";
+
+import { SEED_OF_LIFE_TREASURES_ADDRESS } from "@treasure/constants";
 
 import {
   ImbuedSoulClaimed,
   LifeformCreated,
   StartedClaimingImbuedSoul,
 } from "../../generated/SeedEvolution/SeedEvolution";
-import {
-  ClaimLifeform,
-  Lifeform,
-  Random,
-  StakedTreasure,
-  UserApproval,
-} from "../../generated/schema";
+import { ClaimLifeform, Lifeform, StakedToken } from "../../generated/schema";
+import { CollectionHelpers } from "../helpers/CollectionHelpers";
 import { RandomHelpers } from "../helpers/RandomHelpers";
-import { TransferHelpers } from "../helpers/TransferHelpers";
+import { TokenHelpers } from "../helpers/TokenHelpers";
+import { TreasureHelpers } from "../helpers/TreasureHelpers";
 import { UserHelpers } from "../helpers/UserHelpers";
 import { LifeformRealm, Path } from "../helpers/constants";
 
@@ -34,17 +32,22 @@ export function handleLifeformCreated(event: LifeformCreated): void {
   lifeform.firstRealm = LifeformRealm.getName(evolutionInfo.firstRealm);
   lifeform.secondRealm = LifeformRealm.getName(evolutionInfo.secondRealm);
 
+  let treasureCollection = CollectionHelpers.getOrCreateCollection(
+    SEED_OF_LIFE_TREASURES_ADDRESS
+  );
   for (let i = 0; i < evolutionInfo.stakedTreasureIds.length; i++) {
-    let stakedTreasure = new StakedTreasure(
-      `${event.params._lifeformId.toHexString()} - ${i}`
+    let tokenId = evolutionInfo.stakedTreasureIds[i];
+    let token = TokenHelpers.getOrCreateToken(
+      treasureCollection,
+      tokenId,
+      TreasureHelpers.getNameForTokenId(tokenId)
     );
-
-    stakedTreasure.treasureId = evolutionInfo.stakedTreasureIds[i];
-    stakedTreasure.treasureAmount = evolutionInfo.stakedTreasureAmounts[i];
-
-    stakedTreasure.save();
-
-    lifeform.stakedTreasure.concat([stakedTreasure.id]);
+    let stakedToken = new StakedToken(`${lifeform.id}-${token.id}`);
+    stakedToken.lifeform = lifeform.id;
+    stakedToken.quantity = evolutionInfo.stakedTreasureAmounts[i];
+    stakedToken.token = token.id;
+    stakedToken.user = user.id;
+    stakedToken.save();
   }
 
   lifeform.save();
