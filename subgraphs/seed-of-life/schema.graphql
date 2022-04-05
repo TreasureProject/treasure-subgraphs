@@ -109,6 +109,13 @@ type Lifeform @entity {
   claimLifeform: ClaimLifeform @derivedFrom(field: "lifeform")
 }
 
+type RealmStat @entity {
+  id: ID!
+
+  realm: LifeformRealm!
+  stakedCount: BigInt!
+}
+
 type StakedToken @entity {
   id: ID!
 

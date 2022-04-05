@@ -10,10 +10,11 @@ import {
 import { ClaimLifeform, Lifeform, StakedToken } from "../../generated/schema";
 import { CollectionHelpers } from "../helpers/CollectionHelpers";
 import { RandomHelpers } from "../helpers/RandomHelpers";
+import { RealmStatHelpers } from "../helpers/RealmHelpers";
 import { TokenHelpers } from "../helpers/TokenHelpers";
 import { TreasureHelpers } from "../helpers/TreasureHelpers";
 import { UserHelpers } from "../helpers/UserHelpers";
-import { LifeformRealm, Path } from "../helpers/constants";
+import { LifeformRealm, ONE_BI, Path } from "../helpers/constants";
 
 export function handleLifeformCreated(event: LifeformCreated): void {
   let evolutionInfo = event.params._evolutionInfo;
@@ -31,6 +32,18 @@ export function handleLifeformCreated(event: LifeformCreated): void {
   lifeform.path = Path.getName(evolutionInfo.path);
   lifeform.firstRealm = LifeformRealm.getName(evolutionInfo.firstRealm);
   lifeform.secondRealm = LifeformRealm.getName(evolutionInfo.secondRealm);
+
+  let firstRealmStat = RealmStatHelpers.getOrCreateRealmStat(
+    lifeform.firstRealm
+  );
+  firstRealmStat.stakedCount = firstRealmStat.stakedCount.plus(ONE_BI);
+  firstRealmStat.save();
+
+  let secondRealmStat = RealmStatHelpers.getOrCreateRealmStat(
+    lifeform.secondRealm
+  );
+  secondRealmStat.stakedCount = secondRealmStat.stakedCount.plus(ONE_BI);
+  secondRealmStat.save();
 
   let treasureCollection = CollectionHelpers.getOrCreateCollection(
     SEED_OF_LIFE_TREASURES_ADDRESS
@@ -76,6 +89,18 @@ export function handleImbuedSoulClaimed(event: ImbuedSoulClaimed): void {
   if (!lifeform) {
     return;
   }
+
+  let firstRealmStat = RealmStatHelpers.getOrCreateRealmStat(
+    lifeform.firstRealm
+  );
+  firstRealmStat.stakedCount = firstRealmStat.stakedCount.minus(ONE_BI);
+  firstRealmStat.save();
+
+  let secondRealmStat = RealmStatHelpers.getOrCreateRealmStat(
+    lifeform.secondRealm
+  );
+  secondRealmStat.stakedCount = secondRealmStat.stakedCount.minus(ONE_BI);
+  secondRealmStat.save();
 
   store.remove("Lifeform", lifeform.id);
   store.remove("ClaimLifeform", lifeform.id);
