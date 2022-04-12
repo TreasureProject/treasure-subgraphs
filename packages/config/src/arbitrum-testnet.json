@@ -27,6 +27,8 @@
   "pilgrimage_start_block": 10586188,
   "questing_address": "0x232b5d89fea530801f9c760711e32de3fb6caf01",
   "questing_start_block": 10586200,
+  "advanced_questing_address": "0xf9Fe699e44790deCB2CdaD1BD173f4Ea03a65A0e",
+  "advanced_questing_start_block": 10643869,
   "randomizer_address": "0xdec6641458eef4f7fe70101e77935d4e9d431f64",
   "randomizer_start_block": 8568594,
   "randomizer_smol_farm_start_block": 9616731,

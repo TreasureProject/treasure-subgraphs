@@ -134,6 +134,8 @@ type Random @entity {
   craft: Craft
   "Set for questing"
   quest: Quest
+  "Set for advanced questing"
+  advancedQuest: AdvancedQuest
   "Set for summoning"
   summon: Summon
 
@@ -196,6 +198,42 @@ type Quest @entity {
   status: Status!
   token: Token!
   user: User!
+}
+
+type AdvancedQuest @entity {
+  id: ID!
+
+  random: Random!
+  status: Status!
+  zoneName: String!
+  part: Int!
+  endTimestamp: BigInt!
+  stasisHitCount: Int!
+  treasures: [Token!]!
+  treasureAmounts: [Int!]!
+  treasureTriadResult: TreasureTriadResult
+  rewards: [AdvancedQuestReward!]
+  token: Token!
+  user: User!
+}
+
+type AdvancedQuestReward @entity {
+  id: ID!
+
+  advancedQuest: AdvancedQuest!
+  consumableId: BigInt!
+  consumableAmount: BigInt!
+  treasureFragmentId: BigInt!
+  treasureId: BigInt!
+}
+
+type TreasureTriadResult @entity {
+  id: ID!
+
+  advancedQuest: AdvancedQuest!
+  playerWon: Boolean!
+  numberOfCardsFlipped: Int!
+  numberOfCorruptedCardsRemaining: Int!
 }
 
 type StakedToken @entity {

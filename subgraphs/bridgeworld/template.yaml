@@ -412,3 +412,31 @@ dataSources:
         - event: TransferSingle(indexed address,indexed address,indexed address,uint256,uint256)
           handler: handleTransferSingle
       file: ./src/mappings/treasure.ts
+  - name: Advanced Questing
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ advanced_questing_address }}"
+      abi: AdvancedQuesting
+      startBlock: {{ advanced_questing_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Token
+        - User
+        - UserToken
+      abis:
+        - name: AdvancedQuesting
+          file: ../../node_modules/@treasure/subgraph-abis/src/AdvancedQuesting.json
+      eventHandlers:
+        - event: AdvancedQuestStarted(address,uint256,(uint256,string,uint8,uint256[],uint256[]))
+          handler: handleAdvancedQuestStarted
+        - event: AdvancedQuestContinued(address,uint256,uint256,uint8)
+          handler: handleAdvancedQuestContinued
+        - event: TreasureTriadPlayed(address,uint256,bool,uint8,uint8)
+          handler: handleTreasureTriadPlayed
+        - event: AdvancedQuestEnded(address,uint256,(uint256,uint256,uint256,uint256)[])
+          handler: handleAdvancedQuestEnded
+      file: ./src/mappings/advanced-questing.ts
