@@ -1,4 +1,4 @@
-enum ClaimLifeformStatus {
+enum RequestStatus {
   NOT_READY
   READY
 }
@@ -82,7 +82,7 @@ type User @entity {
   tokens: [UserToken!]! @derivedFrom(field: "user")
   lifeforms: [Lifeform!]! @derivedFrom(field: "user")
   imbuedSouls: [ImbuedSoul!]! @derivedFrom(field: "user")
-  stakedTokens: [StakedToken!] @derivedFrom(field: "user")
+  stakedTokens: [TokenQuantity!] @derivedFrom(field: "user")
 }
 
 type ImbuedSoul @entity {
@@ -103,10 +103,12 @@ type Lifeform @entity {
   path: Path!
   firstRealm: LifeformRealm!
   secondRealm: LifeformRealm!
-  stakedTokens: [StakedToken!] @derivedFrom(field: "lifeform")
   lifeformClass: LifeformClass
+  stakedTokens: [TokenQuantity!] @derivedFrom(field: "lifeform")
+  brokenTokens: [TokenQuantity!] @derivedFrom(field: "lifeform")
 
-  claimLifeform: ClaimLifeform @derivedFrom(field: "lifeform")
+  claimLifeformRequest: ClaimLifeformRequest @derivedFrom(field: "lifeform")
+  unstakeTokenRequest: UnstakeTokenRequest @derivedFrom(field: "lifeform")
 }
 
 type RealmStat @entity {
@@ -116,27 +118,38 @@ type RealmStat @entity {
   stakedCount: BigInt!
 }
 
-type StakedToken @entity {
+type TokenQuantity @entity {
   id: ID!
 
-  lifeform: Lifeform
+  lifeform: Lifeform!
   quantity: BigInt!
   token: Token!
   user: User!
 }
 
-type ClaimLifeform @entity {
+type ClaimLifeformRequest @entity {
   id: ID!
 
   lifeform: Lifeform!
-  claimStatus: ClaimLifeformStatus!
+  status: RequestStatus!
+}
+
+type UnstakeTokenRequest @entity {
+  id: ID!
+
+  lifeform: Lifeform!
+  status: RequestStatus!
 }
 
 type Random @entity {
   id: ID!
 
-  "Internal for tracking associated claimlifeform"
-  _claimLifeformId: String
+  "Internal for tracking associated claimLifeformRequest"
+  _claimLifeformRequestId: String
+
+  "Internal for tracking associated unstakeTokenRequest"
+  _unstakeTokenRequestId: String
+
   "Internal for tracking associated lifeforms"
   _lifeformId: String
 }

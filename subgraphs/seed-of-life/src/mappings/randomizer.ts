@@ -8,10 +8,11 @@ import {
 } from "../../generated/Randomizer/Randomizer";
 import { SeedEvolution } from "../../generated/SeedEvolution/SeedEvolution";
 import {
-  ClaimLifeform,
+  ClaimLifeformRequest,
   Lifeform,
   Random,
   Seeded,
+  UnstakeTokenRequest,
 } from "../../generated/schema";
 import { RandomHelpers } from "../helpers/RandomHelpers";
 import { LifeformClass } from "../helpers/constants";
@@ -47,14 +48,42 @@ export function handleRandomSeeded(event: RandomSeeded): void {
     }
 
     // Shared randomizer
-    if (random._claimLifeformId) {
-      const claimLifeform = ClaimLifeform.load(
-        random._claimLifeformId as string
-      )!;
-      claimLifeform.claimStatus = "READY";
-      claimLifeform.save();
+    if (random._claimLifeformRequestId) {
+      const claimLifeformRequestId = random._claimLifeformRequestId as string;
+      const claimLifeformRequest = ClaimLifeformRequest.load(
+        claimLifeformRequestId
+      );
+      if (!claimLifeformRequest) {
+        log.error("[Randomizer] Unknown claim lifeform request: {}", [
+          claimLifeformRequestId,
+        ]);
+        continue;
+      }
+
+      claimLifeformRequest.status = "READY";
+      claimLifeformRequest.save();
+    } else if (random._unstakeTokenRequestId) {
+      const unstakeTokenRequestId = random._unstakeTokenRequestId as string;
+      const unstakeTokenRequest = UnstakeTokenRequest.load(
+        unstakeTokenRequestId
+      );
+      if (!unstakeTokenRequest) {
+        log.error("[Randomizer] Unknown unstake token request: {}", [
+          unstakeTokenRequestId,
+        ]);
+        continue;
+      }
+
+      unstakeTokenRequest.status = "READY";
+      unstakeTokenRequest.save();
     } else if (random._lifeformId) {
-      const lifeform = Lifeform.load(random._lifeformId as string)!;
+      const lifeformId = random._lifeformId as string;
+      const lifeform = Lifeform.load(lifeformId);
+      if (!lifeform) {
+        log.error("[Randomizer] Unknown lifeform: {}", [lifeformId]);
+        continue;
+      }
+
       const contract = SeedEvolution.bind(SEED_EVOLUTION_ADDRESS);
       const classCall = contract.try_classForLifeform(
         BigInt.fromI32(parseInt(lifeform.id, 16) as i32)

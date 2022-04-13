@@ -155,6 +155,10 @@ dataSources:
       eventHandlers:
         - event: LifeformCreated(indexed uint256,(uint256,uint256,address,uint8,uint8,uint8,uint256,uint256,uint256[],uint256[]))
           handler: handleLifeformCreated
+        - event: StartedUnstakingTreasure(uint256,uint256)
+          handler: handleStartedUnstakingTreasure
+        - event: FinishedUnstakingTreasure(address,uint256[],uint256[])
+          handler: handleFinishedUnstakingTreasure
         - event: StartedClaimingImbuedSoul(uint256,uint256)
           handler: handleStartedClaimingImbuedSoul
         - event: ImbuedSoulClaimed(address,uint256)
