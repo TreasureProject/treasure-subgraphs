@@ -3,6 +3,7 @@ enum Category {
   Crystal
   Legion
   Treasure
+  TreasureFragment
 }
 
 enum Difficulty {
@@ -87,6 +88,13 @@ type TreasureInfo implements Metadata @entity {
 
   boost: String!
   category: TreasureCategory!
+  tier: Int!
+}
+
+type TreasureFragmentInfo implements Metadata @entity {
+  id: ID!
+
+  categories: [TreasureCategory!]!
   tier: Int!
 }
 
