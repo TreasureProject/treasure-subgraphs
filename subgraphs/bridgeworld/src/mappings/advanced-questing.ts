@@ -18,6 +18,7 @@ import {
   AdvancedQuestReward,
   LegionInfo,
   Random,
+  TokenQuantity,
   TreasureTriadResult,
 } from "../../generated/schema";
 import { getAddressId } from "../helpers/utils";
@@ -26,39 +27,38 @@ import { getXpPerLevel } from "../helpers/xp";
 export function handleAdvancedQuestStarted(event: AdvancedQuestStarted): void {
   const params = event.params;
 
-  const random = Random.load(params._requestId.toHexString());
   const quest = new AdvancedQuest(
     getAddressId(event.address, params._startQuestParams.legionId)
   );
 
-  if (!random) {
-    log.error("[advanced-quest-started] Unknown random: {}", [
-      params._requestId.toString(),
-    ]);
-
-    return;
-  }
-
-  quest.random = random.id;
+  quest.requestId = params._requestId;
   quest.token = getAddressId(LEGION_ADDRESS, params._startQuestParams.legionId);
   quest.user = params._owner.toHexString();
   quest.status = "Idle";
   quest.zoneName = params._startQuestParams.zoneName;
   quest.part = params._startQuestParams.advanceToPart;
-  quest.treasures = params._startQuestParams.treasureIds.map<string>((value) =>
-    value.toHex()
-  );
-  quest.treasureAmounts = params._startQuestParams.treasureAmounts.map<i32>(
-    (value) => value.toI32()
-  );
+
+  const treasures: string[] = [];
+
+  for (let i = 0; i < params._startQuestParams.treasureIds.length; i++) {
+    const tokenId = params._startQuestParams.treasureIds[i].toHex();
+
+    const treasure = new TokenQuantity(
+      `${quest.id}-${quest.requestId}-${tokenId}`
+    );
+    treasure.token = tokenId;
+    treasure.quantity = params._startQuestParams.treasureAmounts[i].toI32();
+
+    treasure.save();
+
+    treasures.push(treasure.id);
+  }
+
+  quest.treasures = treasures;
 
   updateQuestEndTimeAndStasis(quest, params._startQuestParams.legionId);
 
-  random.requestId = params._requestId;
-  random.advancedQuest = quest.id;
-
   quest.save();
-  random.save();
 }
 
 export function handleAdvancedQuestContinued(
@@ -84,15 +84,12 @@ export function handleAdvancedQuestContinued(
 export function handleTreasureTriadPlayed(event: TreasureTriadPlayed): void {
   const params = event.params;
 
-  const questId = getAddressId(event.address, params._legionId);
   const id = getAddressId(event.address, params._legionId);
   const result = new TreasureTriadResult(id);
-  const quest = AdvancedQuest.load(questId);
+  const quest = AdvancedQuest.load(id);
 
   if (!quest) {
-    log.error("[advanced-quest-treasure-triad-played] Unknown quest: {}", [
-      questId,
-    ]);
+    log.error("[advanced-quest-treasure-triad-played] Unknown quest: {}", [id]);
 
     return;
   }
@@ -114,8 +111,7 @@ export function handleAdvancedQuestEnded(event: AdvancedQuestEnded): void {
 
   const id = getAddressId(event.address, params._legionId);
   const quest = AdvancedQuest.load(id);
-  const treasureTriadResultId = getAddressId(event.address, params._legionId);
-  const treasureTriadResult = TreasureTriadResult.load(treasureTriadResultId);
+  const treasureTriadResult = TreasureTriadResult.load(id);
 
   if (!quest) {
     log.error("[advanced-quest-ended] Unknown quest: {}", [id]);
@@ -123,38 +119,48 @@ export function handleAdvancedQuestEnded(event: AdvancedQuestEnded): void {
     return;
   }
 
-  quest.id = `${quest.id}-${quest.random}`;
+  quest.id = `${quest.id}-${quest.requestId}`;
   quest.status = "Finished";
 
   store.remove("AdvancedQuest", id);
-
-  const rewards: string[] = [];
 
   for (let i = 0; i < params._rewards.length; i++) {
     const rewardId = `${quest.id}-${i}`;
     const reward = new AdvancedQuestReward(rewardId);
 
-    reward.consumableId = params._rewards[i].consumableId;
-    reward.consumableAmount = params._rewards[i].consumableAmount;
-    reward.treasureFragmentId = params._rewards[i].treasureFragmentId;
-    reward.treasureId = params._rewards[i].treasureId;
     reward.advancedQuest = quest.id;
 
-    rewards.push(reward.id);
+    if (params._rewards[i].consumableId.toI32() !== 0) {
+      const consumable = new TokenQuantity(
+        `${rewardId}-${params._rewards[i].consumableId.toHex()}`
+      );
+      consumable.token = params._rewards[i].consumableId.toHex();
+      consumable.quantity = params._rewards[i].consumableAmount.toI32();
+
+      consumable.save();
+
+      reward.consumable = consumable.id;
+    }
+
+    if (params._rewards[i].treasureFragmentId.toI32() != 0) {
+      reward.treasureFragment = params._rewards[i].treasureFragmentId.toHex();
+    }
+
+    if (params._rewards[i].treasureId.toI32() != 0) {
+      reward.treasure = params._rewards[i].treasureId.toHex();
+    }
 
     reward.save();
   }
 
-  quest.rewards = rewards;
-
   if (treasureTriadResult) {
-    treasureTriadResult.id = `${treasureTriadResultId}-${quest.random}`;
+    treasureTriadResult.id = `${id}-${quest.requestId}`;
     treasureTriadResult.advancedQuest = quest.id;
     treasureTriadResult.save();
 
     quest.treasureTriadResult = treasureTriadResult.id;
 
-    store.remove("TreasureTriadResult", treasureTriadResultId);
+    store.remove("TreasureTriadResult", id);
   }
 
   quest.save();

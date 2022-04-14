@@ -15,6 +15,7 @@ import {
 } from "../src/mappings/advanced-questing";
 import { handleLegionQuestLevelUp } from "../src/mappings/legion";
 import {
+  RewardParam,
   advancedQuestingSetup,
   createAdvancedQuestContinuedEvent,
   createAdvancedQuestEndedEvent,
@@ -59,8 +60,8 @@ test("All fields are set as expected on quest start", () => {
   assert.fieldEquals(
     "AdvancedQuest",
     id,
-    "random",
-    BigInt.fromI32(requestId).toHex()
+    "requestId",
+    BigInt.fromI32(requestId).toString()
   );
   assert.fieldEquals("AdvancedQuest", id, "status", "Idle");
   assert.fieldEquals("AdvancedQuest", id, "zoneName", zoneName);
@@ -77,9 +78,22 @@ test("All fields are set as expected on quest start", () => {
     "stasisHitCount",
     stasisHitCount.toString()
   );
-  assert.fieldEquals("AdvancedQuest", id, "treasures", "[0x2, 0x3]");
-  assert.fieldEquals("AdvancedQuest", id, "treasureAmounts", "[2, 1]");
   assert.fieldEquals("AdvancedQuest", id, "token", legionStoreId);
+
+  const treasureId1 = `${id}-${requestId}-0x2`;
+  const treasureId2 = `${id}-${requestId}-0x3`;
+
+  assert.fieldEquals(
+    "AdvancedQuest",
+    id,
+    "treasures",
+    `[${treasureId1}, ${treasureId2}]`
+  );
+
+  assert.fieldEquals("TokenQuantity", treasureId1, "token", "0x2");
+  assert.fieldEquals("TokenQuantity", treasureId1, "quantity", "2");
+  assert.fieldEquals("TokenQuantity", treasureId2, "token", "0x3");
+  assert.fieldEquals("TokenQuantity", treasureId2, "quantity", "1");
 });
 
 test("Status transitions between Idle and Finished as expected", () => {
@@ -107,7 +121,7 @@ test("Status transitions between Idle and Finished as expected", () => {
   handleAdvancedQuestEnded(
     createAdvancedQuestEndedEvent(USER_ADDRESS, legionId)
   );
-  assert.fieldEquals("AdvancedQuest", `${questId}-0x1`, "status", "Finished");
+  assert.fieldEquals("AdvancedQuest", `${questId}-1`, "status", "Finished");
 });
 
 test("Part increase as quest continues", () => {
@@ -178,11 +192,11 @@ test("XP doesn't increase at level 6", () => {
 test("Quest and Triad ids are changed when quest is ended", () => {
   const legionId = 1;
   advancedQuestingSetup(legionId);
-  const id = getAddressId(ADVANCED_QUESTING_ADDRESS, BigInt.fromI32(legionId));
+  const id = getQuestId(legionId);
 
   simulateAdvancedQuest(USER_ADDRESS, legionId, 1, 2, false, true);
 
-  assert.fieldEquals("AdvancedQuest", id, "random", "0x1");
+  assert.fieldEquals("AdvancedQuest", id, "requestId", "1");
   assert.fieldEquals("TreasureTriadResult", id, "advancedQuest", id);
 
   handleAdvancedQuestEnded(
@@ -194,52 +208,35 @@ test("Quest and Triad ids are changed when quest is ended", () => {
 
   assert.fieldEquals(
     "AdvancedQuest",
-    `${id}-0x1`,
+    `${id}-1`,
     "treasureTriadResult",
-    `${id}-0x1`
+    `${id}-1`
   );
   assert.fieldEquals(
     "TreasureTriadResult",
-    `${id}-0x1`,
+    `${id}-1`,
     "advancedQuest",
-    `${id}-0x1`
+    `${id}-1`
   );
 });
 
 test("Quest rewards are set when ended", () => {
   const legionId = 1;
-  const id = getAddressId(ADVANCED_QUESTING_ADDRESS, BigInt.fromI32(legionId));
+  const id = getQuestId(legionId);
   advancedQuestingSetup(legionId);
 
-  simulateAdvancedQuest(USER_ADDRESS, legionId, 1, 2, false);
+  simulateAdvancedQuest(USER_ADDRESS, legionId, 1, 2, false, false);
 
   let quest: AdvancedQuest = AdvancedQuest.load(id) as AdvancedQuest;
-  assert.assertNull(quest.rewards);
-
-  const rewards: AdvancedQuestReward[] = [];
-
-  const reward1 = new AdvancedQuestReward(`${id}-${quest.random}-0`);
-  reward1.advancedQuest = id;
-  reward1.consumableId = BigInt.fromI64(1);
-  reward1.consumableAmount = BigInt.fromI64(2);
-  reward1.treasureFragmentId = BigInt.fromI64(3);
-  reward1.treasureId = BigInt.fromI64(4);
-  rewards.push(reward1);
-
-  const reward2 = new AdvancedQuestReward(`${id}-${quest.random}-1`);
-  reward2.advancedQuest = id;
-  reward2.consumableId = BigInt.fromI64(5);
-  reward2.consumableAmount = BigInt.fromI64(6);
-  reward2.treasureFragmentId = BigInt.fromI64(7);
-  reward2.treasureId = BigInt.fromI64(8);
-  rewards.push(reward2);
 
   handleAdvancedQuestEnded(
-    createAdvancedQuestEndedEvent(USER_ADDRESS, legionId, rewards)
+    createAdvancedQuestEndedEvent(USER_ADDRESS, legionId, [
+      new RewardParam(1, 2, 3, 4),
+      new RewardParam(5, 6, 7, 8),
+    ])
   );
 
-  quest = AdvancedQuest.load(`${id}-${quest.random}`) as AdvancedQuest;
-  assert.assertNotNull(quest.rewards);
+  quest = AdvancedQuest.load(`${id}-${quest.requestId}`) as AdvancedQuest;
 
   assert.fieldEquals(
     "AdvancedQuestReward",
@@ -250,22 +247,12 @@ test("Quest rewards are set when ended", () => {
   assert.fieldEquals(
     "AdvancedQuestReward",
     `${quest.id}-0`,
-    "consumableId",
-    "1"
+    "treasureFragment",
+    "0x3"
   );
-  assert.fieldEquals(
-    "AdvancedQuestReward",
-    `${quest.id}-0`,
-    "consumableAmount",
-    "2"
-  );
-  assert.fieldEquals(
-    "AdvancedQuestReward",
-    `${quest.id}-0`,
-    "treasureFragmentId",
-    "3"
-  );
-  assert.fieldEquals("AdvancedQuestReward", `${quest.id}-0`, "treasureId", "4");
+  assert.fieldEquals("AdvancedQuestReward", `${quest.id}-0`, "treasure", "0x4");
+  assert.fieldEquals("TokenQuantity", `${quest.id}-0-0x1`, "token", "0x1");
+  assert.fieldEquals("TokenQuantity", `${quest.id}-0-0x1`, "quantity", "2");
 
   assert.fieldEquals(
     "AdvancedQuestReward",
@@ -276,20 +263,10 @@ test("Quest rewards are set when ended", () => {
   assert.fieldEquals(
     "AdvancedQuestReward",
     `${quest.id}-1`,
-    "consumableId",
-    "5"
+    "treasureFragment",
+    "0x7"
   );
-  assert.fieldEquals(
-    "AdvancedQuestReward",
-    `${quest.id}-1`,
-    "consumableAmount",
-    "6"
-  );
-  assert.fieldEquals(
-    "AdvancedQuestReward",
-    `${quest.id}-1`,
-    "treasureFragmentId",
-    "7"
-  );
-  assert.fieldEquals("AdvancedQuestReward", `${quest.id}-1`, "treasureId", "8");
+  assert.fieldEquals("AdvancedQuestReward", `${quest.id}-1`, "treasure", "0x8");
+  assert.fieldEquals("TokenQuantity", `${quest.id}-1-0x5`, "token", "0x5");
+  assert.fieldEquals("TokenQuantity", `${quest.id}-1-0x5`, "quantity", "6");
 });

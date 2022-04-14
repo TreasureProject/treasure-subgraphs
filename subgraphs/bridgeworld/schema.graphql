@@ -134,8 +134,6 @@ type Random @entity {
   craft: Craft
   "Set for questing"
   quest: Quest
-  "Set for advanced questing"
-  advancedQuest: AdvancedQuest
   "Set for summoning"
   summon: Summon
 
@@ -203,16 +201,15 @@ type Quest @entity {
 type AdvancedQuest @entity {
   id: ID!
 
-  random: Random!
+  requestId: BigInt!
   status: Status!
   zoneName: String!
   part: Int!
   endTimestamp: BigInt!
   stasisHitCount: Int!
-  treasures: [Token!]!
-  treasureAmounts: [Int!]!
+  treasures: [TokenQuantity!]!
   treasureTriadResult: TreasureTriadResult
-  rewards: [AdvancedQuestReward!]
+  rewards: [AdvancedQuestReward!]! @derivedFrom(field: "advancedQuest")
   token: Token!
   user: User!
 }
@@ -221,10 +218,9 @@ type AdvancedQuestReward @entity {
   id: ID!
 
   advancedQuest: AdvancedQuest!
-  consumableId: BigInt!
-  consumableAmount: BigInt!
-  treasureFragmentId: BigInt!
-  treasureId: BigInt!
+  consumable: TokenQuantity
+  treasureFragment: Token
+  treasure: Token
 }
 
 type TreasureTriadResult @entity {
@@ -296,6 +292,7 @@ type User @entity {
   deposits: [Deposit!]! @derivedFrom(field: "user")
   pilgrimaging: [Pilgrimage!] @derivedFrom(field: "user")
   quests: [Quest!]! @derivedFrom(field: "user")
+  advancedQuest: [AdvancedQuest!]! @derivedFrom(field: "user")
   staked: [StakedToken!]! @derivedFrom(field: "user")
   tokens: [UserToken!]! @derivedFrom(field: "user")
   summons: [Summon!]! @derivedFrom(field: "user")
@@ -330,4 +327,11 @@ type UserToken @entity {
   quantity: BigInt!
   token: Token!
   user: User!
+}
+
+type TokenQuantity @entity {
+  id: ID!
+
+  quantity: Int!
+  token: Token!
 }

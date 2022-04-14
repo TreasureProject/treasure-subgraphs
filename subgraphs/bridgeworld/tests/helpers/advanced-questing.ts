@@ -22,21 +22,30 @@ import {
   handleTreasureTriadPlayed,
 } from "../../src/mappings/advanced-questing";
 import { handleLegionCreated, handleTransfer } from "../../src/mappings/legion";
-import {
-  handleRandomRequest,
-  handleRandomSeeded,
-} from "../../src/mappings/randomizer";
 import { USER_ADDRESS } from "./constants";
 import { createLegionCreatedEvent, createLegionTransferEvent } from "./legion";
-import {
-  createRandomRequestEvent,
-  createRandomSeededEvent,
-} from "./randomizer";
+
+export class RewardParam {
+  public consumableId: i32;
+  public consumableAmount: i32;
+  public treasureFragmentId: i32;
+  public treasureId: i32;
+
+  constructor(
+    consumableId: i32,
+    consumableAmount: i32,
+    treasureFragmentId: i32,
+    treasureId: i32
+  ) {
+    this.consumableId = consumableId;
+    this.consumableAmount = consumableAmount;
+    this.treasureFragmentId = treasureFragmentId;
+    this.treasureId = treasureId;
+  }
+}
 
 export function advancedQuestingSetup(legionId: i32): string {
   clearStore();
-
-  handleRandomRequest(createRandomRequestEvent(1, 1));
 
   handleTransfer(
     createLegionTransferEvent(Address.zero().toHexString(), USER_ADDRESS, 1)
@@ -71,7 +80,11 @@ export function simulateAdvancedQuest(
   }
 
   if (endQuest) {
-    handleAdvancedQuestEnded(createAdvancedQuestEndedEvent(user, legionId));
+    handleAdvancedQuestEnded(
+      createAdvancedQuestEndedEvent(user, legionId, [
+        new RewardParam(1, 1, 1, 1),
+      ])
+    );
   }
 }
 
@@ -133,7 +146,7 @@ export function createAdvancedQuestContinuedEvent(
 export function createAdvancedQuestEndedEvent(
   user: string = USER_ADDRESS,
   legionId: i32 = 1,
-  rewards: AdvancedQuestReward[] = []
+  rewards: RewardParam[] = []
 ): AdvancedQuestEnded {
   const newEvent = newMockEvent();
   newEvent.address = ADVANCED_QUESTING_ADDRESS;
@@ -141,10 +154,10 @@ export function createAdvancedQuestEndedEvent(
   const rewardsTupleArray: Array<ethereum.Tuple> = rewards.map<ethereum.Tuple>(
     (reward) => {
       const tuple = new ethereum.Tuple(4);
-      tuple[0] = ethereum.Value.fromUnsignedBigInt(reward.consumableId);
-      tuple[1] = ethereum.Value.fromUnsignedBigInt(reward.consumableAmount);
-      tuple[2] = ethereum.Value.fromUnsignedBigInt(reward.treasureFragmentId);
-      tuple[3] = ethereum.Value.fromUnsignedBigInt(reward.treasureId);
+      tuple[0] = ethereum.Value.fromI32(reward.consumableId);
+      tuple[1] = ethereum.Value.fromI32(reward.consumableAmount);
+      tuple[2] = ethereum.Value.fromI32(reward.treasureFragmentId);
+      tuple[3] = ethereum.Value.fromI32(reward.treasureId);
       return tuple;
     }
   );
