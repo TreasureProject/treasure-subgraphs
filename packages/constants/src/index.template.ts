@@ -16,6 +16,9 @@ export const ADVANCED_QUESTING_ADDRESS = Address.fromString(
 );
 export const SUMMONING_ADDRESS = Address.fromString("{{ summoning_address }}");
 export const TREASURE_ADDRESS = Address.fromString("{{ treasure_address }}");
+export const TREASURE_FRAGMENT_ADDRESS = Address.fromString(
+  "{{ treasure_fragment_address }}"
+);
 export const SMOL_BODIES_ADDRESS = Address.fromString(
   "{{ smol_bodies_address }}"
 );
