@@ -2,9 +2,14 @@ import { assert, test } from "matchstick-as/assembly";
 
 import { BigInt } from "@graphprotocol/graph-ts";
 
-import { ADVANCED_QUESTING_ADDRESS } from "@treasure/constants";
+import {
+  ADVANCED_QUESTING_ADDRESS,
+  CONSUMABLE_ADDRESS,
+  TREASURE_ADDRESS,
+  TREASURE_FRAGMENT_ADDRESS,
+} from "@treasure/constants";
 
-import { AdvancedQuest, AdvancedQuestReward } from "../generated/schema";
+import { AdvancedQuest } from "../generated/schema";
 import { getAddressId } from "../src/helpers/utils";
 import { getXpPerLevel } from "../src/helpers/xp";
 import {
@@ -57,12 +62,7 @@ test("All fields are set as expected on quest start", () => {
     )
   );
 
-  assert.fieldEquals(
-    "AdvancedQuest",
-    id,
-    "requestId",
-    BigInt.fromI32(requestId).toString()
-  );
+  assert.fieldEquals("AdvancedQuest", id, "requestId", requestId.toString());
   assert.fieldEquals("AdvancedQuest", id, "status", "Idle");
   assert.fieldEquals("AdvancedQuest", id, "zoneName", zoneName);
   assert.fieldEquals("AdvancedQuest", id, "part", part.toString());
@@ -80,8 +80,12 @@ test("All fields are set as expected on quest start", () => {
   );
   assert.fieldEquals("AdvancedQuest", id, "token", legionStoreId);
 
-  const treasureId1 = `${id}-${requestId}-0x2`;
-  const treasureId2 = `${id}-${requestId}-0x3`;
+  const treasureId1 =
+    `${id}-${BigInt.fromI32(requestId).toHex()}-` +
+    getAddressId(TREASURE_ADDRESS, BigInt.fromI32(2));
+  const treasureId2 =
+    `${id}-${BigInt.fromI32(requestId).toHex()}-` +
+    getAddressId(TREASURE_ADDRESS, BigInt.fromI32(3));
 
   assert.fieldEquals(
     "AdvancedQuest",
@@ -90,9 +94,19 @@ test("All fields are set as expected on quest start", () => {
     `[${treasureId1}, ${treasureId2}]`
   );
 
-  assert.fieldEquals("TokenQuantity", treasureId1, "token", "0x2");
+  assert.fieldEquals(
+    "TokenQuantity",
+    treasureId1,
+    "token",
+    getAddressId(TREASURE_ADDRESS, BigInt.fromI32(2))
+  );
   assert.fieldEquals("TokenQuantity", treasureId1, "quantity", "2");
-  assert.fieldEquals("TokenQuantity", treasureId2, "token", "0x3");
+  assert.fieldEquals(
+    "TokenQuantity",
+    treasureId2,
+    "token",
+    getAddressId(TREASURE_ADDRESS, BigInt.fromI32(3))
+  );
   assert.fieldEquals("TokenQuantity", treasureId2, "quantity", "1");
 });
 
@@ -121,7 +135,7 @@ test("Status transitions between Idle and Finished as expected", () => {
   handleAdvancedQuestEnded(
     createAdvancedQuestEndedEvent(USER_ADDRESS, legionId)
   );
-  assert.fieldEquals("AdvancedQuest", `${questId}-1`, "status", "Finished");
+  assert.fieldEquals("AdvancedQuest", `${questId}-0x1`, "status", "Finished");
 });
 
 test("Part increase as quest continues", () => {
@@ -208,15 +222,15 @@ test("Quest and Triad ids are changed when quest is ended", () => {
 
   assert.fieldEquals(
     "AdvancedQuest",
-    `${id}-1`,
+    `${id}-0x1`,
     "treasureTriadResult",
-    `${id}-1`
+    `${id}-0x1`
   );
   assert.fieldEquals(
     "TreasureTriadResult",
-    `${id}-1`,
+    `${id}-0x1`,
     "advancedQuest",
-    `${id}-1`
+    `${id}-0x1`
   );
 });
 
@@ -236,37 +250,71 @@ test("Quest rewards are set when ended", () => {
     ])
   );
 
-  quest = AdvancedQuest.load(`${id}-${quest.requestId}`) as AdvancedQuest;
+  quest = AdvancedQuest.load(
+    `${id}-${quest.requestId.toHex()}`
+  ) as AdvancedQuest;
 
   assert.fieldEquals(
     "AdvancedQuestReward",
-    `${quest.id}-0`,
+    `${quest.id}-0x0`,
     "advancedQuest",
     quest.id
   );
   assert.fieldEquals(
     "AdvancedQuestReward",
-    `${quest.id}-0`,
+    `${quest.id}-0x0`,
     "treasureFragment",
-    "0x3"
+    getAddressId(TREASURE_FRAGMENT_ADDRESS, BigInt.fromI32(3))
   );
-  assert.fieldEquals("AdvancedQuestReward", `${quest.id}-0`, "treasure", "0x4");
-  assert.fieldEquals("TokenQuantity", `${quest.id}-0-0x1`, "token", "0x1");
-  assert.fieldEquals("TokenQuantity", `${quest.id}-0-0x1`, "quantity", "2");
+  assert.fieldEquals(
+    "AdvancedQuestReward",
+    `${quest.id}-0x0`,
+    "treasure",
+    getAddressId(TREASURE_ADDRESS, BigInt.fromI32(4))
+  );
+  assert.fieldEquals(
+    "AdvancedQuestReward",
+    `${quest.id}-0x0`,
+    "consumable",
+    `${quest.id}-0x0`
+  );
+  assert.fieldEquals(
+    "TokenQuantity",
+    `${quest.id}-0x0`,
+    "token",
+    getAddressId(CONSUMABLE_ADDRESS, BigInt.fromI32(1))
+  );
+  assert.fieldEquals("TokenQuantity", `${quest.id}-0x0`, "quantity", "2");
 
   assert.fieldEquals(
     "AdvancedQuestReward",
-    `${quest.id}-1`,
+    `${quest.id}-0x1`,
     "advancedQuest",
     quest.id
   );
   assert.fieldEquals(
     "AdvancedQuestReward",
-    `${quest.id}-1`,
+    `${quest.id}-0x1`,
     "treasureFragment",
-    "0x7"
+    getAddressId(TREASURE_FRAGMENT_ADDRESS, BigInt.fromI32(7))
   );
-  assert.fieldEquals("AdvancedQuestReward", `${quest.id}-1`, "treasure", "0x8");
-  assert.fieldEquals("TokenQuantity", `${quest.id}-1-0x5`, "token", "0x5");
-  assert.fieldEquals("TokenQuantity", `${quest.id}-1-0x5`, "quantity", "6");
+  assert.fieldEquals(
+    "AdvancedQuestReward",
+    `${quest.id}-0x1`,
+    "treasure",
+    getAddressId(TREASURE_ADDRESS, BigInt.fromI32(8))
+  );
+  assert.fieldEquals(
+    "AdvancedQuestReward",
+    `${quest.id}-0x1`,
+    "consumable",
+    `${quest.id}-0x1`
+  );
+  assert.fieldEquals(
+    "TokenQuantity",
+    `${quest.id}-0x1`,
+    "token",
+    getAddressId(CONSUMABLE_ADDRESS, BigInt.fromI32(5))
+  );
+  assert.fieldEquals("TokenQuantity", `${quest.id}-0x1`, "quantity", "6");
 });

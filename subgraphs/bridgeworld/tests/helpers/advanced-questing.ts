@@ -15,6 +15,7 @@ import {
   TreasureTriadPlayed,
 } from "../../generated/Advanced Questing/AdvancedQuesting";
 import { AdvancedQuestReward } from "../../generated/schema";
+import { getAddressId } from "../../src/helpers";
 import {
   handleAdvancedQuestContinued,
   handleAdvancedQuestEnded,
@@ -54,7 +55,7 @@ export function advancedQuestingSetup(legionId: i32): string {
   const legionCreatedEvent = createLegionCreatedEvent(USER_ADDRESS, 1, 0, 6, 2);
   handleLegionCreated(legionCreatedEvent);
 
-  return `${LEGION_ADDRESS.toHexString()}-${BigInt.fromI32(legionId).toHex()}`;
+  return getAddressId(LEGION_ADDRESS, BigInt.fromI32(legionId));
 }
 
 export function simulateAdvancedQuest(

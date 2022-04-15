@@ -1,9 +1,11 @@
-import { Address, BigInt, log, store } from "@graphprotocol/graph-ts";
+import { BigInt, log, store } from "@graphprotocol/graph-ts";
 
 import {
   ADVANCED_QUESTING_ADDRESS,
+  CONSUMABLE_ADDRESS,
   LEGION_ADDRESS,
   TREASURE_ADDRESS,
+  TREASURE_FRAGMENT_ADDRESS,
 } from "@treasure/constants";
 
 import {
@@ -17,7 +19,6 @@ import {
   AdvancedQuest,
   AdvancedQuestReward,
   LegionInfo,
-  Random,
   TokenQuantity,
   TreasureTriadResult,
 } from "../../generated/schema";
@@ -41,10 +42,13 @@ export function handleAdvancedQuestStarted(event: AdvancedQuestStarted): void {
   const treasures: string[] = [];
 
   for (let i = 0; i < params._startQuestParams.treasureIds.length; i++) {
-    const tokenId = params._startQuestParams.treasureIds[i].toHex();
+    const tokenId = getAddressId(
+      TREASURE_ADDRESS,
+      params._startQuestParams.treasureIds[i]
+    );
 
     const treasure = new TokenQuantity(
-      `${quest.id}-${quest.requestId}-${tokenId}`
+      `${quest.id}-${quest.requestId.toHex()}-${tokenId}`
     );
     treasure.token = tokenId;
     treasure.quantity = params._startQuestParams.treasureAmounts[i].toI32();
@@ -119,22 +123,24 @@ export function handleAdvancedQuestEnded(event: AdvancedQuestEnded): void {
     return;
   }
 
-  quest.id = `${quest.id}-${quest.requestId}`;
+  quest.id = `${quest.id}-${quest.requestId.toHex()}`;
   quest.status = "Finished";
 
   store.remove("AdvancedQuest", id);
 
   for (let i = 0; i < params._rewards.length; i++) {
-    const rewardId = `${quest.id}-${i}`;
+    const rewardId = `${quest.id}-${BigInt.fromI32(i).toHex()}`;
     const reward = new AdvancedQuestReward(rewardId);
 
     reward.advancedQuest = quest.id;
 
     if (params._rewards[i].consumableId.toI32() !== 0) {
-      const consumable = new TokenQuantity(
-        `${rewardId}-${params._rewards[i].consumableId.toHex()}`
+      const consumable = new TokenQuantity(rewardId);
+
+      consumable.token = getAddressId(
+        CONSUMABLE_ADDRESS,
+        params._rewards[i].consumableId
       );
-      consumable.token = params._rewards[i].consumableId.toHex();
       consumable.quantity = params._rewards[i].consumableAmount.toI32();
 
       consumable.save();
@@ -143,18 +149,24 @@ export function handleAdvancedQuestEnded(event: AdvancedQuestEnded): void {
     }
 
     if (params._rewards[i].treasureFragmentId.toI32() != 0) {
-      reward.treasureFragment = params._rewards[i].treasureFragmentId.toHex();
+      reward.treasureFragment = getAddressId(
+        TREASURE_FRAGMENT_ADDRESS,
+        params._rewards[i].treasureFragmentId
+      );
     }
 
     if (params._rewards[i].treasureId.toI32() != 0) {
-      reward.treasure = params._rewards[i].treasureId.toHex();
+      reward.treasure = getAddressId(
+        TREASURE_ADDRESS,
+        params._rewards[i].treasureId
+      );
     }
 
     reward.save();
   }
 
   if (treasureTriadResult) {
-    treasureTriadResult.id = `${id}-${quest.requestId}`;
+    treasureTriadResult.id = `${id}-${quest.requestId.toHex()}`;
     treasureTriadResult.advancedQuest = quest.id;
     treasureTriadResult.save();
 
