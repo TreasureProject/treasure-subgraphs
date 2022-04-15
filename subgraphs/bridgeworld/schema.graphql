@@ -300,7 +300,7 @@ type User @entity {
   deposits: [Deposit!]! @derivedFrom(field: "user")
   pilgrimaging: [Pilgrimage!] @derivedFrom(field: "user")
   quests: [Quest!]! @derivedFrom(field: "user")
-  advancedQuest: [AdvancedQuest!]! @derivedFrom(field: "user")
+  advancedQuests: [AdvancedQuest!]! @derivedFrom(field: "user")
   staked: [StakedToken!]! @derivedFrom(field: "user")
   tokens: [UserToken!]! @derivedFrom(field: "user")
   summons: [Summon!]! @derivedFrom(field: "user")
