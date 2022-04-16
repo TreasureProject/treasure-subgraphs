@@ -10,9 +10,10 @@ import {
   StartedUnstakingTreasure,
 } from "../../generated/SeedEvolution/SeedEvolution";
 import {
+  BrokenToken,
   ClaimLifeformRequest,
   Lifeform,
-  TokenQuantity,
+  StakedToken,
   UnstakeTokenRequest,
 } from "../../generated/schema";
 import { CollectionHelpers } from "../helpers/CollectionHelpers";
@@ -39,6 +40,7 @@ export function handleLifeformCreated(event: LifeformCreated): void {
   lifeform.path = Path.getName(evolutionInfo.path);
   lifeform.firstRealm = LifeformRealm.getName(evolutionInfo.firstRealm);
   lifeform.secondRealm = LifeformRealm.getName(evolutionInfo.secondRealm);
+  lifeform._stakedTokenIds = [];
 
   let firstRealmStat = RealmStatHelpers.getOrCreateRealmStat(
     lifeform.firstRealm
@@ -62,12 +64,16 @@ export function handleLifeformCreated(event: LifeformCreated): void {
       tokenId,
       TreasureHelpers.getNameForTokenId(tokenId)
     );
-    let stakedToken = new TokenQuantity(`${lifeform.id}-staked-${token.id}`);
+    let stakedToken = new StakedToken(`${lifeform.id}-${token.id}`);
     stakedToken.lifeform = lifeform.id;
     stakedToken.quantity = evolutionInfo.stakedTreasureAmounts[i];
     stakedToken.token = token.id;
     stakedToken.user = user.id;
     stakedToken.save();
+
+    lifeform._stakedTokenIds = lifeform._stakedTokenIds.concat([
+      stakedToken.id,
+    ]);
   }
 
   lifeform.save();
@@ -118,6 +124,15 @@ export function handleFinishedUnstakingTreasure(
     return;
   }
 
+  // Remove all of Lifeform's staked tokens
+  for (let i = 0; i < lifeform._stakedTokenIds.length; i++) {
+    store.remove("StakedToken", lifeform._stakedTokenIds[i]);
+  }
+
+  lifeform._stakedTokenIds = [];
+  lifeform.save();
+
+  // Add any broken tokens to the Lifeform
   const treasureCollection = CollectionHelpers.getOrCreateCollection(
     SEED_OF_LIFE_TREASURES_ADDRESS
   );
@@ -128,7 +143,7 @@ export function handleFinishedUnstakingTreasure(
       tokenId,
       TreasureHelpers.getNameForTokenId(tokenId)
     );
-    const brokenToken = new TokenQuantity(`${lifeform.id}-broken-${token.id}`);
+    const brokenToken = new BrokenToken(`${lifeform.id}-${token.id}`);
     brokenToken.lifeform = lifeform.id;
     brokenToken.quantity = params._brokenTreasureAmounts[i];
     brokenToken.token = token.id;

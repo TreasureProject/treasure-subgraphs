@@ -82,7 +82,8 @@ type User @entity {
   tokens: [UserToken!]! @derivedFrom(field: "user")
   lifeforms: [Lifeform!]! @derivedFrom(field: "user")
   imbuedSouls: [ImbuedSoul!]! @derivedFrom(field: "user")
-  stakedTokens: [TokenQuantity!] @derivedFrom(field: "user")
+  stakedTokens: [StakedToken!] @derivedFrom(field: "user")
+  brokenTokens: [BrokenToken!] @derivedFrom(field: "user")
 }
 
 type ImbuedSoul @entity {
@@ -104,8 +105,11 @@ type Lifeform @entity {
   firstRealm: LifeformRealm!
   secondRealm: LifeformRealm!
   lifeformClass: LifeformClass
-  stakedTokens: [TokenQuantity!] @derivedFrom(field: "lifeform")
-  brokenTokens: [TokenQuantity!] @derivedFrom(field: "lifeform")
+  stakedTokens: [StakedToken!] @derivedFrom(field: "lifeform")
+  brokenTokens: [BrokenToken!] @derivedFrom(field: "lifeform")
+
+  "Internal for tracking staked token IDs"
+  _stakedTokenIds: [String!]!
 
   claimLifeformRequest: ClaimLifeformRequest @derivedFrom(field: "lifeform")
   unstakeTokenRequest: UnstakeTokenRequest @derivedFrom(field: "lifeform")
@@ -118,7 +122,16 @@ type RealmStat @entity {
   stakedCount: BigInt!
 }
 
-type TokenQuantity @entity {
+type StakedToken @entity {
+  id: ID!
+
+  lifeform: Lifeform!
+  quantity: BigInt!
+  token: Token!
+  user: User!
+}
+
+type BrokenToken @entity {
   id: ID!
 
   lifeform: Lifeform!
