@@ -104,6 +104,7 @@ type Lifeform @entity {
   path: Path!
   firstRealm: LifeformRealm!
   secondRealm: LifeformRealm!
+  treasureBoost: BigInt!
   lifeformClass: LifeformClass
   stakedTokens: [StakedToken!] @derivedFrom(field: "lifeform")
   brokenTokens: [BrokenToken!] @derivedFrom(field: "lifeform")

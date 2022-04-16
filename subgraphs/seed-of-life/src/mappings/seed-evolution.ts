@@ -40,6 +40,7 @@ export function handleLifeformCreated(event: LifeformCreated): void {
   lifeform.path = Path.getName(evolutionInfo.path);
   lifeform.firstRealm = LifeformRealm.getName(evolutionInfo.firstRealm);
   lifeform.secondRealm = LifeformRealm.getName(evolutionInfo.secondRealm);
+  lifeform.treasureBoost = evolutionInfo.treasureBoost;
   lifeform._stakedTokenIds = [];
 
   let firstRealmStat = getOrCreateRealmStat(lifeform.firstRealm);
