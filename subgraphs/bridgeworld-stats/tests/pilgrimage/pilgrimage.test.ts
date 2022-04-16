@@ -43,7 +43,7 @@ test("pilgrimage stats count pilgrimages started", () => {
     0,
     [1, 2, 3],
     [1, 2, 1],
-    [0, 1, 2]
+    [1, 2, 3]
   );
   handlePilgrimagesStarted(pilgrimagesStartedEvent);
 
@@ -140,7 +140,7 @@ test("pilgrimage stats count pilgrimages started", () => {
     0,
     [4, 5, 6],
     [1, 1, 1],
-    [3, 4, 5]
+    [4, 5, 6]
   );
   handlePilgrimagesStarted(pilgrimagesStartedEvent2);
 
@@ -180,24 +180,21 @@ test("pilgrimage stats count pilgrimages finished", () => {
   handleLegionCreated(createLegionCreatedEvent(1, 1, 4, 3));
   handleLegionCreated(createLegionCreatedEvent(2, 1, 4, 3));
 
-  const pilgrimagesStartedEvent = createPilgrimagesStartedEvent(
-    timestamp,
-    USER_ADDRESS,
-    Address.zero().toHexString(),
-    0,
-    [1, 2],
-    [1, 1],
-    [0, 1]
+  handlePilgrimagesStarted(
+    createPilgrimagesStartedEvent(
+      timestamp,
+      USER_ADDRESS,
+      Address.zero().toHexString(),
+      0,
+      [1, 2],
+      [1, 1],
+      [1, 2]
+    )
   );
-  handlePilgrimagesStarted(pilgrimagesStartedEvent);
 
-  const pilgrimageFinishedEvent = createPilgrimagesFinishedEvent(
-    timestamp,
-    USER_ADDRESS,
-    [1, 2],
-    [0, 1]
+  handlePilgrimagesFinished(
+    createPilgrimagesFinishedEvent(timestamp, USER_ADDRESS, [1, 2], [1, 0, 2])
   );
-  handlePilgrimagesFinished(pilgrimageFinishedEvent);
 
   for (let i = 0; i < statIds.length; i++) {
     // Assert all time intervals are created
@@ -242,7 +239,7 @@ test("pilgrimage stats track addresses", () => {
       0,
       [1],
       [1],
-      [0]
+      [1]
     )
   );
   handlePilgrimagesStarted(
@@ -253,7 +250,7 @@ test("pilgrimage stats track addresses", () => {
       0,
       [2],
       [1],
-      [1]
+      [2]
     )
   );
 
@@ -262,7 +259,7 @@ test("pilgrimage stats track addresses", () => {
 
   // One user becomes inactive
   handlePilgrimagesFinished(
-    createPilgrimagesFinishedEvent(timestamp, USER_ADDRESS, [1], [0])
+    createPilgrimagesFinishedEvent(timestamp, USER_ADDRESS, [1], [1])
   );
 
   assert.fieldEquals(STAT_ENTITY_TYPE, "all-time", "allAddressesCount", "2");
@@ -277,7 +274,7 @@ test("pilgrimage stats track addresses", () => {
       0,
       [3],
       [1],
-      [2]
+      [3]
     )
   );
 

@@ -1,5 +1,6 @@
 enum Category {
   Consumable
+  Crystal
   Legion
   Treasure
 }
@@ -208,12 +209,22 @@ type StakedToken @entity {
 type Summon @entity {
   id: ID!
 
-  endTimestamp: BigInt!
+  endTimestamp: BigInt
+  prismUsed: Token
   random: Random!
-  status: Status!
-  token: Token!
   resultToken: Token
+  status: Status!
+  success: Boolean
+  token: Token!
   user: User!
+}
+
+type SummoningCircle @entity {
+  id: ID!
+
+  crafters: Int!
+  summoners: Int!
+  successRate: String!
 }
 
 # Holds data to clear summon fatigue

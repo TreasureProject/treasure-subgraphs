@@ -25,6 +25,7 @@ import {
   CRAFT_ENTITY_TYPE,
   Difficulty,
   LEGION_INFO_ENTITY_TYPE,
+  SUMMONING_CIRCLE_ENTITY_TYPE,
   USER_ADDRESS,
   createCraftingFinishedEvent,
   createCraftingRevealedEvent,
@@ -73,6 +74,15 @@ test("crafting increases xp when completed successfully", () => {
     );
 
     handleCraftingStartedWithoutDifficulty(craftStartedEvent);
+
+    assert.fieldEquals(SUMMONING_CIRCLE_ENTITY_TYPE, "only", "crafters", "1");
+    assert.fieldEquals(SUMMONING_CIRCLE_ENTITY_TYPE, "only", "summoners", "0");
+    assert.fieldEquals(
+      SUMMONING_CIRCLE_ENTITY_TYPE,
+      "only",
+      "successRate",
+      "1.0"
+    );
 
     const randomSeededEvent = createRandomSeededEvent(index + 1);
 

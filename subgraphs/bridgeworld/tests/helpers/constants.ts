@@ -18,6 +18,7 @@ export const CRAFT_ENTITY_TYPE = "Craft";
 export const DEPOSIT_ENTITY_TYPE = "Deposit";
 export const LEGION_INFO_ENTITY_TYPE = "LegionInfo";
 export const QUEST_ENTITY_TYPE = "Quest";
+export const SUMMONING_CIRCLE_ENTITY_TYPE = "SummoningCircle";
 export const SUMMON_FATIGUE_ENTITY_TYPE = "_SummonFatigue";
 export const SUMMON_ENTITY_TYPE = "Summon";
 export const STAKED_TOKEN_ENTITY_TYPE = "StakedToken";

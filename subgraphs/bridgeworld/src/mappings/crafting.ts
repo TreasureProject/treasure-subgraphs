@@ -1,4 +1,4 @@
-import { Address, BigInt, log, store } from "@graphprotocol/graph-ts";
+import { Address, BigInt, ethereum, log, store } from "@graphprotocol/graph-ts";
 
 import {
   CONSUMABLE_ADDRESS,
@@ -19,7 +19,17 @@ import {
   Outcome,
   Random,
 } from "../../generated/schema";
-import { DIFFICULTY, getAddressId, getXpPerLevel } from "../helpers";
+import {
+  DIFFICULTY,
+  addCrafterToCircle,
+  getAddressId,
+  getXpPerLevel,
+  removeCrafterFromCircle,
+} from "../helpers";
+
+function isXpPaused(event: ethereum.Event): boolean {
+  return event.block.number.gt(BigInt.fromI32(8456580));
+}
 
 function handleCraftingStarted(
   address: Address,
@@ -37,6 +47,8 @@ function handleCraftingStarted(
 
     return;
   }
+
+  addCrafterToCircle();
 
   // TODO: Add treasures sent in for craft
   craft.difficulty = DIFFICULTY[difficulty];
@@ -128,7 +140,7 @@ export function handleCraftingRevealed(event: CraftingRevealed): void {
   outcome.save();
 
   // Increase Xp if successfull
-  if (outcome.success == true) {
+  if (outcome.success == true && !isXpPaused(event)) {
     let metadata = LegionInfo.load(`${craft.token}-metadata`);
 
     if (metadata && metadata.crafting != 6) {
@@ -157,6 +169,8 @@ export function handleCraftingFinished(event: CraftingFinished): void {
   craft.id = `${craft.id}-${craft.random}`;
   craft.status = "Finished";
   craft.save();
+
+  removeCrafterFromCircle();
 
   // Remove old craft
   store.remove("Craft", id);

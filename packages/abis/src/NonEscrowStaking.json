@@ -1,0 +1,18 @@
+[
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": false, "internalType": "uint256", "name": "tokenId", "type": "uint256" }
+    ],
+    "name": "Staked",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": false, "internalType": "uint256", "name": "tokenId", "type": "uint256" }
+    ],
+    "name": "Unstaked",
+    "type": "event"
+  }
+]

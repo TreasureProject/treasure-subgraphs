@@ -19,10 +19,10 @@ export function createSummoningStartedEvent(
   event.block.timestamp = BigInt.fromI32(timestamp);
   event.parameters = [
     new ethereum.EventParam(
-      "_user",
+      "user",
       ethereum.Value.fromAddress(Address.fromString(user))
     ),
-    new ethereum.EventParam("_tokenId", ethereum.Value.fromI32(tokenId)),
+    new ethereum.EventParam("tokenId", ethereum.Value.fromI32(tokenId)),
   ];
 
   return event;
@@ -39,11 +39,11 @@ export function createSummoningFinishedEvent(
   event.block.timestamp = BigInt.fromI32(timestamp);
   event.parameters = [
     new ethereum.EventParam(
-      "_user",
+      "user",
       ethereum.Value.fromAddress(Address.fromString(user))
     ),
-    new ethereum.EventParam("_returnedId", ethereum.Value.fromI32(returnedId)),
-    new ethereum.EventParam("_newTokenId", ethereum.Value.fromI32(newTokenId)),
+    new ethereum.EventParam("returnedId", ethereum.Value.fromI32(returnedId)),
+    new ethereum.EventParam("newTokenId", ethereum.Value.fromI32(newTokenId)),
   ];
 
   return event;

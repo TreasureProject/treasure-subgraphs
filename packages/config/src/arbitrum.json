@@ -7,6 +7,8 @@
 
   "atlas_mine_address": "0xA0A89db1C899c49F98E6326b764BAFcf167fC2CE",
   "atlas_mine_start_block": 5004790,
+  "balancer_crystal_address": "0xbfeba04384cecfaf0240b49163ed418f82e43d3a",
+  "balancer_crystal_start_block": 8295088,
   "consumable_address": "0xF3d00A2559d84De7aC093443bcaAdA5f4eE4165C",
   "consumable_start_block": 2416540,
   "crafting_address": "0xB9c9eD651Eb173Ca7fbC3A094da9Ce33ec145a29",
@@ -70,6 +72,23 @@
   "treasure_marketplace_buyer_address": "0x812cda2181ed7c45a35a691e0c85e231d218e273",
   "treasure_marketplace_address": "0x2E3b85F85628301a0Bce300Dee3A6B04195A15Ee",
   "treasure_marketplace_start_block": 2983469,
+  "treasure_marketplace_v2_address": "0x09986B4e255B3c548041a30A2Ee312Fe176731c2",
+  "treasure_marketplace_v2_start_block": 7764399,
+  "treasure_marketplace_pause_start_block": 7322795,
+
+  "peek_a_boo_address": "0xbb5e6438336187ef87e21798dcda8fc98fcfa65a",
+  "peek_a_boo_start_block": 8279648,
+
+  "realm_address": "0x4de95c1e202102e22e801590c51d7b979f167fbb",
+  "realm_start_block": 758297,
+
+  "tales_of_elleria_address": "0x7480224ec2b98f28cee3740c80940a2f489bf352",
+  "tales_of_elleria_start_block": 8701560,
+  "tales_of_elleria_data_address": "0x7A0D491469fb5D7D3aDbF186221891AfE3b5d028",
+  "tales_of_elleria_data_start_block": 8701736,
+
+  "smithonia_weapons_address": "0x00000000016c35e3613ad3ed484aa48f161b67fd",
+  "smithonia_weapons_start_block": 8971700,
 
   "hourly_stat_interval_start_block": 6470000
 }

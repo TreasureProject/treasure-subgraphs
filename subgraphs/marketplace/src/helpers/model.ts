@@ -1,9 +1,12 @@
 import { Address, BigInt, log } from "@graphprotocol/graph-ts";
 
-import { LEGION_ADDRESS } from "@treasure/constants";
+import {
+  BATTLEFLY_FOUNDERS_ADDRESS,
+  LEGION_ADDRESS,
+} from "@treasure/constants";
 
-import { getAddressId, getName } from ".";
-import { Collection, Token } from "../../generated/schema";
+import { getAddressId, getBattleflyFounderVersion, getName } from ".";
+import { Collection, StatsData, Token, User } from "../../generated/schema";
 
 function createCollection(
   contract: Address,
@@ -21,6 +24,9 @@ function createCollection(
     collection.listings = [];
     collection.name = name;
     collection.standard = standard;
+    collection.stats = id;
+
+    new StatsData(id).save();
 
     collection.save();
   }
@@ -32,6 +38,14 @@ export function createErc721Collection(contract: Address, name: string): void {
 
 export function createErc1155Collection(contract: Address, name: string): void {
   createCollection(contract, name, "ERC1155");
+}
+
+export function createBattleflyFoundersCollection(
+  contract: Address,
+  name: string,
+  version: i32
+): void {
+  createCollection(contract, name, "ERC721", `-${version}`);
 }
 
 export function createLegionsCollection(
@@ -55,6 +69,16 @@ export function getCollection(id: string): Collection {
   return collection;
 }
 
+export function getStats(id: string): StatsData {
+  let stats = StatsData.load(id);
+
+  if (!stats) {
+    stats = new StatsData(id);
+  }
+
+  return stats;
+}
+
 export function getToken(contract: Address, tokenId: BigInt): Token {
   let id = getAddressId(contract, tokenId);
   let token = Token.load(id);
@@ -64,7 +88,13 @@ export function getToken(contract: Address, tokenId: BigInt): Token {
 
     // Legion setup is done with LegionCreated event
     if (contract.notEqual(LEGION_ADDRESS)) {
-      let collection = getCollection(contract.toHexString());
+      let collectionId = contract.toHexString();
+
+      if (contract.equals(BATTLEFLY_FOUNDERS_ADDRESS)) {
+        collectionId += `-${getBattleflyFounderVersion(tokenId.toI32())}`;
+      }
+
+      let collection = getCollection(collectionId);
 
       token.collection = collection.id;
 
@@ -72,6 +102,9 @@ export function getToken(contract: Address, tokenId: BigInt): Token {
         token.name = `${collection.name} #${tokenId.toString()}`;
       } else {
         token.name = getName(contract, tokenId);
+        token.stats = id;
+
+        new StatsData(id).save();
       }
     }
 
@@ -80,4 +113,15 @@ export function getToken(contract: Address, tokenId: BigInt): Token {
   }
 
   return token;
+}
+
+export function getUser(address: Address): User {
+  let user = User.load(address.toHexString());
+
+  if (!user) {
+    user = new User(address.toHexString());
+    user.save();
+  }
+
+  return user;
 }

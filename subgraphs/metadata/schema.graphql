@@ -1,0 +1,39 @@
+type Collection @entity {
+  id: ID!
+
+  "Internal for tracking attributes for a collection"
+  _attributeIds: [String!]!
+
+  "Internal for tracking token IDs with missing metadata"
+  _missingMetadataTokens: [Token!]!
+  _missingMetadataLastUpdated: BigInt!
+
+  "Internal for tracking attibutes to be calculated"
+  _attributePercentageLastUpdated: BigInt!
+
+  attributes: [Attribute!]! @derivedFrom(field: "collection")
+  tokensCount: Int!
+}
+
+type Attribute @entity {
+  id: ID!
+
+  "Internal for tracking tokenIds calculated"
+  _tokenIds: [String!]!
+
+  collection: Collection!
+  name: String!
+  percentage: BigDecimal
+  tokens: [Token!]! @derivedFrom(field: "attributes")
+  value: String!
+}
+
+type Token @entity {
+  id: ID!
+
+  attributes: [Attribute!]!
+  description: String
+  image: String
+  name: String!
+  tokenId: BigInt!
+}

@@ -20,7 +20,7 @@ import { createDropSchoolEvent, createJoinSchoolEvent } from "./utils";
 const IQ_STRING = "206657655423280423280";
 
 createMockedFunction(SMOL_BRAINS_ADDRESS, "brainz", "brainz(uint256):(uint256)")
-  .withArgs([ethereum.Value.fromI32(1)])
+  .withArgs([ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(1))])
   .returns([ethereum.Value.fromUnsignedBigInt(BigInt.fromString(IQ_STRING))]);
 
 test("smol brains joining school creates staked token", () => {

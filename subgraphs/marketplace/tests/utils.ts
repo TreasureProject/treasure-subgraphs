@@ -1,6 +1,6 @@
 import { newMockEvent } from "matchstick-as/assembly";
 
-import { Address, ethereum } from "@graphprotocol/graph-ts";
+import { Address, BigInt, ethereum } from "@graphprotocol/graph-ts";
 
 import {
   MARKETPLACE_ADDRESS,
@@ -18,6 +18,7 @@ import {
   ItemListed,
   ItemSold,
   ItemUpdated,
+  UpdateOracle,
 } from "../generated/TreasureMarketplace/TreasureMarketplace";
 
 export const LEGION_METADATA_STORE_ADDRESS =
@@ -47,10 +48,13 @@ export const createItemListedEvent = (
   contract: Address,
   tokenId: i32,
   quantity: i32,
-  price: i32
+  price: i32,
+  expires: i32 = 1656403681,
+  timestamp: i32 = expires
 ): ItemListed => {
   const newEvent = changetype<ItemListed>(newMockEvent());
   newEvent.address = MARKETPLACE_ADDRESS;
+  newEvent.block.timestamp = BigInt.fromI32(timestamp);
   newEvent.parameters = [
     new ethereum.EventParam(
       "seller",
@@ -60,7 +64,7 @@ export const createItemListedEvent = (
     new ethereum.EventParam("tokenId", ethereum.Value.fromI32(tokenId)),
     new ethereum.EventParam("quantity", ethereum.Value.fromI32(quantity)),
     new ethereum.EventParam("pricePerItem", ethereum.Value.fromI32(price)),
-    new ethereum.EventParam("expirationTime", ethereum.Value.fromI32(0)),
+    new ethereum.EventParam("expirationTime", ethereum.Value.fromI32(expires)),
   ];
 
   return newEvent;
@@ -100,10 +104,13 @@ export const createItemUpdatedEvent = (
   contract: Address,
   tokenId: i32,
   quantity: i32,
-  price: i32
+  price: i32,
+  expires: i32 = 1656403681,
+  timestamp: i32 = expires
 ): ItemUpdated => {
   const newEvent = changetype<ItemUpdated>(newMockEvent());
   newEvent.address = MARKETPLACE_ADDRESS;
+  newEvent.block.timestamp = BigInt.fromI32(timestamp);
   newEvent.parameters = [
     new ethereum.EventParam(
       "seller",
@@ -113,7 +120,7 @@ export const createItemUpdatedEvent = (
     new ethereum.EventParam("tokenId", ethereum.Value.fromI32(tokenId)),
     new ethereum.EventParam("quantity", ethereum.Value.fromI32(quantity)),
     new ethereum.EventParam("pricePerItem", ethereum.Value.fromI32(price)),
-    new ethereum.EventParam("expirationTime", ethereum.Value.fromI32(0)),
+    new ethereum.EventParam("expirationTime", ethereum.Value.fromI32(expires)),
   ];
 
   return newEvent;
@@ -214,6 +221,19 @@ export const createTransferSingleEvent = (
     ),
     new ethereum.EventParam("id", ethereum.Value.fromI32(tokenId)),
     new ethereum.EventParam("value", ethereum.Value.fromI32(quantity)),
+  ];
+
+  return newEvent;
+};
+
+export const createUpdateOracleEvent = (
+  oracle: Address = Address.zero()
+): UpdateOracle => {
+  const newEvent = changetype<UpdateOracle>(newMockEvent());
+
+  newEvent.address = MARKETPLACE_ADDRESS;
+  newEvent.parameters = [
+    new ethereum.EventParam("oracle", ethereum.Value.fromAddress(oracle)),
   ];
 
   return newEvent;

@@ -1,9 +1,19 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts";
 
 import {
+  BALANCER_CRYSTAL_ADDRESS,
   CONSUMABLE_ADDRESS,
   SMOL_TREASURES_ADDRESS,
 } from "@treasure/constants";
+
+function getBalancerCrystalName(tokenId: i32): string {
+  switch (tokenId) {
+    case 1:
+      return "Balancer Crystal";
+    default:
+      return "";
+  }
+}
 
 function getConsumableName(tokenId: i32): string {
   switch (tokenId) {
@@ -64,6 +74,10 @@ export function getName(contract: Address, tokenId: BigInt): string {
 
   if (contract.equals(SMOL_TREASURES_ADDRESS)) {
     return getSmolTreasureName(id);
+  }
+
+  if (contract.equals(BALANCER_CRYSTAL_ADDRESS)) {
+    return getBalancerCrystalName(id);
   }
 
   switch (id) {

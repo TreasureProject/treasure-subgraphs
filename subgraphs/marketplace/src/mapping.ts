@@ -1,9 +1,16 @@
-import { Address, BigInt, TypedMap } from "@graphprotocol/graph-ts";
+import {
+  Address,
+  BigInt,
+  TypedMap,
+  ethereum,
+  store,
+} from "@graphprotocol/graph-ts";
 
 import {
   EXPLORER,
   MARKETPLACE_ADDRESS,
   MARKETPLACE_BUYER_ADDRESS,
+  MARKETPLACE_V2_ADDRESS,
   TREASURE_ADDRESS,
 } from "@treasure/constants";
 
@@ -15,12 +22,18 @@ import {
   TransferSingle,
 } from "../generated/TreasureMarketplace/ERC1155";
 import {
+  Staked,
+  Unstaked,
+} from "../generated/TreasureMarketplace/NonEscrowStaking";
+import {
   ItemCanceled,
   ItemListed,
   ItemSold,
   ItemUpdated,
+  UpdateOracle,
 } from "../generated/TreasureMarketplace/TreasureMarketplace";
 import {
+  Collection,
   Listing,
   StakedToken,
   Token,
@@ -30,9 +43,14 @@ import {
 import {
   exists,
   getAddressId,
+  getAllCollections,
   getCollection,
+  getStats,
   getToken,
+  getUser,
   getUserAddressId,
+  isMint,
+  isPaused,
   removeFromArray,
   removeIfExists,
 } from "./helpers";
@@ -51,6 +69,12 @@ stakers.set(
   "0x6325439389e0797ab35752b4f43a14c004f22a9c"
 );
 
+// Tales of Elleria
+stakers.set(
+  "0x7a0d491469fb5d7d3adbf186221891afe3b5d028",
+  "0x7480224ec2b98f28cee3740c80940a2f489bf352"
+);
+
 function getListing(
   seller: Address,
   contract: Address,
@@ -63,7 +87,6 @@ function getListing(
     listing = new Listing(id);
 
     listing.seller = getUser(seller).id;
-    listing.status = exists("StakedToken", id) ? "Inactive" : "Active";
     listing.token = getAddressId(contract, tokenId);
   }
 
@@ -85,18 +108,12 @@ function getStakedTokenId(
   return id;
 }
 
-function getUser(address: Address): User {
-  let user = User.load(address.toHexString());
-
-  if (!user) {
-    user = new User(address.toHexString());
-    user.save();
-  }
-
-  return user;
-}
-
-function handleStake(user: Address, contract: Address, tokenId: BigInt): void {
+function handleStake(
+  user: Address,
+  contract: Address,
+  tokenId: BigInt,
+  timestamp: i64
+): void {
   let id = getStakedTokenId(user, contract, tokenId);
   let stakedToken = StakedToken.load(id);
 
@@ -118,7 +135,7 @@ function handleStake(user: Address, contract: Address, tokenId: BigInt): void {
         listing.status = "Inactive";
         listing.save();
 
-        updateCollectionFloorAndTotal(listing.collection);
+        updateCollectionFloorAndTotal(listing.collection, timestamp);
       }
     }
 
@@ -149,13 +166,15 @@ function handleTransfer(
   from: Address,
   to: Address,
   tokenId: BigInt,
-  quantity: i32
+  quantity: i32,
+  timestamp: i64
 ): void {
   let user = getUser(to);
   let token = getToken(contract, tokenId);
   let isMarketplace = [
     MARKETPLACE_ADDRESS.toHexString(),
     MARKETPLACE_BUYER_ADDRESS.toHexString(),
+    MARKETPLACE_V2_ADDRESS.toHexString(),
   ].includes(operator.toHexString());
 
   if (!isMarketplace) {
@@ -165,7 +184,26 @@ function handleTransfer(
       listing.status = "Inactive";
       listing.save();
 
-      updateCollectionFloorAndTotal(listing.collection);
+      updateCollectionFloorAndTotal(listing.collection, timestamp);
+    }
+  }
+
+  if (isMint(from)) {
+    let collection = Collection.load(token.collection);
+
+    // Will be null from legions collection
+    if (collection != null) {
+      if (collection.standard == "ERC1155") {
+        let stats = getStats(token.id);
+
+        stats.items += quantity;
+        stats.save();
+      }
+
+      let stats = getStats(collection.id);
+
+      stats.items += quantity;
+      stats.save();
     }
   }
 
@@ -194,14 +232,16 @@ function handleTransfer(
   toUserToken.save();
 }
 
-function updateCollectionFloorAndTotal(id: string): void {
+function updateCollectionFloorAndTotal(id: string, timestamp: i64): void {
   let collection = getCollection(id);
   let floorPrices = new TypedMap<string, BigInt>();
+  let tokenListings = new Map<string, number>();
   let listings = collection.listings;
   let length = listings.length;
+  let stats = getStats(id);
 
-  collection.floorPrice = BigInt.zero();
-  collection.totalListings = 0;
+  collection.floorPrice = stats.floorPrice = BigInt.zero();
+  collection.totalListings = stats.listings = 0;
 
   for (let index = 0; index < length; index++) {
     let id = listings[index];
@@ -214,8 +254,24 @@ function updateCollectionFloorAndTotal(id: string): void {
         let floorPrice = collection.floorPrice;
         let pricePerItem = listing.pricePerItem;
 
+        // Check to see if we need to expire the listing
+        if (listing.expires.lt(BigInt.fromI64(timestamp))) {
+          listing.status = "Expired";
+          listing.save();
+
+          continue;
+        }
+
         if (collection.standard == "ERC1155") {
           let tokenFloorPrice = floorPrices.get(listing.token);
+          let currentTokenListings = tokenListings.has(listing.token)
+            ? tokenListings.get(listing.token)
+            : 0;
+
+          tokenListings.set(
+            listing.token,
+            (currentTokenListings += listing.quantity)
+          );
 
           if (
             !tokenFloorPrice ||
@@ -226,10 +282,10 @@ function updateCollectionFloorAndTotal(id: string): void {
         }
 
         if (floorPrice.isZero() || floorPrice.gt(pricePerItem)) {
-          collection.floorPrice = pricePerItem;
+          collection.floorPrice = stats.floorPrice = pricePerItem;
         }
 
-        collection.totalListings += listing.quantity;
+        collection.totalListings = stats.listings += listing.quantity;
       }
     }
   }
@@ -239,6 +295,10 @@ function updateCollectionFloorAndTotal(id: string): void {
   for (let index = 0; index < entries.length; index++) {
     let entry = entries[index];
     let token = Token.load(entry.key);
+    let stats = getStats(entry.key);
+
+    stats.floorPrice = entry.value;
+    stats.save();
 
     if (token) {
       token.floorPrice = entry.value;
@@ -246,10 +306,36 @@ function updateCollectionFloorAndTotal(id: string): void {
     }
   }
 
+  let keys = tokenListings.keys();
+
+  for (let index = 0; index < keys.length; index++) {
+    let key = keys[index];
+    let stats = getStats(key);
+
+    stats.listings = tokenListings.get(key) as i32;
+    stats.save();
+  }
+
   collection.save();
+  stats.save();
+}
+
+function normalizeTime(value: BigInt): BigInt {
+  return value.toString().length == 10
+    ? value.times(BigInt.fromI32(1000))
+    : value;
+}
+
+function getTime(event: ethereum.Event): i64 {
+  return event.block.timestamp.toI64() * 1000;
 }
 
 export function handleItemCanceled(event: ItemCanceled): void {
+  // Do nothing if paused
+  if (isPaused(event)) {
+    return;
+  }
+
   let params = event.params;
   let address = params.nftAddress;
   let listing = getListing(params.seller, address, params.tokenId);
@@ -261,10 +347,30 @@ export function handleItemCanceled(event: ItemCanceled): void {
 
   removeIfExists("Listing", listing.id);
 
-  updateCollectionFloorAndTotal(listing.collection);
+  let collection = getCollection(listing.collection);
+
+  // Update ERC1155 stats
+  if (collection.standard == "ERC1155") {
+    let stats = getStats(listing.token);
+
+    // Last listing was removed. Clear floor price.
+    if (stats.listings == listing.quantity) {
+      stats.floorPrice = BigInt.zero();
+      stats.listings = 0;
+    }
+
+    stats.save();
+  }
+
+  updateCollectionFloorAndTotal(listing.collection, getTime(event));
 }
 
 export function handleItemListed(event: ItemListed): void {
+  // Do nothing if paused
+  if (isPaused(event)) {
+    return;
+  }
+
   let params = event.params;
   let pricePerItem = params.pricePerItem;
   let quantity = params.quantity;
@@ -273,6 +379,11 @@ export function handleItemListed(event: ItemListed): void {
   let seller = params.seller;
 
   let token = getToken(tokenAddress, tokenId);
+  let collection = getCollection(token.collection);
+
+  if (collection.standard == "") {
+    return;
+  }
 
   // We don't allow listing Recruits on the marketplace
   if (token.name == "Recruit") {
@@ -283,18 +394,19 @@ export function handleItemListed(event: ItemListed): void {
 
   listing.blockTimestamp = event.block.timestamp;
   listing.collection = token.collection;
-  listing.expires = params.expirationTime;
+  listing.expires = normalizeTime(params.expirationTime);
   listing.pricePerItem = pricePerItem;
   listing.quantity = quantity.toI32();
+  listing.status = exists("StakedToken", listing.id) ? "Inactive" : "Active";
 
   listing.save();
 
-  let collection = getCollection(token.collection);
+  if (collection.listings.indexOf(listing.id) == -1) {
+    collection.listings = collection.listings.concat([listing.id]);
+    collection.save();
+  }
 
-  collection.listings = collection.listings.concat([listing.id]);
-  collection.save();
-
-  updateCollectionFloorAndTotal(collection.id);
+  updateCollectionFloorAndTotal(collection.id, getTime(event));
 }
 
 export function handleItemSold(event: ItemSold): void {
@@ -316,7 +428,7 @@ export function handleItemSold(event: ItemSold): void {
 
   listing.quantity = listing.quantity - quantity;
 
-  if (listing.quantity == 0) {
+  if (listing.quantity == 0 || quantity == 0) {
     // Remove sold listing.
     removeIfExists("Listing", listing.id);
   } else {
@@ -333,30 +445,59 @@ export function handleItemSold(event: ItemSold): void {
   sold.expires = BigInt.zero();
   sold.pricePerItem = listing.pricePerItem;
   sold.quantity = quantity;
-  sold.status = "Sold";
+  sold.status = quantity == 0 ? "Invalid" : "Sold";
   sold.transactionLink = `https://${EXPLORER}/tx/${hash}`;
   sold.token = listing.token;
 
   sold.save();
 
   let collection = getCollection(listing.collection);
+  let stats = getStats(collection.stats);
 
-  collection.totalSales = collection.totalSales.plus(BigInt.fromI32(1));
-  collection.totalVolume = collection.totalVolume.plus(
+  collection.totalSales = collection.totalSales.plus(
+    BigInt.fromI32(quantity == 0 ? 0 : 1)
+  );
+  collection.totalVolume = stats.volume = collection.totalVolume.plus(
     listing.pricePerItem.times(BigInt.fromI32(quantity))
   );
 
-  // TODO: Not sure if this is needeed, but put it in for now.
-  if (listing.quantity == 0) {
+  stats.sales = collection.totalSales.toI32();
+
+  // TODO: Not sure if this is needed, but put it in for now.
+  if (listing.quantity == 0 || quantity == 0) {
     collection.listings = removeFromArray(collection.listings, listing.id);
   }
 
   collection.save();
+  stats.save();
 
-  updateCollectionFloorAndTotal(collection.id);
+  // Update ERC1155 stats
+  if (collection.standard == "ERC1155") {
+    let stats = getStats(listing.token);
+
+    stats.sales += 1;
+    stats.volume = stats.volume.plus(
+      listing.pricePerItem.times(BigInt.fromI32(quantity))
+    );
+
+    // Last listing was removed. Clear floor price.
+    if (stats.listings == quantity) {
+      stats.floorPrice = BigInt.zero();
+      stats.listings = 0;
+    }
+
+    stats.save();
+  }
+
+  updateCollectionFloorAndTotal(collection.id, getTime(event));
 }
 
 export function handleItemUpdated(event: ItemUpdated): void {
+  // Do nothing if paused
+  if (isPaused(event)) {
+    return;
+  }
+
   let params = event.params;
   let listing = getListing(params.seller, params.nftAddress, params.tokenId);
 
@@ -369,14 +510,82 @@ export function handleItemUpdated(event: ItemUpdated): void {
     listing.blockTimestamp = event.block.timestamp;
   }
 
-  listing.expires = params.expirationTime;
+  listing.expires = normalizeTime(params.expirationTime);
   listing.status = exists("StakedToken", listing.id) ? "Inactive" : "Active";
   listing.quantity = params.quantity.toI32();
   listing.pricePerItem = params.pricePerItem;
 
-  listing.save();
+  // Bug existed in contract that allowed quantity to be updated to 0, but then couldn't be sold.
+  // Remove this listing as it is invalid.
+  if (listing.quantity == 0) {
+    store.remove("Listing", listing.id);
+  } else {
+    listing.save();
+  }
 
-  updateCollectionFloorAndTotal(listing.collection);
+  updateCollectionFloorAndTotal(listing.collection, getTime(event));
+}
+
+export function handleOracleUpdate(event: UpdateOracle): void {
+  // Safety first
+  if (event.params.oracle.notEqual(Address.zero())) {
+    return;
+  }
+
+  // Cancel all listings.
+  let collections = getAllCollections();
+  let length = collections.length;
+
+  for (let index = 0; index < length; index++) {
+    let id = collections[index];
+
+    // Should never happen, but cleans up warnings in test.
+    if (!exists("Collection", id)) {
+      continue;
+    }
+
+    let collection = getCollection(id);
+
+    let listings = collection.listings.filter(
+      (item) => item.split("-").length == 3
+    );
+    let innerLength = listings.length;
+
+    for (let innerIndex = 0; innerIndex < innerLength; innerIndex++) {
+      store.remove("Listing", listings[innerIndex]);
+    }
+
+    let stats = getStats(id);
+
+    collection.floorPrice = stats.floorPrice = BigInt.zero();
+    collection.listings = [];
+    collection.totalListings = stats.listings = 0;
+
+    collection.save();
+    stats.save();
+
+    if (collection.standard == "ERC1155") {
+      for (let tokenIndex = 1; tokenIndex < 165; tokenIndex++) {
+        let tokenId = `${collection.id}-0x${tokenIndex.toString(16)}`;
+
+        if (exists("Token", tokenId)) {
+          let token = Token.load(tokenId);
+
+          if (!token) {
+            continue;
+          }
+
+          let stats = getStats(tokenId);
+
+          token.floorPrice = stats.floorPrice = BigInt.zero();
+          token.save();
+
+          stats.listings = 0;
+          stats.save();
+        }
+      }
+    }
+  }
 }
 
 export function handleTransfer721(event: Transfer): void {
@@ -388,7 +597,8 @@ export function handleTransfer721(event: Transfer): void {
     params.from,
     params.to,
     params.tokenId,
-    1
+    1,
+    getTime(event)
   );
 }
 
@@ -411,7 +621,8 @@ export function handleTransferBatch(event: TransferBatch): void {
       params.from,
       params.to,
       id,
-      amounts[index].toI32()
+      amounts[index].toI32(),
+      getTime(event)
     );
   }
 }
@@ -429,7 +640,8 @@ export function handleTransferSingle(event: TransferSingle): void {
     params.from,
     params.to,
     params.id,
-    params.value.toI32()
+    params.value.toI32(),
+    getTime(event)
   );
 }
 
@@ -440,7 +652,12 @@ export function handleDropGym(event: DropGym): void {
 }
 
 export function handleJoinGym(event: JoinGym): void {
-  handleStake(event.transaction.from, event.address, event.params.tokenId);
+  handleStake(
+    event.transaction.from,
+    event.address,
+    event.params.tokenId,
+    getTime(event)
+  );
 }
 
 // Smol Brains
@@ -450,5 +667,25 @@ export function handleDropSchool(event: DropSchool): void {
 }
 
 export function handleJoinSchool(event: JoinSchool): void {
-  handleStake(event.transaction.from, event.address, event.params.tokenId);
+  handleStake(
+    event.transaction.from,
+    event.address,
+    event.params.tokenId,
+    getTime(event)
+  );
+}
+
+// Tales of Elleria/Generic
+
+export function handleStake721(event: Staked): void {
+  handleStake(
+    event.transaction.from,
+    event.address,
+    event.params.tokenId,
+    getTime(event)
+  );
+}
+
+export function handleUnstake721(event: Unstaked): void {
+  handleUnstake(event.transaction.from, event.address, event.params.tokenId);
 }

@@ -1,6 +1,8 @@
 enum Status {
   Active
+  Expired
   Inactive
+  Invalid
   Sold
 }
 
@@ -13,15 +15,21 @@ type Collection @entity {
   id: ID!
 
   contract: String!
+  "Deprecated. Use stats field"
   floorPrice: BigInt!
   listings: [Listing!]!
   name: String!
   tokens: [Token!]! @derivedFrom(field: "collection")
   standard: TokenStandard!
 
+  "Deprecated. Use stats field"
   totalListings: Int!
+  "Deprecated. Use stats field"
   totalSales: BigInt!
+  "Deprecated. Use stats field"
   totalVolume: BigInt!
+
+  stats: StatsData!
 }
 
 type Listing @entity {
@@ -46,12 +54,14 @@ type Token @entity {
   id: ID!
 
   collection: Collection!
-  "For ERC1155s, but is it needed?"
+  "Deprecated. Use stats field."
   floorPrice: BigInt
   listings: [Listing!] @derivedFrom(field: "token")
   name: String
   owners: [UserToken!]! @derivedFrom(field: "token")
   tokenId: BigInt!
+
+  stats: StatsData
 }
 
 type User @entity {
@@ -77,4 +87,14 @@ type StakedToken @entity {
   quantity: Int!
   token: Token!
   user: User!
+}
+
+type StatsData @entity {
+  id: ID!
+
+  floorPrice: BigInt!
+  items: Int!
+  listings: Int!
+  sales: Int!
+  volume: BigInt!
 }
