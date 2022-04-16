@@ -2,8 +2,8 @@ import { Address, BigInt, store } from "@graphprotocol/graph-ts";
 
 import { UserToken } from "../../generated/schema";
 import { CollectionHelpers } from "./CollectionHelpers";
+import { TokenHelpers } from "./TokenHelpers";
 import { UserHelpers } from "./UserHelpers";
-import { TokenHelpers } from "./tokenHelpers";
 
 export class TransferHelpers {
   /**
