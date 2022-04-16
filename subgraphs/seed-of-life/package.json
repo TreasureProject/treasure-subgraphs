@@ -5,8 +5,8 @@
   "license": "MIT",
   "scripts": {
     "codegen": "graph codegen",
-    "deploy:dev": "graph deploy --product hosted-service treasureproject/seedoflife-dev",
-    "deploy:prod": "graph deploy --product hosted-service treasureproject/seedoflife",
+    "deploy:dev": "graph deploy --product hosted-service treasureproject/seed-of-life-dev",
+    "deploy:prod": "graph deploy --product hosted-service treasureproject/seed-of-life",
     "prepare:dev": "yarn --cwd ../../packages/constants prepare:arbitrum-testnet && mustache ../../node_modules/@treasure/subgraph-config/src/arbitrum-testnet.json template.yaml > subgraph.yaml",
     "prepare:prod": "yarn --cwd ../../packages/constants prepare:arbitrum && mustache ../../node_modules/@treasure/subgraph-config/src/arbitrum.json template.yaml > subgraph.yaml",
     "test": "graph test"
