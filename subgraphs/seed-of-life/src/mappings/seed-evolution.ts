@@ -16,22 +16,22 @@ import {
   StakedToken,
   UnstakeTokenRequest,
 } from "../../generated/schema";
-import { CollectionHelpers } from "../helpers/CollectionHelpers";
-import { RandomHelpers } from "../helpers/RandomHelpers";
-import { RealmStatHelpers } from "../helpers/RealmHelpers";
-import { TokenHelpers } from "../helpers/TokenHelpers";
-import { TreasureHelpers } from "../helpers/TreasureHelpers";
-import { UserHelpers } from "../helpers/UserHelpers";
+import { getOrCreateCollection } from "../helpers/collection";
 import { LifeformRealm, ONE_BI, Path } from "../helpers/constants";
+import { getOrCreateRandom } from "../helpers/random";
+import { getOrCreateRealmStat } from "../helpers/realm";
+import { getOrCreateToken } from "../helpers/token";
+import { getNameForTokenId } from "../helpers/treasure";
+import { getOrCreateUser } from "../helpers/user";
 
 export function handleLifeformCreated(event: LifeformCreated): void {
   let evolutionInfo = event.params._evolutionInfo;
 
-  let user = UserHelpers.getOrCreateUser(evolutionInfo.owner.toHexString());
+  let user = getOrCreateUser(evolutionInfo.owner.toHexString());
 
   let lifeform = new Lifeform(event.params._lifeformId.toHexString());
 
-  let random = RandomHelpers.getOrCreateRandom(evolutionInfo.requestId);
+  let random = getOrCreateRandom(evolutionInfo.requestId);
   random._lifeformId = lifeform.id;
   random.save();
 
@@ -42,27 +42,23 @@ export function handleLifeformCreated(event: LifeformCreated): void {
   lifeform.secondRealm = LifeformRealm.getName(evolutionInfo.secondRealm);
   lifeform._stakedTokenIds = [];
 
-  let firstRealmStat = RealmStatHelpers.getOrCreateRealmStat(
-    lifeform.firstRealm
-  );
+  let firstRealmStat = getOrCreateRealmStat(lifeform.firstRealm);
   firstRealmStat.stakedCount = firstRealmStat.stakedCount.plus(ONE_BI);
   firstRealmStat.save();
 
-  let secondRealmStat = RealmStatHelpers.getOrCreateRealmStat(
-    lifeform.secondRealm
-  );
+  let secondRealmStat = getOrCreateRealmStat(lifeform.secondRealm);
   secondRealmStat.stakedCount = secondRealmStat.stakedCount.plus(ONE_BI);
   secondRealmStat.save();
 
-  let treasureCollection = CollectionHelpers.getOrCreateCollection(
+  let treasureCollection = getOrCreateCollection(
     SEED_OF_LIFE_TREASURES_ADDRESS
   );
   for (let i = 0; i < evolutionInfo.stakedTreasureIds.length; i++) {
     let tokenId = evolutionInfo.stakedTreasureIds[i];
-    let token = TokenHelpers.getOrCreateToken(
+    let token = getOrCreateToken(
       treasureCollection,
       tokenId,
-      TreasureHelpers.getNameForTokenId(tokenId)
+      getNameForTokenId(tokenId)
     );
     let stakedToken = new StakedToken(`${lifeform.id}-${token.id}`);
     stakedToken.lifeform = lifeform.id;
@@ -92,7 +88,7 @@ export function handleStartedUnstakingTreasure(
     return;
   }
 
-  const random = RandomHelpers.getOrCreateRandom(params._requestId);
+  const random = getOrCreateRandom(params._requestId);
 
   const unstakeTokenRequest = new UnstakeTokenRequest(lifeform.user);
   unstakeTokenRequest.lifeform = lifeform.id;
@@ -133,15 +129,15 @@ export function handleFinishedUnstakingTreasure(
   lifeform.save();
 
   // Add any broken tokens to the Lifeform
-  const treasureCollection = CollectionHelpers.getOrCreateCollection(
+  const treasureCollection = getOrCreateCollection(
     SEED_OF_LIFE_TREASURES_ADDRESS
   );
   for (let i = 0; i < params._brokenTreasureIds.length; i++) {
     const tokenId = params._brokenTreasureIds[i];
-    let token = TokenHelpers.getOrCreateToken(
+    let token = getOrCreateToken(
       treasureCollection,
       tokenId,
-      TreasureHelpers.getNameForTokenId(tokenId)
+      getNameForTokenId(tokenId)
     );
     const brokenToken = new BrokenToken(`${lifeform.id}-${token.id}`);
     brokenToken.lifeform = lifeform.id;
@@ -167,7 +163,7 @@ export function handleStartedClaimingImbuedSoul(
     return;
   }
 
-  const random = RandomHelpers.getOrCreateRandom(params._claimRequestId);
+  const random = getOrCreateRandom(params._claimRequestId);
 
   const claimLifeformRequest = new ClaimLifeformRequest(lifeform.id);
   claimLifeformRequest.lifeform = lifeform.id;
@@ -189,15 +185,11 @@ export function handleImbuedSoulClaimed(event: ImbuedSoulClaimed): void {
     return;
   }
 
-  const firstRealmStat = RealmStatHelpers.getOrCreateRealmStat(
-    lifeform.firstRealm
-  );
+  const firstRealmStat = getOrCreateRealmStat(lifeform.firstRealm);
   firstRealmStat.stakedCount = firstRealmStat.stakedCount.minus(ONE_BI);
   firstRealmStat.save();
 
-  const secondRealmStat = RealmStatHelpers.getOrCreateRealmStat(
-    lifeform.secondRealm
-  );
+  const secondRealmStat = getOrCreateRealmStat(lifeform.secondRealm);
   secondRealmStat.stakedCount = secondRealmStat.stakedCount.minus(ONE_BI);
   secondRealmStat.save();
 

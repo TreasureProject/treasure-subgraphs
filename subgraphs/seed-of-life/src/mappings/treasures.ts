@@ -6,11 +6,11 @@ import {
   TransferSingle,
 } from "../../generated/SeedOfLife/ERC1155";
 import { UserApproval } from "../../generated/schema";
-import { ApprovalHelpers } from "../helpers/ApprovalHelpers";
-import { TransferHelpers } from "../helpers/TransferHelpers";
-import { TreasureHelpers } from "../helpers/TreasureHelpers";
-import { UserApprovalHelpers } from "../helpers/UserApprovalHelpers";
-import { UserHelpers } from "../helpers/UserHelpers";
+import { getOrCreateApproval } from "../helpers/approval";
+import { handleTransfer } from "../helpers/transfer";
+import { getNameForTokenId } from "../helpers/treasure";
+import { getOrCreateUser } from "../helpers/user";
+import { getUserApprovalId } from "../helpers/user-approval";
 
 export function handleTransferBatch(event: TransferBatch): void {
   let params = event.params;
@@ -18,37 +18,37 @@ export function handleTransferBatch(event: TransferBatch): void {
   for (let index = 0; index < params.ids.length; index++) {
     let id = params.ids[index];
 
-    TransferHelpers.handleTransfer(
+    handleTransfer(
       event.address,
       params.from,
       params.to,
       id,
-      TreasureHelpers.getNameForTokenId(id),
+      getNameForTokenId(id),
       params.values[index]
     );
   }
 }
 
 export function handleTransferSingle(event: TransferSingle): void {
-  TransferHelpers.handleTransfer(
+  handleTransfer(
     event.address,
     event.params.from,
     event.params.to,
     event.params.id,
-    TreasureHelpers.getNameForTokenId(event.params.id),
+    getNameForTokenId(event.params.id),
     event.params.value
   );
 }
 
 export function handleApprovalForAll(event: ApprovalForAll): void {
-  let user = UserHelpers.getOrCreateUser(event.params.account.toHexString());
+  let user = getOrCreateUser(event.params.account.toHexString());
 
   let contract = event.address;
   let operator = event.params.operator;
 
-  let approval = ApprovalHelpers.getOrCreateApproval(contract, operator);
+  let approval = getOrCreateApproval(contract, operator);
 
-  let userApprovalId = UserApprovalHelpers.getUserApprovalId(user, approval);
+  let userApprovalId = getUserApprovalId(user, approval);
 
   if (event.params.approved) {
     let userApproval = new UserApproval(userApprovalId);

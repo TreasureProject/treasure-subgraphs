@@ -57,7 +57,7 @@ dataSources:
           handler: handleTransferSingle
         - event: TransferBatch(indexed address,indexed address,indexed address,uint256[],uint256[])
           handler: handleTransferBatch
-      file: ./src/mappings/balancerCrystal.ts
+      file: ./src/mappings/balancer-crystal.ts
   - name: SeedOfLife
     kind: ethereum/contract
     network: {{ network }}
@@ -84,7 +84,7 @@ dataSources:
           handler: handleTransferSingle
         - event: TransferBatch(indexed address,indexed address,indexed address,uint256[],uint256[])
           handler: handleTransferBatch
-      file: ./src/mappings/seedOfLife.ts
+      file: ./src/mappings/seed-of-life.ts
   - name: Magic
     kind: ethereum/contract
     network: {{ network }}
@@ -163,4 +163,4 @@ dataSources:
           handler: handleStartedClaimingImbuedSoul
         - event: ImbuedSoulClaimed(address,uint256)
           handler: handleImbuedSoulClaimed
-      file: ./src/mappings/seedEvolution.ts
+      file: ./src/mappings/seed-evolution.ts

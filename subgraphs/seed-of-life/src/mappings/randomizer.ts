@@ -14,14 +14,18 @@ import {
   Seeded,
   UnstakeTokenRequest,
 } from "../../generated/schema";
-import { RandomHelpers } from "../helpers/RandomHelpers";
 import { LifeformClass } from "../helpers/constants";
+import {
+  getOrCreateRandom,
+  getOrCreateSeeded,
+  getSeededId,
+} from "../helpers/random";
 
 export function handleRandomRequest(event: RandomRequest): void {
   const params = event.params;
 
-  const random = RandomHelpers.getOrCreateRandom(params._requestId);
-  const seeded = RandomHelpers.getOrCreateSeeded(params._commitId);
+  const random = getOrCreateRandom(params._requestId);
+  const seeded = getOrCreateSeeded(params._commitId);
 
   seeded._randomIds = seeded._randomIds.concat([random.id]);
   seeded.save();
@@ -30,7 +34,7 @@ export function handleRandomRequest(event: RandomRequest): void {
 export function handleRandomSeeded(event: RandomSeeded): void {
   const params = event.params;
 
-  const seededId = RandomHelpers.getSeededId(params._commitId);
+  const seededId = getSeededId(params._commitId);
   const seeded = Seeded.load(seededId);
 
   if (!seeded) {
