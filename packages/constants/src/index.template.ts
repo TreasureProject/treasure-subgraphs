@@ -47,12 +47,24 @@ export const MARKETPLACE_V2_ADDRESS = Address.fromString(
 export const MARKETPLACE_BUYER_ADDRESS = Address.fromString(
   "{{ treasure_marketplace_buyer_address }}"
 );
-export const HOURLY_STAT_INTERVAL_START_BLOCK = BigInt.fromString(
-  "{{ hourly_stat_interval_start_block }}"
-);
-
 export const SEED_OF_LIFE_ADDRESS = Address.fromString(
   "{{ seed_of_life_address }}"
+);
+export const SEED_OF_LIFE_ITEM_ADDRESS = Address.fromString(
+  "{{ sol_item_address }}"
+);
+export const SEED_EVOLUTION_ADDRESS = Address.fromString(
+  "{{ seed_evolution_address }}"
+);
+export const IMBUED_SOUL_ADDRESS = Address.fromString(
+  "{{ imbued_soul_address }}"
+);
+export const SEED_OF_LIFE_TREASURES_ADDRESS = Address.fromString(
+  "{{ seed_of_life_treasures_address }}"
+);
+
+export const HOURLY_STAT_INTERVAL_START_BLOCK = BigInt.fromString(
+  "{{ hourly_stat_interval_start_block }}"
 );
 export const EXTRA_LIFE_ADDRESS = Address.fromString(
   "{{ extra_life_address }}"
@@ -63,18 +75,18 @@ export const BATTLEFLY_ADDRESS = Address.fromString("{{ battlefly_address }}");
 export const BATTLEFLY_FOUNDERS_ADDRESS = Address.fromString(
   "{{ battlefly_founders_address }}"
 );
-
 export const LEGACY_LEGION_ADDRESS = Address.fromString(
   "{{ legacy_legion_address }}"
 );
 export const LEGACY_LEGION_GENESIS_ADDRESS = Address.fromString(
   "{{ legacy_legion_genesis_address }}"
 );
-
 export const TREASURE_MARKETPLACE_PAUSE_START_BLOCK = BigInt.fromString(
   "{{ treasure_marketplace_pause_start_block }}"
 );
-
 export const TALES_OF_ELLERIA_ADDRESS = Address.fromString(
   "{{ tales_of_elleria_address }}"
+);
+export const TOADSTOOLZ_ITEMZ_ADDRESS = Address.fromString(
+  "{{ toadstoolz_itemz_address }}"
 );

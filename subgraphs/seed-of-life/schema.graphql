@@ -1,0 +1,216 @@
+enum RequestStatus {
+  NOT_READY
+  READY
+}
+
+enum Path {
+  NO_MAGIC
+  MAGIC
+  MAGIC_AND_BC
+}
+
+enum LifeformRealm {
+  VESPER
+  SHERWOOD
+  THOUSAND_ISLES
+  TUL_NIELOHG_DESERT
+  DULKHAN_MOUNTAINS
+  MOLTANIA
+  NETHEREALM
+  MAGINCIA
+}
+
+enum LifeformClass {
+  WARRIOR
+  MAGE
+  PRIEST
+  SHARPSHOOTER
+  SUMMONER
+  PALADIN
+  ASURA
+  SLAYER
+}
+
+enum OffensiveSkill {
+  NONE
+  BERSERKER
+  METEOR_SWARM
+  HOLY_ARROW
+  MULTISHOT
+  SUMMON_MINION
+  THORS_HAMMER
+  MINDBURN
+  BACKSTAB
+}
+
+enum SecondarySkill {
+  POTION_OF_SWIFTNESS
+  POTION_OF_RECOVERY
+  POTION_OF_GLUTTONY
+  BEGINNER_GARDENING_KIT
+  INTERMEDIATE_GARDENING_KIT
+  EXPERT_GARDENING_KIT
+  SHADOW_WALK
+  SHADOW_ASSAULT
+  SHADOW_OVERLORD
+  SPEAR_OF_FIRE
+  SPEAR_OF_FLAME
+  SPEAR_OF_INFERNO
+  SUMMON_BROWN_BEAR
+  SUMMON_LESSER_DAEMON
+  SUMMON_ANCIENT_WYRM
+  HOUSING_DEED_SMALL_COTTAGE
+  HOUSING_DEED_MEDIUM_TOWER
+  HOUSING_DEED_LARGE_CASTLE
+  DEMONIC_BLAST
+  DEMONIC_WAVE
+  DEMONIC_NOVA
+  RADIANT_BLESSING
+  DIVINE_BLESSING
+  CELESTIAL_BLESSING
+}
+
+enum TokenStandard {
+  ERC721
+  ERC1155
+}
+
+type User @entity {
+  id: ID!
+
+  approvals: [UserApproval!]! @derivedFrom(field: "user")
+  tokens: [UserToken!]! @derivedFrom(field: "user")
+  lifeforms: [Lifeform!]! @derivedFrom(field: "user")
+  imbuedSouls: [ImbuedSoul!]! @derivedFrom(field: "user")
+  stakedTokens: [StakedToken!] @derivedFrom(field: "user")
+  brokenTokens: [BrokenToken!] @derivedFrom(field: "user")
+}
+
+type ImbuedSoul @entity {
+  id: ID!
+
+  user: User!
+  lifeformClass: LifeformClass!
+  offeniveSkill: OffensiveSkill!
+  secondarySkills: [SecondarySkill!]!
+  isLandOwner: Boolean!
+}
+
+type Lifeform @entity {
+  id: ID!
+
+  creationTimestamp: BigInt!
+  user: User!
+  path: Path!
+  firstRealm: LifeformRealm!
+  secondRealm: LifeformRealm!
+  treasureBoost: BigInt!
+  lifeformClass: LifeformClass
+  stakedTokens: [StakedToken!] @derivedFrom(field: "lifeform")
+  brokenTokens: [BrokenToken!] @derivedFrom(field: "lifeform")
+
+  "Internal for tracking staked token IDs"
+  _stakedTokenIds: [String!]!
+
+  claimLifeformRequest: ClaimLifeformRequest @derivedFrom(field: "lifeform")
+  unstakeTokenRequest: UnstakeTokenRequest @derivedFrom(field: "lifeform")
+}
+
+type RealmStat @entity {
+  id: ID!
+
+  realm: LifeformRealm!
+  stakedCount: BigInt!
+}
+
+type StakedToken @entity {
+  id: ID!
+
+  lifeform: Lifeform!
+  quantity: BigInt!
+  token: Token!
+  user: User!
+}
+
+type BrokenToken @entity {
+  id: ID!
+
+  lifeform: Lifeform!
+  quantity: BigInt!
+  token: Token!
+  user: User!
+}
+
+type ClaimLifeformRequest @entity {
+  id: ID!
+
+  lifeform: Lifeform!
+  status: RequestStatus!
+}
+
+type UnstakeTokenRequest @entity {
+  id: ID!
+
+  lifeform: Lifeform!
+  status: RequestStatus!
+}
+
+type Random @entity {
+  id: ID!
+
+  "Internal for tracking associated claimLifeformRequest"
+  _claimLifeformRequestId: String
+
+  "Internal for tracking associated unstakeTokenRequest"
+  _unstakeTokenRequestId: String
+
+  "Internal for tracking associated lifeforms"
+  _lifeformId: String
+}
+
+type Seeded @entity {
+  id: ID!
+
+  "Internal for tracking associated random requests"
+  _randomIds: [String!]!
+}
+
+type Collection @entity {
+  id: ID!
+
+  name: String!
+  tokens: [Token!]! @derivedFrom(field: "collection")
+}
+
+type UserToken @entity {
+  id: ID!
+
+  quantity: BigInt!
+  token: Token!
+  user: User!
+}
+
+type Token @entity {
+  id: ID!
+  collection: Collection!
+  tokenId: BigInt!
+  name: String!
+  description: String
+  image: String
+  video: String
+}
+
+type Approval @entity {
+  id: ID!
+
+  contract: Bytes!
+  operator: Bytes!
+  users: [UserApproval!]! @derivedFrom(field: "approval")
+}
+
+type UserApproval @entity {
+  id: ID!
+
+  approval: Approval!
+  user: User!
+}
