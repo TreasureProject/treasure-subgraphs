@@ -169,7 +169,6 @@ function handleTransfer(
   quantity: i32,
   timestamp: i64
 ): void {
-  let user = getUser(to);
   let token = getToken(contract, tokenId);
   let isMarketplace = [
     MARKETPLACE_ADDRESS.toHexString(),
@@ -210,7 +209,7 @@ function handleTransfer(
   let fromUserToken = UserToken.load(`${from.toHexString()}-${token.id}`);
 
   if (fromUserToken) {
-    fromUserToken.quantity = fromUserToken.quantity - quantity;
+    fromUserToken.quantity -= quantity;
     fromUserToken.save();
 
     if (fromUserToken.quantity == 0) {
@@ -218,6 +217,28 @@ function handleTransfer(
     }
   }
 
+  if (isMint(to)) {
+    let collection = Collection.load(token.collection);
+
+    // Will be null from legions collection
+    if (collection != null) {
+      if (collection.standard == "ERC1155") {
+        let stats = getStats(token.id);
+
+        stats.items -= quantity;
+        stats.save();
+      }
+
+      let stats = getStats(collection.id);
+
+      stats.items -= quantity;
+      stats.save();
+    }
+
+    return;
+  }
+
+  let user = getUser(to);
   let id = `${user.id}-${token.id}`;
   let toUserToken = UserToken.load(id);
 
@@ -228,7 +249,7 @@ function handleTransfer(
     toUserToken.user = user.id;
   }
 
-  toUserToken.quantity = toUserToken.quantity + quantity;
+  toUserToken.quantity += quantity;
   toUserToken.save();
 }
 

@@ -90,5 +90,10 @@
   "smithonia_weapons_address": "0x00000000016c35e3613ad3ed484aa48f161b67fd",
   "smithonia_weapons_start_block": 8971700,
 
+  "toadstoolz_address": "0x09CAE384C6626102ABE47Ff50588A1dBe8432174",
+  "toadstoolz_start_block": 9816777,
+  "toadstoolz_itemz_address": "0x5e0ba87362f239bDBF40E621Fa11DBD50d190389",
+  "toadstoolz_itemz_start_block": 9816829,
+
   "hourly_stat_interval_start_block": 6470000
 }
