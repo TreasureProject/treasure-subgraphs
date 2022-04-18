@@ -1,3 +1,5 @@
+import { log } from "matchstick-as";
+
 import {
   Address,
   BigInt,
@@ -169,6 +171,76 @@ function handleTransfer(
   quantity: i32,
   timestamp: i64
 ): void {
+  // let token = getToken(contract, tokenId);
+  // let isMarketplace = [
+  //   MARKETPLACE_ADDRESS.toHexString(),
+  //   MARKETPLACE_BUYER_ADDRESS.toHexString(),
+  //   MARKETPLACE_V2_ADDRESS.toHexString(),
+  // ].includes(operator.toHexString());
+
+  // if (!isMarketplace) {
+  //   let listing = Listing.load(getUserAddressId(from, contract, tokenId));
+
+  //   if (listing) {
+  //     listing.status = "Inactive";
+  //     listing.save();
+
+  //     updateCollectionFloorAndTotal(listing.collection, timestamp);
+  //   }
+  // }
+
+  // if (isMint(from)) {
+  //   let collection = Collection.load(token.collection);
+
+  //   // Will be null from legions collection
+  //   if (collection != null) {
+  //     if (collection.standard == "ERC1155") {
+  //       let stats = getStats(token.id);
+
+  //       stats.items += quantity;
+  //       stats.save();
+  //     }
+
+  //     let stats = getStats(collection.id);
+
+  //     stats.items += quantity;
+  //     stats.save();
+  //   }
+  // }
+
+  // let fromUserToken = UserToken.load(`${from.toHexString()}-${token.id}`);
+
+  // if (fromUserToken) {
+  //   fromUserToken.quantity -= quantity;
+  //   fromUserToken.save();
+
+  //   if (fromUserToken.quantity == 0) {
+  //     removeIfExists("UserToken", fromUserToken.id);
+  //   }
+  // }
+
+  // let user = getUser(to);
+  // let id = `${user.id}-${token.id}`;
+  // let toUserToken = UserToken.load(id);
+
+  // if (!toUserToken) {
+  //   toUserToken = new UserToken(id);
+
+  //   toUserToken.token = token.id;
+  //   toUserToken.user = user.id;
+  // }
+
+  // // toUserToken.quantity = toUserToken.quantity + quantity;
+  // toUserToken.quantity += quantity;
+  // toUserToken.save();
+
+  // log.info("ut: {}, {}, {}", [
+  //   toUserToken.token,
+  //   toUserToken.user,
+  //   toUserToken.quantity.toString(),
+  // ]);
+
+  let user = getUser(to);
   let token = getToken(contract, tokenId);
   let isMarketplace = [
     MARKETPLACE_ADDRESS.toHexString(),
@@ -217,6 +289,8 @@ function handleTransfer(
     }
   }
 
+  // log.info("to: {}", [to.toHexString()])
+
   if (isMint(to)) {
     let collection = Collection.load(token.collection);
 
@@ -235,10 +309,11 @@ function handleTransfer(
       stats.save();
     }
 
+    store.remove("User", Address.zero().toHexString());
+
     return;
   }
 
-  let user = getUser(to);
   let id = `${user.id}-${token.id}`;
   let toUserToken = UserToken.load(id);
 
