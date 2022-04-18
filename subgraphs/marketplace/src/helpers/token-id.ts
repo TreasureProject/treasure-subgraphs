@@ -4,6 +4,7 @@ import {
   BALANCER_CRYSTAL_ADDRESS,
   CONSUMABLE_ADDRESS,
   SMOL_TREASURES_ADDRESS,
+  TOADSTOOLZ_ITEMZ_ADDRESS,
 } from "@treasure/constants";
 
 function getBalancerCrystalName(tokenId: i32): string {
@@ -65,6 +66,23 @@ function getSmolTreasureName(tokenId: i32): string {
   }
 }
 
+function getToadstoolzItemzName(tokenId: i32): string {
+  switch (tokenId) {
+    case 1:
+      return "Wood Axe";
+    case 2:
+      return "Golden Axe";
+    case 3:
+    case 4:
+    case 5:
+    case 6:
+    case 7:
+      return `Log ${tokenId - 2}`;
+    default:
+      return "";
+  }
+}
+
 export function getName(contract: Address, tokenId: BigInt): string {
   let id = tokenId.toI32();
 
@@ -78,6 +96,10 @@ export function getName(contract: Address, tokenId: BigInt): string {
 
   if (contract.equals(BALANCER_CRYSTAL_ADDRESS)) {
     return getBalancerCrystalName(id);
+  }
+
+  if (contract.equals(TOADSTOOLZ_ITEMZ_ADDRESS)) {
+    return getToadstoolzItemzName(id);
   }
 
   switch (id) {
