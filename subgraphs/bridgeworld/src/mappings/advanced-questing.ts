@@ -202,5 +202,9 @@ function updateQuestEndTimeAndStasis(
   if (!endTimeResult.reverted) {
     quest.endTimestamp = endTimeResult.value.value0.times(BigInt.fromI32(1000));
     quest.stasisHitCount = endTimeResult.value.value1;
+  } else {
+    log.error("[advanced-quest] Failed to get endTime for legion: {}", [
+      legionId.toString(),
+    ]);
   }
 }
