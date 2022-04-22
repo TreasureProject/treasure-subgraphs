@@ -1,107 +1,7 @@
-import { Address, BigInt } from "@graphprotocol/graph-ts";
+import { BigInt, log } from "@graphprotocol/graph-ts";
 
-import {
-  BALANCER_CRYSTAL_ADDRESS,
-  CONSUMABLE_ADDRESS,
-  SMOL_TREASURES_ADDRESS,
-  TOADSTOOLZ_ITEMZ_ADDRESS,
-} from "@treasure/constants";
-
-function getBalancerCrystalName(tokenId: i32): string {
-  switch (tokenId) {
-    case 1:
-      return "Balancer Crystal";
-    default:
-      return "";
-  }
-}
-
-function getConsumableName(tokenId: i32): string {
-  switch (tokenId) {
-    case 1:
-      return "Small Prism";
-    case 2:
-      return "Medium Prism";
-    case 3:
-      return "Large Prism";
-    case 4:
-      return "Small Extractor";
-    case 5:
-      return "Medium Extractor";
-    case 6:
-      return "Large Extractor";
-    case 7:
-      return "Harvestor";
-    case 8:
-      return "Essence of Starlight";
-    case 9:
-      return "Prism Shards";
-    case 10:
-      return "Universal Lock";
-    case 11:
-      return "Azurite Dust";
-    case 12:
-      return "Essence of Honeycomb";
-    case 13:
-      return "Essence of Grin";
-    default:
-      return "";
-  }
-}
-
-function getSmolTreasureName(tokenId: i32): string {
-  switch (tokenId) {
-    case 1:
-      return "Moon Rock";
-    case 2:
-      return "Stardust";
-    case 3:
-      return "Comet Shard";
-    case 4:
-      return "Lunar Gold";
-    case 5:
-      return "Alien Relic";
-    default:
-      return "";
-  }
-}
-
-function getToadstoolzItemzName(tokenId: i32): string {
-  switch (tokenId) {
-    case 1:
-      return "Wood Axe";
-    case 2:
-      return "Golden Axe";
-    case 3:
-    case 4:
-    case 5:
-    case 6:
-    case 7:
-      return `Log ${tokenId - 2}`;
-    default:
-      return "";
-  }
-}
-
-export function getName(contract: Address, tokenId: BigInt): string {
-  let id = tokenId.toI32();
-
-  if (contract.equals(CONSUMABLE_ADDRESS)) {
-    return getConsumableName(id);
-  }
-
-  if (contract.equals(SMOL_TREASURES_ADDRESS)) {
-    return getSmolTreasureName(id);
-  }
-
-  if (contract.equals(BALANCER_CRYSTAL_ADDRESS)) {
-    return getBalancerCrystalName(id);
-  }
-
-  if (contract.equals(TOADSTOOLZ_ITEMZ_ADDRESS)) {
-    return getToadstoolzItemzName(id);
-  }
-
+export function getNameForTokenId(tokenId: BigInt): string {
+  const id = tokenId.toI32();
   switch (id) {
     case 1:
     case 2:
@@ -336,6 +236,7 @@ export function getName(contract: Address, tokenId: BigInt): string {
     case 164:
       return "Witches Broom";
     default:
-      return "";
+      log.error("[Treasure] Unknown id: {}", [tokenId.toHexString()]);
+      return "Unknown";
   }
 }

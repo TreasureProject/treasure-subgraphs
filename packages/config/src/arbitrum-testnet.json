@@ -39,8 +39,6 @@
   "treasure_fragment_address": "0xb6CaFc9AFcFe8A225100Ec474f5110876654781f",
   "treasure_fragment_start_block": 10643878,
 
-  "seed_of_life_address": "0x0000000000000000000000000000000000000000",
-  "seed_of_life_start_block": 9265867,
   "extra_life_address": "0x0000000000000000000000000000000000000000",
   "extra_life_start_block": 9265867,
   "keys_address": "0x0000000000000000000000000000000000000000",
@@ -68,6 +66,20 @@
   "smol_treasures_address": "0x8e79c8607a28fe1EC3527991C89F1d9E36D1bAd9",
   "smol_treasures_start_block": 9141902,
 
+  "randomizer_seed_of_life_start_block": 9687394,
+  "seed_of_life_address": "0xfB3DD6c293bc2f987884641dA4af9E0f64538Dc7",
+  "seed_of_life_start_block": 9623655,
+  "seed_evolution_address": "0x0B9032904e53337eE043409249B040a8b89e379f",
+  "seed_evolution_start_block": 9623637,
+  "sol_item_address": "0x0b2A8F29022Bb6aA580b02a7A89711f6EF3F1f81",
+  "sol_item_start_block": 9623650,
+  "imbued_soul_address": "0x222C706c5772d6E4c07E06D1a945A207914b1731",
+  "imbued_soul_start_block": 9623640,
+  "seed_of_life_magic_address": "0x7B402a341f92d2Ce96da3F87D00B60D552D66cA7",
+  "seed_of_life_magic_start_block": 9623658,
+  "seed_of_life_treasures_address": "0xA51E43Ef87A3AfDe712c0F25E731378c9285e3D9",
+  "seed_of_life_treasures_start_block": 9623644,
+
   "battlefly_address": "0x1148206e845bff6ca2dcad3d901305e8ee8e027d",
   "battlefly_start_block": 9779858,
   "battlefly_founders_address": "0x219600bd4a1250b14530e057a6ff682649818128",
@@ -93,6 +105,11 @@
 
   "smithonia_weapons_address": "0x1b6ae36f3e0f5fc3efecfe0e906d245e110fe56e",
   "smithonia_weapons_start_block": 10713031,
+
+  "toadstoolz_address": "0x8C0ab3D6f27993FF5ccBba219ba8F8E011F0fB43",
+  "toadstoolz_start_block": 11114553,
+  "toadstoolz_itemz_address": "0xeD430BD4BEb5DE2EE332d410395d6E61670a15ba",
+  "toadstoolz_itemz_start_block": 11114605,
 
   "hourly_stat_interval_start_block": 8952193
 }

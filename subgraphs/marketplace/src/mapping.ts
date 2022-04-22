@@ -210,12 +210,36 @@ function handleTransfer(
   let fromUserToken = UserToken.load(`${from.toHexString()}-${token.id}`);
 
   if (fromUserToken) {
-    fromUserToken.quantity = fromUserToken.quantity - quantity;
+    fromUserToken.quantity -= quantity;
     fromUserToken.save();
 
     if (fromUserToken.quantity == 0) {
       removeIfExists("UserToken", fromUserToken.id);
     }
+  }
+
+  if (isMint(to)) {
+    let collection = Collection.load(token.collection);
+
+    // Will be null from legions collection
+    if (collection != null) {
+      if (collection.standard == "ERC1155") {
+        let stats = getStats(token.id);
+
+        stats.items -= quantity;
+        stats.save();
+      }
+
+      let stats = getStats(collection.id);
+
+      stats.items -= quantity;
+      stats.save();
+    }
+
+    removeIfExists("User", Address.zero().toHexString());
+    removeIfExists("Token", token.id);
+
+    return;
   }
 
   let id = `${user.id}-${token.id}`;
@@ -228,7 +252,7 @@ function handleTransfer(
     toUserToken.user = user.id;
   }
 
-  toUserToken.quantity = toUserToken.quantity + quantity;
+  toUserToken.quantity += quantity;
   toUserToken.save();
 }
 
