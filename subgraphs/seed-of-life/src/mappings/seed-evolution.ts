@@ -1,4 +1,4 @@
-import { log, store } from "@graphprotocol/graph-ts";
+import { BigInt, log, store } from "@graphprotocol/graph-ts";
 
 import { SEED_OF_LIFE_TREASURES_ADDRESS } from "@treasure/constants";
 
@@ -14,6 +14,7 @@ import {
   ClaimLifeformRequest,
   Lifeform,
   StakedToken,
+  Token,
   UnstakeTokenRequest,
 } from "../../generated/schema";
 import { getOrCreateCollection } from "../helpers/collection";
@@ -121,32 +122,49 @@ export function handleFinishedUnstakingTreasure(
     return;
   }
 
-  // Remove all of Lifeform's staked tokens
   for (let i = 0; i < lifeform._stakedTokenIds.length; i++) {
-    store.remove("StakedToken", lifeform._stakedTokenIds[i]);
+    const stakedTokenId = lifeform._stakedTokenIds[i];
+    const stakedToken = StakedToken.load(stakedTokenId);
+    if (!stakedToken) {
+      log.error("[SeedEvolution] Unknown staked token: {}", [stakedTokenId]);
+      continue;
+    }
+
+    const token = Token.load(stakedToken.token);
+    if (!token) {
+      log.error("[SeedEvolution] Unknown token: {}", [stakedToken.token]);
+      continue;
+    }
+
+    // Amount originally staked
+    const originalAmount = stakedToken.quantity;
+
+    // Amount owner is receiving back
+    const unstakingIndex = params._unstakingTreasureIds.indexOf(token.tokenId);
+
+    // Calculate amount broken
+    const brokenAmount =
+      unstakingIndex >= 0
+        ? originalAmount.minus(params._unstakingTreasureAmounts[unstakingIndex])
+        : originalAmount;
+
+    // Save any broken tokens
+    if (brokenAmount.gt(BigInt.zero())) {
+      const brokenToken = new BrokenToken(`${lifeform.id}-${token.id}`);
+      brokenToken.lifeform = lifeform.id;
+      brokenToken.quantity = brokenAmount;
+      brokenToken.token = token.id;
+      brokenToken.user = userId;
+      brokenToken.save();
+    }
+
+    // Remove staked token
+    store.remove("StakedToken", stakedTokenId);
   }
 
+  // Clear internal tracking of Lifeform's staked token IDs
   lifeform._stakedTokenIds = [];
   lifeform.save();
-
-  // Add any broken tokens to the Lifeform
-  const treasureCollection = getOrCreateCollection(
-    SEED_OF_LIFE_TREASURES_ADDRESS
-  );
-  for (let i = 0; i < params._brokenTreasureIds.length; i++) {
-    const tokenId = params._brokenTreasureIds[i];
-    let token = getOrCreateToken(
-      treasureCollection,
-      tokenId,
-      getNameForTokenId(tokenId)
-    );
-    const brokenToken = new BrokenToken(`${lifeform.id}-${token.id}`);
-    brokenToken.lifeform = lifeform.id;
-    brokenToken.quantity = params._brokenTreasureAmounts[i];
-    brokenToken.token = token.id;
-    brokenToken.user = userId;
-    brokenToken.save();
-  }
 
   store.remove("UnstakeTokenRequest", unstakeTokenRequest.id);
 }
