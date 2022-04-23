@@ -140,6 +140,12 @@ export function handleAdvancedQuestEnded(event: AdvancedQuestEnded): void {
 
   store.remove("AdvancedQuest", id);
 
+  const random = Random.load(quest.requestId.toHexString());
+  if (random !== null) {
+    random.advancedQuest = quest.id;
+    random.save();
+  }
+
   for (let i = 0; i < params._rewards.length; i++) {
     const rewardId = `${quest.id}-${BigInt.fromI32(i).toHex()}`;
     const reward = new AdvancedQuestReward(rewardId);
