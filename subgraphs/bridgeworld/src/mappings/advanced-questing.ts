@@ -75,8 +75,6 @@ export function handleAdvancedQuestStarted(event: AdvancedQuestStarted): void {
 
   random.advancedQuest = quest.id;
   random.save();
-
-  // updateQuestEndTimeAndStasis(quest, params._startQuestParams.legionId);
 }
 
 export function handleAdvancedQuestContinued(
@@ -94,7 +92,7 @@ export function handleAdvancedQuestContinued(
   }
 
   quest.part = params._toPart;
-  // updateQuestEndTimeAndStasis(quest, params._legionId);
+  updateQuestEndTimeAndStasis(quest, params._legionId);
 
   quest.save();
 }

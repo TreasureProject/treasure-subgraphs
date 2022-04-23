@@ -8,6 +8,7 @@ import { Address, BigInt, ethereum } from "@graphprotocol/graph-ts";
 
 import { ADVANCED_QUESTING_ADDRESS, LEGION_ADDRESS } from "@treasure/constants";
 
+import { createRandomRequestEvent } from ".";
 import {
   AdvancedQuestContinued,
   AdvancedQuestEnded,
@@ -23,6 +24,7 @@ import {
   handleTreasureTriadPlayed,
 } from "../../src/mappings/advanced-questing";
 import { handleLegionCreated, handleTransfer } from "../../src/mappings/legion";
+import { handleRandomRequest } from "../../src/mappings/randomizer";
 import { USER_ADDRESS } from "./constants";
 import { createLegionCreatedEvent, createLegionTransferEvent } from "./legion";
 
@@ -54,6 +56,9 @@ export function advancedQuestingSetup(legionId: i32): string {
 
   const legionCreatedEvent = createLegionCreatedEvent(USER_ADDRESS, 1, 0, 6, 2);
   handleLegionCreated(legionCreatedEvent);
+
+  const randomRequestEvent = createRandomRequestEvent(1, 1);
+  handleRandomRequest(randomRequestEvent);
 
   return getAddressId(LEGION_ADDRESS, BigInt.fromI32(legionId));
 }

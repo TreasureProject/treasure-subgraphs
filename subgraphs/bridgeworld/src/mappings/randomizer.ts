@@ -79,6 +79,7 @@ export function handleRandomSeeded(event: RandomSeeded): void {
     let craftId = random.craft;
     let questId = random.quest;
     let summonId = random.summon;
+    let advancedQuestId = random.advancedQuest;
 
     if (craftId !== null) {
       let craft = Craft.load(craftId);
@@ -102,36 +103,38 @@ export function handleRandomSeeded(event: RandomSeeded): void {
       }
     }
 
-    if (random.advancedQuest != null) {
-      const quest = AdvancedQuest.load(random.advancedQuest);
-      const token = Token.load(quest.token);
+    if (advancedQuestId !== null) {
+      const quest = AdvancedQuest.load(advancedQuestId);
 
-      if (quest && token) {
-        const advancedQuesting = AdvancedQuesting.bind(
-          ADVANCED_QUESTING_ADDRESS
-        );
-        const endTimeResult = advancedQuesting.try_endTimeForLegion(
-          token.tokenId
-        );
-
-        if (!endTimeResult.reverted) {
-          quest.endTimestamp = endTimeResult.value.value0.times(
-            BigInt.fromI32(1000)
+      if (quest !== null && quest.token !== null) {
+        const token = Token.load(quest.token);
+        if (token !== null) {
+          const advancedQuesting = AdvancedQuesting.bind(
+            ADVANCED_QUESTING_ADDRESS
           );
-          quest.stasisHitCount = endTimeResult.value.value1;
+          const endTimeResult = advancedQuesting.try_endTimeForLegion(
+            token.tokenId
+          );
+
+          if (!endTimeResult.reverted) {
+            quest.endTimestamp = endTimeResult.value.value0.times(
+              BigInt.fromI32(1000)
+            );
+            quest.stasisHitCount = endTimeResult.value.value1;
+            quest.save();
+          } else {
+            log.error(
+              "[random-advanced-quest] Failed to get endTime for legion: {}",
+              [quest.token]
+            );
+          }
+
+          continue;
         } else {
-          log.error(
-            "[advanced-quest-random] Failed to get endTime for legion: {}",
-            [quest.token]
-          );
+          log.error("[random-advanced-quest] Token not found: {}", [random.id]);
         }
-
-        continue;
       } else {
-        log.error(
-          "[advanced-quest-random] Failed to update endTime during random seed: {}",
-          [random.id]
-        );
+        log.error("[random-advanced-quest] Quest not found: {}", [random.id]);
       }
     }
 

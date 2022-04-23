@@ -19,6 +19,7 @@ import {
   handleTreasureTriadPlayed,
 } from "../src/mappings/advanced-questing";
 import { handleLegionQuestLevelUp } from "../src/mappings/legion";
+import { handleRandomSeeded } from "../src/mappings/randomizer";
 import {
   RewardParam,
   advancedQuestingSetup,
@@ -31,6 +32,7 @@ import {
 } from "./helpers/advanced-questing";
 import { USER_ADDRESS } from "./helpers/constants";
 import { createLegionQuestLevelUpEvent } from "./helpers/legion";
+import { createRandomSeededEvent } from "./helpers/randomizer";
 
 function getQuestId(legionId: i32): string {
   return getAddressId(ADVANCED_QUESTING_ADDRESS, BigInt.fromI32(legionId));
@@ -48,8 +50,6 @@ test("All fields are set as expected on quest start", () => {
   const endTimestamp = new Date(0).getTime();
   const stasisHitCount = 2;
 
-  mockEndTimeForLegion(legionId, endTimestamp, stasisHitCount);
-
   handleAdvancedQuestStarted(
     createAdvancedQuestStartedEvent(
       USER_ADDRESS,
@@ -61,6 +61,11 @@ test("All fields are set as expected on quest start", () => {
       treasureAmounts
     )
   );
+
+  mockEndTimeForLegion(legionId, endTimestamp, stasisHitCount);
+
+  const randomSeededEvent = createRandomSeededEvent(requestId);
+  handleRandomSeeded(randomSeededEvent);
 
   assert.fieldEquals("AdvancedQuest", id, "requestId", requestId.toString());
   assert.fieldEquals("AdvancedQuest", id, "status", "Idle");
