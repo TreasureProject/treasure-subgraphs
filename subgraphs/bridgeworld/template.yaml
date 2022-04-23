@@ -356,6 +356,8 @@ dataSources:
           file: ../../node_modules/@treasure/subgraph-abis/src/Randomizer.json
         - name: Summoning
           file: ../../node_modules/@treasure/subgraph-abis/src/Summoning.json
+        - name: AdvancedQuesting
+          file: ../../node_modules/@treasure/subgraph-abis/src/AdvancedQuesting.json
       eventHandlers:
         - event: RandomRequest(indexed uint256,indexed uint256)
           handler: handleRandomRequest
