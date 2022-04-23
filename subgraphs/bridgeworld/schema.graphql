@@ -142,6 +142,8 @@ type Random @entity {
   craft: Craft
   "Set for questing"
   quest: Quest
+  "Set for advanced questing"
+  advancedQuest: AdvancedQuest
   "Set for summoning"
   summon: Summon
 
@@ -210,6 +212,7 @@ type AdvancedQuest @entity {
   id: ID!
 
   requestId: BigInt!
+  random: Random!
   status: Status!
   zoneName: String!
   part: Int!

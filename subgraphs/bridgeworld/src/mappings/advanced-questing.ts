@@ -19,6 +19,7 @@ import {
   AdvancedQuest,
   AdvancedQuestReward,
   LegionInfo,
+  Random,
   TokenQuantity,
   TreasureTriadResult,
 } from "../../generated/schema";
@@ -28,11 +29,21 @@ import { getXpPerLevel } from "../helpers/xp";
 export function handleAdvancedQuestStarted(event: AdvancedQuestStarted): void {
   const params = event.params;
 
+  const random = Random.load(params._requestId.toHexString());
+  if (!random) {
+    log.error("[advanced-quest-started]: Unknown random: {}", [
+      params._requestId.toString(),
+    ]);
+
+    return;
+  }
+
   const quest = new AdvancedQuest(
     getAddressId(event.address, params._startQuestParams.legionId)
   );
 
   quest.requestId = params._requestId;
+  quest.random = random.id;
   quest.token = getAddressId(LEGION_ADDRESS, params._startQuestParams.legionId);
   quest.user = params._owner.toHexString();
   quest.status = "Idle";
@@ -60,9 +71,12 @@ export function handleAdvancedQuestStarted(event: AdvancedQuestStarted): void {
 
   quest.treasures = treasures;
 
-  updateQuestEndTimeAndStasis(quest, params._startQuestParams.legionId);
-
   quest.save();
+
+  random.advancedQuest = quest.id;
+  random.save();
+
+  // updateQuestEndTimeAndStasis(quest, params._startQuestParams.legionId);
 }
 
 export function handleAdvancedQuestContinued(
@@ -80,7 +94,7 @@ export function handleAdvancedQuestContinued(
   }
 
   quest.part = params._toPart;
-  updateQuestEndTimeAndStasis(quest, params._legionId);
+  // updateQuestEndTimeAndStasis(quest, params._legionId);
 
   quest.save();
 }
@@ -192,7 +206,7 @@ export function handleAdvancedQuestEnded(event: AdvancedQuestEnded): void {
   }
 }
 
-function updateQuestEndTimeAndStasis(
+export function updateQuestEndTimeAndStasis(
   quest: AdvancedQuest,
   legionId: BigInt
 ): void {

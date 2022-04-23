@@ -1,14 +1,27 @@
 import { BigInt, log } from "@graphprotocol/graph-ts";
 
-import { SUMMONING_ADDRESS } from "@treasure/constants";
+import {
+  ADVANCED_QUESTING_ADDRESS,
+  LEGION_ADDRESS,
+  SUMMONING_ADDRESS,
+} from "@treasure/constants";
 
+import { AdvancedQuesting } from "../../generated/Advanced Questing/AdvancedQuesting";
 import {
   RandomRequest,
   RandomSeeded,
 } from "../../generated/Randomizer/Randomizer";
 import { Summoning } from "../../generated/Summoning/Summoning";
-import { Craft, Quest, Random, Seeded, Summon } from "../../generated/schema";
-import { checkSummonFatigue } from "../helpers";
+import {
+  AdvancedQuest,
+  Craft,
+  Quest,
+  Random,
+  Seeded,
+  Summon,
+  Token,
+} from "../../generated/schema";
+import { checkSummonFatigue, getAddressId } from "../helpers";
 
 function toI32(value: string): i32 {
   return parseInt(value, 16) as i32;
@@ -86,6 +99,39 @@ export function handleRandomSeeded(event: RandomSeeded): void {
         quest.save();
 
         continue;
+      }
+    }
+
+    if (random.advancedQuest != null) {
+      const quest = AdvancedQuest.load(random.advancedQuest);
+      const token = Token.load(quest.token);
+
+      if (quest && token) {
+        const advancedQuesting = AdvancedQuesting.bind(
+          ADVANCED_QUESTING_ADDRESS
+        );
+        const endTimeResult = advancedQuesting.try_endTimeForLegion(
+          token.tokenId
+        );
+
+        if (!endTimeResult.reverted) {
+          quest.endTimestamp = endTimeResult.value.value0.times(
+            BigInt.fromI32(1000)
+          );
+          quest.stasisHitCount = endTimeResult.value.value1;
+        } else {
+          log.error(
+            "[advanced-quest-random] Failed to get endTime for legion: {}",
+            [quest.token]
+          );
+        }
+
+        continue;
+      } else {
+        log.error(
+          "[advanced-quest-random] Failed to update endTime during random seed: {}",
+          [random.id]
+        );
       }
     }
 
