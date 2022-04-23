@@ -254,6 +254,7 @@ export function handleLegionCreated(event: LegionCreated): void {
   token.image = `${LEGION_IPFS}/${metadata.rarity}%20${metadata.role}.gif`;
   token.name = `${metadata.type} ${metadata.rarity}`;
   token.metadata = metadata.id;
+  token.generation = params._generation;
   token.rarity = metadata.rarity.replace("Recruit", "None");
 
   if (metadata.type == "Recruit") {
