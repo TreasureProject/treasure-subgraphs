@@ -81,8 +81,9 @@ export function handleAdvancedQuestContinued(
   event: AdvancedQuestContinued
 ): void {
   const params = event.params;
-
+  const id = getAddressId(event.address, params._legionId);
   const random = Random.load(params._requestId.toHexString());
+
   if (!random) {
     log.error("[advanced-quest-started]: Unknown random: {}", [
       params._requestId.toString(),
@@ -91,7 +92,9 @@ export function handleAdvancedQuestContinued(
     return;
   }
 
-  const id = getAddressId(event.address, params._legionId);
+  random.advancedQuest = id;
+  random.save();
+
   const quest = AdvancedQuest.load(id);
 
   if (!quest) {
@@ -104,12 +107,8 @@ export function handleAdvancedQuestContinued(
   quest.endTimestamp = BigInt.fromI32(0);
   quest.stasisHitCount = BigInt.fromI32(0);
   quest.part = params._toPart;
-  updateQuestEndTimeAndStasis(quest, params._legionId);
 
   quest.save();
-
-  random.advancedQuest = quest.id;
-  random.save();
 }
 
 export function handleTreasureTriadPlayed(event: TreasureTriadPlayed): void {
@@ -222,22 +221,5 @@ export function handleAdvancedQuestEnded(event: AdvancedQuestEnded): void {
       "[advanced-quest-end] Failed to update XP, metadata not found: {}",
       [quest.token]
     );
-  }
-}
-
-export function updateQuestEndTimeAndStasis(
-  quest: AdvancedQuest,
-  legionId: BigInt
-): void {
-  const advancedQuesting = AdvancedQuesting.bind(ADVANCED_QUESTING_ADDRESS);
-  const endTimeResult = advancedQuesting.try_endTimeForLegion(legionId);
-
-  if (!endTimeResult.reverted) {
-    quest.endTimestamp = endTimeResult.value.value0.times(BigInt.fromI32(1000));
-    quest.stasisHitCount = endTimeResult.value.value1;
-  } else {
-    log.error("[advanced-quest] Failed to get endTime for legion: {}", [
-      legionId.toString(),
-    ]);
   }
 }
