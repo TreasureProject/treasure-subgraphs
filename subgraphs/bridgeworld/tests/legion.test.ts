@@ -66,6 +66,7 @@ test("legion metadata is correct for pilgrimaged riverman", () => {
     "ipfs://QmRqosGZZ6icx6uSDjLuFFMJiWDefZAiAZdpJdBK9BP5S4/Riverman%201.png"
   );
   assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "name", "Genesis Special");
+  assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "generation", "0");
   assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "rarity", "Special");
 
   const metadata = `${id}-metadata`;
