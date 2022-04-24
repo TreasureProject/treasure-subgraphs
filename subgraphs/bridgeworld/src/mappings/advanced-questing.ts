@@ -101,6 +101,8 @@ export function handleAdvancedQuestContinued(
   }
 
   quest.requestId = params._requestId;
+  quest.endTimestamp = BigInt.fromI32(0);
+  quest.stasisHitCount = BigInt.fromI32(0);
   quest.part = params._toPart;
   updateQuestEndTimeAndStasis(quest, params._legionId);
 
