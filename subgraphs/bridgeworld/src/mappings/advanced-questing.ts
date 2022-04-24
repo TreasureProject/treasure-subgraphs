@@ -82,6 +82,15 @@ export function handleAdvancedQuestContinued(
 ): void {
   const params = event.params;
 
+  const random = Random.load(params._requestId.toHexString());
+  if (!random) {
+    log.error("[advanced-quest-started]: Unknown random: {}", [
+      params._requestId.toString(),
+    ]);
+
+    return;
+  }
+
   const id = getAddressId(event.address, params._legionId);
   const quest = AdvancedQuest.load(id);
 
@@ -91,10 +100,14 @@ export function handleAdvancedQuestContinued(
     return;
   }
 
+  quest.requestId = params._requestId;
   quest.part = params._toPart;
   updateQuestEndTimeAndStasis(quest, params._legionId);
 
   quest.save();
+
+  random.advancedQuest = quest.id;
+  random.save();
 }
 
 export function handleTreasureTriadPlayed(event: TreasureTriadPlayed): void {
