@@ -69,6 +69,16 @@ type RealmStat @entity {
   secondRealmCount: BigInt!
 }
 
+type RealmComboStat @entity {
+  id: ID!
+
+  firstRealm: LifeformRealm!
+  secondRealm: LifeformRealm!
+
+  "Number of Lifeforms with this realm combination"
+  lifeformTotal: BigInt!
+}
+
 type PathStat @entity {
   id: ID!
 

@@ -4,6 +4,7 @@ import {
   ClassStat,
   GlobalStat,
   PathStat,
+  RealmComboStat,
   RealmStat,
   TreasureStat,
 } from "../../generated/schema";
@@ -15,6 +16,22 @@ export const getOrCreateRealmStat = (realm: string): RealmStat => {
   if (!stat) {
     stat = new RealmStat(id);
     stat.realm = realm;
+    stat.save();
+  }
+
+  return stat;
+};
+
+export const getOrCreateRealmComboStat = (
+  firstRealm: string,
+  secondRealm: string
+): RealmComboStat => {
+  const id = `${firstRealm}-${secondRealm}`;
+  let stat = RealmComboStat.load(id);
+  if (!stat) {
+    stat = new RealmComboStat(id);
+    stat.firstRealm = firstRealm;
+    stat.secondRealm = secondRealm;
     stat.save();
   }
 
