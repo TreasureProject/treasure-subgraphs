@@ -22,6 +22,9 @@ type Collection @entity {
   tokens: [Token!]! @derivedFrom(field: "collection")
   standard: TokenStandard!
 
+  "Collection fee for royalties"
+  fee: Fee @derivedFrom(field: "collection")
+
   "Deprecated. Use stats field"
   totalListings: Int!
   "Deprecated. Use stats field"
@@ -30,6 +33,13 @@ type Collection @entity {
   totalVolume: BigInt!
 
   stats: StatsData!
+}
+
+type Fee @entity {
+  id: ID!
+
+  collection: Collection!
+  fee: String!
 }
 
 type Listing @entity {

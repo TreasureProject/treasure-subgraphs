@@ -8,6 +8,7 @@ import {
 } from "@treasure/constants";
 
 import { LegionCreated } from "../generated/Legion Metadata Store/LegionMetadataStore";
+import { UpdateCollectionOwnerFee } from "../generated/TreasureMarketplace v2/Marketplace";
 import { Transfer } from "../generated/TreasureMarketplace/ERC721";
 import {
   TransferBatch,
@@ -234,6 +235,28 @@ export const createUpdateOracleEvent = (
   newEvent.address = MARKETPLACE_ADDRESS;
   newEvent.parameters = [
     new ethereum.EventParam("oracle", ethereum.Value.fromAddress(oracle)),
+  ];
+
+  return newEvent;
+};
+
+export const createUpdateCollectionOwnerFee = (
+  collection: Address,
+  fee: i32
+): UpdateCollectionOwnerFee => {
+  const newEvent = changetype<UpdateCollectionOwnerFee>(newMockEvent());
+
+  newEvent.address = MARKETPLACE_ADDRESS;
+  newEvent.parameters = [
+    new ethereum.EventParam(
+      "collection",
+      ethereum.Value.fromAddress(collection)
+    ),
+    new ethereum.EventParam(
+      "recipient",
+      ethereum.Value.fromAddress(Address.zero())
+    ),
+    new ethereum.EventParam("fee", ethereum.Value.fromI32(fee)),
   ];
 
   return newEvent;
