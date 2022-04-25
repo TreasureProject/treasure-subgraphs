@@ -71,6 +71,8 @@ dataSources:
           handler: handleItemSold
         - event: ItemUpdated(address,address,uint256,uint64,uint128,uint64)
           handler: handleItemUpdated
+        - event: UpdateCollectionOwnerFee(address,address,uint256)
+          handler: handleUpdateCollectionOwnerFee
       file: ./src/mapping.ts
   - name: Legacy Legion
     kind: ethereum/contract

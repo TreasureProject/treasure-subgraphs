@@ -16,6 +16,7 @@ import {
 
 import { DropGym, JoinGym } from "../generated/Smol Bodies Gym/Gym";
 import { DropSchool, JoinSchool } from "../generated/Smol Brains School/School";
+import { UpdateCollectionOwnerFee } from "../generated/TreasureMarketplace v2/Marketplace";
 import { Transfer } from "../generated/TreasureMarketplace/ERC721";
 import {
   TransferBatch,
@@ -34,6 +35,7 @@ import {
 } from "../generated/TreasureMarketplace/TreasureMarketplace";
 import {
   Collection,
+  Fee,
   Listing,
   StakedToken,
   Token,
@@ -610,6 +612,26 @@ export function handleOracleUpdate(event: UpdateOracle): void {
       }
     }
   }
+}
+
+export function handleUpdateCollectionOwnerFee(
+  event: UpdateCollectionOwnerFee
+): void {
+  const params = event.params;
+  const id = params.collection.toHexString();
+
+  let fee = Fee.load(id);
+
+  if (!fee) {
+    fee = new Fee(id);
+
+    fee.collection = id;
+  }
+
+  fee.fee = params.fee
+    .divDecimal(BigInt.fromI32(10_000).toBigDecimal())
+    .toString();
+  fee.save();
 }
 
 export function handleTransfer721(event: Transfer): void {
