@@ -17,6 +17,7 @@ import { getRealmByIndex } from "../helpers/realm";
 import {
   getOrCreateGlobalStat,
   getOrCreatePathStat,
+  getOrCreateRealmComboStat,
   getOrCreateRealmStat,
   getOrCreateTreasureStat,
 } from "../helpers/stat";
@@ -63,6 +64,10 @@ export function handleLifeformCreated(event: LifeformCreated): void {
   secondRealmStat.secondRealmCount =
     secondRealmStat.secondRealmCount.plus(ONE_BI);
   secondRealmStat.save();
+
+  const realmComboStat = getOrCreateRealmComboStat(firstRealm, secondRealm);
+  realmComboStat.lifeformTotal = realmComboStat.lifeformTotal.plus(ONE_BI);
+  realmComboStat.save();
 
   // Increment path stats
   const pathStat = getOrCreatePathStat(path);
