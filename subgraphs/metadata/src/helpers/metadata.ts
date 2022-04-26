@@ -107,6 +107,7 @@ export function updateTokenMetadata(
 
     token.attributes = attributes.map<string>((attribute) => attribute.id);
 
+    // TODO: Refactor somehow. Maybe hash output and check on transfer to rehash
     if (
       timestamp.gt(
         collection._attributePercentageLastUpdated.plus(

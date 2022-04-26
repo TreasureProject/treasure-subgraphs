@@ -116,3 +116,25 @@ dataSources:
         - event: TransferSingle(indexed address,indexed address,indexed address,uint256,uint256)
           handler: handleTransferSingle
       file: ./src/mappings/toadstoolz-itemz.ts
+  - name: KOTE Squires
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ kote_squires_address }}"
+      abi: ERC721
+      startBlock: {{ kote_squires_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Attribute
+        - Collection
+        - Token
+      abis:
+        - name: ERC721
+          file: {{{ abis }}}/721.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,indexed uint256)
+          handler: handleTransfer
+      file: ./src/mappings/kote-squires.ts
