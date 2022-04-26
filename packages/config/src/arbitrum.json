@@ -116,5 +116,10 @@
   "kote_trinkets_address": "0x0000000000000000000000000000000000000000",
   "kote_trinkets_start_block": 11353624,
 
+  "samurise_land_address": "0x71bD1562f7E0F182f8BE472151bEfdFb824E26BE",
+  "samurise_land_start_block": 11336369,
+  "samurise_items_address": "0x5e01c1889085B528EefF5e1bEe64Bfe94f454703",
+  "samurise_items_start_block": 11335527,
+
   "hourly_stat_interval_start_block": 6470000
 }
