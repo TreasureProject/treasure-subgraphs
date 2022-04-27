@@ -6,6 +6,10 @@ import { SMOL_BRAINS_ADDRESS } from "@treasure/constants";
 
 import { Collection, StakedToken, Token, User } from "../../generated/schema";
 import {
+  getOrCreateCollection,
+  getOrCreateToken,
+} from "../../src/helpers/models";
+import {
   handleDropSchool,
   handleJoinSchool,
 } from "../../src/mappings/smol-brains-school";
@@ -87,8 +91,14 @@ test("smol brains dropping school removes staked token", () => {
   assert.assertNull(stakedToken);
 });
 
-test("smol brains dropping school updates IQ and head size", () => {
+test("smol brains dropping school updates IQ, head size, and image", () => {
   clearStore();
+
+  const collection = getOrCreateCollection(SMOL_BRAINS_ADDRESS);
+  const token = getOrCreateToken(collection, BigInt.fromI32(1));
+
+  token.image = "ipfs://Qmu/0/0.png";
+  token.save();
 
   const joinEvent = createJoinSchoolEvent(USER_ADDRESS, 1);
   handleJoinSchool(joinEvent);
@@ -107,5 +117,13 @@ test("smol brains dropping school updates IQ and head size", () => {
     `${SMOL_BRAINS_ADDRESS.toHexString()}-0x1`,
     "attributes",
     `[${headSizeAttributeId}, ${iqAttributeId}]`
+  );
+
+  // Assert token image is updated
+  assert.fieldEquals(
+    TOKEN_ENTITY_TYPE,
+    `${SMOL_BRAINS_ADDRESS.toHexString()}-0x1`,
+    "image",
+    "ipfs://Qmu/0/4.png"
   );
 });
