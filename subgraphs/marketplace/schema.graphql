@@ -86,6 +86,7 @@ type User @entity {
 type UserToken @entity {
   id: ID!
 
+  collection: Collection!
   quantity: Int!
   token: Token!
   user: User!

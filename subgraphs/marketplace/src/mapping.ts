@@ -39,7 +39,6 @@ import {
   Listing,
   StakedToken,
   Token,
-  User,
   UserToken,
 } from "../generated/schema";
 import {
@@ -51,8 +50,8 @@ import {
   getToken,
   getUser,
   getUserAddressId,
-  isMint,
   isPaused,
+  isZero,
   removeFromArray,
   removeIfExists,
 } from "./helpers";
@@ -190,7 +189,7 @@ function handleTransfer(
     }
   }
 
-  if (isMint(from)) {
+  if (isZero(from)) {
     let collection = Collection.load(token.collection);
 
     // Will be null from legions collection
@@ -220,7 +219,7 @@ function handleTransfer(
     }
   }
 
-  if (isMint(to)) {
+  if (isZero(to)) {
     let collection = Collection.load(token.collection);
 
     // Will be null from legions collection
@@ -250,6 +249,7 @@ function handleTransfer(
   if (!toUserToken) {
     toUserToken = new UserToken(id);
 
+    toUserToken.collection = token.collection;
     toUserToken.token = token.id;
     toUserToken.user = user.id;
   }
