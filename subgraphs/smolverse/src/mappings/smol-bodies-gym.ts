@@ -57,10 +57,18 @@ export function handleDropGym(event: DropGym): void {
     "Swol Size",
     level
   );
+
+  const image = token.image;
+
+  if (image) {
+    token.image = image.slice(0, -5).concat(`${level}.png`);
+  }
+
   token.attributes = token.attributes.concat([
     swolSizeAttribute.id,
     platesAttribute.id,
   ]);
+
   token.save();
 
   handleUnstake(SMOL_BODIES_ADDRESS, event.params.tokenId, LOCATION_GYM);

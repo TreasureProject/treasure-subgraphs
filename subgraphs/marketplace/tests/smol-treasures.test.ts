@@ -61,8 +61,6 @@ test("smol treasures have correct names", () => {
     "Alien Relic",
   ];
 
-  // logStore();
-
   for (let index = 0; index < 5; index++) {
     const tokenId = tokenIds[index];
     const id = `${contract}-${tokenId.toHexString()}`;
