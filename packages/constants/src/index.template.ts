@@ -84,3 +84,36 @@ export const TALES_OF_ELLERIA_ADDRESS = Address.fromString(
 export const TOADSTOOLZ_ITEMZ_ADDRESS = Address.fromString(
   "{{ toadstoolz_itemz_address }}"
 );
+
+// AMM
+export const MAGICSWAP_FACTORY_ADDRESS = Address.fromString(
+  "{{ magicswap_factory_address }}"
+);
+
+export const MAGICSWAP_TOKEN_WHITELIST: string[] = [
+  "{{ magic_address }}",
+  "{{ usdc_address }}",
+];
+
+export const USDC =
+  "{{ usdc_address }}{{^usdc_address}}0x0000000000000000000000000000000000000000{{/usdc_address}}";
+
+export const USDT =
+  "{{ usdt_address }}{{^usdt_address}}0x0000000000000000000000000000000000000000{{/usdt_address}}";
+
+export const DAI =
+  "{{ dai_address }}{{^dai_address}}0x0000000000000000000000000000000000000000{{/dai_address}}";
+
+export const NATIVE = Address.fromString("{{ magic_address }}");
+
+export const USDC_WETH_PAIR =
+  "{{ usdc_weth_pair_address }}{{^usdc_weth_pair_address}}0x0000000000000000000000000000000000000000{{/usdc_weth_pair_address}}";
+
+export const DAI_WETH_PAIR =
+  "{{ dai_weth_pair }}{{^dai_weth_pair}}0x0000000000000000000000000000000000000000{{/dai_weth_pair}}";
+
+export const USDT_WETH_PAIR =
+  "{{ usdt_weth_pair }}{{^usdt_weth_pair}}0x0000000000000000000000000000000000000000{{/usdt_weth_pair}}";
+
+export const SUSHI_USDT_PAIR =
+  "{{ sushi_usdt_pair }}{{^sushi_usdt_pair}}0x0000000000000000000000000000000000000000{{/sushi_usdt_pair}}";
