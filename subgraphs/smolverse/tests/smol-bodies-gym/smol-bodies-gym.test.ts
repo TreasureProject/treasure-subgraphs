@@ -6,6 +6,10 @@ import { SMOL_BODIES_ADDRESS } from "@treasure/constants";
 
 import { Collection, StakedToken, Token, User } from "../../generated/schema";
 import {
+  getOrCreateCollection,
+  getOrCreateToken,
+} from "../../src/helpers/models";
+import {
   handleDropGym,
   handleJoinGym,
 } from "../../src/mappings/smol-bodies-gym";
@@ -81,8 +85,14 @@ test("smol bodies dropping gym removes staked token", () => {
   assert.assertNull(stakedToken);
 });
 
-test("smol bodies dropping gym updates plates and swol size", () => {
+test("smol bodies dropping gym updates plates, swol size, and image", () => {
   clearStore();
+
+  const collection = getOrCreateCollection(SMOL_BODIES_ADDRESS);
+  const token = getOrCreateToken(collection, BigInt.fromI32(1));
+
+  token.image = "ipfs://Qmu/0/0.png";
+  token.save();
 
   const joinEvent = createJoinGymEvent(USER_ADDRESS, 1);
   handleJoinGym(joinEvent);
@@ -101,5 +111,13 @@ test("smol bodies dropping gym updates plates and swol size", () => {
     `${SMOL_BODIES_ADDRESS.toHexString()}-0x1`,
     "attributes",
     `[${swolSizeAttributeId}, ${platesAttributeId}]`
+  );
+
+  // Assert token image is updated
+  assert.fieldEquals(
+    TOKEN_ENTITY_TYPE,
+    `${SMOL_BODIES_ADDRESS.toHexString()}-0x1`,
+    "image",
+    "ipfs://Qmu/0/1.png"
   );
 });

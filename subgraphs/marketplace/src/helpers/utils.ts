@@ -4,7 +4,7 @@ export function exists(entity: string, id: string): boolean {
   return store.get(entity, id) != null;
 }
 
-export function isMint(address: Address): boolean {
+export function isZero(address: Address): boolean {
   return address.equals(Address.zero());
 }
 

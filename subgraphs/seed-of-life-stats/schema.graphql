@@ -1,0 +1,128 @@
+enum Path {
+  NO_MAGIC
+  MAGIC
+  MAGIC_AND_BC
+}
+
+enum LifeformRealm {
+  VESPER
+  SHERWOOD
+  THOUSAND_ISLES
+  TUL_NIELOHG_DESERT
+  DULKHAN_MOUNTAINS
+  MOLTANIA
+  NETHEREALM
+  MAGINCIA
+}
+
+enum LifeformClass {
+  WARRIOR
+  MAGE
+  PRIEST
+  SHARPSHOOTER
+  SUMMONER
+  PALADIN
+  ASURA
+  SLAYER
+}
+
+type _Lifeform @entity {
+  id: ID!
+
+  firstRealm: LifeformRealm!
+  secondRealm: LifeformRealm!
+  path: Path!
+  stakedTreasureIds: [BigInt!]!
+  stakedTreasureAmounts: [BigInt!]!
+}
+
+type _LifeformOwner @entity {
+  id: ID!
+
+  lifeform: _Lifeform!
+}
+
+type _Random @entity {
+  id: ID!
+
+  lifeformId: String
+}
+
+type _Seeded @entity {
+  id: ID!
+
+  randomIds: [String!]!
+}
+
+type RealmStat @entity {
+  id: ID!
+
+  realm: LifeformRealm!
+
+  "Number of Lifeforms in this realm"
+  lifeformTotal: BigInt!
+
+  "Number of Lifeforms birthed in this realm"
+  firstRealmCount: BigInt!
+
+  "Number of Lifeforms brought up in this realm"
+  secondRealmCount: BigInt!
+}
+
+type RealmComboStat @entity {
+  id: ID!
+
+  firstRealm: LifeformRealm!
+  secondRealm: LifeformRealm!
+
+  "Number of Lifeforms with this realm combination"
+  lifeformTotal: BigInt!
+}
+
+type PathStat @entity {
+  id: ID!
+
+  path: Path!
+
+  "Number of Lifeforms on this path"
+  lifeformTotal: BigInt!
+}
+
+type TreasureStat @entity {
+  id: ID!
+
+  tokenId: BigInt!
+  name: String!
+  tier: Int!
+
+  "Number of this treasure staked"
+  staked: BigInt!
+
+  "Number of this treasure unstaked"
+  unstaked: BigInt!
+
+  "Number of this treasure broken"
+  broken: BigInt!
+}
+
+type ClassStat @entity {
+  id: ID!
+
+  lifeformClass: LifeformClass!
+
+  "Number of Lifeforms of this class"
+  lifeformTotal: BigInt!
+}
+
+type GlobalStat @entity {
+  id: ID!
+
+  lifeformTotal: BigInt!
+
+  magicOffered: BigInt!
+  balancerCrystalsStaked: BigInt!
+
+  treasuresStaked: BigInt!
+  treasuresUnstaked: BigInt!
+  treasuresBroken: BigInt!
+}

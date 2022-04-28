@@ -107,5 +107,19 @@
   "toadstoolz_itemz_address": "0x5e0ba87362f239bDBF40E621Fa11DBD50d190389",
   "toadstoolz_itemz_start_block": 9816829,
 
+  "kote_squires_address": "0xF7fBE8EEc9063AA518D11639565B018468bB4AbB",
+  "kote_squires_start_block": 10050034,
+  "kote_potions_address": "0x0000000000000000000000000000000000000000",
+  "kote_potions_start_block": 11353624,
+  "kote_rings_address": "0x0000000000000000000000000000000000000000",
+  "kote_rings_start_block": 11353624,
+  "kote_trinkets_address": "0x0000000000000000000000000000000000000000",
+  "kote_trinkets_start_block": 11353624,
+
+  "samurise_land_address": "0x71bD1562f7E0F182f8BE472151bEfdFb824E26BE",
+  "samurise_land_start_block": 10217321,
+  "samurise_items_address": "0x5e01c1889085B528EefF5e1bEe64Bfe94f454703",
+  "samurise_items_start_block": 11335527,
+
   "hourly_stat_interval_start_block": 6470000
 }

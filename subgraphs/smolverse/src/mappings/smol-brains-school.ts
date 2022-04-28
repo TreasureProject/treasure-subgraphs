@@ -74,10 +74,18 @@ export function handleDropSchool(event: DropSchool): void {
       "Head Size",
       levelString
     );
+
+    const image = token.image;
+
+    if (image) {
+      token.image = image.slice(0, -5).concat(`${levelString}.png`);
+    }
+
     token.attributes = token.attributes.concat([
       headSizeAttribute.id,
       iqAttribute.id,
     ]);
+
     token.save();
   } else {
     log.error("[smol-brains-school] Error fetching new IQ: {}", [

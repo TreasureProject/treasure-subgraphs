@@ -16,6 +16,7 @@ import {
 
 import { DropGym, JoinGym } from "../generated/Smol Bodies Gym/Gym";
 import { DropSchool, JoinSchool } from "../generated/Smol Brains School/School";
+import { UpdateCollectionOwnerFee } from "../generated/TreasureMarketplace v2/Marketplace";
 import { Transfer } from "../generated/TreasureMarketplace/ERC721";
 import {
   TransferBatch,
@@ -34,10 +35,10 @@ import {
 } from "../generated/TreasureMarketplace/TreasureMarketplace";
 import {
   Collection,
+  Fee,
   Listing,
   StakedToken,
   Token,
-  User,
   UserToken,
 } from "../generated/schema";
 import {
@@ -49,8 +50,8 @@ import {
   getToken,
   getUser,
   getUserAddressId,
-  isMint,
   isPaused,
+  isZero,
   removeFromArray,
   removeIfExists,
 } from "./helpers";
@@ -188,7 +189,7 @@ function handleTransfer(
     }
   }
 
-  if (isMint(from)) {
+  if (isZero(from)) {
     let collection = Collection.load(token.collection);
 
     // Will be null from legions collection
@@ -218,7 +219,7 @@ function handleTransfer(
     }
   }
 
-  if (isMint(to)) {
+  if (isZero(to)) {
     let collection = Collection.load(token.collection);
 
     // Will be null from legions collection
@@ -248,6 +249,7 @@ function handleTransfer(
   if (!toUserToken) {
     toUserToken = new UserToken(id);
 
+    toUserToken.collection = token.collection;
     toUserToken.token = token.id;
     toUserToken.user = user.id;
   }
@@ -610,6 +612,26 @@ export function handleOracleUpdate(event: UpdateOracle): void {
       }
     }
   }
+}
+
+export function handleUpdateCollectionOwnerFee(
+  event: UpdateCollectionOwnerFee
+): void {
+  const params = event.params;
+  const id = params.collection.toHexString();
+
+  let fee = Fee.load(id);
+
+  if (!fee) {
+    fee = new Fee(id);
+
+    fee.collection = id;
+  }
+
+  fee.fee = params.fee
+    .divDecimal(BigInt.fromI32(10_000).toBigDecimal())
+    .toString();
+  fee.save();
 }
 
 export function handleTransfer721(event: Transfer): void {

@@ -11,13 +11,13 @@
             {
                 "indexed": false,
                 "internalType": "uint256[]",
-                "name": "_brokenTreasureIds",
+                "name": "_unstakingTreasureIds",
                 "type": "uint256[]"
             },
             {
                 "indexed": false,
                 "internalType": "uint256[]",
-                "name": "_brokenTreasureAmounts",
+                "name": "_unstakingTreasureAmounts",
                 "type": "uint256[]"
             }
         ],

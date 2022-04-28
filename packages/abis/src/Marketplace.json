@@ -47,5 +47,15 @@
     ],
     "name": "ItemUpdated",
     "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": false, "internalType": "address", "name": "collection", "type": "address" },
+      { "indexed": false, "internalType": "address", "name": "recipient", "type": "address" },
+      { "indexed": false, "internalType": "uint256", "name": "fee", "type": "uint256" }
+    ],
+    "name": "UpdateCollectionOwnerFee",
+    "type": "event"
   }
 ]

@@ -1,0 +1,54 @@
+specVersion: 0.0.4
+schema:
+  file: ./schema.graphql
+dataSources:
+  - name: Randomizer
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ randomizer_address }}"
+      abi: Randomizer
+      startBlock: {{ randomizer_seed_of_life_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Random
+        - Seeded
+        - Lifeform
+        - ClaimLifeform
+      abis:
+        - name: Randomizer
+          file: ../../node_modules/@treasure/subgraph-abis/src/Randomizer.json
+        - name: SeedEvolution
+          file: ../../node_modules/@treasure/subgraph-abis/src/SeedEvolution.json
+      eventHandlers:
+        - event: RandomRequest(indexed uint256,indexed uint256)
+          handler: handleRandomRequest
+        - event: RandomSeeded(indexed uint256)
+          handler: handleRandomSeeded
+      file: ./src/mappings/randomizer.ts
+  - name: SeedEvolution
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ seed_evolution_address }}"
+      abi: SeedEvolution
+      startBlock: {{ seed_evolution_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Lifeform
+        - Token
+      abis:
+        - name: SeedEvolution
+          file: ../../node_modules/@treasure/subgraph-abis/src/SeedEvolution.json
+      eventHandlers:
+        - event: LifeformCreated(indexed uint256,(uint256,uint256,address,uint8,uint8,uint8,uint256,uint256,uint256[],uint256[]))
+          handler: handleLifeformCreated
+        - event: FinishedUnstakingTreasure(address,uint256[],uint256[])
+          handler: handleFinishedUnstakingTreasure
+      file: ./src/mappings/seed-evolution.ts
