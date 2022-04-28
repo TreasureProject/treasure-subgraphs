@@ -12,16 +12,45 @@ import {
   User,
   UserApproval,
 } from "../../generated/schema";
-import { getAddressId, isMint } from "../helpers";
+import { TREASURE_FRAGMENT_IPFS, getAddressId, isMint } from "../helpers";
 import * as common from "../mapping";
 
+function getRomanNumerals(num: i32): string {
+  switch (num) {
+    case 1:
+      return "I";
+    case 2:
+      return "II";
+    case 3:
+      return "III";
+    case 4:
+      return "IV";
+    case 5:
+      return "V";
+    default:
+      return "";
+  }
+}
+
 function getCategories(tokenId: i32): string[] {
-  switch (true) {
-    case [1, 2, 3, 4, 5].includes(tokenId):
+  switch (tokenId) {
+    case 1:
+    case 2:
+    case 3:
+    case 4:
+    case 5:
       return ["Alchemy", "Arcana"];
-    case [6, 7, 8, 9, 10].includes(tokenId):
+    case 6:
+    case 7:
+    case 8:
+    case 9:
+    case 10:
       return ["Enchanter", "Leatherworking"];
-    case [11, 12, 13, 14, 15].includes(tokenId):
+    case 11:
+    case 12:
+    case 13:
+    case 14:
+    case 15:
       return ["Smithing", "Brewing"];
     default:
       log.error("Unhandled treasure fragment category: {}", [
@@ -33,22 +62,40 @@ function getCategories(tokenId: i32): string[] {
 }
 
 function getTier(tokenId: i32): i32 {
-  switch (true) {
-    case [1, 6, 11].includes(tokenId):
+  switch (tokenId) {
+    case 1:
+    case 6:
+    case 11:
       return 1;
-    case [2, 7, 12].includes(tokenId):
+    case 2:
+    case 7:
+    case 12:
       return 2;
-    case [3, 8, 13].includes(tokenId):
+    case 3:
+    case 8:
+    case 13:
       return 3;
-    case [4, 9, 14].includes(tokenId):
+    case 4:
+    case 9:
+    case 14:
       return 4;
-    case [5, 10, 15].includes(tokenId):
+    case 5:
+    case 10:
+    case 15:
       return 5;
     default:
       log.error("Unhandled treasure fragment tier: {}", [tokenId.toString()]);
 
       return 0;
   }
+}
+
+function getName(tokenId: i32): string {
+  return (
+    getCategories(tokenId).join(" & ") +
+    " " +
+    getRomanNumerals(getTier(tokenId))
+  );
 }
 
 function setMetadata(contract: Address, tokenId: BigInt): void {
@@ -71,6 +118,8 @@ function setMetadata(contract: Address, tokenId: BigInt): void {
 
   token.category = "TreasureFragment";
   token.metadata = metadata.id;
+  token.name = getName(token.tokenId.toI32());
+  token.image = `${TREASURE_FRAGMENT_IPFS}/${token.tokenId}.jpg`;
 
   token.save();
 }
