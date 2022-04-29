@@ -468,3 +468,25 @@ dataSources:
         - event: AdvancedQuestEnded(address,uint256,(uint256,uint256,uint256,uint256)[])
           handler: handleAdvancedQuestEnded
       file: ./src/mappings/advanced-questing.ts
+  - name: Treasure Triad
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ treasure_triad_address }}"
+      abi: TreasureTriad
+      startBlock: {{ treasure_triad_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Token
+        - User
+        - UserToken
+      abis:
+        - name: TreasureTriad
+          file: ../../node_modules/@treasure/subgraph-abis/src/TreasureTriad.json
+      eventHandlers:
+        - event: TreasureCardInfoSet(uint256,(uint8,uint8,uint8,uint8,uint8))
+          handler: handleTreasureCardInfoSet
+      file: ./src/mappings/treasure-triad.ts

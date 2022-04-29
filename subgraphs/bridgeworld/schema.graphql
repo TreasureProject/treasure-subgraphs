@@ -243,6 +243,16 @@ type TreasureTriadResult @entity {
   numberOfCorruptedCardsRemaining: Int!
 }
 
+type TreasureTriadCardInfo @entity {
+  id: ID!
+
+  token: Token!
+  north: Int!
+  east: Int!
+  south: Int!
+  west: Int!
+}
+
 type StakedToken @entity {
   id: ID!
 
