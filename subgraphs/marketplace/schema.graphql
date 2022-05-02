@@ -103,6 +103,7 @@ type StakedToken @entity {
 type StatsData @entity {
   id: ID!
 
+  burned: Int!
   floorPrice: BigInt!
   items: Int!
   listings: Int!
