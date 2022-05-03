@@ -1,5 +1,3 @@
-import Date from "Date";
-
 import { BigInt, log, store } from "@graphprotocol/graph-ts";
 
 import {
