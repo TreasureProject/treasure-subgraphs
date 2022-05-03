@@ -23,6 +23,7 @@ import {
   TokenQuantity,
   TreasureTriadResult,
 } from "../../generated/schema";
+import { setQuestEndTime } from "../helpers/advanced-questing";
 import { getAddressId } from "../helpers/utils";
 import { getXpPerLevel } from "../helpers/xp";
 
@@ -132,19 +133,7 @@ export function handleTreasureTriadPlayed(event: TreasureTriadPlayed): void {
 
   quest.treasureTriadResult = result.id;
 
-  const advancedQuesting = AdvancedQuesting.bind(ADVANCED_QUESTING_ADDRESS);
-  const endTimeResult = advancedQuesting.try_endTimeForLegion(
-    event.params._legionId
-  );
-
-  if (!endTimeResult.reverted) {
-    quest.endTimestamp = endTimeResult.value.value0.times(BigInt.fromI32(1000));
-    quest.stasisHitCount = endTimeResult.value.value1;
-  } else {
-    log.error("[advanced-quest-triad] Failed to get endTime for legion: {}", [
-      quest.token,
-    ]);
-  }
+  setQuestEndTime(quest, event.params._legionId);
 
   result.save();
   quest.save();
@@ -165,6 +154,9 @@ export function handleAdvancedQuestEnded(event: AdvancedQuestEnded): void {
 
   quest.id = `${quest.id}-${quest.requestId.toHex()}`;
   quest.status = "Finished";
+  quest.endTimestamp = BigInt.fromI64(new Date(0).getTime()).times(
+    BigInt.fromI32(1000)
+  );
 
   store.remove("AdvancedQuest", id);
 

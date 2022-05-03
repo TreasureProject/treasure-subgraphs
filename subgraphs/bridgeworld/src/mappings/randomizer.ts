@@ -22,6 +22,7 @@ import {
   Token,
 } from "../../generated/schema";
 import { checkSummonFatigue, getAddressId } from "../helpers";
+import { setQuestEndTime } from "../helpers/advanced-questing";
 
 function toI32(value: string): i32 {
   return parseInt(value, 16) as i32;
@@ -109,26 +110,8 @@ export function handleRandomSeeded(event: RandomSeeded): void {
       if (quest !== null && quest.token !== null) {
         const token = Token.load(quest.token);
         if (token !== null) {
-          const advancedQuesting = AdvancedQuesting.bind(
-            ADVANCED_QUESTING_ADDRESS
-          );
-          const endTimeResult = advancedQuesting.try_endTimeForLegion(
-            token.tokenId
-          );
-
-          if (!endTimeResult.reverted) {
-            quest.endTimestamp = endTimeResult.value.value0.times(
-              BigInt.fromI32(1000)
-            );
-            quest.stasisHitCount = endTimeResult.value.value1;
-            quest.save();
-          } else {
-            log.error(
-              "[random-advanced-quest] Failed to get endTime for legion: {}",
-              [quest.token]
-            );
-          }
-
+          setQuestEndTime(quest, token.tokenId);
+          quest.save();
           continue;
         } else {
           log.error("[random-advanced-quest] Token not found: {}", [random.id]);
