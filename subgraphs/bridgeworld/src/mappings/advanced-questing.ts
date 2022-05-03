@@ -1,3 +1,5 @@
+import Date from "Date";
+
 import { BigInt, log, store } from "@graphprotocol/graph-ts";
 
 import {
@@ -133,7 +135,7 @@ export function handleTreasureTriadPlayed(event: TreasureTriadPlayed): void {
 
   quest.treasureTriadResult = result.id;
 
-  quest.endTimestamp = BigInt.fromI64(Date.now());
+  quest.endTimestamp = event.block.timestamp;
 
   result.save();
   quest.save();
@@ -154,7 +156,7 @@ export function handleAdvancedQuestEnded(event: AdvancedQuestEnded): void {
 
   quest.id = `${quest.id}-${quest.requestId.toHex()}`;
   quest.status = "Finished";
-  quest.endTimestamp = BigInt.fromI64(Date.now());
+  quest.endTimestamp = event.block.timestamp;
 
   store.remove("AdvancedQuest", id);
 
