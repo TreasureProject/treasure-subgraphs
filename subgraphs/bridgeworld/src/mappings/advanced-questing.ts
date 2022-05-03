@@ -133,9 +133,9 @@ export function handleTreasureTriadPlayed(event: TreasureTriadPlayed): void {
 
   quest.treasureTriadResult = result.id;
 
-  if (result.playerWon === false) {
-    setQuestEndTime(quest, event.params._legionId);
-  }
+  quest.endTimestamp = BigInt.fromI64(new Date(0).getTime()).times(
+    BigInt.fromI32(1000)
+  );
 
   result.save();
   quest.save();
