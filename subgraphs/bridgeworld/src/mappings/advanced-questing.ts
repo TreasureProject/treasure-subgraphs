@@ -133,9 +133,7 @@ export function handleTreasureTriadPlayed(event: TreasureTriadPlayed): void {
 
   quest.treasureTriadResult = result.id;
 
-  quest.endTimestamp = BigInt.fromI64(new Date(0).getTime()).times(
-    BigInt.fromI32(1000)
-  );
+  quest.endTimestamp = BigInt.fromI64(Date.now());
 
   result.save();
   quest.save();
@@ -156,9 +154,7 @@ export function handleAdvancedQuestEnded(event: AdvancedQuestEnded): void {
 
   quest.id = `${quest.id}-${quest.requestId.toHex()}`;
   quest.status = "Finished";
-  quest.endTimestamp = BigInt.fromI64(new Date(0).getTime()).times(
-    BigInt.fromI32(1000)
-  );
+  quest.endTimestamp = BigInt.fromI64(Date.now());
 
   store.remove("AdvancedQuest", id);
 
