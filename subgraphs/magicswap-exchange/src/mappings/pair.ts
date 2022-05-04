@@ -698,7 +698,7 @@ export function onBurn(event: BurnEvent): void {
 
   // update the LP position
   const liquidityPosition = createLiquidityPosition(
-    burn.sender as Address,
+    event.params.sender,
     event.address,
     event.block
   );
