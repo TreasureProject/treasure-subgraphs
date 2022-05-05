@@ -183,9 +183,9 @@ export function getNameForTokenId(tokenId: BigInt): string {
     case 128:
     case 129:
     case 130:
-      return `Range ${id - 117}`;
+      return `Ranger ${id - 117}`;
     case 131:
-      return "Range";
+      return "Ranger";
     case 132:
       return "Red Feather";
     case 133:

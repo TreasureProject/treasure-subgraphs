@@ -3,7 +3,11 @@ import { assert, test } from "matchstick-as";
 import { BigInt } from "@graphprotocol/graph-ts";
 
 import { LEGION_IPFS } from "../src/helpers/constants";
-import { getLegacyLegionImage, getLegionImage } from "../src/helpers/legion";
+import {
+  getLegacyGenesisLegionImage,
+  getLegacyLegionImage,
+  getLegionImage,
+} from "../src/helpers/legion";
 
 test("legion images are correct", () => {
   const expectedLegions = [
@@ -23,7 +27,14 @@ test("legion images are correct", () => {
       "",
       "/Auxiliary/Common/Fighter/1B.jpg",
     ],
-    ["Auxiliary", "Common", "Range", "3", "", "/Auxiliary/Common/Range/1B.jpg"],
+    [
+      "Auxiliary",
+      "Common",
+      "Ranger",
+      "3",
+      "",
+      "/Auxiliary/Common/Ranger/1B.jpg",
+    ],
     ["Auxiliary", "Common", "Siege", "4", "", "/Auxiliary/Common/Siege/1C.jpg"],
     [
       "Auxiliary",
@@ -49,7 +60,14 @@ test("legion images are correct", () => {
       "",
       "/Auxiliary/Common/Fighter/1D.jpg",
     ],
-    ["Auxiliary", "Common", "Range", "8", "", "/Auxiliary/Common/Range/1E.jpg"],
+    [
+      "Auxiliary",
+      "Common",
+      "Ranger",
+      "8",
+      "",
+      "/Auxiliary/Common/Ranger/1E.jpg",
+    ],
     ["Auxiliary", "Common", "Siege", "9", "", "/Auxiliary/Common/Siege/1E.jpg"],
     [
       "Auxiliary",
@@ -82,10 +100,10 @@ test("legion images are correct", () => {
     [
       "Auxiliary",
       "Uncommon",
-      "Range",
+      "Ranger",
       "12158",
       "",
-      "/Auxiliary/Uncommon/Range/3E.jpg",
+      "/Auxiliary/Uncommon/Ranger/3E.jpg",
     ],
     [
       "Auxiliary",
@@ -915,4 +933,40 @@ test("legion images are correct", () => {
 test("legacy legion images are correct", () => {
   const image = getLegacyLegionImage(LEGION_IPFS, BigInt.fromI32(1214));
   assert.stringEquals(`${LEGION_IPFS}/Auxiliary/Unpilgrimaged/1C.jpg`, image);
+});
+
+test("legacy genesis legion images are correct", () => {
+  const expectedLegions = [
+    ["Legendary", "81", "/Genesis/Legendary/Fallen.jpg"],
+    ["Rare", "1", "/Genesis/Rare/Executioner/3A.jpg"],
+    ["Rare", "2", "/Genesis/Rare/Clockwork Marine/2B.jpg"],
+    ["Special", "106", "/Genesis/Special/Numeraire/5D.jpg"],
+    ["Special", "107", "/Genesis/Special/Numeraire/3D.jpg"],
+    ["Special", "134", "/Genesis/Special/Riverman/4C.jpg"],
+    ["Special", "135", "/Genesis/Special/Riverman/1C.jpg"],
+    ["Uncommon", "40", "/Genesis/Uncommon/Assassin/1A.jpg"],
+    ["Uncommon", "41", "/Genesis/Uncommon/Assassin/3A.jpg"],
+    ["Uncommon", "83", "/Genesis/Uncommon/Fighter/1B.jpg"],
+    ["Uncommon", "84", "/Genesis/Uncommon/Fighter/4C.jpg"],
+    ["Uncommon", "118", "/Genesis/Uncommon/Ranger/3E.jpg"],
+    ["Uncommon", "119", "/Genesis/Uncommon/Ranger/2E.jpg"],
+    ["Uncommon", "144", "/Genesis/Uncommon/Siege/4C.jpg"],
+    ["Uncommon", "145", "/Genesis/Uncommon/Siege/2C.jpg"],
+    ["Uncommon", "154", "/Genesis/Uncommon/Spellcaster/5C.jpg"],
+    ["Uncommon", "155", "/Genesis/Uncommon/Spellcaster/3C.jpg"],
+    ["Common", "56", "/Genesis/Common/Siege/3D.jpg"],
+    ["Common", "58", "/Genesis/Common/Ranger/3E.jpg"],
+    ["Common", "61", "/Genesis/Common/Fighter/4A.jpg"],
+    ["Common", "64", "/Genesis/Common/Spellcaster/4C.jpg"],
+  ];
+
+  for (let i = 0; i < expectedLegions.length; i++) {
+    const legion = expectedLegions[i];
+    const image = getLegacyGenesisLegionImage(
+      LEGION_IPFS,
+      BigInt.fromString(legion[1]),
+      legion[0]
+    );
+    assert.stringEquals(`${LEGION_IPFS}${legion[2]}`, image);
+  }
 });

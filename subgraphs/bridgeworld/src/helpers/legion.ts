@@ -1,6 +1,6 @@
 import { BigInt, log } from "@graphprotocol/graph-ts";
 
-import { getName } from "./token-id";
+import { getName, getRole } from "./token-id";
 
 export const TYPE = ["Genesis", "Auxiliary", "Recruit"];
 
@@ -18,7 +18,7 @@ export const CLASS = [
   "Siege",
   "Fighter",
   "Assassin",
-  "Ranged",
+  "Ranger",
   "Spellcaster",
   "Riverman",
   "Numeraire",
@@ -359,15 +359,6 @@ const convertTokenIdToVariant = (
   return variant;
 };
 
-export const getLegacyLegionImage = (
-  ipfsPrefix: string,
-  legacyTokenId: BigInt
-): string => {
-  return `${ipfsPrefix}/Auxiliary/Unpilgrimaged/${convertTokenIdToVariant(
-    legacyTokenId
-  )}.jpg`;
-};
-
 export const getLegionImage = (
   ipfsPrefix: string,
   type: string,
@@ -403,4 +394,28 @@ export const getLegionImage = (
   }
 
   return image;
+};
+
+export const getLegacyLegionImage = (
+  ipfsPrefix: string,
+  legacyTokenId: BigInt
+): string => {
+  return `${ipfsPrefix}/Auxiliary/Unpilgrimaged/${convertTokenIdToVariant(
+    legacyTokenId
+  )}.jpg`;
+};
+
+export const getLegacyGenesisLegionImage = (
+  ipfsPrefix: string,
+  legacyTokenId: BigInt,
+  rarity: string
+): string => {
+  return getLegionImage(
+    ipfsPrefix,
+    "Genesis",
+    rarity,
+    getRole(legacyTokenId),
+    legacyTokenId,
+    legacyTokenId
+  );
 };
