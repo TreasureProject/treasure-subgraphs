@@ -1,6 +1,5 @@
 import { BigInt, log } from "@graphprotocol/graph-ts";
 
-import { LEGION_IPFS } from "./constants";
 import { getName } from "./token-id";
 
 export const TYPE = ["Genesis", "Auxiliary", "Recruit"];
@@ -358,6 +357,15 @@ const convertTokenIdToVariant = (
   }
 
   return variant;
+};
+
+export const getLegacyLegionImage = (
+  ipfsPrefix: string,
+  legacyTokenId: BigInt
+): string => {
+  return `${ipfsPrefix}/Auxiliary/Unpilgrimaged/${convertTokenIdToVariant(
+    legacyTokenId
+  )}.jpg`;
 };
 
 export const getLegionImage = (

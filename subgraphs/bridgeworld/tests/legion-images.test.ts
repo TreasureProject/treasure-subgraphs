@@ -3,7 +3,7 @@ import { assert, test } from "matchstick-as";
 import { BigInt } from "@graphprotocol/graph-ts";
 
 import { LEGION_IPFS } from "../src/helpers/constants";
-import { getLegionImage } from "../src/helpers/legion";
+import { getLegacyLegionImage, getLegionImage } from "../src/helpers/legion";
 
 test("legion images are correct", () => {
   const expectedLegions = [
@@ -910,4 +910,9 @@ test("legion images are correct", () => {
     );
     assert.stringEquals(`${LEGION_IPFS}${legion[5]}`, image);
   }
+});
+
+test("legacy legion images are correct", () => {
+  const image = getLegacyLegionImage(LEGION_IPFS, BigInt.fromI32(1214));
+  assert.stringEquals(`${LEGION_IPFS}/Auxiliary/Unpilgrimaged/1C.jpg`, image);
 });
