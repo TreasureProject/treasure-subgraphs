@@ -5,6 +5,7 @@ import { Address } from "@graphprotocol/graph-ts";
 import { LEGION_ADDRESS } from "@treasure/constants";
 
 import { LEGION_IPFS } from "../src/helpers/index";
+import { handleTransferSingle } from "../src/mappings/legacy-legion-genesis";
 import { handleLegionCreated, handleTransfer } from "../src/mappings/legion";
 import {
   handlePilgrimagesFinished,
@@ -15,6 +16,7 @@ import {
   LEGION_INFO_ENTITY_TYPE,
   TOKEN_ENTITY_TYPE,
   USER_ADDRESS,
+  createLegacyLegionGenesisTransferEvent,
   createLegionCreatedEvent,
   createLegionTransferEvent,
   createPilgrimagesFinishedEvent,
@@ -24,6 +26,14 @@ import {
 // PilgrimageId = 7 in production
 test("legion metadata is correct for pilgrimaged riverman", () => {
   clearStore();
+
+  handleTransferSingle(
+    createLegacyLegionGenesisTransferEvent(
+      Address.zero().toHexString(),
+      USER_ADDRESS,
+      134
+    )
+  );
 
   const pilgrimagesStartedEvent = createPilgrimagesStartedEvent(
     USER_ADDRESS,
@@ -63,7 +73,7 @@ test("legion metadata is correct for pilgrimaged riverman", () => {
     TOKEN_ENTITY_TYPE,
     id,
     "image",
-    "ipfs://QmRqosGZZ6icx6uSDjLuFFMJiWDefZAiAZdpJdBK9BP5S4/Riverman%201.png"
+    `${LEGION_IPFS}/Genesis/Special/Riverman/4D.jpg`
   );
   assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "name", "Genesis Special");
   assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "generation", "0");
@@ -124,7 +134,7 @@ test("legion metadata is correct for pilgrimaged common legion", () => {
     TOKEN_ENTITY_TYPE,
     id,
     "image",
-    `${LEGION_IPFS}/Common%20Siege.gif`
+    `${LEGION_IPFS}/Auxiliary/Common/Siege/1A.jpg`
   );
   assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "name", "Auxiliary Common");
   assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "rarity", "Common");
@@ -184,7 +194,7 @@ test("legion metadata is correct for pilgrimaged common 5", () => {
     TOKEN_ENTITY_TYPE,
     id,
     "image",
-    "ipfs://QmRqosGZZ6icx6uSDjLuFFMJiWDefZAiAZdpJdBK9BP5S4/Common%205.png"
+    `${LEGION_IPFS}/Genesis/Common/Siege/1A.jpg`
   );
   assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "name", "Genesis Common");
   assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "rarity", "Common");
@@ -205,6 +215,14 @@ test("legion metadata is correct for pilgrimaged common 5", () => {
 // PilgrimageId = 3109 in production
 test("legion metadata is correct for pilgrimaged clocksnatcher", () => {
   clearStore();
+
+  handleTransferSingle(
+    createLegacyLegionGenesisTransferEvent(
+      Address.zero().toHexString(),
+      USER_ADDRESS,
+      55
+    )
+  );
 
   const pilgrimagesStartedEvent = createPilgrimagesStartedEvent(
     USER_ADDRESS,
@@ -250,7 +268,7 @@ test("legion metadata is correct for pilgrimaged clocksnatcher", () => {
     TOKEN_ENTITY_TYPE,
     id,
     "image",
-    "ipfs://QmRqosGZZ6icx6uSDjLuFFMJiWDefZAiAZdpJdBK9BP5S4/Clocksnatcher.png"
+    `${LEGION_IPFS}/Genesis/Legendary/Clocksnatcher.jpg`
   );
   assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "name", "Clocksnatcher");
   assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "rarity", "Legendary");

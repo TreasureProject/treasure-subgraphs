@@ -8,7 +8,8 @@ import {
   PilgrimagesStarted,
 } from "../../generated/Pilgrimage/Pilgrimage";
 import { LegionInfo, Pilgrimage, Token } from "../../generated/schema";
-import { LEGION_IPFS, getAddressId, getImageHash } from "../helpers";
+import { getAddressId } from "../helpers";
+import { getLegionImage } from "../helpers/legion";
 import * as common from "../mapping";
 
 export function handleNoPilgrimagesToFinish(
@@ -35,27 +36,21 @@ export function handlePilgrimagesFinished(event: PilgrimagesFinished): void {
     let pilgrimage = Pilgrimage.load(getAddressId(user, pilgrimageId));
 
     if (legion && pilgrimage) {
-      let token = Token.load(pilgrimage.token);
-
-      if (token) {
-        let legacyTokenId = token.tokenId.toI32();
-
+      let metadata = LegionInfo.load(`${legion.id}-metadata`);
+      let legacyToken = Token.load(pilgrimage.token);
+      if (metadata && legacyToken) {
         // 1/1 names don't change
-        if ([50, 55, 78, 81, 163].includes(legacyTokenId)) {
-          legion.name = token.name;
+        if ([50, 55, 78, 81, 163].includes(legacyToken.tokenId.toI32())) {
+          legion.name = legacyToken.name;
         }
 
-        if (70 === legacyTokenId) {
-          let metadata = LegionInfo.load(`${legion.id}-metadata`);
-
-          if (metadata) {
-            legion.image = `${LEGION_IPFS}/${metadata.rarity}%20${metadata.role}.gif`;
-          }
-        } else {
-          legion.image = getImageHash(token.tokenId, token.name)
-            .split(" ")
-            .join("%20");
-        }
+        legion.image = getLegionImage(
+          metadata.type,
+          metadata.rarity,
+          metadata.role,
+          tokenId,
+          legacyToken.tokenId
+        );
         legion.save();
       }
     }
