@@ -6,9 +6,11 @@ import {
   TransferSingle,
 } from "../../generated/Legacy Legion Genesis/ERC1155";
 import { Approval, Token, User, UserApproval } from "../../generated/schema";
+import { LEGION_IPFS, LEGION_PFP_IPFS } from "../helpers";
+import { getLegacyGenesisLegionImage } from "../helpers/legion";
 import * as common from "../mapping";
 
-function setGeneration(contract: Address, tokenId: BigInt): void {
+function setMetadata(contract: Address, tokenId: BigInt): void {
   let token = Token.load(`${contract.toHexString()}-${tokenId.toHexString()}`);
 
   if (!token) {
@@ -18,6 +20,12 @@ function setGeneration(contract: Address, tokenId: BigInt): void {
   }
 
   token.generation = 0;
+  token.image = getLegacyGenesisLegionImage(LEGION_IPFS, tokenId, token.rarity);
+  token.imageAlt = getLegacyGenesisLegionImage(
+    LEGION_PFP_IPFS,
+    tokenId,
+    token.rarity
+  );
   token.save();
 }
 
@@ -71,7 +79,7 @@ export function handleTransferBatch(event: TransferBatch): void {
 
     common.handleTransfer(event.address, params.from, params.to, id, value);
 
-    setGeneration(event.address, id);
+    setMetadata(event.address, id);
   }
 }
 
@@ -86,5 +94,5 @@ export function handleTransferSingle(event: TransferSingle): void {
     params.value
   );
 
-  setGeneration(event.address, params.id);
+  setMetadata(event.address, params.id);
 }
