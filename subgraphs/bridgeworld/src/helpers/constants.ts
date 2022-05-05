@@ -1,4 +1,4 @@
 export const DIFFICULTY = ["Easy", "Medium", "Hard"];
 export const LEGION_IPFS =
-  "ipfs://QmTxcMUqVvrHMrdLUqtSjFSbHZ4ZoQ2bUB6U7CEpA7JDiF";
+  "ipfs://QmRXV7Pu2Y2CaeYGCSWJLKXnnRgDa3qndisPwGv9ZjQowt";
 export const SUMMONING_SUCCESS_SENSITIVITY: f32 = 1;

@@ -35,7 +35,7 @@ const RARE_CLASS = [
   "Shadowguard",
 ];
 
-const mapGenesisRareClass = (tokenId: BigInt): number => {
+const mapGenesisRareClass = (tokenId: BigInt): i32 => {
   const id = tokenId.toI32();
   switch (id) {
     case 1:
@@ -120,7 +120,7 @@ const mapGenesisRareClass = (tokenId: BigInt): number => {
   }
 };
 
-const mapGenesisVariant = (tokenId: BigInt): number => {
+const mapGenesisVariant = (tokenId: BigInt): i32 => {
   const id = tokenId.toI32();
   switch (id) {
     // All-Class
@@ -320,7 +320,7 @@ const mapGenesisVariant = (tokenId: BigInt): number => {
 const convertTokenIdToVariant = (
   tokenId: BigInt,
   mappedDigit1: string | null = null
-) => {
+): string => {
   let digits = tokenId.toString().slice(-2);
   if (digits.length == 1) {
     digits = `0${digits}`;
@@ -361,36 +361,34 @@ const convertTokenIdToVariant = (
 };
 
 export const getLegionImage = (
-  type: number,
-  rarity: number,
-  role: number,
+  type: string,
+  rarity: string,
+  role: string,
   tokenId: BigInt,
-  legacyTokenId: BigInt
-) => {
-  const typeName = TYPE[type];
-  if (typeName == "Recruit") {
+  legacyTokenId: BigInt | null = null
+): string => {
+  if (type == "Recruit") {
     return `${LEGION_IPFS}/Recruit/${convertTokenIdToVariant(tokenId)}.jpg`;
   }
 
-  const rarityName = RARITY[rarity];
-  let className = CLASS[role];
-  let image = `${LEGION_IPFS}/${typeName}/${rarityName}`;
-  if (typeName == "Genesis" && rarityName != "Common") {
+  let className = role;
+  let image = `${LEGION_IPFS}/${type}/${rarity}`;
+  if (type == "Genesis" && rarity != "Common" && legacyTokenId) {
     const tokenName = getName(legacyTokenId);
 
-    if (rarityName == "Legendary") {
+    if (rarity == "Legendary") {
       return `${image}/${tokenName}.jpg`;
     }
 
     const variantDigit1 = mapGenesisVariant(legacyTokenId);
-    if (rarityName == "Rare") {
+    if (rarity == "Rare") {
       className = RARE_CLASS[mapGenesisRareClass(legacyTokenId)];
     }
 
     return `${image}/${className}/${convertTokenIdToVariant(
-      legacyTokenId,
+      tokenId,
       variantDigit1.toString()
-    )}`;
+    )}.jpg`;
   }
 
   return `${image}/${className}/${convertTokenIdToVariant(tokenId)}.jpg`;
