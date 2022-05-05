@@ -26,7 +26,7 @@ export const CLASS = [
   "Origin",
 ];
 
-const RARE_CLASS = [
+export const RARE_CLASS = [
   "Ashen Kingsguard",
   "Clockwork Marine",
   "Executioner",
@@ -34,7 +34,7 @@ const RARE_CLASS = [
   "Shadowguard",
 ];
 
-const mapGenesisRareClass = (tokenId: BigInt): i32 => {
+export const mapGenesisRareClass = (tokenId: BigInt): i32 => {
   const id = tokenId.toI32();
   switch (id) {
     case 1:

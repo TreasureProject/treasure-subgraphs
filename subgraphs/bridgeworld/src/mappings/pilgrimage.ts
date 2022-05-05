@@ -9,7 +9,11 @@ import {
 } from "../../generated/Pilgrimage/Pilgrimage";
 import { LegionInfo, Pilgrimage, Token } from "../../generated/schema";
 import { LEGION_IPFS, LEGION_PFP_IPFS, getAddressId } from "../helpers";
-import { getLegionImage } from "../helpers/legion";
+import {
+  RARE_CLASS,
+  getLegionImage,
+  mapGenesisRareClass,
+} from "../helpers/legion";
 import * as common from "../mapping";
 
 export function handleNoPilgrimagesToFinish(
@@ -60,6 +64,12 @@ export function handlePilgrimagesFinished(event: PilgrimagesFinished): void {
           tokenId,
           legacyToken.tokenId
         );
+
+        if (legacyToken.rarity == "Rare") {
+          metadata.role = RARE_CLASS[mapGenesisRareClass(legacyToken.tokenId)];
+          metadata.save();
+        }
+
         legion.save();
       }
     }

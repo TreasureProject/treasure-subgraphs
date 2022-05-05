@@ -309,3 +309,77 @@ test("legion metadata is correct for pilgrimaged clocksnatcher", () => {
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "role", "Origin");
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "boost", "6.0");
 });
+
+test("legion metadata is correct for pilgrimaged all-class 1", () => {
+  clearStore();
+
+  handleTransferSingle(
+    createLegacyLegionGenesisTransferEvent(
+      Address.zero().toHexString(),
+      USER_ADDRESS,
+      1
+    )
+  );
+
+  const pilgrimagesStartedEvent = createPilgrimagesStartedEvent(
+    USER_ADDRESS,
+    LEGACY_LEGION_GENESIS_ADDRESS,
+    1643659676,
+    [1],
+    [1],
+    [7]
+  );
+
+  handlePilgrimagesStarted(pilgrimagesStartedEvent);
+
+  const mintEvent = createLegionTransferEvent(
+    Address.zero().toHexString(),
+    USER_ADDRESS,
+    7
+  );
+
+  handleTransfer(mintEvent);
+
+  const legionCreatedEvent = createLegionCreatedEvent(USER_ADDRESS, 7, 0, 8, 1);
+
+  handleLegionCreated(legionCreatedEvent);
+
+  const pilgrimagesFinishedEvent = createPilgrimagesFinishedEvent(
+    USER_ADDRESS,
+    [7],
+    [7]
+  );
+
+  handlePilgrimagesFinished(pilgrimagesFinishedEvent);
+
+  const id = `${LEGION_ADDRESS.toHexString()}-0x7`;
+
+  assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "category", "Legion");
+  assert.fieldEquals(
+    TOKEN_ENTITY_TYPE,
+    id,
+    "image",
+    `${LEGION_IPFS}/Genesis/Rare/Executioner/3D.jpg`
+  );
+  assert.fieldEquals(
+    TOKEN_ENTITY_TYPE,
+    id,
+    "imageAlt",
+    `${LEGION_PFP_IPFS}/Genesis/Rare/Executioner/3D.jpg`
+  );
+  assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "name", "Genesis Rare");
+  assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "generation", "0");
+  assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "rarity", "Rare");
+
+  const metadata = `${id}-metadata`;
+
+  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "questing", "1");
+  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "questingXp", "0");
+  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "type", "Genesis");
+  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "summons", "0");
+  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "crafting", "1");
+  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "craftingXp", "0");
+  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "rarity", "Rare");
+  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "role", "Executioner");
+  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "boost", "2.0");
+});
