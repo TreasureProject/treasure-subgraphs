@@ -361,35 +361,38 @@ const convertTokenIdToVariant = (
 };
 
 export const getLegionImage = (
+  ipfsPrefix: string,
   type: string,
   rarity: string,
   role: string,
   tokenId: BigInt,
   legacyTokenId: BigInt | null = null
 ): string => {
+  let image = ipfsPrefix;
   if (type == "Recruit") {
-    return `${LEGION_IPFS}/Recruit/${convertTokenIdToVariant(tokenId)}.jpg`;
+    image += `/Recruit/${convertTokenIdToVariant(tokenId)}.jpg`;
+  } else {
+    let className = role;
+    image += `/${type}/${rarity}`;
+    if (type == "Genesis" && rarity != "Common" && legacyTokenId) {
+      const tokenName = getName(legacyTokenId);
+      if (rarity == "Legendary") {
+        image += `/${tokenName}.jpg`;
+      } else {
+        const variantDigit1 = mapGenesisVariant(legacyTokenId);
+        if (rarity == "Rare") {
+          className = RARE_CLASS[mapGenesisRareClass(legacyTokenId)];
+        }
+
+        image += `/${className}/${convertTokenIdToVariant(
+          tokenId,
+          variantDigit1.toString()
+        )}.jpg`;
+      }
+    } else {
+      image += `/${className}/${convertTokenIdToVariant(tokenId)}.jpg`;
+    }
   }
 
-  let className = role;
-  let image = `${LEGION_IPFS}/${type}/${rarity}`;
-  if (type == "Genesis" && rarity != "Common" && legacyTokenId) {
-    const tokenName = getName(legacyTokenId);
-
-    if (rarity == "Legendary") {
-      return `${image}/${tokenName}.jpg`;
-    }
-
-    const variantDigit1 = mapGenesisVariant(legacyTokenId);
-    if (rarity == "Rare") {
-      className = RARE_CLASS[mapGenesisRareClass(legacyTokenId)];
-    }
-
-    return `${image}/${className}/${convertTokenIdToVariant(
-      tokenId,
-      variantDigit1.toString()
-    )}.jpg`;
-  }
-
-  return `${image}/${className}/${convertTokenIdToVariant(tokenId)}.jpg`;
+  return image;
 };

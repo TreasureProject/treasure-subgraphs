@@ -13,7 +13,7 @@ test("legion images are correct", () => {
       "Assassin",
       "1",
       "",
-      `${LEGION_IPFS}/Auxiliary/Common/Assassin/1A.jpg`,
+      "/Auxiliary/Common/Assassin/1A.jpg",
     ],
     [
       "Auxiliary",
@@ -21,31 +21,17 @@ test("legion images are correct", () => {
       "Fighter",
       "2",
       "",
-      `${LEGION_IPFS}/Auxiliary/Common/Fighter/1B.jpg`,
+      "/Auxiliary/Common/Fighter/1B.jpg",
     ],
-    [
-      "Auxiliary",
-      "Common",
-      "Range",
-      "3",
-      "",
-      `${LEGION_IPFS}/Auxiliary/Common/Range/1B.jpg`,
-    ],
-    [
-      "Auxiliary",
-      "Common",
-      "Siege",
-      "4",
-      "",
-      `${LEGION_IPFS}/Auxiliary/Common/Siege/1C.jpg`,
-    ],
+    ["Auxiliary", "Common", "Range", "3", "", "/Auxiliary/Common/Range/1B.jpg"],
+    ["Auxiliary", "Common", "Siege", "4", "", "/Auxiliary/Common/Siege/1C.jpg"],
     [
       "Auxiliary",
       "Common",
       "Spellcaster",
       "5",
       "",
-      `${LEGION_IPFS}/Auxiliary/Common/Spellcaster/1C.jpg`,
+      "/Auxiliary/Common/Spellcaster/1C.jpg",
     ],
     [
       "Auxiliary",
@@ -53,7 +39,7 @@ test("legion images are correct", () => {
       "Assassin",
       "6",
       "",
-      `${LEGION_IPFS}/Auxiliary/Common/Assassin/1D.jpg`,
+      "/Auxiliary/Common/Assassin/1D.jpg",
     ],
     [
       "Auxiliary",
@@ -61,43 +47,29 @@ test("legion images are correct", () => {
       "Fighter",
       "7",
       "",
-      `${LEGION_IPFS}/Auxiliary/Common/Fighter/1D.jpg`,
+      "/Auxiliary/Common/Fighter/1D.jpg",
     ],
-    [
-      "Auxiliary",
-      "Common",
-      "Range",
-      "8",
-      "",
-      `${LEGION_IPFS}/Auxiliary/Common/Range/1E.jpg`,
-    ],
-    [
-      "Auxiliary",
-      "Common",
-      "Siege",
-      "9",
-      "",
-      `${LEGION_IPFS}/Auxiliary/Common/Siege/1E.jpg`,
-    ],
+    ["Auxiliary", "Common", "Range", "8", "", "/Auxiliary/Common/Range/1E.jpg"],
+    ["Auxiliary", "Common", "Siege", "9", "", "/Auxiliary/Common/Siege/1E.jpg"],
     [
       "Auxiliary",
       "Common",
       "Spellcaster",
       "10",
       "",
-      `${LEGION_IPFS}/Auxiliary/Common/Spellcaster/1A.jpg`,
+      "/Auxiliary/Common/Spellcaster/1A.jpg",
     ],
-    ["Recruit", "None", "None", "123", "", `${LEGION_IPFS}/Recruit/2B.jpg`],
-    ["Recruit", "None", "None", "134", "", `${LEGION_IPFS}/Recruit/2C.jpg`],
-    ["Recruit", "None", "None", "156", "", `${LEGION_IPFS}/Recruit/3D.jpg`],
-    ["Recruit", "None", "None", "167", "", `${LEGION_IPFS}/Recruit/4D.jpg`],
+    ["Recruit", "None", "None", "123", "", "/Recruit/2B.jpg"],
+    ["Recruit", "None", "None", "134", "", "/Recruit/2C.jpg"],
+    ["Recruit", "None", "None", "156", "", "/Recruit/3D.jpg"],
+    ["Recruit", "None", "None", "167", "", "/Recruit/4D.jpg"],
     [
       "Auxiliary",
       "Uncommon",
       "Assassin",
       "12101",
       "",
-      `${LEGION_IPFS}/Auxiliary/Uncommon/Assassin/1A.jpg`,
+      "/Auxiliary/Uncommon/Assassin/1A.jpg",
     ],
     [
       "Auxiliary",
@@ -105,7 +77,7 @@ test("legion images are correct", () => {
       "Fighter",
       "12132",
       "",
-      `${LEGION_IPFS}/Auxiliary/Uncommon/Fighter/2B.jpg`,
+      "/Auxiliary/Uncommon/Fighter/2B.jpg",
     ],
     [
       "Auxiliary",
@@ -113,7 +85,7 @@ test("legion images are correct", () => {
       "Range",
       "12158",
       "",
-      `${LEGION_IPFS}/Auxiliary/Uncommon/Range/3E.jpg`,
+      "/Auxiliary/Uncommon/Range/3E.jpg",
     ],
     [
       "Auxiliary",
@@ -121,7 +93,7 @@ test("legion images are correct", () => {
       "Siege",
       "12171",
       "",
-      `${LEGION_IPFS}/Auxiliary/Uncommon/Siege/4A.jpg`,
+      "/Auxiliary/Uncommon/Siege/4A.jpg",
     ],
     [
       "Auxiliary",
@@ -129,7 +101,7 @@ test("legion images are correct", () => {
       "Spellcaster",
       "12192",
       "",
-      `${LEGION_IPFS}/Auxiliary/Uncommon/Spellcaster/5B.jpg`,
+      "/Auxiliary/Uncommon/Spellcaster/5B.jpg",
     ],
     [
       "Genesis",
@@ -137,7 +109,7 @@ test("legion images are correct", () => {
       "Bombmaker",
       "2345",
       "50",
-      `${LEGION_IPFS}/Genesis/Legendary/Bombmaker.jpg`,
+      "/Genesis/Legendary/Bombmaker.jpg",
     ],
     [
       "Genesis",
@@ -145,7 +117,7 @@ test("legion images are correct", () => {
       "Clocksnatcher",
       "2345",
       "55",
-      `${LEGION_IPFS}/Genesis/Legendary/Clocksnatcher.jpg`,
+      "/Genesis/Legendary/Clocksnatcher.jpg",
     ],
     [
       "Genesis",
@@ -153,7 +125,7 @@ test("legion images are correct", () => {
       "Dreamwinder",
       "2345",
       "78",
-      `${LEGION_IPFS}/Genesis/Legendary/Dreamwinder.jpg`,
+      "/Genesis/Legendary/Dreamwinder.jpg",
     ],
     [
       "Genesis",
@@ -161,7 +133,7 @@ test("legion images are correct", () => {
       "Fallen",
       "2345",
       "81",
-      `${LEGION_IPFS}/Genesis/Legendary/Fallen.jpg`,
+      "/Genesis/Legendary/Fallen.jpg",
     ],
     [
       "Genesis",
@@ -169,7 +141,7 @@ test("legion images are correct", () => {
       "All-Class",
       "12312",
       "1",
-      `${LEGION_IPFS}/Genesis/Rare/Executioner/3B.jpg`,
+      "/Genesis/Rare/Executioner/3B.jpg",
     ],
     [
       "Genesis",
@@ -177,7 +149,7 @@ test("legion images are correct", () => {
       "All-Class",
       "12342",
       "2",
-      `${LEGION_IPFS}/Genesis/Rare/Clockwork Marine/2B.jpg`,
+      "/Genesis/Rare/Clockwork Marine/2B.jpg",
     ],
     [
       "Genesis",
@@ -185,7 +157,7 @@ test("legion images are correct", () => {
       "All-Class",
       "12388",
       "3",
-      `${LEGION_IPFS}/Genesis/Rare/Shadowguard/5E.jpg`,
+      "/Genesis/Rare/Shadowguard/5E.jpg",
     ],
     [
       "Genesis",
@@ -193,7 +165,7 @@ test("legion images are correct", () => {
       "All-Class",
       "12363",
       "4",
-      `${LEGION_IPFS}/Genesis/Rare/Ashen Kingsguard/2B.jpg`,
+      "/Genesis/Rare/Ashen Kingsguard/2B.jpg",
     ],
     [
       "Genesis",
@@ -201,7 +173,7 @@ test("legion images are correct", () => {
       "All-Class",
       "12338",
       "5",
-      `${LEGION_IPFS}/Genesis/Rare/Reaper/2E.jpg`,
+      "/Genesis/Rare/Reaper/2E.jpg",
     ],
     [
       "Genesis",
@@ -209,7 +181,7 @@ test("legion images are correct", () => {
       "All-Class",
       "12300",
       "6",
-      `${LEGION_IPFS}/Genesis/Rare/Reaper/1A.jpg`,
+      "/Genesis/Rare/Reaper/1A.jpg",
     ],
     [
       "Genesis",
@@ -217,7 +189,7 @@ test("legion images are correct", () => {
       "All-Class",
       "12310",
       "7",
-      `${LEGION_IPFS}/Genesis/Rare/Reaper/4A.jpg`,
+      "/Genesis/Rare/Reaper/4A.jpg",
     ],
     [
       "Genesis",
@@ -225,7 +197,7 @@ test("legion images are correct", () => {
       "All-Class",
       "12322",
       "8",
-      `${LEGION_IPFS}/Genesis/Rare/Reaper/2B.jpg`,
+      "/Genesis/Rare/Reaper/2B.jpg",
     ],
     [
       "Genesis",
@@ -233,7 +205,7 @@ test("legion images are correct", () => {
       "All-Class",
       "12329",
       "9",
-      `${LEGION_IPFS}/Genesis/Rare/Reaper/2E.jpg`,
+      "/Genesis/Rare/Reaper/2E.jpg",
     ],
     [
       "Genesis",
@@ -241,7 +213,7 @@ test("legion images are correct", () => {
       "All-Class",
       "12337",
       "10",
-      `${LEGION_IPFS}/Genesis/Rare/Shadowguard/4D.jpg`,
+      "/Genesis/Rare/Shadowguard/4D.jpg",
     ],
     [
       "Genesis",
@@ -249,7 +221,7 @@ test("legion images are correct", () => {
       "All-Class",
       "12391",
       "11",
-      `${LEGION_IPFS}/Genesis/Rare/Shadowguard/3A.jpg`,
+      "/Genesis/Rare/Shadowguard/3A.jpg",
     ],
     [
       "Genesis",
@@ -257,7 +229,7 @@ test("legion images are correct", () => {
       "All-Class",
       "12383",
       "12",
-      `${LEGION_IPFS}/Genesis/Rare/Shadowguard/2B.jpg`,
+      "/Genesis/Rare/Shadowguard/2B.jpg",
     ],
     [
       "Genesis",
@@ -265,7 +237,7 @@ test("legion images are correct", () => {
       "All-Class",
       "12347",
       "13",
-      `${LEGION_IPFS}/Genesis/Rare/Executioner/1D.jpg`,
+      "/Genesis/Rare/Executioner/1D.jpg",
     ],
     [
       "Genesis",
@@ -273,7 +245,7 @@ test("legion images are correct", () => {
       "All-Class",
       "12358",
       "14",
-      `${LEGION_IPFS}/Genesis/Rare/Executioner/3E.jpg`,
+      "/Genesis/Rare/Executioner/3E.jpg",
     ],
     [
       "Genesis",
@@ -281,7 +253,7 @@ test("legion images are correct", () => {
       "All-Class",
       "12388",
       "15",
-      `${LEGION_IPFS}/Genesis/Rare/Executioner/3E.jpg`,
+      "/Genesis/Rare/Executioner/3E.jpg",
     ],
     [
       "Genesis",
@@ -289,7 +261,7 @@ test("legion images are correct", () => {
       "All-Class",
       "12344",
       "16",
-      `${LEGION_IPFS}/Genesis/Rare/Executioner/3C.jpg`,
+      "/Genesis/Rare/Executioner/3C.jpg",
     ],
     [
       "Genesis",
@@ -297,7 +269,7 @@ test("legion images are correct", () => {
       "All-Class",
       "12328",
       "17",
-      `${LEGION_IPFS}/Genesis/Rare/Clockwork Marine/4E.jpg`,
+      "/Genesis/Rare/Clockwork Marine/4E.jpg",
     ],
     [
       "Genesis",
@@ -305,7 +277,7 @@ test("legion images are correct", () => {
       "All-Class",
       "12347",
       "18",
-      `${LEGION_IPFS}/Genesis/Rare/Clockwork Marine/1D.jpg`,
+      "/Genesis/Rare/Clockwork Marine/1D.jpg",
     ],
     [
       "Genesis",
@@ -313,7 +285,7 @@ test("legion images are correct", () => {
       "All-Class",
       "12381",
       "19",
-      `${LEGION_IPFS}/Genesis/Rare/Clockwork Marine/4A.jpg`,
+      "/Genesis/Rare/Clockwork Marine/4A.jpg",
     ],
     [
       "Genesis",
@@ -321,7 +293,7 @@ test("legion images are correct", () => {
       "All-Class",
       "12303",
       "20",
-      `${LEGION_IPFS}/Genesis/Rare/Clockwork Marine/3B.jpg`,
+      "/Genesis/Rare/Clockwork Marine/3B.jpg",
     ],
     [
       "Genesis",
@@ -329,7 +301,7 @@ test("legion images are correct", () => {
       "All-Class",
       "12353",
       "21",
-      `${LEGION_IPFS}/Genesis/Rare/Ashen Kingsguard/1B.jpg`,
+      "/Genesis/Rare/Ashen Kingsguard/1B.jpg",
     ],
     [
       "Genesis",
@@ -337,7 +309,7 @@ test("legion images are correct", () => {
       "All-Class",
       "12342",
       "22",
-      `${LEGION_IPFS}/Genesis/Rare/Ashen Kingsguard/1B.jpg`,
+      "/Genesis/Rare/Ashen Kingsguard/1B.jpg",
     ],
     [
       "Genesis",
@@ -345,7 +317,7 @@ test("legion images are correct", () => {
       "All-Class",
       "12383",
       "23",
-      `${LEGION_IPFS}/Genesis/Rare/Ashen Kingsguard/3B.jpg`,
+      "/Genesis/Rare/Ashen Kingsguard/3B.jpg",
     ],
     [
       "Genesis",
@@ -353,7 +325,7 @@ test("legion images are correct", () => {
       "All-Class",
       "12301",
       "24",
-      `${LEGION_IPFS}/Genesis/Rare/Reaper/4A.jpg`,
+      "/Genesis/Rare/Reaper/4A.jpg",
     ],
     [
       "Genesis",
@@ -361,7 +333,7 @@ test("legion images are correct", () => {
       "All-Class",
       "12389",
       "25",
-      `${LEGION_IPFS}/Genesis/Rare/Shadowguard/4E.jpg`,
+      "/Genesis/Rare/Shadowguard/4E.jpg",
     ],
     [
       "Genesis",
@@ -369,7 +341,7 @@ test("legion images are correct", () => {
       "All-Class",
       "12398",
       "26",
-      `${LEGION_IPFS}/Genesis/Rare/Executioner/4E.jpg`,
+      "/Genesis/Rare/Executioner/4E.jpg",
     ],
     [
       "Genesis",
@@ -377,7 +349,7 @@ test("legion images are correct", () => {
       "All-Class",
       "12347",
       "27",
-      `${LEGION_IPFS}/Genesis/Rare/Clockwork Marine/4D.jpg`,
+      "/Genesis/Rare/Clockwork Marine/4D.jpg",
     ],
     [
       "Genesis",
@@ -385,7 +357,7 @@ test("legion images are correct", () => {
       "All-Class",
       "12392",
       "28",
-      `${LEGION_IPFS}/Genesis/Rare/Reaper/3B.jpg`,
+      "/Genesis/Rare/Reaper/3B.jpg",
     ],
     [
       "Genesis",
@@ -393,7 +365,7 @@ test("legion images are correct", () => {
       "All-Class",
       "12383",
       "29",
-      `${LEGION_IPFS}/Genesis/Rare/Shadowguard/3B.jpg`,
+      "/Genesis/Rare/Shadowguard/3B.jpg",
     ],
     [
       "Genesis",
@@ -401,7 +373,7 @@ test("legion images are correct", () => {
       "All-Class",
       "12319",
       "30",
-      `${LEGION_IPFS}/Genesis/Rare/Executioner/3E.jpg`,
+      "/Genesis/Rare/Executioner/3E.jpg",
     ],
     [
       "Genesis",
@@ -409,7 +381,7 @@ test("legion images are correct", () => {
       "All-Class",
       "12383",
       "31",
-      `${LEGION_IPFS}/Genesis/Rare/Clockwork Marine/3B.jpg`,
+      "/Genesis/Rare/Clockwork Marine/3B.jpg",
     ],
     [
       "Genesis",
@@ -417,7 +389,7 @@ test("legion images are correct", () => {
       "All-Class",
       "12374",
       "32",
-      `${LEGION_IPFS}/Genesis/Rare/Reaper/2C.jpg`,
+      "/Genesis/Rare/Reaper/2C.jpg",
     ],
     [
       "Genesis",
@@ -425,7 +397,7 @@ test("legion images are correct", () => {
       "All-Class",
       "12382",
       "33",
-      `${LEGION_IPFS}/Genesis/Rare/Executioner/2B.jpg`,
+      "/Genesis/Rare/Executioner/2B.jpg",
     ],
     [
       "Genesis",
@@ -433,7 +405,7 @@ test("legion images are correct", () => {
       "All-Class",
       "12373",
       "34",
-      `${LEGION_IPFS}/Genesis/Rare/Clockwork Marine/2B.jpg`,
+      "/Genesis/Rare/Clockwork Marine/2B.jpg",
     ],
     [
       "Genesis",
@@ -441,7 +413,7 @@ test("legion images are correct", () => {
       "All-Class",
       "12348",
       "35",
-      `${LEGION_IPFS}/Genesis/Rare/Reaper/4E.jpg`,
+      "/Genesis/Rare/Reaper/4E.jpg",
     ],
     [
       "Genesis",
@@ -449,7 +421,7 @@ test("legion images are correct", () => {
       "All-Class",
       "12392",
       "36",
-      `${LEGION_IPFS}/Genesis/Rare/Shadowguard/4B.jpg`,
+      "/Genesis/Rare/Shadowguard/4B.jpg",
     ],
     [
       "Genesis",
@@ -457,7 +429,7 @@ test("legion images are correct", () => {
       "All-Class",
       "12339",
       "37",
-      `${LEGION_IPFS}/Genesis/Rare/Executioner/4E.jpg`,
+      "/Genesis/Rare/Executioner/4E.jpg",
     ],
     [
       "Genesis",
@@ -465,7 +437,7 @@ test("legion images are correct", () => {
       "All-Class",
       "12332",
       "38",
-      `${LEGION_IPFS}/Genesis/Rare/Clockwork Marine/5B.jpg`,
+      "/Genesis/Rare/Clockwork Marine/5B.jpg",
     ],
     [
       "Genesis",
@@ -473,7 +445,7 @@ test("legion images are correct", () => {
       "Numeraire",
       "12482",
       "106",
-      `${LEGION_IPFS}/Genesis/Special/Numeraire/5B.jpg`,
+      "/Genesis/Special/Numeraire/5B.jpg",
     ],
     [
       "Genesis",
@@ -481,7 +453,7 @@ test("legion images are correct", () => {
       "Numeraire",
       "12429",
       "107",
-      `${LEGION_IPFS}/Genesis/Special/Numeraire/3E.jpg`,
+      "/Genesis/Special/Numeraire/3E.jpg",
     ],
     [
       "Genesis",
@@ -489,7 +461,7 @@ test("legion images are correct", () => {
       "Numeraire",
       "12491",
       "108",
-      `${LEGION_IPFS}/Genesis/Special/Numeraire/3A.jpg`,
+      "/Genesis/Special/Numeraire/3A.jpg",
     ],
     [
       "Genesis",
@@ -497,7 +469,7 @@ test("legion images are correct", () => {
       "Numeraire",
       "12421",
       "109",
-      `${LEGION_IPFS}/Genesis/Special/Numeraire/3A.jpg`,
+      "/Genesis/Special/Numeraire/3A.jpg",
     ],
     [
       "Genesis",
@@ -505,7 +477,7 @@ test("legion images are correct", () => {
       "Numeraire",
       "12411",
       "110",
-      `${LEGION_IPFS}/Genesis/Special/Numeraire/1A.jpg`,
+      "/Genesis/Special/Numeraire/1A.jpg",
     ],
     [
       "Genesis",
@@ -513,7 +485,7 @@ test("legion images are correct", () => {
       "Numeraire",
       "12483",
       "111",
-      `${LEGION_IPFS}/Genesis/Special/Numeraire/4B.jpg`,
+      "/Genesis/Special/Numeraire/4B.jpg",
     ],
     [
       "Genesis",
@@ -521,7 +493,7 @@ test("legion images are correct", () => {
       "Numeraire",
       "12493",
       "112",
-      `${LEGION_IPFS}/Genesis/Special/Numeraire/2B.jpg`,
+      "/Genesis/Special/Numeraire/2B.jpg",
     ],
     [
       "Genesis",
@@ -529,7 +501,7 @@ test("legion images are correct", () => {
       "Numeraire",
       "12429",
       "113",
-      `${LEGION_IPFS}/Genesis/Special/Numeraire/1E.jpg`,
+      "/Genesis/Special/Numeraire/1E.jpg",
     ],
     [
       "Genesis",
@@ -537,7 +509,7 @@ test("legion images are correct", () => {
       "Riverman",
       "12582",
       "134",
-      `${LEGION_IPFS}/Genesis/Special/Riverman/4B.jpg`,
+      "/Genesis/Special/Riverman/4B.jpg",
     ],
     [
       "Genesis",
@@ -545,7 +517,7 @@ test("legion images are correct", () => {
       "Riverman",
       "12523",
       "135",
-      `${LEGION_IPFS}/Genesis/Special/Riverman/1B.jpg`,
+      "/Genesis/Special/Riverman/1B.jpg",
     ],
     [
       "Genesis",
@@ -553,7 +525,7 @@ test("legion images are correct", () => {
       "Riverman",
       "12521",
       "136",
-      `${LEGION_IPFS}/Genesis/Special/Riverman/4A.jpg`,
+      "/Genesis/Special/Riverman/4A.jpg",
     ],
     [
       "Genesis",
@@ -561,7 +533,7 @@ test("legion images are correct", () => {
       "Riverman",
       "12593",
       "137",
-      `${LEGION_IPFS}/Genesis/Special/Riverman/4B.jpg`,
+      "/Genesis/Special/Riverman/4B.jpg",
     ],
     [
       "Genesis",
@@ -569,7 +541,7 @@ test("legion images are correct", () => {
       "Riverman",
       "12520",
       "138",
-      `${LEGION_IPFS}/Genesis/Special/Riverman/5A.jpg`,
+      "/Genesis/Special/Riverman/5A.jpg",
     ],
     [
       "Genesis",
@@ -577,7 +549,7 @@ test("legion images are correct", () => {
       "Riverman",
       "12592",
       "139",
-      `${LEGION_IPFS}/Genesis/Special/Riverman/3B.jpg`,
+      "/Genesis/Special/Riverman/3B.jpg",
     ],
     [
       "Genesis",
@@ -585,7 +557,7 @@ test("legion images are correct", () => {
       "Riverman",
       "12521",
       "140",
-      `${LEGION_IPFS}/Genesis/Special/Riverman/2A.jpg`,
+      "/Genesis/Special/Riverman/2A.jpg",
     ],
     [
       "Genesis",
@@ -593,7 +565,7 @@ test("legion images are correct", () => {
       "Assassin",
       "12683",
       "40",
-      `${LEGION_IPFS}/Genesis/Uncommon/Assassin/1B.jpg`,
+      "/Genesis/Uncommon/Assassin/1B.jpg",
     ],
     [
       "Genesis",
@@ -601,7 +573,7 @@ test("legion images are correct", () => {
       "Assassin",
       "12634",
       "41",
-      `${LEGION_IPFS}/Genesis/Uncommon/Assassin/3C.jpg`,
+      "/Genesis/Uncommon/Assassin/3C.jpg",
     ],
     [
       "Genesis",
@@ -609,7 +581,7 @@ test("legion images are correct", () => {
       "Assassin",
       "12632",
       "42",
-      `${LEGION_IPFS}/Genesis/Uncommon/Assassin/2B.jpg`,
+      "/Genesis/Uncommon/Assassin/2B.jpg",
     ],
     [
       "Genesis",
@@ -617,7 +589,7 @@ test("legion images are correct", () => {
       "Assassin",
       "12698",
       "43",
-      `${LEGION_IPFS}/Genesis/Uncommon/Assassin/5E.jpg`,
+      "/Genesis/Uncommon/Assassin/5E.jpg",
     ],
     [
       "Genesis",
@@ -625,7 +597,7 @@ test("legion images are correct", () => {
       "Assassin",
       "12603",
       "44",
-      `${LEGION_IPFS}/Genesis/Uncommon/Assassin/4B.jpg`,
+      "/Genesis/Uncommon/Assassin/4B.jpg",
     ],
     [
       "Genesis",
@@ -633,7 +605,7 @@ test("legion images are correct", () => {
       "Fighter",
       "12632",
       "83",
-      `${LEGION_IPFS}/Genesis/Uncommon/Fighter/1B.jpg`,
+      "/Genesis/Uncommon/Fighter/1B.jpg",
     ],
     [
       "Genesis",
@@ -641,7 +613,7 @@ test("legion images are correct", () => {
       "Fighter",
       "12666",
       "84",
-      `${LEGION_IPFS}/Genesis/Uncommon/Fighter/4D.jpg`,
+      "/Genesis/Uncommon/Fighter/4D.jpg",
     ],
     [
       "Genesis",
@@ -649,7 +621,7 @@ test("legion images are correct", () => {
       "Fighter",
       "12202",
       "85",
-      `${LEGION_IPFS}/Genesis/Uncommon/Fighter/5B.jpg`,
+      "/Genesis/Uncommon/Fighter/5B.jpg",
     ],
     [
       "Genesis",
@@ -657,7 +629,7 @@ test("legion images are correct", () => {
       "Fighter",
       "12192",
       "86",
-      `${LEGION_IPFS}/Genesis/Uncommon/Fighter/2B.jpg`,
+      "/Genesis/Uncommon/Fighter/2B.jpg",
     ],
     [
       "Genesis",
@@ -665,7 +637,7 @@ test("legion images are correct", () => {
       "Fighter",
       "12293",
       "87",
-      `${LEGION_IPFS}/Genesis/Uncommon/Fighter/1B.jpg`,
+      "/Genesis/Uncommon/Fighter/1B.jpg",
     ],
     [
       "Genesis",
@@ -673,7 +645,7 @@ test("legion images are correct", () => {
       "Fighter",
       "12845",
       "88",
-      `${LEGION_IPFS}/Genesis/Uncommon/Fighter/3C.jpg`,
+      "/Genesis/Uncommon/Fighter/3C.jpg",
     ],
     [
       "Genesis",
@@ -681,7 +653,7 @@ test("legion images are correct", () => {
       "Fighter",
       "12822",
       "89",
-      `${LEGION_IPFS}/Genesis/Uncommon/Fighter/3B.jpg`,
+      "/Genesis/Uncommon/Fighter/3B.jpg",
     ],
     [
       "Genesis",
@@ -689,7 +661,7 @@ test("legion images are correct", () => {
       "Ranger",
       "12400",
       "118",
-      `${LEGION_IPFS}/Genesis/Uncommon/Ranger/3A.jpg`,
+      "/Genesis/Uncommon/Ranger/3A.jpg",
     ],
     [
       "Genesis",
@@ -697,7 +669,7 @@ test("legion images are correct", () => {
       "Ranger",
       "12092",
       "119",
-      `${LEGION_IPFS}/Genesis/Uncommon/Ranger/2B.jpg`,
+      "/Genesis/Uncommon/Ranger/2B.jpg",
     ],
     [
       "Genesis",
@@ -705,7 +677,7 @@ test("legion images are correct", () => {
       "Ranger",
       "12029",
       "120",
-      `${LEGION_IPFS}/Genesis/Uncommon/Ranger/3E.jpg`,
+      "/Genesis/Uncommon/Ranger/3E.jpg",
     ],
     [
       "Genesis",
@@ -713,7 +685,7 @@ test("legion images are correct", () => {
       "Ranger",
       "12820",
       "121",
-      `${LEGION_IPFS}/Genesis/Uncommon/Ranger/4A.jpg`,
+      "/Genesis/Uncommon/Ranger/4A.jpg",
     ],
     [
       "Genesis",
@@ -721,7 +693,7 @@ test("legion images are correct", () => {
       "Ranger",
       "12982",
       "122",
-      `${LEGION_IPFS}/Genesis/Uncommon/Ranger/4B.jpg`,
+      "/Genesis/Uncommon/Ranger/4B.jpg",
     ],
     [
       "Genesis",
@@ -729,7 +701,7 @@ test("legion images are correct", () => {
       "Ranger",
       "12298",
       "123",
-      `${LEGION_IPFS}/Genesis/Uncommon/Ranger/2E.jpg`,
+      "/Genesis/Uncommon/Ranger/2E.jpg",
     ],
     [
       "Genesis",
@@ -737,7 +709,7 @@ test("legion images are correct", () => {
       "Ranger",
       "12280",
       "124",
-      `${LEGION_IPFS}/Genesis/Uncommon/Ranger/2A.jpg`,
+      "/Genesis/Uncommon/Ranger/2A.jpg",
     ],
     [
       "Genesis",
@@ -745,7 +717,7 @@ test("legion images are correct", () => {
       "Ranger",
       "12349",
       "125",
-      `${LEGION_IPFS}/Genesis/Uncommon/Ranger/1E.jpg`,
+      "/Genesis/Uncommon/Ranger/1E.jpg",
     ],
     [
       "Genesis",
@@ -753,7 +725,7 @@ test("legion images are correct", () => {
       "Ranger",
       "12209",
       "126",
-      `${LEGION_IPFS}/Genesis/Uncommon/Ranger/5E.jpg`,
+      "/Genesis/Uncommon/Ranger/5E.jpg",
     ],
     [
       "Genesis",
@@ -761,7 +733,7 @@ test("legion images are correct", () => {
       "Ranger",
       "12200",
       "127",
-      `${LEGION_IPFS}/Genesis/Uncommon/Ranger/4A.jpg`,
+      "/Genesis/Uncommon/Ranger/4A.jpg",
     ],
     [
       "Genesis",
@@ -769,7 +741,7 @@ test("legion images are correct", () => {
       "Ranger",
       "12848",
       "128",
-      `${LEGION_IPFS}/Genesis/Uncommon/Ranger/3E.jpg`,
+      "/Genesis/Uncommon/Ranger/3E.jpg",
     ],
     [
       "Genesis",
@@ -777,7 +749,7 @@ test("legion images are correct", () => {
       "Ranger",
       "12493",
       "129",
-      `${LEGION_IPFS}/Genesis/Uncommon/Ranger/2B.jpg`,
+      "/Genesis/Uncommon/Ranger/2B.jpg",
     ],
     [
       "Genesis",
@@ -785,7 +757,7 @@ test("legion images are correct", () => {
       "Ranger",
       "12404",
       "130",
-      `${LEGION_IPFS}/Genesis/Uncommon/Ranger/5C.jpg`,
+      "/Genesis/Uncommon/Ranger/5C.jpg",
     ],
     [
       "Genesis",
@@ -793,7 +765,7 @@ test("legion images are correct", () => {
       "Siege",
       "12209",
       "144",
-      `${LEGION_IPFS}/Genesis/Uncommon/Siege/4E.jpg`,
+      "/Genesis/Uncommon/Siege/4E.jpg",
     ],
     [
       "Genesis",
@@ -801,7 +773,7 @@ test("legion images are correct", () => {
       "Siege",
       "12439",
       "145",
-      `${LEGION_IPFS}/Genesis/Uncommon/Siege/2E.jpg`,
+      "/Genesis/Uncommon/Siege/2E.jpg",
     ],
     [
       "Genesis",
@@ -809,7 +781,7 @@ test("legion images are correct", () => {
       "Siege",
       "12402",
       "146",
-      `${LEGION_IPFS}/Genesis/Uncommon/Siege/3B.jpg`,
+      "/Genesis/Uncommon/Siege/3B.jpg",
     ],
     [
       "Genesis",
@@ -817,7 +789,7 @@ test("legion images are correct", () => {
       "Siege",
       "12209",
       "147",
-      `${LEGION_IPFS}/Genesis/Uncommon/Siege/5E.jpg`,
+      "/Genesis/Uncommon/Siege/5E.jpg",
     ],
     [
       "Genesis",
@@ -825,7 +797,7 @@ test("legion images are correct", () => {
       "Siege",
       "12242",
       "148",
-      `${LEGION_IPFS}/Genesis/Uncommon/Siege/5B.jpg`,
+      "/Genesis/Uncommon/Siege/5B.jpg",
     ],
     [
       "Genesis",
@@ -833,7 +805,7 @@ test("legion images are correct", () => {
       "Siege",
       "12029",
       "149",
-      `${LEGION_IPFS}/Genesis/Uncommon/Siege/1E.jpg`,
+      "/Genesis/Uncommon/Siege/1E.jpg",
     ],
     [
       "Genesis",
@@ -841,7 +813,7 @@ test("legion images are correct", () => {
       "Spellcaster",
       "12353",
       "154",
-      `${LEGION_IPFS}/Genesis/Uncommon/Spellcaster/5B.jpg`,
+      "/Genesis/Uncommon/Spellcaster/5B.jpg",
     ],
     [
       "Genesis",
@@ -849,7 +821,7 @@ test("legion images are correct", () => {
       "Spellcaster",
       "12345",
       "155",
-      `${LEGION_IPFS}/Genesis/Uncommon/Spellcaster/3C.jpg`,
+      "/Genesis/Uncommon/Spellcaster/3C.jpg",
     ],
     [
       "Genesis",
@@ -857,7 +829,7 @@ test("legion images are correct", () => {
       "Spellcaster",
       "12243",
       "156",
-      `${LEGION_IPFS}/Genesis/Uncommon/Spellcaster/2B.jpg`,
+      "/Genesis/Uncommon/Spellcaster/2B.jpg",
     ],
     [
       "Genesis",
@@ -865,7 +837,7 @@ test("legion images are correct", () => {
       "Spellcaster",
       "12029",
       "157",
-      `${LEGION_IPFS}/Genesis/Uncommon/Spellcaster/2E.jpg`,
+      "/Genesis/Uncommon/Spellcaster/2E.jpg",
     ],
     [
       "Genesis",
@@ -873,7 +845,7 @@ test("legion images are correct", () => {
       "Spellcaster",
       "12832",
       "158",
-      `${LEGION_IPFS}/Genesis/Uncommon/Spellcaster/4B.jpg`,
+      "/Genesis/Uncommon/Spellcaster/4B.jpg",
     ],
     [
       "Genesis",
@@ -881,7 +853,7 @@ test("legion images are correct", () => {
       "Spellcaster",
       "12389",
       "159",
-      `${LEGION_IPFS}/Genesis/Uncommon/Spellcaster/1E.jpg`,
+      "/Genesis/Uncommon/Spellcaster/1E.jpg",
     ],
     [
       "Genesis",
@@ -889,7 +861,7 @@ test("legion images are correct", () => {
       "Warlock",
       "12209",
       "163",
-      `${LEGION_IPFS}/Genesis/Legendary/Warlock.jpg`,
+      "/Genesis/Legendary/Warlock.jpg",
     ],
     [
       "Genesis",
@@ -897,7 +869,7 @@ test("legion images are correct", () => {
       "Assassin",
       "12134",
       "",
-      `${LEGION_IPFS}/Genesis/Common/Assassin/2C.jpg`,
+      "/Genesis/Common/Assassin/2C.jpg",
     ],
     [
       "Genesis",
@@ -905,23 +877,16 @@ test("legion images are correct", () => {
       "Fighter",
       "12872",
       "",
-      `${LEGION_IPFS}/Genesis/Common/Fighter/4B.jpg`,
+      "/Genesis/Common/Fighter/4B.jpg",
     ],
-    [
-      "Genesis",
-      "Common",
-      "Siege",
-      "12911",
-      "",
-      `${LEGION_IPFS}/Genesis/Common/Siege/1A.jpg`,
-    ],
+    ["Genesis", "Common", "Siege", "12911", "", "/Genesis/Common/Siege/1A.jpg"],
     [
       "Genesis",
       "Common",
       "Ranger",
       "12341",
       "",
-      `${LEGION_IPFS}/Genesis/Common/Ranger/3A.jpg`,
+      "/Genesis/Common/Ranger/3A.jpg",
     ],
     [
       "Genesis",
@@ -929,19 +894,20 @@ test("legion images are correct", () => {
       "Spellcaster",
       "12777",
       "",
-      `${LEGION_IPFS}/Genesis/Common/Spellcaster/4D.jpg`,
+      "/Genesis/Common/Spellcaster/4D.jpg",
     ],
   ];
 
   for (let i = 0; i < expectedLegions.length; i++) {
     const legion = expectedLegions[i];
     const image = getLegionImage(
+      LEGION_IPFS,
       legion[0],
       legion[1],
       legion[2],
       BigInt.fromString(legion[3]),
       legion[4] != "" ? BigInt.fromString(legion[4]) : null
     );
-    assert.stringEquals(legion[5], image);
+    assert.stringEquals(`${LEGION_IPFS}${legion[5]}`, image);
   }
 });

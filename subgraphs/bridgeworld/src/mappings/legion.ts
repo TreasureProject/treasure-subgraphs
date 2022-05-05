@@ -23,7 +23,13 @@ import {
   User,
   UserApproval,
 } from "../../generated/schema";
-import { LEGION_IPFS, getAddressId, getImageHash, isMint } from "../helpers";
+import {
+  LEGION_IPFS,
+  LEGION_PFP_IPFS,
+  getAddressId,
+  getImageHash,
+  isMint,
+} from "../helpers";
 import { CLASS, RARITY, TYPE, getLegionImage } from "../helpers/legion";
 import * as common from "../mapping";
 
@@ -229,6 +235,14 @@ export function handleLegionCreated(event: LegionCreated): void {
 
   token.category = "Legion";
   token.image = getLegionImage(
+    LEGION_IPFS,
+    metadata.type,
+    metadata.rarity,
+    metadata.role,
+    tokenId
+  );
+  token.imageAlt = getLegionImage(
+    LEGION_PFP_IPFS,
     metadata.type,
     metadata.rarity,
     metadata.role,

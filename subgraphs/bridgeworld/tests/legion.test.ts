@@ -4,7 +4,7 @@ import { Address } from "@graphprotocol/graph-ts";
 
 import { LEGION_ADDRESS } from "@treasure/constants";
 
-import { LEGION_IPFS } from "../src/helpers/index";
+import { LEGION_IPFS, LEGION_PFP_IPFS } from "../src/helpers/index";
 import { handleTransferSingle } from "../src/mappings/legacy-legion-genesis";
 import { handleLegionCreated, handleTransfer } from "../src/mappings/legion";
 import {
@@ -75,6 +75,12 @@ test("legion metadata is correct for pilgrimaged riverman", () => {
     "image",
     `${LEGION_IPFS}/Genesis/Special/Riverman/4D.jpg`
   );
+  assert.fieldEquals(
+    TOKEN_ENTITY_TYPE,
+    id,
+    "imageAlt",
+    `${LEGION_PFP_IPFS}/Genesis/Special/Riverman/4D.jpg`
+  );
   assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "name", "Genesis Special");
   assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "generation", "0");
   assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "rarity", "Special");
@@ -136,6 +142,12 @@ test("legion metadata is correct for pilgrimaged common legion", () => {
     "image",
     `${LEGION_IPFS}/Auxiliary/Common/Siege/1A.jpg`
   );
+  assert.fieldEquals(
+    TOKEN_ENTITY_TYPE,
+    id,
+    "imageAlt",
+    `${LEGION_PFP_IPFS}/Auxiliary/Common/Siege/1A.jpg`
+  );
   assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "name", "Auxiliary Common");
   assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "rarity", "Common");
 
@@ -195,6 +207,12 @@ test("legion metadata is correct for pilgrimaged common 5", () => {
     id,
     "image",
     `${LEGION_IPFS}/Genesis/Common/Siege/1A.jpg`
+  );
+  assert.fieldEquals(
+    TOKEN_ENTITY_TYPE,
+    id,
+    "imageAlt",
+    `${LEGION_PFP_IPFS}/Genesis/Common/Siege/1A.jpg`
   );
   assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "name", "Genesis Common");
   assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "rarity", "Common");
@@ -269,6 +287,12 @@ test("legion metadata is correct for pilgrimaged clocksnatcher", () => {
     id,
     "image",
     `${LEGION_IPFS}/Genesis/Legendary/Clocksnatcher.jpg`
+  );
+  assert.fieldEquals(
+    TOKEN_ENTITY_TYPE,
+    id,
+    "imageAlt",
+    `${LEGION_PFP_IPFS}/Genesis/Legendary/Clocksnatcher.jpg`
   );
   assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "name", "Clocksnatcher");
   assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "rarity", "Legendary");
