@@ -11,8 +11,17 @@ export const CRAFTING_ADDRESS = Address.fromString("{{ crafting_address }}");
 export const EXPLORER = "{{ explorer }}";
 export const LEGION_ADDRESS = Address.fromString("{{ legion_address }}");
 export const QUESTING_ADDRESS = Address.fromString("{{ questing_address }}");
+export const ADVANCED_QUESTING_ADDRESS = Address.fromString(
+  "{{ advanced_questing_address }}"
+);
+export const TREASURE_TRIAD_ADDRESS = Address.fromString(
+  "{{ treasure_triad_address }}"
+);
 export const SUMMONING_ADDRESS = Address.fromString("{{ summoning_address }}");
 export const TREASURE_ADDRESS = Address.fromString("{{ treasure_address }}");
+export const TREASURE_FRAGMENT_ADDRESS = Address.fromString(
+  "{{ treasure_fragment_address }}"
+);
 export const SMOL_BODIES_ADDRESS = Address.fromString(
   "{{ smol_bodies_address }}"
 );
