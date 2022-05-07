@@ -157,7 +157,7 @@ export function getName(contract: Address, tokenId: BigInt): string {
     case 47:
       return "Bait for Monsters";
     case 48:
-      return "Beetle-wing";
+      return "Beetle Wings";
     case 49:
       return "Blue Rupee";
     case 50:
@@ -283,9 +283,9 @@ export function getName(contract: Address, tokenId: BigInt): string {
     case 128:
     case 129:
     case 130:
-      return `Range ${id - 117}`;
+      return `Ranger ${id - 117}`;
     case 131:
-      return "Range";
+      return "Ranger";
     case 132:
       return "Red Feather";
     case 133:

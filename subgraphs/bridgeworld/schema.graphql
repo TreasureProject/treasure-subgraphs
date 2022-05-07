@@ -300,6 +300,7 @@ type Token @entity {
   "0 = Genesis, 1 = Auxiliary, 2 = Recruit"
   generation: Int
   image: String!
+  imageAlt: String
   metadata: Metadata
   name: String!
   owners: [UserToken!]! @derivedFrom(field: "token")
