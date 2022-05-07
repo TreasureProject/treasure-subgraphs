@@ -42,12 +42,19 @@ export function handlePilgrimagesFinished(event: PilgrimagesFinished): void {
     if (legion && pilgrimage) {
       let metadata = LegionInfo.load(`${legion.id}-metadata`);
       let legacyToken = Token.load(pilgrimage.token);
-      if (metadata && legacyToken) {
+      // Some data from unpilgrimaged Genesis Legion is needed to form new metadata
+      if (
+        metadata &&
+        metadata.type == "Genesis" &&
+        metadata.rarity != "Common" &&
+        legacyToken
+      ) {
         // 1/1 names don't change
         if ([50, 55, 78, 81, 163].includes(legacyToken.tokenId.toI32())) {
           legion.name = legacyToken.name;
         }
 
+        // Images may be determined by legacy token ID
         legion.image = getLegionImage(
           LEGION_IPFS,
           metadata.type,
@@ -65,7 +72,8 @@ export function handlePilgrimagesFinished(event: PilgrimagesFinished): void {
           legacyToken.tokenId
         );
 
-        if (legacyToken.rarity == "Rare") {
+        // Legacy Genesis Rare token IDs are mapped to new class names
+        if (metadata.rarity == "Rare") {
           metadata.role = RARE_CLASS[mapGenesisRareClass(legacyToken.tokenId)];
           metadata.save();
         }
