@@ -383,3 +383,44 @@ test("legion metadata is correct for pilgrimaged all-class 1", () => {
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "role", "Executioner");
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "boost", "2.0");
 });
+
+test("legion metadata is correct for recruit", () => {
+  clearStore();
+
+  handleTransfer(
+    createLegionTransferEvent(Address.zero().toHexString(), USER_ADDRESS, 4357)
+  );
+
+  handleLegionCreated(createLegionCreatedEvent(USER_ADDRESS, 4357, 2, 0, 5));
+
+  const id = `${LEGION_ADDRESS.toHexString()}-0x1105`;
+
+  assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "category", "Legion");
+  assert.fieldEquals(
+    TOKEN_ENTITY_TYPE,
+    id,
+    "image",
+    `${LEGION_IPFS}/Recruit/3D.jpg`
+  );
+  assert.fieldEquals(
+    TOKEN_ENTITY_TYPE,
+    id,
+    "imageAlt",
+    `${LEGION_PFP_IPFS}/Recruit/3D.jpg`
+  );
+  assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "name", "Recruit");
+  assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "generation", "2");
+  assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "rarity", "None");
+
+  const metadata = `${id}-metadata`;
+
+  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "questing", "1");
+  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "questingXp", "0");
+  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "type", "Recruit");
+  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "summons", "0");
+  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "crafting", "1");
+  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "craftingXp", "0");
+  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "rarity", "Recruit");
+  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "role", "Recruit");
+  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "boost", "0.0");
+});

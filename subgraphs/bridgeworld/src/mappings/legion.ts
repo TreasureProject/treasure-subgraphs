@@ -251,7 +251,7 @@ export function handleLegionCreated(event: LegionCreated): void {
   token.name = `${metadata.type} ${metadata.rarity}`;
   token.metadata = metadata.id;
   token.generation = params._generation;
-  token.rarity = metadata.rarity.replace("Recruit", "None");
+  token.rarity = metadata.rarity;
 
   if (metadata.type == "Recruit") {
     let user = User.load(params._owner.toHexString());
@@ -261,8 +261,8 @@ export function handleLegionCreated(event: LegionCreated): void {
       user.save();
     }
 
-    token.image = `${LEGION_IPFS}/Recruit.gif`;
     token.name = "Recruit";
+    token.rarity = "None";
   }
 
   token.save();
