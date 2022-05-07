@@ -218,6 +218,8 @@ type AdvancedQuest @entity {
   part: Int!
   endTimestamp: BigInt!
   stasisHitCount: Int!
+  hadStasisPart2: Boolean!
+  hadStasisPart3: Boolean!
   treasures: [TokenQuantity!]!
   treasureTriadResult: TreasureTriadResult
   rewards: [AdvancedQuestReward!]! @derivedFrom(field: "advancedQuest")

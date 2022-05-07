@@ -111,6 +111,14 @@ export function handleRandomSeeded(event: RandomSeeded): void {
         const token = Token.load(quest.token);
         if (token !== null) {
           setQuestEndTime(quest, token.tokenId);
+
+          if (quest.part === 2 && quest.stasisHitCount > 0) {
+            quest.hadStasisPart2 = true;
+          }
+          if (quest.part === 3 && quest.stasisHitCount > 0) {
+            quest.hadStasisPart3 = true;
+          }
+
           quest.save();
           continue;
         } else {
