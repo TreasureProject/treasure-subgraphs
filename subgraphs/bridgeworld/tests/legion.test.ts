@@ -286,7 +286,7 @@ test("legion metadata is correct for pilgrimaged clocksnatcher", () => {
     TOKEN_ENTITY_TYPE,
     id,
     "image",
-    `${LEGION_IPFS}/Genesis/Legendary/Clocksnatcher.jpg`
+    `${LEGION_IPFS}/Genesis/Legendary/Clocksnatcher.png`
   );
   assert.fieldEquals(
     TOKEN_ENTITY_TYPE,

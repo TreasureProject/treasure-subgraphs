@@ -1,5 +1,6 @@
 import { BigInt, log } from "@graphprotocol/graph-ts";
 
+import { LEGION_PFP_IPFS } from "./constants";
 import { getName, getRole } from "./token-id";
 
 export const TYPE = ["Genesis", "Auxiliary", "Recruit"];
@@ -376,7 +377,9 @@ export const getLegionImage = (
     if (type == "Genesis" && rarity != "Common" && legacyTokenId) {
       const tokenName = getName(legacyTokenId);
       if (rarity == "Legendary") {
-        image += `/${tokenName}.jpg`;
+        image += `/${tokenName}.${
+          ipfsPrefix == LEGION_PFP_IPFS ? "jpg" : "png"
+        }`;
       } else {
         const variantDigit1 = mapGenesisVariant(legacyTokenId);
         if (rarity == "Rare") {

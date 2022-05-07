@@ -127,7 +127,7 @@ test("legion images are correct", () => {
       "Bombmaker",
       "2345",
       "50",
-      "/Genesis/Legendary/Bombmaker.jpg",
+      "/Genesis/Legendary/Bombmaker.png",
     ],
     [
       "Genesis",
@@ -135,7 +135,7 @@ test("legion images are correct", () => {
       "Clocksnatcher",
       "2345",
       "55",
-      "/Genesis/Legendary/Clocksnatcher.jpg",
+      "/Genesis/Legendary/Clocksnatcher.png",
     ],
     [
       "Genesis",
@@ -143,7 +143,7 @@ test("legion images are correct", () => {
       "Dreamwinder",
       "2345",
       "78",
-      "/Genesis/Legendary/Dreamwinder.jpg",
+      "/Genesis/Legendary/Dreamwinder.png",
     ],
     [
       "Genesis",
@@ -151,7 +151,7 @@ test("legion images are correct", () => {
       "Fallen",
       "2345",
       "81",
-      "/Genesis/Legendary/Fallen.jpg",
+      "/Genesis/Legendary/Fallen.png",
     ],
     [
       "Genesis",
@@ -879,7 +879,7 @@ test("legion images are correct", () => {
       "Warlock",
       "12209",
       "163",
-      "/Genesis/Legendary/Warlock.jpg",
+      "/Genesis/Legendary/Warlock.png",
     ],
     [
       "Genesis",
@@ -937,7 +937,7 @@ test("legacy legion images are correct", () => {
 
 test("legacy genesis legion images are correct", () => {
   const expectedLegions = [
-    ["Legendary", "81", "/Genesis/Legendary/Fallen.jpg"],
+    ["Legendary", "81", "/Genesis/Legendary/Fallen.png"],
     ["Rare", "1", "/Genesis/Rare/Executioner/3A.jpg"],
     ["Rare", "2", "/Genesis/Rare/Clockwork Marine/2B.jpg"],
     ["Special", "106", "/Genesis/Special/Numeraire/5D.jpg"],
