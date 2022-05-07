@@ -119,10 +119,7 @@ function setMetadata(contract: Address, tokenId: BigInt): void {
 
   token.category = "Consumable";
   token.name = getName(tokenId.toI32());
-  token.image =
-    `ipfs://QmdpMJMTRrGu1Z43RF94WnDRj5QwiLJXo43TwKWPX2cTWE/${token.name}.gif`
-      .split(" ")
-      .join("%20");
+  token.image = `ipfs://Qmd1hsvPDWrxtnfUna3pQyfmChyAkMenuziHS1gszM34P8/Consumables/${tokenId.toString()}.gif`;
   token.metadata = metadata.id;
   token.rarity = "None";
 

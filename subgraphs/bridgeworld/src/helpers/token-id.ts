@@ -14,10 +14,8 @@ export function getImageHash(tokenId: BigInt, name: string): string {
   let id = tokenId.toI32();
 
   switch (true) {
-    case id == 151:
-      return `ipfs://Qmbyy8EWMzrSTSGG1bDNsYZfvnkcjAFNM5TXJqvsbuY8Dz/Silver Penny.gif`;
     case isTreasure(id):
-      return `ipfs://Qmbyy8EWMzrSTSGG1bDNsYZfvnkcjAFNM5TXJqvsbuY8Dz/${name}.gif`;
+      return `ipfs://Qmd1hsvPDWrxtnfUna3pQyfmChyAkMenuziHS1gszM34P8/Treasures/${id}.jpg`;
     case [45, 70, 90, 131, 150, 160].includes(id):
       return `ipfs://QmTd8siTE6Ys2XTLNerPySYQowdeDkZjSTViYpBf54GnXx/${name}.gif`;
     default:
@@ -83,7 +81,7 @@ export function getName(tokenId: BigInt): string {
     case 47:
       return "Bait for Monsters";
     case 48:
-      return "Beetle-wing";
+      return "Beetle Wings";
     case 49:
       return "Blue Rupee";
     case 50:

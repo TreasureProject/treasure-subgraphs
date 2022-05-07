@@ -57,7 +57,7 @@ export function getNameForTokenId(tokenId: BigInt): string {
     case 47:
       return "Bait for Monsters";
     case 48:
-      return "Beetle-wing";
+      return "Beetle Wings";
     case 49:
       return "Blue Rupee";
     case 50:
