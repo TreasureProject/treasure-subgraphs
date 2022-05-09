@@ -3,6 +3,7 @@ enum Category {
   Crystal
   Legion
   Treasure
+  TreasureFragment
 }
 
 enum Difficulty {
@@ -90,6 +91,13 @@ type TreasureInfo implements Metadata @entity {
   tier: Int!
 }
 
+type TreasureFragmentInfo implements Metadata @entity {
+  id: ID!
+
+  categories: [TreasureCategory!]!
+  tier: Int!
+}
+
 type Approval @entity {
   id: ID!
 
@@ -134,6 +142,8 @@ type Random @entity {
   craft: Craft
   "Set for questing"
   quest: Quest
+  "Set for advanced questing"
+  advancedQuest: AdvancedQuest
   "Set for summoning"
   summon: Summon
 
@@ -198,6 +208,53 @@ type Quest @entity {
   user: User!
 }
 
+type AdvancedQuest @entity {
+  id: ID!
+
+  requestId: BigInt!
+  random: Random!
+  status: Status!
+  zoneName: String!
+  part: Int!
+  endTimestamp: BigInt!
+  stasisHitCount: Int!
+  hadStasisPart2: Boolean!
+  hadStasisPart3: Boolean!
+  treasures: [TokenQuantity!]!
+  treasureTriadResult: TreasureTriadResult
+  rewards: [AdvancedQuestReward!]! @derivedFrom(field: "advancedQuest")
+  token: Token!
+  user: User!
+}
+
+type AdvancedQuestReward @entity {
+  id: ID!
+
+  advancedQuest: AdvancedQuest!
+  consumable: TokenQuantity
+  treasureFragment: Token
+  treasure: Token
+}
+
+type TreasureTriadResult @entity {
+  id: ID!
+
+  advancedQuest: AdvancedQuest!
+  playerWon: Boolean!
+  numberOfCardsFlipped: Int!
+  numberOfCorruptedCardsRemaining: Int!
+}
+
+type TreasureTriadCardInfo @entity {
+  id: ID!
+
+  token: Token!
+  north: Int!
+  east: Int!
+  south: Int!
+  west: Int!
+}
+
 type StakedToken @entity {
   id: ID!
 
@@ -243,6 +300,7 @@ type Token @entity {
   "0 = Genesis, 1 = Auxiliary, 2 = Recruit"
   generation: Int
   image: String!
+  imageAlt: String
   metadata: Metadata
   name: String!
   owners: [UserToken!]! @derivedFrom(field: "token")
@@ -258,6 +316,7 @@ type User @entity {
   deposits: [Deposit!]! @derivedFrom(field: "user")
   pilgrimaging: [Pilgrimage!] @derivedFrom(field: "user")
   quests: [Quest!]! @derivedFrom(field: "user")
+  advancedQuests: [AdvancedQuest!]! @derivedFrom(field: "user")
   staked: [StakedToken!]! @derivedFrom(field: "user")
   tokens: [UserToken!]! @derivedFrom(field: "user")
   summons: [Summon!]! @derivedFrom(field: "user")
@@ -292,4 +351,11 @@ type UserToken @entity {
   quantity: BigInt!
   token: Token!
   user: User!
+}
+
+type TokenQuantity @entity {
+  id: ID!
+
+  quantity: Int!
+  token: Token!
 }

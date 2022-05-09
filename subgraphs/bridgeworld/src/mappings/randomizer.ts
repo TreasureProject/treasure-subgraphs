@@ -1,14 +1,28 @@
 import { BigInt, log } from "@graphprotocol/graph-ts";
 
-import { SUMMONING_ADDRESS } from "@treasure/constants";
+import {
+  ADVANCED_QUESTING_ADDRESS,
+  LEGION_ADDRESS,
+  SUMMONING_ADDRESS,
+} from "@treasure/constants";
 
+import { AdvancedQuesting } from "../../generated/Advanced Questing/AdvancedQuesting";
 import {
   RandomRequest,
   RandomSeeded,
 } from "../../generated/Randomizer/Randomizer";
 import { Summoning } from "../../generated/Summoning/Summoning";
-import { Craft, Quest, Random, Seeded, Summon } from "../../generated/schema";
-import { checkSummonFatigue } from "../helpers";
+import {
+  AdvancedQuest,
+  Craft,
+  Quest,
+  Random,
+  Seeded,
+  Summon,
+  Token,
+} from "../../generated/schema";
+import { checkSummonFatigue, getAddressId } from "../helpers";
+import { setQuestEndTime } from "../helpers/advanced-questing";
 
 function toI32(value: string): i32 {
   return parseInt(value, 16) as i32;
@@ -66,6 +80,7 @@ export function handleRandomSeeded(event: RandomSeeded): void {
     let craftId = random.craft;
     let questId = random.quest;
     let summonId = random.summon;
+    let advancedQuestId = random.advancedQuest;
 
     if (craftId !== null) {
       let craft = Craft.load(craftId);
@@ -86,6 +101,31 @@ export function handleRandomSeeded(event: RandomSeeded): void {
         quest.save();
 
         continue;
+      }
+    }
+
+    if (advancedQuestId !== null) {
+      const quest = AdvancedQuest.load(advancedQuestId);
+
+      if (quest !== null && quest.token !== null) {
+        const token = Token.load(quest.token);
+        if (token !== null) {
+          setQuestEndTime(quest, token.tokenId);
+
+          if (quest.part === 2 && quest.stasisHitCount > 0) {
+            quest.hadStasisPart2 = true;
+          }
+          if (quest.part === 3 && quest.stasisHitCount > 0) {
+            quest.hadStasisPart3 = true;
+          }
+
+          quest.save();
+          continue;
+        } else {
+          log.error("[random-advanced-quest] Token not found: {}", [random.id]);
+        }
+      } else {
+        log.error("[random-advanced-quest] Quest not found: {}", [random.id]);
       }
     }
 
