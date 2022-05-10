@@ -14,6 +14,7 @@ jobs:
       bridgeworld: ${{ steps.filter.outputs.bridgeworld }}
       bridgeworld_stats: ${{ steps.filter.outputs.bridgeworld_stats }}
       marketplace: ${{ steps.filter.outputs.marketplace }}
+      magic_stats: ${{ steps.filter.outputs.magic_stats }}
       metadata: ${{ steps.filter.outputs.metadata }}
       migration: ${{ steps.filter.outputs.migration }}
       seed_of_life: ${{ steps.filter.outputs.seed_of_life }}
@@ -33,6 +34,9 @@ jobs:
           bridgeworld_stats:
             - "packages/**"
             - "subgraphs/bridgeworld-stats/**"
+          magic_stats:
+            - "packages/**"
+            - "subgraphs/magic-stats/**"
           marketplace:
             - "packages/**"
             - "subgraphs/marketplace/**"
@@ -101,6 +105,44 @@ jobs:
     defaults:
       run:
         working-directory: ./subgraphs/bridgeworld-stats
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: Install Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14
+      - name: Install dependencies
+        run: yarn --frozen-lockfile
+      - name: Prepare for DEV
+        if: github.event_name == 'pull_request' && github.event.pull_request.draft == false
+        run: yarn prepare:dev
+      - name: Prepare for PROD
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        run: yarn prepare:prod
+      - name: Generate code
+        run: yarn codegen
+      - name: Test
+        run: yarn test
+      - name: Authenticate
+        env:
+          GRAPH_ACCESS_TOKEN: ${{ secrets.GRAPH_ACCESS_TOKEN }}
+        run: yarn graph auth --product hosted-service "$GRAPH_ACCESS_TOKEN"
+      - name: Deploy to DEV
+        if: github.event_name == 'pull_request' && github.event.pull_request.draft == false
+        run: yarn deploy:dev
+      - name: Deploy to PROD
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        run: yarn deploy:prod
+
+  magic_stats:
+    name: Magic Stats Subgraph
+    if: ${{ needs.changes.outputs.magic_stats == 'true' }}
+    needs: changes
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./subgraphs/magic-stats
     steps:
       - name: Check out code
         uses: actions/checkout@v2

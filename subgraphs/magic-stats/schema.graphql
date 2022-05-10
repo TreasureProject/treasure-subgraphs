@@ -1,0 +1,36 @@
+enum Interval {
+  Hourly
+  Daily
+  Weekly
+  Monthly
+  Yearly
+  AllTime
+}
+
+type UserStat @entity {
+  id: ID!
+  address: String!
+
+  startTimestamp: BigInt
+  endTimestamp: BigInt
+  interval: Interval!
+
+  magicReceivedCount: Int!
+  magicSentCount: Int!
+  magicReceived: BigInt!
+  magicSent: BigInt!
+}
+
+type MagicStat @entity {
+  id: ID!
+
+  startTimestamp: BigInt
+  endTimestamp: BigInt
+  interval: Interval!
+
+  magicTransferedCount: Int!
+  magicTransfered: BigInt!
+
+  "Number of unique addresses that have interacted at any point"
+  allAddressesCount: Int!
+}
