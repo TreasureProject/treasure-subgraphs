@@ -51,7 +51,7 @@ function getCategories(tokenId: i32): string[] {
     case 13:
     case 14:
     case 15:
-      return ["Leatherworks", "Smithing"];
+      return ["Leatherworking", "Smithing"];
     default:
       log.error("Unhandled treasure fragment category: {}", [
         tokenId.toString(),
