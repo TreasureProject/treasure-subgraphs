@@ -31,6 +31,9 @@ type Collection @entity {
   _missingMetadataTokens: [Token!]!
   _missingMetadataLastUpdated: BigInt!
 
+  "Internal for token naming"
+  _includeNameInTokenName: Boolean
+
   name: String!
   standard: TokenStandard
   baseUri: String

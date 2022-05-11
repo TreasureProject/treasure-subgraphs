@@ -156,7 +156,20 @@ export function updateTokenMetadata(
     return;
   }
 
-  token.name = `${collection.name} ${name as string}`;
+  token.name = "";
+
+  // We use `.get` here because the entity helpers don't work if the boolean value is not required (null).
+  // When we do a graft, the values will be null for existing collections, so it must be handled.
+  const includeNameInTokenName =
+    collection.get("_includeNameInTokenName") != null
+      ? collection._includeNameInTokenName
+      : true;
+
+  if (includeNameInTokenName) {
+    token.name += `${collection.name} `;
+  }
+
+  token.name += name as string;
 
   const description = getJsonStringValue(data, "description");
   if (description) {

@@ -8,7 +8,7 @@ import { getOrCreateCollection } from "../helpers/models";
 import { handleTransfer as commonHandleTransfer } from "./common";
 
 export function handleBaseUriChanged(event: BaseURIChanged): void {
-  const collection = getOrCreateCollection(event.address);
+  const collection = getOrCreateCollection(event.address, false);
   collection.baseUri = event.params.to;
   collection.save();
 }
@@ -17,7 +17,7 @@ export function handleTransfer(event: Transfer): void {
   const address = event.address;
   const params = event.params;
 
-  const collection = getOrCreateCollection(address);
+  const collection = getOrCreateCollection(address, false);
   if (!collection.baseUri) {
     const contract = Swolercycles.bind(address);
     const baseUriCall = contract.try_baseURI();
