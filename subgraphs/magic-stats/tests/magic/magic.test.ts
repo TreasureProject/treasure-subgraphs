@@ -57,13 +57,13 @@ test("magic stats count transfers", () => {
     assert.fieldEquals(
       MAGIC_STAT_ENTITY_TYPE,
       statIds[i],
-      "magicTransfered",
+      "magicTransferred",
       magicBi
     );
     assert.fieldEquals(
       MAGIC_STAT_ENTITY_TYPE,
       statIds[i],
-      "magicTransferedCount",
+      "magicTransferredCount",
       "1"
     );
     assert.fieldEquals(
@@ -200,13 +200,13 @@ test("magic stats count transfers", () => {
     assert.fieldEquals(
       MAGIC_STAT_ENTITY_TYPE,
       statIds[i],
-      "magicTransfered",
+      "magicTransferred",
       magicBi
     );
     assert.fieldEquals(
       MAGIC_STAT_ENTITY_TYPE,
       statIds[i],
-      "magicTransferedCount",
+      "magicTransferredCount",
       "1"
     );
     assert.fieldEquals(
@@ -271,13 +271,13 @@ test("magic stats count transfers", () => {
   assert.fieldEquals(
     MAGIC_STAT_ENTITY_TYPE,
     statPrefix,
-    "magicTransfered",
+    "magicTransferred",
     magicBi
   );
   assert.fieldEquals(
     MAGIC_STAT_ENTITY_TYPE,
     statPrefix,
-    "magicTransferedCount",
+    "magicTransferredCount",
     "1"
   );
   assert.fieldEquals(
@@ -342,13 +342,13 @@ test("magic stats count transfers", () => {
   assert.fieldEquals(
     MAGIC_STAT_ENTITY_TYPE,
     statPrefix,
-    "magicTransfered",
+    "magicTransferred",
     magicBi
   );
   assert.fieldEquals(
     MAGIC_STAT_ENTITY_TYPE,
     statPrefix,
-    "magicTransferedCount",
+    "magicTransferredCount",
     "1"
   );
   assert.fieldEquals(
@@ -413,13 +413,13 @@ test("magic stats count transfers", () => {
   assert.fieldEquals(
     MAGIC_STAT_ENTITY_TYPE,
     statPrefix,
-    "magicTransfered",
+    "magicTransferred",
     magicBi2
   );
   assert.fieldEquals(
     MAGIC_STAT_ENTITY_TYPE,
     statPrefix,
-    "magicTransferedCount",
+    "magicTransferredCount",
     "2"
   );
   assert.fieldEquals(
@@ -520,13 +520,13 @@ test("magic stats track addresses", () => {
   assert.fieldEquals(
     MAGIC_STAT_ENTITY_TYPE,
     "all-time",
-    "magicTransferedCount",
+    "magicTransferredCount",
     "1"
   );
   assert.fieldEquals(
     MAGIC_STAT_ENTITY_TYPE,
     "all-time",
-    "magicTransfered",
+    "magicTransferred",
     magicBi
   );
 
@@ -544,13 +544,13 @@ test("magic stats track addresses", () => {
   assert.fieldEquals(
     MAGIC_STAT_ENTITY_TYPE,
     "all-time",
-    "magicTransferedCount",
+    "magicTransferredCount",
     "2"
   );
   assert.fieldEquals(
     MAGIC_STAT_ENTITY_TYPE,
     "all-time",
-    "magicTransfered",
+    "magicTransferred",
     magicBi2
   );
 });

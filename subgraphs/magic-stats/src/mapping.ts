@@ -13,8 +13,8 @@ export function handleTransfer(event: Transfer): void {
   for (let i = 0; i < stats.length; i++) {
     const stat = stats[i];
 
-    stat.magicTransfered = stat.magicTransfered.plus(value);
-    stat.magicTransferedCount += 1;
+    stat.magicTransferred = stat.magicTransferred.plus(value);
+    stat.magicTransferredCount += 1;
 
     const userReceivedStat = getOrCreateUserStat(
       stat.id,

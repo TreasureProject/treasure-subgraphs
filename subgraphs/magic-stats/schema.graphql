@@ -28,8 +28,8 @@ type MagicStat @entity {
   endTimestamp: BigInt
   interval: Interval!
 
-  magicTransferedCount: Int!
-  magicTransfered: BigInt!
+  magicTransferredCount: Int!
+  magicTransferred: BigInt!
 
   "Number of unique addresses that have interacted at any point"
   allAddressesCount: Int!
