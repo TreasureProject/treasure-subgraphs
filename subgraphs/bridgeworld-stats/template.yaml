@@ -96,6 +96,8 @@ dataSources:
       eventHandlers:
         - event: LegionCreated(indexed address,indexed uint256,uint8,uint8,uint8)
           handler: handleLegionCreated
+        - event: LegionConstellationRankUp(indexed uint256,indexed uint8,uint8)
+          handler: handleLegionConstellationRankUp
       file: ./src/mappings/legion.ts
   - name: Pilgrimage
     kind: ethereum/contract

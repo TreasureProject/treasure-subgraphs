@@ -5,6 +5,7 @@ import { HOURLY_STAT_INTERVAL_START_BLOCK } from "@treasure/constants";
 import {
   AtlasMineLockStat,
   AtlasMineStat,
+  ConstellationStat,
   ConsumableStat,
   CraftingDifficultyStat,
   CraftingStat,
@@ -13,6 +14,7 @@ import {
   PilgrimageStat,
   QuestingDifficultyStat,
   QuestingStat,
+  StarlightTempleStat,
   SummoningStat,
   TreasureStat,
   UserStat,
@@ -557,6 +559,22 @@ export function getOrCreateQuestingDifficultyStat(
   return stat;
 }
 
+export function getTimeIntervalStarlightTempleStats(): StarlightTempleStat[] {
+  const stats: StarlightTempleStat[] = [];
+
+  // All-time
+  const allTimeId = getAllTimeId();
+  let allTimeStat = StarlightTempleStat.load(allTimeId);
+  if (!allTimeStat) {
+    allTimeStat = new StarlightTempleStat(allTimeId);
+    allTimeStat.interval = "AllTime";
+    allTimeStat.save();
+  }
+  stats.push(allTimeStat);
+
+  return stats;
+}
+
 export function getTimeIntervalSummoningStats(
   block: ethereum.Block
 ): SummoningStat[] {
@@ -677,14 +695,14 @@ export function getOrCreateUserStat(
 }
 
 export function getOrCreateLegionStat(
-  summoningStatId: string,
+  parentStatId: string,
   legion: Legion,
   startTimestamp: BigInt | null = null,
   endTimestamp: BigInt | null = null,
   withClass: boolean = false
 ): LegionStat {
   const id = [
-    summoningStatId,
+    parentStatId,
     legion.name.toLowerCase().split(" ").join("-"),
     withClass ? legion.legionClass.toLowerCase() : null,
   ]
@@ -701,6 +719,34 @@ export function getOrCreateLegionStat(
       stat.legionClass = legion.legionClass;
     }
     stat.name = legion.name;
+    stat.save();
+  }
+
+  return stat;
+}
+
+export function getOrCreateConstellationStat(
+  starlightTempleStatId: string,
+  constellation: string,
+  rank: i32,
+  startTimestamp: BigInt | null = null,
+  endTimestamp: BigInt | null = null
+): ConstellationStat {
+  const id = [
+    starlightTempleStatId,
+    constellation.toLowerCase(),
+    rank >= 0 ? rank.toString() : null,
+  ]
+    .filter((x) => !!x)
+    .join("-");
+  let stat = ConstellationStat.load(id);
+  if (!stat) {
+    stat = new ConstellationStat(id);
+    stat.starlightTempleStat = starlightTempleStatId;
+    stat.constellation = constellation;
+    stat.rank = rank;
+    stat.startTimestamp = startTimestamp;
+    stat.endTimestamp = endTimestamp;
     stat.save();
   }
 

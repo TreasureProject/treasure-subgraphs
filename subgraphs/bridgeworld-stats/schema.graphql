@@ -35,6 +35,15 @@ enum LegionClass {
   Origin
 }
 
+enum Constellation {
+  Dark
+  Earth
+  Fire
+  Light
+  Water
+  Wind
+}
+
 enum CraftingDifficulty {
   Prism
   HarvesterPart
@@ -54,6 +63,13 @@ type Legion @entity {
   rarity: LegionRarity!
   legionClass: LegionClass!
   name: String!
+
+  dark: Int!
+  earth: Int!
+  fire: Int!
+  light: Int!
+  water: Int!
+  wind: Int!
 }
 
 type _Craft @entity {
@@ -64,6 +80,21 @@ type _Craft @entity {
 type _Quest @entity {
   id: ID!
   difficulty: QuestingDifficulty!
+}
+
+type ConstellationStat @entity {
+  id: ID!
+
+  startTimestamp: BigInt
+  endTimestamp: BigInt
+
+  constellation: Constellation!
+  rank: Int!
+
+  starlightTempleStat: StarlightTempleStat
+
+  legionsTattooed: Int!
+  legionsTotalRank: Int!
 }
 
 type ConsumableStat @entity {
@@ -118,7 +149,14 @@ type LegionStat @entity {
   craftingStat: CraftingStat
   pilgrimageStat: PilgrimageStat
   questingStat: QuestingStat
+  starlightTempleStat: StarlightTempleStat
   summoningStat: SummoningStat
+
+  "Number of Legions of this type that have Constellations tattooed"
+  constellationsTattooed: Int!
+
+  "Total rank of Constellations for this Legion type"
+  constellationsTotalRank: Int!
 
   "Number of Crafts started by this Legion type"
   craftsStarted: Int!
@@ -337,6 +375,27 @@ type QuestingStat @entity {
     @derivedFrom(field: "questingStat")
   legionStats: [LegionStat!]! @derivedFrom(field: "questingStat")
   treasureStats: [TreasureStat!]! @derivedFrom(field: "questingStat")
+}
+
+type StarlightTempleStat @entity {
+  id: ID!
+
+  startTimestamp: BigInt
+  endTimestamp: BigInt
+  interval: Interval!
+
+  "Number of Legions tattooed with Constellations"
+  legionsTattooed: Int!
+
+  "Number of Constellations tattooed on Legions"
+  legionConstellationsTattooed: Int!
+
+  "Total rank of all Constellations tattooed on Legions"
+  legionConstellationsTotalRank: Int!
+
+  constellationStats: [ConstellationStat!]!
+    @derivedFrom(field: "starlightTempleStat")
+  legionStats: [LegionStat!]! @derivedFrom(field: "starlightTempleStat")
 }
 
 type SummoningStat @entity {
