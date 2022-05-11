@@ -20,6 +20,7 @@ import {
   AdvancedQuestReward,
   LegionInfo,
   Random,
+  Token,
   TokenQuantity,
   TreasureTriadResult,
 } from "../../generated/schema";
@@ -133,7 +134,10 @@ export function handleTreasureTriadPlayed(event: TreasureTriadPlayed): void {
 
   quest.treasureTriadResult = result.id;
 
-  quest.endTimestamp = event.block.timestamp.times(BigInt.fromI32(1000));
+  const token = Token.load(quest.token);
+  if (token) {
+    setQuestEndTime(quest, token.tokenId);
+  }
 
   result.save();
   quest.save();
