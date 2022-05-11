@@ -14,7 +14,13 @@ import {
   Token,
   _LandMetadata,
 } from "../../generated/schema";
-import { SMOL_BRAINS_LAND_BASE_URI } from "./constants";
+import {
+  SMOL_BODIES_COLLECTION_NAME,
+  SMOL_BODIES_PETS_COLLECTION_NAME,
+  SMOL_BRAINS_COLLECTION_NAME,
+  SMOL_BRAINS_LAND_BASE_URI,
+  SMOL_BRAINS_PETS_COLLECTION_NAME,
+} from "./constants";
 import { getCollectionId } from "./ids";
 import { JSON, getIpfsJson, getJsonStringValue } from "./json";
 import { getOrCreateAttribute } from "./models";
@@ -98,13 +104,22 @@ export function fetchTokenMetadata(collection: Collection, token: Token): void {
   } else if (collection.baseUri && collection.baseUri != "test") {
     // TODO: remove hack when Matchstick supports ipfs
     const baseUri = collection.baseUri as string;
+
+    tokenUri = `${baseUri}${tokenIdString}`;
+
     if (
-      collection.id == getCollectionId(SMOL_BRAINS_PETS_ADDRESS) ||
-      collection.id == getCollectionId(SMOL_BODIES_PETS_ADDRESS)
+      [
+        SMOL_BODIES_PETS_COLLECTION_NAME,
+        SMOL_BRAINS_PETS_COLLECTION_NAME,
+      ].includes(collection.name)
     ) {
-      tokenUri = `${baseUri}${tokenIdString}.json`;
-    } else {
-      tokenUri = `${baseUri}${tokenIdString}/0`;
+      tokenUri += ".json";
+    } else if (
+      [SMOL_BODIES_COLLECTION_NAME, SMOL_BRAINS_COLLECTION_NAME].includes(
+        collection.name
+      )
+    ) {
+      tokenUri += "/0";
     }
   }
 

@@ -74,6 +74,9 @@ export const EXTRA_LIFE_ADDRESS = Address.fromString(
 );
 export const KEYS_ADDRESS = Address.fromString("{{ keys_address }}");
 export const SMOL_CARS_ADDRESS = Address.fromString("{{ smol_cars_address }}");
+export const SWOLERCYCLES_ADDRESS = Address.fromString(
+  "{{ swolercycles_address }}"
+);
 export const BATTLEFLY_ADDRESS = Address.fromString("{{ battlefly_address }}");
 export const BATTLEFLY_FOUNDERS_ADDRESS = Address.fromString(
   "{{ battlefly_founders_address }}"

@@ -5,6 +5,7 @@ export const SMOL_BRAINS_LAND_COLLECTION_NAME = "Smol Brains Land";
 export const SMOL_BRAINS_PETS_COLLECTION_NAME = "Smol Brains Pets";
 export const SMOL_BODIES_PETS_COLLECTION_NAME = "Smol Bodies Pets";
 export const SMOL_TREASURES_COLLECTION_NAME = "Smol Treasures";
+export const SWOLERCYCLES_COLLECTION_NAME = "Swolercycles";
 
 // Cron jobs
 export const MISSING_METADATA_UPDATE_INTERVAL = 3600;
@@ -22,6 +23,8 @@ export const SMOL_BRAINS_PETS_BASE_URI =
   "ipfs://QmbZDMgiMYquBZvcJjDhBAeHajftLxMMP4z63VxpL58yJw/";
 export const SMOL_TREASURES_IMAGES_BASE_URI =
   "https://gateway.pinata.cloud/ipfs/QmZK1i4y7qn7Fi7mEMgT4KZcb1Etb12yndcTZ5dnhigDPt/";
+export const SWOLERCYCLES_BASE_URI =
+  "https://treasure-marketplace.mypinata.cloud/ipfs/QmQnMPfqL64cXK743R7taweHKLrDT4hoGpy8VqTo6YCj9G/";
 
 // Locations
 export const LOCATION_FARM = "Farm";
