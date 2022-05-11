@@ -23,32 +23,15 @@ import {
   User,
   UserApproval,
 } from "../../generated/schema";
-import { LEGION_IPFS, getAddressId, getImageHash, isMint } from "../helpers";
+import {
+  LEGION_IPFS,
+  LEGION_PFP_IPFS,
+  getAddressId,
+  getImageHash,
+  isMint,
+} from "../helpers";
+import { CLASS, RARITY, TYPE, getLegionImage } from "../helpers/legion";
 import * as common from "../mapping";
-
-const RARITY = [
-  "Legendary",
-  "Rare",
-  "Special",
-  "Uncommon",
-  "Common",
-  "Recruit",
-];
-
-const CLASS = [
-  "Recruit",
-  "Siege",
-  "Fighter",
-  "Assassin",
-  "Ranged",
-  "Spellcaster",
-  "Riverman",
-  "Numeraire",
-  "All-Class",
-  "Origin",
-];
-
-const TYPE = ["Genesis", "Auxiliary", "Recruit"];
 
 const BOOST_MATRIX = [
   // GENESIS
@@ -251,11 +234,24 @@ export function handleLegionCreated(event: LegionCreated): void {
   metadata.save();
 
   token.category = "Legion";
-  token.image = `${LEGION_IPFS}/${metadata.rarity}%20${metadata.role}.gif`;
+  token.image = getLegionImage(
+    LEGION_IPFS,
+    metadata.type,
+    metadata.rarity,
+    metadata.role,
+    tokenId
+  );
+  token.imageAlt = getLegionImage(
+    LEGION_PFP_IPFS,
+    metadata.type,
+    metadata.rarity,
+    metadata.role,
+    tokenId
+  );
   token.name = `${metadata.type} ${metadata.rarity}`;
   token.metadata = metadata.id;
   token.generation = params._generation;
-  token.rarity = metadata.rarity.replace("Recruit", "None");
+  token.rarity = metadata.rarity;
 
   if (metadata.type == "Recruit") {
     let user = User.load(params._owner.toHexString());
@@ -265,8 +261,8 @@ export function handleLegionCreated(event: LegionCreated): void {
       user.save();
     }
 
-    token.image = `${LEGION_IPFS}/Recruit.gif`;
     token.name = "Recruit";
+    token.rarity = "None";
   }
 
   token.save();

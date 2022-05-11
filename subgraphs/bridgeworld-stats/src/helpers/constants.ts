@@ -7,7 +7,7 @@ export const LEGION_CLASSES = [
   "Siege",
   "Fighter",
   "Assassin",
-  "Ranged",
+  "Ranger",
   "Spellcaster",
   "Riverman",
   "Numeraire",

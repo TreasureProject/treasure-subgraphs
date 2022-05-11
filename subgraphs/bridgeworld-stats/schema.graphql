@@ -27,7 +27,7 @@ enum LegionClass {
   Siege
   Fighter
   Assassin
-  Ranged
+  Ranger
   Spellcaster
   Riverman
   Numeraire

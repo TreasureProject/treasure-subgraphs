@@ -31,10 +31,7 @@ function setMetadata(contract: Address, tokenId: BigInt): void {
 
   token.category = "Crystal";
   token.name = getName(tokenId.toI32());
-  token.image =
-    `ipfs://QmZxhxnzWZbhYDiBeoqHgGyBKefPkHaFYa2hqFFyhfa99S/${token.name}.gif`
-      .split(" ")
-      .join("%20");
+  token.image = `ipfs://Qmd1hsvPDWrxtnfUna3pQyfmChyAkMenuziHS1gszM34P8/Balancer%20Crystal/${tokenId.toString()}.jpg`;
   token.rarity = "None";
 
   token.save();

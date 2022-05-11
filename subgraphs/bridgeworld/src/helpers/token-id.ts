@@ -14,10 +14,8 @@ export function getImageHash(tokenId: BigInt, name: string): string {
   let id = tokenId.toI32();
 
   switch (true) {
-    case id == 151:
-      return `ipfs://Qmbyy8EWMzrSTSGG1bDNsYZfvnkcjAFNM5TXJqvsbuY8Dz/Silver Penny.gif`;
     case isTreasure(id):
-      return `ipfs://Qmbyy8EWMzrSTSGG1bDNsYZfvnkcjAFNM5TXJqvsbuY8Dz/${name}.gif`;
+      return `ipfs://Qmd1hsvPDWrxtnfUna3pQyfmChyAkMenuziHS1gszM34P8/Treasures/${id}.jpg`;
     case [45, 70, 90, 131, 150, 160].includes(id):
       return `ipfs://QmTd8siTE6Ys2XTLNerPySYQowdeDkZjSTViYpBf54GnXx/${name}.gif`;
     default:
@@ -83,7 +81,7 @@ export function getName(tokenId: BigInt): string {
     case 47:
       return "Bait for Monsters";
     case 48:
-      return "Beetle-wing";
+      return "Beetle Wings";
     case 49:
       return "Blue Rupee";
     case 50:
@@ -209,9 +207,9 @@ export function getName(tokenId: BigInt): string {
     case 128:
     case 129:
     case 130:
-      return `Range ${id - 117}`;
+      return `Ranger ${id - 117}`;
     case 131:
-      return "Range";
+      return "Ranger";
     case 132:
       return "Red Feather";
     case 133:
@@ -415,5 +413,134 @@ export function getRarity(tokenId: BigInt): string {
       return "Special";
     default:
       return "Common";
+  }
+}
+
+export function getRole(tokenId: BigInt): string {
+  const id = tokenId.toI32();
+  switch (id) {
+    case 1:
+    case 2:
+    case 3:
+    case 4:
+    case 5:
+    case 6:
+    case 7:
+    case 8:
+    case 9:
+    case 10:
+    case 11:
+    case 12:
+    case 13:
+    case 14:
+    case 15:
+    case 16:
+    case 17:
+    case 18:
+    case 19:
+    case 20:
+    case 21:
+    case 22:
+    case 23:
+    case 24:
+    case 25:
+    case 26:
+    case 27:
+    case 28:
+    case 29:
+    case 30:
+    case 31:
+    case 32:
+    case 33:
+    case 34:
+    case 35:
+    case 36:
+    case 37:
+    case 38:
+      return "All-Class";
+    case 40:
+    case 41:
+    case 42:
+    case 43:
+    case 44:
+      return "Assassin";
+    case 50:
+    case 55:
+    case 78:
+    case 81:
+    case 163:
+      return "1/1";
+    case 56:
+    case 57:
+      return "Siege";
+    case 58:
+    case 59:
+    case 60:
+      return "Ranger";
+    case 61:
+    case 62:
+    case 63:
+      return "Fighter";
+    case 64:
+    case 65:
+    case 66:
+    case 67:
+      return "Spellcaster";
+    case 83:
+    case 84:
+    case 85:
+    case 86:
+    case 87:
+    case 88:
+    case 89:
+      return "Fighter";
+    case 106:
+    case 107:
+    case 108:
+    case 109:
+    case 110:
+    case 111:
+    case 112:
+    case 113:
+      return "Numeraire";
+    case 118:
+    case 119:
+    case 120:
+    case 121:
+    case 122:
+    case 123:
+    case 124:
+    case 125:
+    case 126:
+    case 127:
+    case 128:
+    case 129:
+    case 130:
+      return "Ranger";
+    case 134:
+    case 135:
+    case 136:
+    case 137:
+    case 138:
+    case 139:
+    case 140:
+      return "Riverman";
+    case 144:
+    case 145:
+    case 146:
+    case 147:
+    case 148:
+    case 149:
+      return "Siege";
+    case 154:
+    case 155:
+    case 156:
+    case 157:
+    case 158:
+    case 159:
+      return "Spellcaster";
+    default:
+      log.error("Unknown Genesis Legion: {}", [tokenId.toString()]);
+      return "Unknown";
   }
 }
