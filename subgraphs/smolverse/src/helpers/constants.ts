@@ -8,7 +8,7 @@ export const SMOL_TREASURES_COLLECTION_NAME = "Smol Treasures";
 export const SWOLERCYCLES_COLLECTION_NAME = "Swolercycles";
 
 // Cron jobs
-export const MISSING_METADATA_UPDATE_INTERVAL = 3600;
+export const MISSING_METADATA_UPDATE_INTERVAL = 600;
 
 // IPFS
 export const SMOL_BODIES_BASE_URI =

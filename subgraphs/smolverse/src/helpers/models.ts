@@ -84,6 +84,7 @@ export function getOrCreateCollection(
     collection._attributeIds = [];
     collection._includeNameInTokenName = includeNameInTokenName;
     collection._missingMetadataTokens = [];
+    collection._tokenIds = [];
     collection.save();
   }
 

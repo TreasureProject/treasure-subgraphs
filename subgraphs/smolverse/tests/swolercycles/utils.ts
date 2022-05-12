@@ -14,7 +14,7 @@ export function createBaseUriChangedEvent(
   to: string
 ): BaseURIChanged {
   const event = changetype<BaseURIChanged>(newMockEvent());
-  event.address = Address.zero();
+  event.address = SWOLERCYCLES_ADDRESS;
   event.parameters = [
     new ethereum.EventParam("from", ethereum.Value.fromString(from)),
     new ethereum.EventParam("to", ethereum.Value.fromString(to)),

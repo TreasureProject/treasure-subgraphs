@@ -1,16 +1,35 @@
+import { BigInt } from "@graphprotocol/graph-ts";
+
 import {
   BaseURIChanged,
   Swolercycles,
   Transfer,
 } from "../../generated/Swolercycles/Swolercycles";
-import { SWOLERCYCLES_BASE_URI } from "../helpers/constants";
+import {
+  MISSING_METADATA_UPDATE_INTERVAL,
+  SWOLERCYCLES_BASE_URI,
+} from "../helpers/constants";
+import { checkMissingMetadata } from "../helpers/metadata";
 import { getOrCreateCollection } from "../helpers/models";
 import { handleTransfer as commonHandleTransfer } from "./common";
 
 export function handleBaseUriChanged(event: BaseURIChanged): void {
   const collection = getOrCreateCollection(event.address, false);
+
+  // Add current tokenIds to missing metadata to be reprocessed
+  collection._missingMetadataTokens = collection._missingMetadataTokens.concat(
+    collection._tokenIds
+  );
+
+  // Set last timestamp in the past so the reprocess of metadata starts
+  collection._missingMetadataLastUpdated =
+    collection._missingMetadataLastUpdated.minus(
+      BigInt.fromI32(MISSING_METADATA_UPDATE_INTERVAL)
+    );
   collection.baseUri = event.params.to;
   collection.save();
+
+  checkMissingMetadata(collection, event.block.timestamp);
 }
 
 export function handleTransfer(event: Transfer): void {

@@ -2256,10 +2256,10 @@ mafmt@^7.0.0:
   dependencies:
     multiaddr "^7.3.0"
 
-matchstick-as@0.4.0:
-  version "0.4.0"
-  resolved "https://registry.yarnpkg.com/matchstick-as/-/matchstick-as-0.4.0.tgz#7456c2f20abee6d12366b65f4216385a9ef62a50"
-  integrity sha512-XkWoXQWUg1ms8DaDMkl2M95woGPB89f7aysjwDNst/x+G9FV48dxcAKSwilJ1BVGV3MqU7HfuKGHxegSsuxQxQ==
+matchstick-as@0.4.2:
+  version "0.4.2"
+  resolved "https://registry.yarnpkg.com/matchstick-as/-/matchstick-as-0.4.2.tgz#d9b20af5890a1c0191a2b88936a1296d8113a90b"
+  integrity sha512-LbLWA9DLMgus/GIsT7fHxP9cdb/oLQFrjpj2dAcHd64X4wxrVs2VIyxoNlha6h+9lQWHBmdT8042Oi+/wh/idg==
   dependencies:
     "@graphprotocol/graph-ts" "^0.24.1"
     assemblyscript "^0.19.20"

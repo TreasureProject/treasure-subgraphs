@@ -1,4 +1,4 @@
-import { TypedMap, log } from "@graphprotocol/graph-ts";
+import { BigInt, TypedMap, log } from "@graphprotocol/graph-ts";
 
 import {
   SMOL_BODIES_ADDRESS,
@@ -15,6 +15,7 @@ import {
   _LandMetadata,
 } from "../../generated/schema";
 import {
+  MISSING_METADATA_UPDATE_INTERVAL,
   SMOL_BODIES_COLLECTION_NAME,
   SMOL_BODIES_PETS_COLLECTION_NAME,
   SMOL_BRAINS_COLLECTION_NAME,
@@ -25,6 +26,8 @@ import { getCollectionId } from "./ids";
 import { JSON, getIpfsJson, getJsonStringValue } from "./json";
 import { getOrCreateAttribute } from "./models";
 import { toBigDecimal } from "./number";
+
+const TOKEN_REFETCH_COUNT = 100;
 
 const ATTRIBUTE_PERCENTAGE_THRESHOLDS = new TypedMap<string, number>();
 ATTRIBUTE_PERCENTAGE_THRESHOLDS.set(SMOL_BODIES_ADDRESS.toHexString(), 6_200);
@@ -214,4 +217,41 @@ export function updateTokenMetadata(
   }
 
   token.save();
+}
+
+export function checkMissingMetadata(
+  collection: Collection,
+  timestamp: BigInt
+): void {
+  // Should we run missing metadata cron job?
+  if (
+    timestamp.gt(
+      collection._missingMetadataLastUpdated.plus(
+        BigInt.fromI32(MISSING_METADATA_UPDATE_INTERVAL)
+      )
+    )
+  ) {
+    const missingMetadataTokens = collection._missingMetadataTokens;
+
+    // Reprocess max of 100 at a time.
+    const tokenIds = missingMetadataTokens.slice(0, TOKEN_REFETCH_COUNT);
+
+    log.debug("Re-fetching missing metadata from {} tokens", [
+      tokenIds.length.toString(),
+    ]);
+
+    // Reset list of missing metadata before we attempt to re-fetch them
+    collection._missingMetadataTokens =
+      missingMetadataTokens.slice(TOKEN_REFETCH_COUNT);
+    for (let i = 0; i < tokenIds.length; i++) {
+      const token = Token.load(tokenIds[i]);
+      if (token) {
+        fetchTokenMetadata(collection, token);
+      }
+    }
+
+    // Update cron job's last run time
+    collection._missingMetadataLastUpdated = timestamp;
+    collection.save();
+  }
 }
