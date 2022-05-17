@@ -1,8 +1,8 @@
 import {
   BaseURIChanged,
-  SmolBodies,
+  SmolCars,
   Transfer,
-} from "../../generated/Smol Bodies/SmolBodies";
+} from "../../generated/Smol Cars/SmolCars";
 import { SMOL_CARS_BASE_URI } from "../helpers/constants";
 import { getOrCreateCollection } from "../helpers/models";
 import { handleTransfer as commonHandleTransfer } from "./common";
@@ -19,7 +19,7 @@ export function handleTransfer(event: Transfer): void {
 
   const collection = getOrCreateCollection(address);
   if (!collection.baseUri) {
-    const contract = SmolBodies.bind(address);
+    const contract = SmolCars.bind(address);
     const baseUriCall = contract.try_baseURI();
     collection.baseUri = baseUriCall.reverted
       ? SMOL_CARS_BASE_URI

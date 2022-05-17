@@ -226,7 +226,7 @@ dataSources:
     network: {{ network }}
     source:
       address: "{{ smol_cars_address }}"
-      abi: SmolBodies
+      abi: SmolCars
       startBlock: {{ smol_cars_start_block }}
     mapping:
       kind: ethereum/events
@@ -235,8 +235,8 @@ dataSources:
       entities:
         - Transfer
       abis:
-        - name: SmolBodies
-          file: {{{ abis }}}/SmolBodies.json
+        - name: SmolCars
+          file: {{{ abis }}}/SmolCars.json
       eventHandlers:
         - event: BaseURIChanged(string,string)
           handler: handleBaseUriChanged
