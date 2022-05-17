@@ -116,6 +116,8 @@
 
   "kote_squires_address": "0xCd782397AcdaD0ADc57064cA3Ce414eFA3BA5269",
   "kote_squires_start_block": 11353624,
+  "kote_questing_address": "0xF41552DE7Cd82e0628d28AF80c393328B41a79D0",
+  "kote_questing_start_block": 11409748,
   "kote_potions_address": "0x0000000000000000000000000000000000000000",
   "kote_potions_start_block": 11353624,
   "kote_rings_address": "0x0000000000000000000000000000000000000000",
