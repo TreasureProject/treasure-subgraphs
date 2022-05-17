@@ -108,6 +108,8 @@
 
   "smithonia_weapons_address": "0x1b6ae36f3e0f5fc3efecfe0e906d245e110fe56e",
   "smithonia_weapons_start_block": 10713031,
+  "smithonia_resources_address": "0xd2ff59488bd97b4c0ea30cb9d06f13a2a1f667bc",
+  "smithonia_resources_start_block": 11538395,
 
   "toadstoolz_address": "0x8C0ab3D6f27993FF5ccBba219ba8F8E011F0fB43",
   "toadstoolz_start_block": 11114553,
@@ -127,8 +129,8 @@
 
   "samurise_land_address": "0xba7c0EA103853C70b48aA39b20626096be084d2C",
   "samurise_land_start_block": 11336369,
-  "samurise_items_address": "0xd238E7F8705309202AA7d159348065dd41b8a3f3",
-  "samurise_items_start_block": 11335527,
+  "samurise_items_address": "0x0f09F1A73d8ff4414c153D2feCd3e41B5A5721d3",
+  "samurise_items_start_block": 11339479,
 
   "lost_donkeys_address": "0xC0267aa0A483dC7AC8fA4415b7aA5e0b3777226d",
   "lost_donkeys_start_block": 11752296,
