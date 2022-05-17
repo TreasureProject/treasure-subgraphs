@@ -93,6 +93,9 @@ export const TREASURE_MARKETPLACE_PAUSE_START_BLOCK = BigInt.fromString(
 export const TALES_OF_ELLERIA_ADDRESS = Address.fromString(
   "{{ tales_of_elleria_address }}"
 );
+export const TOADSTOOLZ_ADDRESS = Address.fromString(
+  "{{ toadstoolz_address }}"
+);
 export const TOADSTOOLZ_ITEMZ_ADDRESS = Address.fromString(
   "{{ toadstoolz_itemz_address }}"
 );
