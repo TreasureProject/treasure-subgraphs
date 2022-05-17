@@ -767,3 +767,25 @@ dataSources:
         - event: Transfer(indexed address,indexed address,indexed uint256)
           handler: handleTransfer
       file: ./src/mappings/samurise-land.ts
+  - name: Lost Donkeys
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ lost_donkeys_address }}"
+      abi: ERC721
+      startBlock: {{ lost_donkeys_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Attribute
+        - Collection
+        - Token
+      abis:
+        - name: ERC721
+          file: {{{ abis }}}/721.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,indexed uint256)
+          handler: handleTransfer
+      file: ./src/mappings/lost-donkeys.ts

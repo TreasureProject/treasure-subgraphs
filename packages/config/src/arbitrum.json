@@ -131,5 +131,8 @@
   "samurise_items_address": "0x5e01c1889085B528EefF5e1bEe64Bfe94f454703",
   "samurise_items_start_block": 11335527,
 
+  "lost_donkeys_address": "0x5e84c1A06E6AD1a8ED66Bc48dBe5eB06BF2Fe4aA",
+  "lost_donkeys_start_block": 11440957,
+
   "hourly_stat_interval_start_block": 6470000
 }
