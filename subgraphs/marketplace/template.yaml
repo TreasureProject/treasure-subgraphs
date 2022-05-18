@@ -722,7 +722,7 @@ dataSources:
           handler: handleTransferBatch
         - event: TransferSingle(indexed address,indexed address,indexed address,uint256,uint256)
           handler: handleTransferSingle
-      file: ./src/mappings/toadstoolz-itemz.ts
+      file: ./src/mappings/toadstoolz.ts
   - name: KOTE Squires
     kind: ethereum/contract
     network: {{ network }}
