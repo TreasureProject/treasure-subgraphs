@@ -1,19 +1,13 @@
-import {
-  assert,
-  clearStore,
-  createMockedFunction,
-  mockIpfsFile,
-  test,
-} from "matchstick-as";
+import { assert, clearStore, createMockedFunction, test } from "matchstick-as";
 
 import { Address, ethereum } from "@graphprotocol/graph-ts";
 
-import { SWOLERCYCLES_ADDRESS } from "@treasure/constants";
+import { SMOL_CARS_ADDRESS } from "@treasure/constants";
 
 import {
   handleBaseUriChanged,
   handleTransfer,
-} from "../../src/mappings/swolercycles";
+} from "../../src/mappings/smol-cars";
 import {
   COLLECTION_ENTITY_TYPE,
   TOKEN_ENTITY_TYPE,
@@ -22,7 +16,7 @@ import {
 import { createBaseUriChangedEvent, createTransferEvent } from "./utils";
 
 createMockedFunction(
-  SWOLERCYCLES_ADDRESS,
+  SMOL_CARS_ADDRESS,
   "baseURI",
   "baseURI():(string)"
 ).returns([ethereum.Value.fromString("test")]);
@@ -30,53 +24,24 @@ createMockedFunction(
 test("collection base uri is changed", () => {
   clearStore();
 
-  const address = SWOLERCYCLES_ADDRESS.toHexString();
-  const transferEvent = createTransferEvent(
-    Address.zero().toHexString(),
-    USER_ADDRESS,
-    1
-  );
-  handleTransfer(transferEvent);
-
-  assert.fieldEquals(
-    TOKEN_ENTITY_TYPE,
-    `${address}-0x1`,
-    "name",
-    "Swolercycles #1"
-  );
-
-  mockIpfsFile(
-    "QmWyCqeGA5jXPofJYqx2WirWgeK7ei4GhaNzEySPAxn9ja/1",
-    "tests/swolercycles/1.json"
-  );
-
   const baseUri =
     "https://treasure-marketplace.mypinata.cloud/ipfs/QmWyCqeGA5jXPofJYqx2WirWgeK7ei4GhaNzEySPAxn9ja/";
   const baseUriChangedEvent = createBaseUriChangedEvent("", baseUri);
 
   handleBaseUriChanged(baseUriChangedEvent);
 
-  assert.fieldEquals(COLLECTION_ENTITY_TYPE, address, "baseUri", baseUri);
-
-  assert.fieldEquals(TOKEN_ENTITY_TYPE, `${address}-0x1`, "name", "Cycle #1");
   assert.fieldEquals(
-    TOKEN_ENTITY_TYPE,
-    `${address}-0x1`,
-    "image",
-    "ipfs://QmUqm5andJ4u6HMTuvtMmhMKs6oskGceRgXruRnt19CNR4/1.png"
-  );
-  assert.fieldEquals(
-    TOKEN_ENTITY_TYPE,
-    `${address}-0x1`,
-    "attributes",
-    `[${address}-backgrounds-punk-garage]`
+    COLLECTION_ENTITY_TYPE,
+    baseUriChangedEvent.address.toHexString(),
+    "baseUri",
+    baseUri
   );
 });
 
 test("token is minted", () => {
   clearStore();
 
-  const address = SWOLERCYCLES_ADDRESS.toHexString();
+  const address = SMOL_CARS_ADDRESS.toHexString();
   const transferEvent = createTransferEvent(
     Address.zero().toHexString(),
     USER_ADDRESS,
