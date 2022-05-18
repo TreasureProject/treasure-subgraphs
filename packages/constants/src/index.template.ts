@@ -96,3 +96,6 @@ export const TALES_OF_ELLERIA_ADDRESS = Address.fromString(
 export const TOADSTOOLZ_ITEMZ_ADDRESS = Address.fromString(
   "{{ toadstoolz_itemz_address }}"
 );
+export const KOTE_QUESTING_ADDRESS = Address.fromString(
+  "{{ kote_questing_address }}"
+);

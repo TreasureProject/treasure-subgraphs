@@ -1,8 +1,11 @@
 import { Address, BigInt, Bytes, json } from "@graphprotocol/graph-ts";
 
+import { KOTE_QUESTING_ADDRESS } from "@treasure/constants";
+
 import { ERC721, Transfer } from "../../generated/KOTE Squires/ERC721";
 import { Collection, Token } from "../../generated/schema";
 import { NormalizedAttribute, updateTokenMetadata } from "../helpers/metadata";
+import { getOrCreateCollection, getOrCreateToken } from "../helpers/models";
 import { isMint } from "../helpers/utils";
 import * as common from "../mapping";
 
@@ -105,12 +108,20 @@ function fetchTokenMetadata(
 
 export function handleTransfer(event: Transfer): void {
   const params = event.params;
+  const timestamp = event.block.timestamp;
   const transfer = new common.TransferEvent(
     event.address,
     params.tokenId,
     isMint(params.from),
-    event.block.timestamp
+    timestamp
   );
+
+  if (params.from.equals(KOTE_QUESTING_ADDRESS)) {
+    const collection = getOrCreateCollection(event.address);
+    const token = getOrCreateToken(collection, params.tokenId);
+
+    fetchTokenMetadata(collection, token, timestamp);
+  }
 
   common.handleTransfer(transfer, fetchTokenMetadata);
 }
