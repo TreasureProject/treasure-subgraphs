@@ -6,9 +6,8 @@ import {
   Token,
   _LandMetadata,
 } from "../../generated/schema";
-import { MISSING_METADATA_UPDATE_INTERVAL } from "../helpers/constants";
 import { getStakedTokenId } from "../helpers/ids";
-import { fetchTokenMetadata } from "../helpers/metadata";
+import { checkMissingMetadata, fetchTokenMetadata } from "../helpers/metadata";
 import {
   getOrCreateCollection,
   getOrCreateToken,
@@ -29,34 +28,12 @@ export function handleTransfer(
 
   if (isMint(from)) {
     fetchTokenMetadata(collection, token);
-  }
 
-  // Should we run missing metadata cron job?
-  if (
-    timestamp.gt(
-      collection._missingMetadataLastUpdated.plus(
-        BigInt.fromI32(MISSING_METADATA_UPDATE_INTERVAL)
-      )
-    )
-  ) {
-    const tokenIds = collection._missingMetadataTokens;
-    log.debug("Re-fetching missing metadata from {} tokens", [
-      tokenIds.length.toString(),
-    ]);
-
-    // Reset list of missing metadata before we attempt to re-fetch them
-    collection._missingMetadataTokens = [];
-    for (let i = 0; i < tokenIds.length; i++) {
-      const token = Token.load(tokenIds[i]);
-      if (token) {
-        fetchTokenMetadata(collection, token);
-      }
-    }
-
-    // Update cron job's last run time
-    collection._missingMetadataLastUpdated = timestamp;
+    collection._tokenIds = collection._tokenIds.concat([token.id]);
     collection.save();
   }
+
+  checkMissingMetadata(collection, timestamp);
 
   token.save();
   return token;

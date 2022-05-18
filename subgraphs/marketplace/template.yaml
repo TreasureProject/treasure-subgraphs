@@ -345,6 +345,26 @@ dataSources:
         - event: Transfer(indexed address,indexed address,indexed uint256)
           handler: handleTransfer
       file: ./src/mappings/smol-cars.ts
+  - name: Swolercycles
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ swolercycles_address }}"
+      abi: ERC721
+      startBlock: {{ swolercycles_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Token
+      abis:
+        - name: ERC721
+          file: {{{ abis }}}/721.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,indexed uint256)
+          handler: handleTransfer
+      file: ./src/mappings/swolercycles.ts
   - name: Smol Bodies
     kind: ethereum/contract
     network: {{ network }}

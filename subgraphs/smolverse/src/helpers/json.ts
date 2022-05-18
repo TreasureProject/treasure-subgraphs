@@ -28,7 +28,8 @@ export function getJsonStringValue(
 export function getIpfsJson(path: string, retries: i32 = 0): JSON | null {
   const normalizedPath = path
     .replace("ipfs://", "")
-    .replace("https://treasure-marketplace.mypinata.cloud/ipfs/", "");
+    .replace("https://treasure-marketplace.mypinata.cloud/ipfs/", "")
+    .replace("https://treasuredao.mypinata.cloud/ipfs/", "");
   const data = ipfs.cat(normalizedPath);
   if (!data) {
     if (retries > MAX_RETRIES) {

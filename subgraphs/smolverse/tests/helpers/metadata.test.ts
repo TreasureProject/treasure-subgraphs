@@ -8,12 +8,14 @@ import {
   json,
 } from "@graphprotocol/graph-ts";
 
-import { SMOL_BODIES_ADDRESS } from "@treasure/constants";
+import { SMOL_BODIES_ADDRESS, SWOLERCYCLES_ADDRESS } from "@treasure/constants";
 
 import { Attribute, Collection, Token } from "../../generated/schema";
 import { updateTokenMetadata } from "../../src/helpers/metadata";
 import { handleTransfer } from "../../src/mappings/smol-bodies";
+import { handleTransfer as handleSwolercycleTransfer } from "../../src/mappings/swolercycles";
 import { createTransferEvent } from "../smol-bodies/utils";
+import { createTransferEvent as createSwolercycleTransferEvent } from "../swolercycles/utils";
 import {
   ATTRIBUTE_ENTITY_TYPE,
   TOKEN_ENTITY_TYPE,
@@ -26,6 +28,12 @@ createMockedFunction(Address.zero(), "baseURI", "baseURI():(string)").returns([
 
 createMockedFunction(
   SMOL_BODIES_ADDRESS,
+  "baseURI",
+  "baseURI():(string)"
+).returns([ethereum.Value.fromString("test")]);
+
+createMockedFunction(
+  SWOLERCYCLES_ADDRESS,
   "baseURI",
   "baseURI():(string)"
 ).returns([ethereum.Value.fromString("test")]);
@@ -46,6 +54,28 @@ const mockTokenData = json
         {
           "trait_type": "Swol Size",
           "value": 0
+        }
+      ]
+    }
+  `)
+  )
+  .toObject();
+
+const mockSwolercycleTokenData = json
+  .fromBytes(
+    Bytes.fromUTF8(`
+    {
+      "name": "Cycle #1",
+      "description": "Swolercycles",
+      "image": "test-image",
+      "attributes": [
+        {
+          "trait_type": "Backgrounds",
+          "value": "Punk Garage"
+        },
+        {
+          "trait_type": "Wheel Color",
+          "value": "Green"
         }
       ]
     }
@@ -95,6 +125,72 @@ test("token attributes are set", () => {
   );
   assert.fieldEquals(ATTRIBUTE_ENTITY_TYPE, attributeId2, "name", "Swol Size");
   assert.fieldEquals(ATTRIBUTE_ENTITY_TYPE, attributeId2, "value", "0");
+
+  // Assert attributes were attached to token
+  assert.fieldEquals(
+    TOKEN_ENTITY_TYPE,
+    id,
+    "attributes",
+    `[${attributeId1}, ${attributeId2}]`
+  );
+});
+
+test("token attributes are set without collection name in token name", () => {
+  clearStore();
+
+  const address = SWOLERCYCLES_ADDRESS.toHexString();
+  const transferEvent = createSwolercycleTransferEvent(
+    Address.zero().toHexString(),
+    USER_ADDRESS,
+    1
+  );
+  handleSwolercycleTransfer(transferEvent);
+
+  const id = `${address}-0x1`;
+  const collection = Collection.load(address) as Collection;
+  const token = Token.load(id) as Token;
+  updateTokenMetadata(collection, token, mockSwolercycleTokenData);
+
+  // Assert token metadata was saved
+  assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "name", "Cycle #1");
+  assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "description", "Swolercycles");
+  assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "image", "test-image");
+
+  // Assert related attributes were created
+  const attributeId1 = `${address}-backgrounds-punk-garage`;
+  assert.fieldEquals(
+    ATTRIBUTE_ENTITY_TYPE,
+    attributeId1,
+    "collection",
+    address
+  );
+  assert.fieldEquals(
+    ATTRIBUTE_ENTITY_TYPE,
+    attributeId1,
+    "name",
+    "Backgrounds"
+  );
+  assert.fieldEquals(
+    ATTRIBUTE_ENTITY_TYPE,
+    attributeId1,
+    "value",
+    "Punk Garage"
+  );
+
+  const attributeId2 = `${address}-wheel-color-green`;
+  assert.fieldEquals(
+    ATTRIBUTE_ENTITY_TYPE,
+    attributeId2,
+    "collection",
+    address
+  );
+  assert.fieldEquals(
+    ATTRIBUTE_ENTITY_TYPE,
+    attributeId2,
+    "name",
+    "Wheel Color"
+  );
+  assert.fieldEquals(ATTRIBUTE_ENTITY_TYPE, attributeId2, "value", "Green");
 
   // Assert attributes were attached to token
   assert.fieldEquals(

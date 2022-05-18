@@ -70,7 +70,10 @@ export function getOrCreateAttribute(
   return attribute;
 }
 
-export function getOrCreateCollection(address: Address): Collection {
+export function getOrCreateCollection(
+  address: Address,
+  includeNameInTokenName: boolean = true
+): Collection {
   const id = getCollectionId(address);
   let collection = Collection.load(id);
 
@@ -79,7 +82,9 @@ export function getOrCreateCollection(address: Address): Collection {
     collection.name = getNameForCollection(address);
     collection.standard = TOKEN_STANDARD_ERC721;
     collection._attributeIds = [];
+    collection._includeNameInTokenName = includeNameInTokenName;
     collection._missingMetadataTokens = [];
+    collection._tokenIds = [];
     collection.save();
   }
 

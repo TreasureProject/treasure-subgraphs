@@ -1,4 +1,4 @@
-import { TypedMap, log } from "@graphprotocol/graph-ts";
+import { BigInt, TypedMap, log } from "@graphprotocol/graph-ts";
 
 import {
   SMOL_BODIES_ADDRESS,
@@ -14,11 +14,20 @@ import {
   Token,
   _LandMetadata,
 } from "../../generated/schema";
-import { SMOL_BRAINS_LAND_BASE_URI } from "./constants";
+import {
+  MISSING_METADATA_UPDATE_INTERVAL,
+  SMOL_BODIES_COLLECTION_NAME,
+  SMOL_BODIES_PETS_COLLECTION_NAME,
+  SMOL_BRAINS_COLLECTION_NAME,
+  SMOL_BRAINS_LAND_BASE_URI,
+  SMOL_BRAINS_PETS_COLLECTION_NAME,
+} from "./constants";
 import { getCollectionId } from "./ids";
 import { JSON, getIpfsJson, getJsonStringValue } from "./json";
 import { getOrCreateAttribute } from "./models";
 import { toBigDecimal } from "./number";
+
+const TOKEN_REFETCH_COUNT = 100;
 
 const ATTRIBUTE_PERCENTAGE_THRESHOLDS = new TypedMap<string, number>();
 ATTRIBUTE_PERCENTAGE_THRESHOLDS.set(SMOL_BODIES_ADDRESS.toHexString(), 6_200);
@@ -98,13 +107,22 @@ export function fetchTokenMetadata(collection: Collection, token: Token): void {
   } else if (collection.baseUri && collection.baseUri != "test") {
     // TODO: remove hack when Matchstick supports ipfs
     const baseUri = collection.baseUri as string;
+
+    tokenUri = `${baseUri}${tokenIdString}`;
+
     if (
-      collection.id == getCollectionId(SMOL_BRAINS_PETS_ADDRESS) ||
-      collection.id == getCollectionId(SMOL_BODIES_PETS_ADDRESS)
+      [
+        SMOL_BODIES_PETS_COLLECTION_NAME,
+        SMOL_BRAINS_PETS_COLLECTION_NAME,
+      ].includes(collection.name)
     ) {
-      tokenUri = `${baseUri}${tokenIdString}.json`;
-    } else {
-      tokenUri = `${baseUri}${tokenIdString}/0`;
+      tokenUri += ".json";
+    } else if (
+      [SMOL_BODIES_COLLECTION_NAME, SMOL_BRAINS_COLLECTION_NAME].includes(
+        collection.name
+      )
+    ) {
+      tokenUri += "/0";
     }
   }
 
@@ -141,7 +159,20 @@ export function updateTokenMetadata(
     return;
   }
 
-  token.name = `${collection.name} ${name as string}`;
+  token.name = "";
+
+  // We use `.get` here because the entity helpers don't work if the boolean value is not required (null).
+  // When we do a graft, the values will be null for existing collections, so it must be handled.
+  const includeNameInTokenName =
+    collection.get("_includeNameInTokenName") != null
+      ? collection._includeNameInTokenName
+      : true;
+
+  if (includeNameInTokenName) {
+    token.name += `${collection.name} `;
+  }
+
+  token.name += name as string;
 
   const description = getJsonStringValue(data, "description");
   if (description) {
@@ -186,4 +217,41 @@ export function updateTokenMetadata(
   }
 
   token.save();
+}
+
+export function checkMissingMetadata(
+  collection: Collection,
+  timestamp: BigInt
+): void {
+  // Should we run missing metadata cron job?
+  if (
+    timestamp.gt(
+      collection._missingMetadataLastUpdated.plus(
+        BigInt.fromI32(MISSING_METADATA_UPDATE_INTERVAL)
+      )
+    )
+  ) {
+    const missingMetadataTokens = collection._missingMetadataTokens;
+
+    // Reprocess max of 100 at a time.
+    const tokenIds = missingMetadataTokens.slice(0, TOKEN_REFETCH_COUNT);
+
+    log.debug("Re-fetching missing metadata from {} tokens", [
+      tokenIds.length.toString(),
+    ]);
+
+    // Reset list of missing metadata before we attempt to re-fetch them
+    collection._missingMetadataTokens =
+      missingMetadataTokens.slice(TOKEN_REFETCH_COUNT);
+    for (let i = 0; i < tokenIds.length; i++) {
+      const token = Token.load(tokenIds[i]);
+      if (token) {
+        fetchTokenMetadata(collection, token);
+      }
+    }
+
+    // Update cron job's last run time
+    collection._missingMetadataLastUpdated = timestamp;
+    collection.save();
+  }
 }
