@@ -69,7 +69,7 @@ test("collection base uri is changed", () => {
     TOKEN_ENTITY_TYPE,
     `${address}-0x1`,
     "attributes",
-    "[0xda1c260309d12f65a1ceaa8fdec71bd7bb3912f8-backgrounds-punk-garage]"
+    `[${address}-backgrounds-punk-garage]`
   );
 });
 
