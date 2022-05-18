@@ -125,7 +125,7 @@ function getCategory(tokenId: i32): string {
     case [39, 47, 132, 82, 164, 93, 77, 48].includes(tokenId):
       return "Brewing";
     case [51, 98, 153, 91, 100, 69, 49, 151].includes(tokenId):
-      return "Enchanter";
+      return "Enchanting";
     case [97, 105, 46, 152, 72, 76, 96, 117].includes(tokenId):
       return "Leatherworking";
     case [52, 104, 53, 116, 103, 114, 133, 92].includes(tokenId):
