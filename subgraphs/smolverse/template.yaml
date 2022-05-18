@@ -221,3 +221,25 @@ dataSources:
         - event: JoinGym(uint256)
           handler: handleJoinGym
       file: ./src/mappings/smol-bodies-gym.ts
+  - name: Smol Cars
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ smol_cars_address }}"
+      abi: SmolCars
+      startBlock: {{ smol_cars_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Transfer
+      abis:
+        - name: SmolCars
+          file: {{{ abis }}}/SmolCars.json
+      eventHandlers:
+        - event: BaseURIChanged(string,string)
+          handler: handleBaseUriChanged
+        - event: Transfer(indexed address,indexed address,indexed uint256)
+          handler: handleTransfer
+      file: ./src/mappings/smol-cars.ts
