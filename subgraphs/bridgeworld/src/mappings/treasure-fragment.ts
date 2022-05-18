@@ -45,13 +45,13 @@ function getCategories(tokenId: i32): string[] {
     case 8:
     case 9:
     case 10:
-      return ["Enchanter", "Leatherworking"];
+      return ["Brewing", "Enchanting"];
     case 11:
     case 12:
     case 13:
     case 14:
     case 15:
-      return ["Smithing", "Brewing"];
+      return ["Leatherworking", "Smithing"];
     default:
       log.error("Unhandled treasure fragment category: {}", [
         tokenId.toString(),
