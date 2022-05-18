@@ -39,7 +39,7 @@ enum TreasureCategory {
   Alchemy
   Arcana
   Brewing
-  Enchanter
+  Enchanting
   Leatherworking
   Smithing
 }

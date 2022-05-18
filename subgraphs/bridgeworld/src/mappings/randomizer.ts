@@ -110,7 +110,12 @@ export function handleRandomSeeded(event: RandomSeeded): void {
       if (quest !== null && quest.token !== null) {
         const token = Token.load(quest.token);
         if (token !== null) {
-          setQuestEndTime(quest, token.tokenId);
+          const success = setQuestEndTime(quest, token.tokenId);
+          if (!success) {
+            log.error("[randomizer] Failed to get endTime for legion: {}", [
+              quest.token,
+            ]);
+          }
 
           if (quest.part === 2 && quest.stasisHitCount > 0) {
             quest.hadStasisPart2 = true;

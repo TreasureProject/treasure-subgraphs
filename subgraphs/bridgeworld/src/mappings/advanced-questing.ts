@@ -136,7 +136,12 @@ export function handleTreasureTriadPlayed(event: TreasureTriadPlayed): void {
 
   const token = Token.load(quest.token);
   if (token) {
-    setQuestEndTime(quest, token.tokenId);
+    const success = setQuestEndTime(quest, token.tokenId);
+    if (!success) {
+      log.error("[advanced-quest-triad] Failed to get endTime for legion: {}", [
+        quest.token,
+      ]);
+    }
   }
 
   result.save();
