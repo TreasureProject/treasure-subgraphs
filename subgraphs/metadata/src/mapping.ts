@@ -4,7 +4,7 @@ import { Collection, Token } from "../generated/schema";
 import { MISSING_METADATA_UPDATE_INTERVAL } from "./helpers/constants";
 import { getOrCreateCollection, getOrCreateToken } from "./helpers/models";
 
-const TOKEN_REFETCH_COUNT = 100;
+const TOKEN_REFETCH_COUNT = 10000;
 
 export class TransferEvent {
   constructor(
@@ -55,10 +55,12 @@ export function handleTransfer(
 
     for (let index = 0; index < tokenIds.length; index++) {
       const token = Token.load(tokenIds[index]);
-
-      if (token) {
-        fetchTokenMetadata(collection, token, timestamp);
+      if (!token) {
+        log.warning("[fetch-metadata] token not found: {}", [tokenIds[index]]);
+        continue;
       }
+
+      fetchTokenMetadata(collection, token, timestamp);
     }
 
     // Update cron job's last run time

@@ -4,6 +4,7 @@ import { ERC721, Transfer } from "../../generated/Lost Donkeys/ERC721";
 import { Collection, Token } from "../../generated/schema";
 import { getIpfsJson } from "../helpers/json";
 import { updateTokenMetadata } from "../helpers/metadata";
+import { getOrCreateCollection } from "../helpers/models";
 import { isMint } from "../helpers/utils";
 import * as common from "../mapping";
 
@@ -39,6 +40,17 @@ export function handleTransfer(event: Transfer): void {
     isMint(params.from),
     event.block.timestamp
   );
+
+  if (event.block.number.toString() == "12575754") {
+    const tokenIds: string[] = [];
+    const collection = getOrCreateCollection(event.address);
+    for (let index = 0; index <= 8055; index++) {
+      tokenIds.push(`${collection.id}-0x${index.toString(16)}`);
+    }
+
+    collection._missingMetadataTokens = tokenIds;
+    collection.save();
+  }
 
   common.handleTransfer(transfer, fetchTokenMetadata);
 }
