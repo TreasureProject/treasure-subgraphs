@@ -4,7 +4,7 @@ import { Collection, Token } from "../generated/schema";
 import { MISSING_METADATA_UPDATE_INTERVAL } from "./helpers/constants";
 import { getOrCreateCollection, getOrCreateToken } from "./helpers/models";
 
-const TOKEN_REFETCH_COUNT = 10000;
+const TOKEN_REFETCH_COUNT = 100;
 
 export class TransferEvent {
   constructor(
