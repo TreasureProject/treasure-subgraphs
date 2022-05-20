@@ -132,6 +132,29 @@ dataSources:
         - event: CraftingStarted(indexed address,indexed uint256,indexed uint256,uint256,uint256[],uint8[])
           handler: handleCraftingStartedWithoutDifficulty
       file: ./src/mappings/crafting.ts
+  - name: Mini Crafting
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ mini_crafting_address }}"
+      abi: MiniCrafting
+      startBlock: {{ mini_crafting_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Token
+        - User
+        - UserToken
+      abis:
+        - name: MiniCrafting
+          file: ../../node_modules/@treasure/subgraph-abis/src/MiniCrafting.json
+      eventHandlers:
+              # emit CraftingFinished(msg.sender, _craftTreasureParam.legionId, _fragmentInfo.tier, _tierInfo.craftingCPGained, _treasureIdToMint);
+        - event: CraftingFinished(address,uint256,uint8,uint8,uint256)
+          handler: handleCraftingFinished
+      file: ./src/mappings/mini-crafting.ts
   - name: Legion
     kind: ethereum/contract
     network: {{ network }}

@@ -13,6 +13,8 @@
   "consumable_start_block": 10586214,
   "crafting_address": "0x5756a674549fbd284e2f55dbb3cc781c31c5fb07",
   "crafting_start_block": 10586212,
+  "mini_crafting_address": "0xF7294076b47df541e30a3eC4f3ad5Ba12A290BFf",
+  "mini_crafting_start_block": 11563698,
   "legacy_legion_address": "0xead53481a20963dc3cfdaad4349e2c984ff7f96c",
   "legacy_legion_start_block": 10586160,
   "legacy_legion_genesis_address": "0xef0d4e2af8d24b4cab8368c3bbb483025e8656c1",

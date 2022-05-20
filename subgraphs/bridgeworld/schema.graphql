@@ -187,6 +187,16 @@ type Craft @entity {
   user: User!
 }
 
+type MiniCraft @entity {
+  id: ID!
+
+  timestamp: BigInt!
+  tier: Int!
+  token: Token!
+  user: User!
+  outcome: Outcome!
+}
+
 type Reward @entity {
   id: ID!
 
@@ -313,6 +323,7 @@ type User @entity {
 
   approvals: [UserApproval!]! @derivedFrom(field: "user")
   crafts: [Craft!]! @derivedFrom(field: "user")
+  miniCrafts: [MiniCraft!]! @derivedFrom(field: "user")
   deposits: [Deposit!]! @derivedFrom(field: "user")
   pilgrimaging: [Pilgrimage!] @derivedFrom(field: "user")
   quests: [Quest!]! @derivedFrom(field: "user")
