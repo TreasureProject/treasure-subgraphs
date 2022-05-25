@@ -6,6 +6,7 @@
   "scripts": {
     "codegen": "graph codegen",
     "deploy:dev": "graph deploy --product hosted-service treasureproject/metadata-dev",
+    "deploy:staging": "graph deploy --product hosted-service --deploy-key f3b3a583f9534d758b07eee5e7d94dec treasureproject/metadata-next",
     "deploy:prod": "graph deploy --product hosted-service treasureproject/metadata",
     "prepare:dev": "yarn --cwd ../../packages/constants prepare:arbitrum-testnet && mustache ../../node_modules/@treasure/subgraph-config/src/arbitrum-testnet.json template.yaml > subgraph.yaml",
     "prepare:prod": "yarn --cwd ../../packages/constants prepare:arbitrum && mustache ../../node_modules/@treasure/subgraph-config/src/arbitrum.json template.yaml > subgraph.yaml",

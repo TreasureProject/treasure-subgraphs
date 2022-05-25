@@ -134,5 +134,8 @@
   "lost_donkeys_address": "0x5e84c1A06E6AD1a8ED66Bc48dBe5eB06BF2Fe4aA",
   "lost_donkeys_start_block": 11440957,
 
+  "custom_smols_address": "0x755A1bb394ceDAbAf31b1D627EBb188Ed1c231a2",
+  "custom_smols_start_block": 11725377,
+
   "hourly_stat_interval_start_block": 6470000
 }

@@ -133,5 +133,8 @@
   "lost_donkeys_address": "0xC0267aa0A483dC7AC8fA4415b7aA5e0b3777226d",
   "lost_donkeys_start_block": 11752296,
 
+  "custom_smols_address": "0x0000000000000000000000000000000000000000",
+  "custom_smols_start_block": 11752296,
+
   "hourly_stat_interval_start_block": 8952193
 }
