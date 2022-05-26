@@ -105,6 +105,8 @@
   "tales_of_elleria_start_block": 10642355,
   "tales_of_elleria_data_address": "0xbdf92d81e2c1e1fa44d62c50d256b2dd64bde1e6",
   "tales_of_elleria_data_start_block": 10642357,
+  "tales_of_elleria_relics_address": "0x58884384f2f578e638d7ecb2ff32e8c369a3b0c9",
+  "tales_of_elleria_relics_start_block": 11766716,
 
   "smithonia_weapons_address": "0x1b6ae36f3e0f5fc3efecfe0e906d245e110fe56e",
   "smithonia_weapons_start_block": 10713031,
