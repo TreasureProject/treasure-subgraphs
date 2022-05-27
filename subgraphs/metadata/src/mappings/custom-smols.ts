@@ -13,7 +13,7 @@ function fetchTokenMetadata(
 ): void {
   const tokenIdString = token.tokenId.toString();
 
-  token.name = `Custom Smol #${tokenIdString}`;
+  token.name = `Smol Custom #${tokenIdString}`;
 
   const contract = ERC721.bind(Address.fromString(collection.id));
   const tokenUri = contract.try_tokenURI(token.tokenId);
