@@ -768,7 +768,79 @@ dataSources:
       eventHandlers:
         - event: Transfer(indexed address,indexed address,indexed uint256)
           handler: handleTransfer
-      file: ./src/mappings/kote-squires.ts
+      file: ./src/mappings/kote.ts
+  - name: KOTE Rings
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ kote_rings_address }}"
+      abi: ERC1155
+      startBlock: {{ kote_rings_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Token
+        - User
+        - UserToken
+      abis:
+        - name: ERC1155
+          file: {{{ abis }}}/1155.json
+      eventHandlers:
+        - event: TransferBatch(indexed address,indexed address,indexed address,uint256[],uint256[])
+          handler: handleTransferBatchRings
+        - event: TransferSingle(indexed address,indexed address,indexed address,uint256,uint256)
+          handler: handleTransferSingleRing
+      file: ./src/mappings/kote.ts
+  - name: KOTE Trinkets
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ kote_trinkets_address }}"
+      abi: ERC1155
+      startBlock: {{ kote_trinkets_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Token
+        - User
+        - UserToken
+      abis:
+        - name: ERC1155
+          file: {{{ abis }}}/1155.json
+      eventHandlers:
+        - event: TransferBatch(indexed address,indexed address,indexed address,uint256[],uint256[])
+          handler: handleTransferBatchTrinkets
+        - event: TransferSingle(indexed address,indexed address,indexed address,uint256,uint256)
+          handler: handleTransferSingleTrinket
+      file: ./src/mappings/kote.ts
+  - name: KOTE Potions
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ kote_potions_address }}"
+      abi: ERC1155
+      startBlock: {{ kote_potions_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Token
+        - User
+        - UserToken
+      abis:
+        - name: ERC1155
+          file: {{{ abis }}}/1155.json
+      eventHandlers:
+        - event: TransferBatch(indexed address,indexed address,indexed address,uint256[],uint256[])
+          handler: handleTransferBatchPotions
+        - event: TransferSingle(indexed address,indexed address,indexed address,uint256,uint256)
+          handler: handleTransferSinglePotion
+      file: ./src/mappings/kote.ts
   - name: SamuRise Land
     kind: ethereum/contract
     network: {{ network }}
