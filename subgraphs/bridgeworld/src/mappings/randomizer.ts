@@ -117,11 +117,13 @@ export function handleRandomSeeded(event: RandomSeeded): void {
             ]);
           }
 
-          if (quest.part === 2 && quest.stasisHitCount > 0) {
-            quest.hadStasisPart2 = true;
-          }
-          if (quest.part === 3 && quest.stasisHitCount > 0) {
-            quest.hadStasisPart3 = true;
+          if (quest.stasisHitCount > 0) {
+            if (quest.part === 2) {
+              quest.hadStasisPart2 = true;
+            } else if (quest.part === 3) {
+              quest.hadStasisPart2 = quest.stasisHitCount >= 2;
+              quest.hadStasisPart3 = true;
+            }
           }
 
           quest.save();
