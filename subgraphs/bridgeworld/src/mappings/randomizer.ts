@@ -121,7 +121,8 @@ export function handleRandomSeeded(event: RandomSeeded): void {
             if (quest.part === 2) {
               quest.hadStasisPart2 = true;
             } else if (quest.part === 3) {
-              quest.hadStasisPart2 = quest.stasisHitCount >= 2;
+              quest.hadStasisPart2 =
+                quest.hadStasisPart2 || quest.stasisHitCount >= 2;
               quest.hadStasisPart3 = true;
             }
           }
