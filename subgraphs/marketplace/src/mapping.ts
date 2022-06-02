@@ -72,7 +72,7 @@ stakers.set(
 
 // Tales of Elleria
 stakers.set(
-  "0x7a0d491469fb5d7d3adbf186221891afe3b5d028",
+  "0xc985872c155c387c850aa9cc6b19e81a35ccd829",
   "0x7480224ec2b98f28cee3740c80940a2f489bf352"
 );
 
