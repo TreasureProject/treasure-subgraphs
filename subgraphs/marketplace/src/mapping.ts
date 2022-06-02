@@ -227,18 +227,21 @@ function handleTransfer(
       if (collection.standard == "ERC1155") {
         let stats = getStats(token.id);
 
+        stats.burned += quantity;
         stats.items -= quantity;
         stats.save();
+      } else {
+        removeIfExists("Token", token.id);
       }
 
       let stats = getStats(collection.id);
 
+      stats.burned += quantity;
       stats.items -= quantity;
       stats.save();
     }
 
     removeIfExists("User", Address.zero().toHexString());
-    removeIfExists("Token", token.id);
 
     return;
   }

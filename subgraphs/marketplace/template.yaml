@@ -655,6 +655,30 @@ dataSources:
         - event: Unstaked(uint256)
           handler: handleUnstake721
       file: ./src/mapping.ts
+  - name: Tales of Elleria Relics
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ tales_of_elleria_relics_address }}"
+      abi: ERC1155
+      startBlock: {{ tales_of_elleria_relics_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Token
+        - User
+        - UserToken
+      abis:
+        - name: ERC1155
+          file: {{{ abis }}}/1155.json
+      eventHandlers:
+        - event: TransferBatch(indexed address,indexed address,indexed address,uint256[],uint256[])
+          handler: handleTransferBatch
+        - event: TransferSingle(indexed address,indexed address,indexed address,uint256,uint256)
+          handler: handleTransferSingle
+      file: ./src/mappings/tales-of-elleria.ts
   - name: Smithonia Weapons
     kind: ethereum/contract
     network: {{ network }}
@@ -766,7 +790,7 @@ dataSources:
       eventHandlers:
         - event: Transfer(indexed address,indexed address,indexed uint256)
           handler: handleTransfer
-      file: ./src/mappings/samurise.ts
+      file: ./src/mappings/samurise-land.ts
   - name: SamuRise Items
     kind: ethereum/contract
     network: {{ network }}
@@ -790,7 +814,7 @@ dataSources:
           handler: handleTransferBatch
         - event: TransferSingle(indexed address,indexed address,indexed address,uint256,uint256)
           handler: handleTransferSingle
-      file: ./src/mappings/samurise.ts
+      file: ./src/mappings/samurise-items.ts
   - name: Lost Donkeys
     kind: ethereum/contract
     network: {{ network }}
