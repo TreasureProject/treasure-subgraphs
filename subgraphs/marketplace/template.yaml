@@ -790,7 +790,7 @@ dataSources:
       eventHandlers:
         - event: Transfer(indexed address,indexed address,indexed uint256)
           handler: handleTransfer
-      file: ./src/mappings/samurise-land.ts
+      file: ./src/mappings/samurise.ts
   - name: SamuRise Items
     kind: ethereum/contract
     network: {{ network }}
@@ -814,7 +814,7 @@ dataSources:
           handler: handleTransferBatch
         - event: TransferSingle(indexed address,indexed address,indexed address,uint256,uint256)
           handler: handleTransferSingle
-      file: ./src/mappings/samurise-items.ts
+      file: ./src/mappings/samurise.ts
   - name: Lost Donkeys
     kind: ethereum/contract
     network: {{ network }}
