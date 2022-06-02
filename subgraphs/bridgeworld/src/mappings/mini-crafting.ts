@@ -11,7 +11,7 @@ export function handleCraftingFinished(event: CraftingFinished): void {
   const xpGained = params._cpGained;
 
   // Save mini craft details
-  const miniCraftId = `${event.address.toHexString()}-${tokenId.toHexString()}-${timestamp.toString()}`;
+  const miniCraftId = `${event.transaction.hash.toHex()}-${event.logIndex.toString()}`;
   const miniCraft = new MiniCraft(miniCraftId);
   miniCraft.timestamp = timestamp;
   miniCraft.tier = params._tier;
