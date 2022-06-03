@@ -3,6 +3,7 @@ export * from "./constants";
 export * from "./crafting";
 export * from "./legion";
 export * from "./magic";
+export * from "./mini-crafting";
 export * from "./pilgrimage";
 export * from "./questing";
 export * from "./randomizer";

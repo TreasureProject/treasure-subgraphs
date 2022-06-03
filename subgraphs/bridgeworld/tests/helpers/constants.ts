@@ -6,6 +6,8 @@ export const LEGACY_LEGION_GENESIS_ADDRESS =
 export const LEGION_METADATA_STORE_ADDRESS =
   "0x99193ee9229b833d2aa4dbbda697c6600b944286";
 export const MAGIC_ADDRESS = "0x539bde0d7dbd336b79148aa742883198bbf60342";
+export const MINI_CRAFTING_ADDRESS =
+  "0xf7294076b47df541e30a3ec4f3ad5ba12a290bff";
 export const MULTISIG_ADDRESS = "0x512950b159366edcd2bcbee8126d973ac29736a2";
 export const PILGRIMAGE_ADDRESS = "0x088613c6bbb951c9796ba3bb42a1f310fb209fbd";
 export const QUESTING_ADDRESS = "0xda3cad5e4f40062ceca6c1b979766bc0baed8e33";
@@ -17,6 +19,8 @@ export const BROKEN_ENTITY_TYPE = "Broken";
 export const CRAFT_ENTITY_TYPE = "Craft";
 export const DEPOSIT_ENTITY_TYPE = "Deposit";
 export const LEGION_INFO_ENTITY_TYPE = "LegionInfo";
+export const MINI_CRAFT_ENTITY_TYPE = "MiniCraft";
+export const OUTCOME_ENTITY_TYPE = "Outcome";
 export const QUEST_ENTITY_TYPE = "Quest";
 export const SUMMONING_CIRCLE_ENTITY_TYPE = "SummoningCircle";
 export const SUMMON_FATIGUE_ENTITY_TYPE = "_SummonFatigue";
