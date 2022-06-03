@@ -173,38 +173,41 @@ export function handleAdvancedQuestEnded(event: AdvancedQuestEnded): void {
     random.save();
   }
 
-  for (let i = 0; i < params._rewards.length; i++) {
+  const rewards = params._rewards.filter(
+    (reward) =>
+      reward.consumableId.toI32() !== 0 ||
+      reward.treasureFragmentId.toI32() !== 0 ||
+      reward.treasureId.toI32() !== 0
+  );
+  for (let i = 0; i < rewards.length; i++) {
     const rewardId = `${quest.id}-${BigInt.fromI32(i).toHex()}`;
     const reward = new AdvancedQuestReward(rewardId);
 
     reward.advancedQuest = quest.id;
 
-    if (params._rewards[i].consumableId.toI32() !== 0) {
+    if (rewards[i].consumableId.toI32() !== 0) {
       const consumable = new TokenQuantity(rewardId);
 
       consumable.token = getAddressId(
         CONSUMABLE_ADDRESS,
-        params._rewards[i].consumableId
+        rewards[i].consumableId
       );
-      consumable.quantity = params._rewards[i].consumableAmount.toI32();
+      consumable.quantity = rewards[i].consumableAmount.toI32();
 
       consumable.save();
 
       reward.consumable = consumable.id;
     }
 
-    if (params._rewards[i].treasureFragmentId.toI32() != 0) {
+    if (rewards[i].treasureFragmentId.toI32() != 0) {
       reward.treasureFragment = getAddressId(
         TREASURE_FRAGMENT_ADDRESS,
-        params._rewards[i].treasureFragmentId
+        rewards[i].treasureFragmentId
       );
     }
 
-    if (params._rewards[i].treasureId.toI32() != 0) {
-      reward.treasure = getAddressId(
-        TREASURE_ADDRESS,
-        params._rewards[i].treasureId
-      );
+    if (rewards[i].treasureId.toI32() != 0) {
+      reward.treasure = getAddressId(TREASURE_ADDRESS, rewards[i].treasureId);
     }
 
     reward.save();
