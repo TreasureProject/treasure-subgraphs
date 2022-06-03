@@ -8,7 +8,6 @@ import { handleLegionCreated, handleTransfer } from "../src/mappings/legion";
 import { handleCraftingFinished } from "../src/mappings/mini-crafting";
 import {
   LEGION_INFO_ENTITY_TYPE,
-  MINI_CRAFTING_ADDRESS,
   MINI_CRAFT_ENTITY_TYPE,
   OUTCOME_ENTITY_TYPE,
   USER_ADDRESS,
@@ -21,14 +20,13 @@ test("mini crafting outcome is stored", () => {
   clearStore();
 
   // Finish mini craft
-  const timestamp = "1653084615";
   handleCraftingFinished(
-    createMiniCraftingFinishedEvent(timestamp, USER_ADDRESS, 1, 4, 114)
+    createMiniCraftingFinishedEvent("1653084615", USER_ADDRESS, 1, 4, 114)
   );
 
   // Assert MiniCraft entity was created
-  const id = `${MINI_CRAFTING_ADDRESS}-0x1-${timestamp}`;
-  assert.fieldEquals(MINI_CRAFT_ENTITY_TYPE, id, "timestamp", timestamp);
+  const id = "0xa16081f360e3847006db660bae1c6d1b2e17ec2a-1";
+  assert.fieldEquals(MINI_CRAFT_ENTITY_TYPE, id, "timestamp", "1653084615");
   assert.fieldEquals(MINI_CRAFT_ENTITY_TYPE, id, "tier", "4");
   assert.fieldEquals(
     MINI_CRAFT_ENTITY_TYPE,
