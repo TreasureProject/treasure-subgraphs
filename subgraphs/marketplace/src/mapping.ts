@@ -72,7 +72,7 @@ stakers.set(
 
 // Tales of Elleria
 stakers.set(
-  "0xc985872c155c387c850aa9cc6b19e81a35ccd829",
+  "0x7a0d491469fb5d7d3adbf186221891afe3b5d028",
   "0x7480224ec2b98f28cee3740c80940a2f489bf352"
 );
 
@@ -216,6 +216,23 @@ function handleTransfer(
 
     if (fromUserToken.quantity == 0) {
       removeIfExists("UserToken", fromUserToken.id);
+    }
+
+    // If token was staked we need to transfer it as well
+    const stakedToken = StakedToken.load(
+      getStakedTokenId(from, contract, tokenId)
+    );
+
+    if (!isZero(to) && stakedToken) {
+      removeIfExists("StakedToken", stakedToken.id);
+
+      stakedToken.id = stakedToken.id.replace(
+        from.toHexString(),
+        to.toHexString()
+      );
+      stakedToken.user = to.toHexString();
+
+      stakedToken.save();
     }
   }
 

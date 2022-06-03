@@ -1,4 +1,4 @@
-import { assert, clearStore, logStore, test } from "matchstick-as/assembly";
+import { assert, clearStore, test } from "matchstick-as/assembly";
 
 import { Address } from "@graphprotocol/graph-ts";
 
