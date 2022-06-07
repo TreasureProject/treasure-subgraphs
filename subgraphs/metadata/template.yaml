@@ -304,3 +304,27 @@ dataSources:
         - event: ImbuedSoulCreate(indexed address,indexed uint256,(uint256,uint8,uint8,uint8[],bool))
           handler: handleImbuedSoulCreated
       file: ./src/mappings/imbued-soul.ts
+  - name: Seed of Life Items
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ sol_item_address }}"
+      abi: ERC1155
+      startBlock: {{ sol_item_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Attribute
+        - Collection
+        - Token
+      abis:
+        - name: ERC1155
+          file: {{{ abis }}}/1155.json
+      eventHandlers:
+        - event: TransferBatch(indexed address,indexed address,indexed address,uint256[],uint256[])
+          handler: handleTransferBatch
+        - event: TransferSingle(indexed address,indexed address,indexed address,uint256,uint256)
+          handler: handleTransferSingle
+      file: ./src/mappings/seed-of-life-item.ts

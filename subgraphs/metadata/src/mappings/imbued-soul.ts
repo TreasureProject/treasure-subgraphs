@@ -100,6 +100,15 @@ export function handleImbuedSoulCreated(event: ImbuedSoulCreate): void {
     );
   }
 
+  attributes.push(
+    getOrCreateAttribute(
+      collection,
+      token,
+      "Land Owner",
+      info.isLandOwner ? "Yes" : "No"
+    )
+  );
+
   token.attributes = attributes.map<string>(attribute => attribute.id);
 
   if (
