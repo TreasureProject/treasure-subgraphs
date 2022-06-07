@@ -190,6 +190,7 @@ type Craft @entity {
 type MiniCraft @entity {
   id: ID!
 
+  blockNumber: BigInt!
   timestamp: BigInt!
   tier: Int!
   token: Token!
