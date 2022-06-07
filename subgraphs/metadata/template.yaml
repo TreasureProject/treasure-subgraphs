@@ -282,3 +282,25 @@ dataSources:
         - event: Transfer(indexed address,indexed address,indexed uint256)
           handler: handleTransfer
       file: ./src/mappings/lost-donkeys.ts
+  - name: Imbued Soul
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ imbued_soul_address }}"
+      abi: ImbuedSoul
+      startBlock: {{ imbued_soul_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Attribute
+        - Collection
+        - Token
+      abis:
+        - name: ImbuedSoul
+          file: {{{ abis }}}/ImbuedSoul.json
+      eventHandlers:
+        - event: ImbuedSoulCreate(indexed address,indexed uint256,(uint256,uint8,uint8,uint8[],bool))
+          handler: handleImbuedSoulCreated
+      file: ./src/mappings/imbued-soul.ts
