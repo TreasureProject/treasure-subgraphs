@@ -134,13 +134,16 @@ export function handleTreasureTriadPlayed(event: TreasureTriadPlayed): void {
 
   quest.treasureTriadResult = result.id;
 
-  const token = Token.load(quest.token);
-  if (token) {
-    const success = setQuestEndTime(quest, token.tokenId);
-    if (!success) {
-      log.error("[advanced-quest-triad] Failed to get endTime for legion: {}", [
-        quest.token,
-      ]);
+  if (result.numberOfCorruptedCardsRemaining > 0) {
+    const token = Token.load(quest.token);
+    if (token) {
+      const success = setQuestEndTime(quest, token.tokenId);
+      if (!success) {
+        log.error(
+          "[advanced-quest-triad] Failed to get endTime for legion: {}",
+          [quest.token]
+        );
+      }
     }
   }
 
@@ -174,7 +177,7 @@ export function handleAdvancedQuestEnded(event: AdvancedQuestEnded): void {
   }
 
   const rewards = params._rewards.filter(
-    (reward) =>
+    reward =>
       reward.consumableId.toI32() !== 0 ||
       reward.treasureFragmentId.toI32() !== 0 ||
       reward.treasureId.toI32() !== 0
