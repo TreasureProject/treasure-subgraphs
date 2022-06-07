@@ -67,3 +67,62 @@ export class LifeformClass {
     return this._names.at(intValue as i32);
   }
 }
+
+export class OffensiveSkill {
+  private static _names: Array<string> = [
+    "NONE",
+    "BERSERKER",
+    "METEOR_SWARM",
+    "HOLY_ARROW",
+    "MULTISHOT",
+    "SUMMON_MINION",
+    "THORS_HAMMER",
+    "MINDBURN",
+    "BACKSTAB",
+  ];
+
+  public static getName(intValue: number): string {
+    if (intValue >= this._names.length) {
+      throw new Error(`Bad enum value: ${intValue}`);
+    }
+
+    return this._names.at(intValue as i32);
+  }
+}
+
+export class SecondarySkill {
+  private static _names: Array<string> = [
+    "POTION_OF_SWIFTNESS",
+    "POTION_OF_RECOVERY",
+    "POTION_OF_GLUTTONY",
+    "BEGINNER_GARDENING_KIT",
+    "INTERMEDIATE_GARDENING_KIT",
+    "EXPERT_GARDENING_KIT",
+    "SHADOW_WALK",
+    "SHADOW_ASSAULT",
+    "SHADOW_OVERLORD",
+    "SPEAR_OF_FIRE",
+    "SPEAR_OF_FLAME",
+    "SPEAR_OF_INFERNO",
+    "SUMMON_BROWN_BEAR",
+    "SUMMON_LESSER_DAEMON",
+    "SUMMON_ANCIENT_WYRM",
+    "HOUSING_DEED_SMALL_COTTAGE",
+    "HOUSING_DEED_MEDIUM_TOWER",
+    "HOUSING_DEED_LARGE_CASTLE",
+    "DEMONIC_BLAST",
+    "DEMONIC_WAVE",
+    "DEMONIC_NOVA",
+    "RADIANT_BLESSING",
+    "DIVING_BLESSING",
+    "CELESTIAL_BLESSIN",
+  ];
+
+  public static getName(intValue: number): string {
+    if (intValue >= this._names.length) {
+      throw new Error(`Bad enum value: ${intValue}`);
+    }
+
+    return this._names.at(intValue as i32);
+  }
+}

@@ -91,7 +91,7 @@ type ImbuedSoul @entity {
 
   user: User!
   lifeformClass: LifeformClass!
-  offeniveSkill: OffensiveSkill!
+  offensiveSkill: OffensiveSkill!
   secondarySkills: [SecondarySkill!]!
   isLandOwner: Boolean!
 }

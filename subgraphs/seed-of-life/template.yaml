@@ -164,3 +164,24 @@ dataSources:
         - event: ImbuedSoulClaimed(address,uint256)
           handler: handleImbuedSoulClaimed
       file: ./src/mappings/seed-evolution.ts
+  - name: ImbuedSoul
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ imbued_soul_address }}"
+      abi: ImbuedSoul
+      startBlock: {{ imbued_soul_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - User
+        - ImbuedSoul
+      abis:
+        - name: ImbuedSoul
+          file: ../../node_modules/@treasure/subgraph-abis/src/ImbuedSoul.json
+      eventHandlers:
+        - event: ImbuedSoulCreate(indexed address,indexed uint256,(uint256,uint8,uint8,uint8[],bool))
+          handler: handleImbuedSoulCreated
+      file: ./src/mappings/imbued-soul.ts
