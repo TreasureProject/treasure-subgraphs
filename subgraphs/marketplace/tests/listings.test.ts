@@ -3,6 +3,7 @@ import { assert, clearStore, test } from "matchstick-as/assembly";
 import { Address, BigInt } from "@graphprotocol/graph-ts";
 
 import {
+  BURNER_ADDRESS,
   LEGION_ADDRESS,
   MARKETPLACE_ADDRESS,
   MARKETPLACE_BUYER_ADDRESS,
@@ -17,6 +18,9 @@ import {
   handleMarketplaceItemSold,
   handleMarketplaceItemUpdated,
   handleOracleUpdate,
+  handleTroveItemListed,
+  handleTroveItemSold,
+  handleTroveItemUpdated,
 } from "../src/mapping";
 import {
   handleLegionCreated,
@@ -32,6 +36,9 @@ import {
   createLegionCreatedEvent,
   createTransferEvent,
   createTransferSingleEvent,
+  createTroveItemListedEvent,
+  createTroveItemSoldEvent,
+  createTroveItemUpdatedEvent,
   createUpdateOracleEvent,
 } from "./utils";
 
@@ -1196,4 +1203,134 @@ test("item listed works for updates as well", () => {
   assert.fieldEquals(STATS_ENTITY_TYPE, collectionId, "listings", "1");
   assert.fieldEquals(STATS_ENTITY_TYPE, collectionId, "sales", "0");
   assert.fieldEquals(STATS_ENTITY_TYPE, collectionId, "volume", "0");
+});
+
+test("smol brains work via trove", () => {
+  clearStore();
+
+  handleSmolBrainsTransfer(
+    createTransferEvent(
+      SMOL_BRAINS_ADDRESS,
+      Address.zero().toHexString(),
+      USER_ADDRESS,
+      1
+    )
+  );
+
+  handleTroveItemListed(
+    createTroveItemListedEvent(USER_ADDRESS, SMOL_BRAINS_ADDRESS, 1, 1, 50)
+  );
+
+  handleTroveItemUpdated(
+    createTroveItemUpdatedEvent(USER_ADDRESS, SMOL_BRAINS_ADDRESS, 1, 1, 100)
+  );
+
+  const contract = SMOL_BRAINS_ADDRESS.toHexString();
+  const collectionId = contract;
+  const id = `${contract}-0x1`;
+  const listingId = `${USER_ADDRESS}-${id}`;
+
+  assert.fieldEquals(LISTING_ENTITY_TYPE, listingId, "status", "Active");
+  assert.fieldEquals(LISTING_ENTITY_TYPE, listingId, "token", id);
+  assert.fieldEquals(LISTING_ENTITY_TYPE, listingId, "quantity", "1");
+  assert.fieldEquals(LISTING_ENTITY_TYPE, listingId, "pricePerItem", "100");
+  assert.fieldEquals(
+    LISTING_ENTITY_TYPE,
+    listingId,
+    "collection",
+    collectionId
+  );
+  assert.fieldEquals(LISTING_ENTITY_TYPE, listingId, "seller", USER_ADDRESS);
+
+  assert.fieldEquals(
+    COLLECTION_ENTITY_TYPE,
+    collectionId,
+    "totalListings",
+    "1"
+  );
+  assert.fieldEquals(
+    COLLECTION_ENTITY_TYPE,
+    collectionId,
+    "listings",
+    `[${listingId}]`
+  );
+
+  // Transfer from seller to marketplace buyer
+  handleSmolBrainsTransfer(
+    createTransferEvent(
+      SMOL_BRAINS_ADDRESS,
+      USER_ADDRESS,
+      MARKETPLACE_BUYER_ADDRESS.toHexString(),
+      1
+    )
+  );
+
+  handleTroveItemSold(
+    createTroveItemSoldEvent(
+      USER_ADDRESS,
+      BUYER_ADDRESS,
+      SMOL_BRAINS_ADDRESS,
+      1,
+      1,
+      100
+    )
+  );
+
+  // Transfer from marketplace buyer to actual buyer
+  handleSmolBrainsTransfer(
+    createTransferEvent(
+      SMOL_BRAINS_ADDRESS,
+      MARKETPLACE_BUYER_ADDRESS.toHexString(),
+      BUYER_ADDRESS,
+      1
+    )
+  );
+
+  const soldId = `${listingId}-0xa16081f360e3847006db660bae1c6d1b2e17ec2a`;
+
+  assert.notInStore(LISTING_ENTITY_TYPE, listingId);
+
+  assert.fieldEquals(LISTING_ENTITY_TYPE, soldId, "status", "Sold");
+  assert.fieldEquals(LISTING_ENTITY_TYPE, soldId, "token", id);
+  assert.fieldEquals(LISTING_ENTITY_TYPE, soldId, "quantity", "1");
+  assert.fieldEquals(LISTING_ENTITY_TYPE, soldId, "pricePerItem", "100");
+  assert.fieldEquals(LISTING_ENTITY_TYPE, soldId, "collection", collectionId);
+  assert.fieldEquals(LISTING_ENTITY_TYPE, soldId, "seller", USER_ADDRESS);
+  assert.fieldEquals(LISTING_ENTITY_TYPE, soldId, "buyer", BUYER_ADDRESS);
+
+  assert.fieldEquals(
+    COLLECTION_ENTITY_TYPE,
+    collectionId,
+    "totalListings",
+    "0"
+  );
+  assert.fieldEquals(COLLECTION_ENTITY_TYPE, collectionId, "listings", "[]");
+});
+
+test("non-magic trove listings are ignored", () => {
+  clearStore();
+
+  handleSmolBrainsTransfer(
+    createTransferEvent(
+      SMOL_BRAINS_ADDRESS,
+      Address.zero().toHexString(),
+      USER_ADDRESS,
+      1
+    )
+  );
+
+  handleTroveItemListed(
+    createTroveItemListedEvent(
+      USER_ADDRESS,
+      SMOL_BRAINS_ADDRESS,
+      1,
+      1,
+      50,
+      1656403681,
+      1656403681,
+      BURNER_ADDRESS
+    )
+  );
+
+  assert.entityCount(LISTING_ENTITY_TYPE, 0);
 });

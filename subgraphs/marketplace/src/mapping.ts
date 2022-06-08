@@ -2,13 +2,13 @@ import { Address, BigInt, TypedMap, store } from "@graphprotocol/graph-ts";
 
 import {
   EXPLORER,
-  MAGIC_ADDRESS,
   MARKETPLACE_ADDRESS,
   MARKETPLACE_BUYER_ADDRESS,
   MARKETPLACE_V2_ADDRESS,
   TALES_OF_ELLERIA_ADDRESS,
   TALES_OF_ELLERIA_DATA_ADDRESS,
   TREASURE_ADDRESS,
+  TROVE_MAGIC_ADDRESS,
 } from "@treasure/constants";
 
 import { DropGym, JoinGym } from "../generated/Smol Bodies Gym/Gym";
@@ -478,7 +478,7 @@ export function handleTroveItemListed(event: TroveItemListed): void {
   const params = event.params;
 
   // Do nothing if not a MAGIC transaction
-  if (params.paymentToken.toHexString() != MAGIC_ADDRESS.toHexString()) {
+  if (!params.paymentToken.equals(TROVE_MAGIC_ADDRESS)) {
     return;
   }
 
@@ -596,7 +596,7 @@ export function handleTroveItemSold(event: TroveItemSold): void {
   const params = event.params;
 
   // Do nothing if not a MAGIC transaction
-  if (params.paymentToken.toHexString() != MAGIC_ADDRESS.toHexString()) {
+  if (!params.paymentToken.equals(TROVE_MAGIC_ADDRESS)) {
     return;
   }
 
@@ -673,7 +673,7 @@ export function handleTroveItemUpdated(event: TroveItemUpdated): void {
   const params = event.params;
 
   // Do nothing if not a MAGIC transaction
-  if (params.paymentToken.toHexString() != MAGIC_ADDRESS.toHexString()) {
+  if (!params.paymentToken.equals(TROVE_MAGIC_ADDRESS)) {
     return;
   }
 
