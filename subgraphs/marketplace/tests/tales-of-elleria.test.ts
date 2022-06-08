@@ -13,7 +13,6 @@ import {
 } from "./utils";
 
 const LISTING_ENTITY_TYPE = "Listing";
-const TOKEN_ENTITY_TYPE = "Token";
 const STAKED_TOKEN_ENTITY_TYPE = "StakedToken";
 const USER_ENTITY_TYPE = "User";
 

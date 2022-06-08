@@ -5,6 +5,7 @@ import { Address, BigInt, ethereum } from "@graphprotocol/graph-ts";
 import {
   MARKETPLACE_ADDRESS,
   MARKETPLACE_BUYER_ADDRESS,
+  TALES_OF_ELLERIA_DATA_ADDRESS,
 } from "@treasure/constants";
 
 import { LegionCreated } from "../generated/Legion Metadata Store/LegionMetadataStore";
@@ -269,9 +270,7 @@ export const createUpdateCollectionOwnerFee = (
 export const createStakedEvent = (user: string, tokenId: i32): Staked => {
   const newEvent = changetype<Staked>(newMockEvent());
 
-  newEvent.address = Address.fromString(
-    "0x7a0d491469fb5d7d3adbf186221891afe3b5d028"
-  );
+  newEvent.address = TALES_OF_ELLERIA_DATA_ADDRESS;
   newEvent.transaction.from = Address.fromString(user);
   newEvent.parameters = [
     new ethereum.EventParam("tokenId", ethereum.Value.fromI32(tokenId)),
@@ -283,9 +282,7 @@ export const createStakedEvent = (user: string, tokenId: i32): Staked => {
 export const createUnstakedEvent = (user: string, tokenId: i32): Unstaked => {
   const newEvent = changetype<Unstaked>(newMockEvent());
 
-  newEvent.address = Address.fromString(
-    "0x7a0d491469fb5d7d3adbf186221891afe3b5d028"
-  );
+  newEvent.address = TALES_OF_ELLERIA_DATA_ADDRESS;
   newEvent.transaction.from = Address.fromString(user);
   newEvent.parameters = [
     new ethereum.EventParam("tokenId", ethereum.Value.fromI32(tokenId)),

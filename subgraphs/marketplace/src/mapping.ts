@@ -11,6 +11,8 @@ import {
   MARKETPLACE_ADDRESS,
   MARKETPLACE_BUYER_ADDRESS,
   MARKETPLACE_V2_ADDRESS,
+  TALES_OF_ELLERIA_ADDRESS,
+  TALES_OF_ELLERIA_DATA_ADDRESS,
   TREASURE_ADDRESS,
 } from "@treasure/constants";
 
@@ -72,8 +74,8 @@ stakers.set(
 
 // Tales of Elleria
 stakers.set(
-  "0x7a0d491469fb5d7d3adbf186221891afe3b5d028",
-  "0x7480224ec2b98f28cee3740c80940a2f489bf352"
+  TALES_OF_ELLERIA_DATA_ADDRESS.toHexString(),
+  TALES_OF_ELLERIA_ADDRESS.toHexString()
 );
 
 function getListing(
