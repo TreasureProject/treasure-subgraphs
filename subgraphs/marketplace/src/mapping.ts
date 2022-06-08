@@ -11,6 +11,8 @@ import {
   MARKETPLACE_ADDRESS,
   MARKETPLACE_BUYER_ADDRESS,
   MARKETPLACE_V2_ADDRESS,
+  TALES_OF_ELLERIA_ADDRESS,
+  TALES_OF_ELLERIA_DATA_ADDRESS,
   TREASURE_ADDRESS,
 } from "@treasure/constants";
 
@@ -72,8 +74,8 @@ stakers.set(
 
 // Tales of Elleria
 stakers.set(
-  "0xc985872c155c387c850aa9cc6b19e81a35ccd829",
-  "0x7480224ec2b98f28cee3740c80940a2f489bf352"
+  TALES_OF_ELLERIA_DATA_ADDRESS.toHexString(),
+  TALES_OF_ELLERIA_ADDRESS.toHexString()
 );
 
 function getListing(
@@ -216,6 +218,23 @@ function handleTransfer(
 
     if (fromUserToken.quantity == 0) {
       removeIfExists("UserToken", fromUserToken.id);
+    }
+
+    // If token was staked we need to transfer it as well
+    const stakedToken = StakedToken.load(
+      getStakedTokenId(from, contract, tokenId)
+    );
+
+    if (!isZero(to) && stakedToken) {
+      removeIfExists("StakedToken", stakedToken.id);
+
+      stakedToken.id = stakedToken.id.replace(
+        from.toHexString(),
+        to.toHexString()
+      );
+      stakedToken.user = to.toHexString();
+
+      stakedToken.save();
     }
   }
 

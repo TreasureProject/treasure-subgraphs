@@ -16,7 +16,7 @@ function fetchTokenMetadata(
   token: Token,
   timestamp: BigInt
 ): void {
-  if (token.image) {
+  if (token.name != "") {
     return;
   }
 
