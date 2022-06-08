@@ -4,7 +4,7 @@ import { Address } from "@graphprotocol/graph-ts";
 
 import { TALES_OF_ELLERIA_ADDRESS } from "@treasure/constants";
 
-import { handleItemListed, handleStake721 } from "../src/mapping";
+import { handleMarketplaceItemListed, handleStake721 } from "../src/mapping";
 import { handleTransfer } from "../src/mappings/tales-of-elleria";
 import {
   createItemListedEvent,
@@ -45,7 +45,7 @@ test("tales of elleria staked tokens are tracked properly when transfered", () =
     100
   );
 
-  handleItemListed(listEvent);
+  handleMarketplaceItemListed(listEvent);
 
   const collectionId = TALES_OF_ELLERIA_ADDRESS.toHexString();
   const id = `${collectionId}-0x1`;
@@ -72,7 +72,7 @@ test("tales of elleria staked tokens are tracked properly when transfered", () =
     200
   );
 
-  handleItemListed(listEvent2);
+  handleMarketplaceItemListed(listEvent2);
 
   const listingId2 = `${USER_ADDRESS2}-${id}`;
 
