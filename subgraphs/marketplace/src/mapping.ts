@@ -2,6 +2,7 @@ import { Address, BigInt, TypedMap, store } from "@graphprotocol/graph-ts";
 
 import {
   EXPLORER,
+  MAGIC_ADDRESS,
   MARKETPLACE_ADDRESS,
   MARKETPLACE_BUYER_ADDRESS,
   MARKETPLACE_V2_ADDRESS,
@@ -477,7 +478,7 @@ export function handleTroveItemListed(event: TroveItemListed): void {
   const params = event.params;
 
   // Do nothing if not a MAGIC transaction
-  if (params.paymentToken.toHexString() != "") {
+  if (params.paymentToken.toHexString() != MAGIC_ADDRESS.toHexString()) {
     return;
   }
 
@@ -595,7 +596,7 @@ export function handleTroveItemSold(event: TroveItemSold): void {
   const params = event.params;
 
   // Do nothing if not a MAGIC transaction
-  if (params.paymentToken.toHexString() != "") {
+  if (params.paymentToken.toHexString() != MAGIC_ADDRESS.toHexString()) {
     return;
   }
 
@@ -672,7 +673,7 @@ export function handleTroveItemUpdated(event: TroveItemUpdated): void {
   const params = event.params;
 
   // Do nothing if not a MAGIC transaction
-  if (params.paymentToken.toHexString() != "") {
+  if (params.paymentToken.toHexString() != MAGIC_ADDRESS.toHexString()) {
     return;
   }
 
