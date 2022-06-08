@@ -68,6 +68,7 @@ export function handleImbuedSoulCreated(event: ImbuedSoulCreate): void {
   const collection = getOrCreateCollection(event.address);
   const token = getOrCreateToken(collection, tokenId);
   token.name = `Imbued Soul #${tokenId}`;
+  token.image = "ipfs://QmTa3Pf9k1JW14WGNa9YwKsk5yqjXZfRegtpig9EUp9TQ3";
 
   const attributes: Attribute[] = [];
 
