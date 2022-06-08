@@ -18,7 +18,7 @@ import {
   ItemSold as TroveItemSold,
   ItemUpdated as TroveItemUpdated,
 } from "../generated/TreasureMarketplace Trove/TreasureMarketplaceTrove";
-import { UpdateCollectionOwnerFee } from "../generated/TreasureMarketplace v2/Marketplace";
+import { UpdateCollectionOwnerFee } from "../generated/TreasureMarketplace v2/TreasureMarketplaceV2";
 import { Transfer } from "../generated/TreasureMarketplace/ERC721";
 import {
   TransferBatch,
