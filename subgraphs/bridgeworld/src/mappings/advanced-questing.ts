@@ -171,7 +171,7 @@ export function handleAdvancedQuestEnded(event: AdvancedQuestEnded): void {
 
   const user = User.load(quest.user);
   if (user) {
-    user.finishedAdvancedQuestCount++;
+    user.finishedAdvancedQuestCount += 1;
     user.save();
   }
 
