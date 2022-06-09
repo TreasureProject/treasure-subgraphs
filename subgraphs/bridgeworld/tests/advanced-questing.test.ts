@@ -323,3 +323,32 @@ test("Quest rewards are set when ended", () => {
   );
   assert.fieldEquals("TokenQuantity", `${quest.id}-0x1`, "quantity", "6");
 });
+
+test("Finishing a quest increments user's finishedAdvancedQuestCount", () => {
+  const legionId = 1;
+
+  advancedQuestingSetup(legionId);
+  mockEndTimeForLegion(legionId, new Date(0).getTime(), 0);
+
+  assert.fieldEquals("User", USER_ADDRESS, "finishedAdvancedQuestCount", "0");
+
+  handleAdvancedQuestStarted(
+    createAdvancedQuestStartedEvent(USER_ADDRESS, legionId, 1)
+  );
+  assert.fieldEquals("User", USER_ADDRESS, "finishedAdvancedQuestCount", "0");
+
+  handleAdvancedQuestEnded(
+    createAdvancedQuestEndedEvent(USER_ADDRESS, legionId)
+  );
+  assert.fieldEquals("User", USER_ADDRESS, "finishedAdvancedQuestCount", "1");
+
+  handleAdvancedQuestStarted(
+    createAdvancedQuestStartedEvent(USER_ADDRESS, legionId, 1)
+  );
+  assert.fieldEquals("User", USER_ADDRESS, "finishedAdvancedQuestCount", "1");
+
+  handleAdvancedQuestEnded(
+    createAdvancedQuestEndedEvent(USER_ADDRESS, legionId)
+  );
+  assert.fieldEquals("User", USER_ADDRESS, "finishedAdvancedQuestCount", "2");
+});
