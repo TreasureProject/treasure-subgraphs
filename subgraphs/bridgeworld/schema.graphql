@@ -338,6 +338,7 @@ type User @entity {
   boosts: Int!
   deposited: BigInt!
   recruit: Token
+  finishedAdvancedQuestCount: Int!
 }
 
 type Pilgrimage @entity {

@@ -23,6 +23,7 @@ import {
   Token,
   TokenQuantity,
   TreasureTriadResult,
+  User,
 } from "../../generated/schema";
 import { setQuestEndTime } from "../helpers/advanced-questing";
 import { getAddressId } from "../helpers/utils";
@@ -168,6 +169,12 @@ export function handleAdvancedQuestEnded(event: AdvancedQuestEnded): void {
   quest.status = "Finished";
   quest.endTimestamp = event.block.timestamp.times(BigInt.fromI32(1000));
 
+  const user = User.load(quest.user);
+  if (user) {
+    user.finishedAdvancedQuestCount += 1;
+    user.save();
+  }
+
   store.remove("AdvancedQuest", id);
 
   const random = Random.load(quest.requestId.toHexString());
@@ -177,7 +184,7 @@ export function handleAdvancedQuestEnded(event: AdvancedQuestEnded): void {
   }
 
   const rewards = params._rewards.filter(
-    reward =>
+    (reward) =>
       reward.consumableId.toI32() !== 0 ||
       reward.treasureFragmentId.toI32() !== 0 ||
       reward.treasureId.toI32() !== 0
