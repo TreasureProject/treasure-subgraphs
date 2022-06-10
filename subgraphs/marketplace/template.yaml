@@ -931,13 +931,13 @@ dataSources:
         - event: Transfer(indexed address,indexed address,indexed uint256)
           handler: handleTransfer
       file: ./src/mappings/imbued-soul.ts
-  - name: Seed of Life Item
+  - name: Seed of Life Resources
     kind: ethereum/contract
     network: {{ network }}
     source:
-      address: "{{ sol_item_address }}"
+      address: "{{ sol_resources_address }}"
       abi: ERC1155
-      startBlock: {{ sol_item_start_block }}
+      startBlock: {{ sol_resources_start_block }}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -954,4 +954,4 @@ dataSources:
           handler: handleTransferBatch
         - event: TransferSingle(indexed address,indexed address,indexed address,uint256,uint256)
           handler: handleTransferSingle
-      file: ./src/mappings/seed-of-life-item.ts
+      file: ./src/mappings/seed-of-life-resources.ts

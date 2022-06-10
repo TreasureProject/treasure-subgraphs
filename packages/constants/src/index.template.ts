@@ -53,8 +53,8 @@ export const MARKETPLACE_BUYER_ADDRESS = Address.fromString(
 export const SEED_OF_LIFE_ADDRESS = Address.fromString(
   "{{ seed_of_life_address }}"
 );
-export const SEED_OF_LIFE_ITEM_ADDRESS = Address.fromString(
-  "{{ sol_item_address }}"
+export const SEED_OF_LIFE_RESOURCES_ADDRESS = Address.fromString(
+  "{{ sol_resources_address }}"
 );
 export const SEED_EVOLUTION_ADDRESS = Address.fromString(
   "{{ seed_evolution_address }}"
