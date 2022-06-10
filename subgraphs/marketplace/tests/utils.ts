@@ -6,10 +6,16 @@ import {
   MARKETPLACE_ADDRESS,
   MARKETPLACE_BUYER_ADDRESS,
   TALES_OF_ELLERIA_DATA_ADDRESS,
+  TROVE_MAGIC_ADDRESS,
 } from "@treasure/constants";
 
 import { LegionCreated } from "../generated/Legion Metadata Store/LegionMetadataStore";
-import { UpdateCollectionOwnerFee } from "../generated/TreasureMarketplace v2/Marketplace";
+import {
+  ItemListed as TroveItemListed,
+  ItemSold as TroveItemSold,
+  ItemUpdated as TroveItemUpdated,
+} from "../generated/TreasureMarketplace Trove/TreasureMarketplaceTrove";
+import { UpdateCollectionOwnerFee } from "../generated/TreasureMarketplace v2/TreasureMarketplaceV2";
 import { Transfer } from "../generated/TreasureMarketplace/ERC721";
 import {
   TransferBatch,
@@ -76,6 +82,38 @@ export const createItemListedEvent = (
   return newEvent;
 };
 
+export const createTroveItemListedEvent = (
+  user: string,
+  contract: Address,
+  tokenId: i32,
+  quantity: i32,
+  price: i32,
+  expires: i32 = 1656403681,
+  timestamp: i32 = expires,
+  paymentToken: Address = TROVE_MAGIC_ADDRESS
+): TroveItemListed => {
+  const newEvent = changetype<TroveItemListed>(newMockEvent());
+  newEvent.address = MARKETPLACE_ADDRESS;
+  newEvent.block.timestamp = BigInt.fromI32(timestamp);
+  newEvent.parameters = [
+    new ethereum.EventParam(
+      "seller",
+      ethereum.Value.fromAddress(Address.fromString(user))
+    ),
+    new ethereum.EventParam("nftAddress", ethereum.Value.fromAddress(contract)),
+    new ethereum.EventParam("tokenId", ethereum.Value.fromI32(tokenId)),
+    new ethereum.EventParam("quantity", ethereum.Value.fromI32(quantity)),
+    new ethereum.EventParam("pricePerItem", ethereum.Value.fromI32(price)),
+    new ethereum.EventParam("expirationTime", ethereum.Value.fromI32(expires)),
+    new ethereum.EventParam(
+      "paymentToken",
+      ethereum.Value.fromAddress(paymentToken)
+    ),
+  ];
+
+  return newEvent;
+};
+
 export const createItemSoldEvent = (
   seller: string,
   buyer: string,
@@ -105,6 +143,40 @@ export const createItemSoldEvent = (
   return newEvent;
 };
 
+export const createTroveItemSoldEvent = (
+  seller: string,
+  buyer: string,
+  contract: Address,
+  tokenId: i32,
+  quantity: i32,
+  price: i32,
+  paymentToken: Address = TROVE_MAGIC_ADDRESS
+): TroveItemSold => {
+  const newEvent = changetype<TroveItemSold>(newMockEvent());
+  newEvent.address = MARKETPLACE_ADDRESS;
+  newEvent.transaction.from = Address.fromString(buyer);
+  newEvent.parameters = [
+    new ethereum.EventParam(
+      "seller",
+      ethereum.Value.fromAddress(Address.fromString(seller))
+    ),
+    new ethereum.EventParam(
+      "buyer",
+      ethereum.Value.fromAddress(MARKETPLACE_BUYER_ADDRESS)
+    ),
+    new ethereum.EventParam("nftAddress", ethereum.Value.fromAddress(contract)),
+    new ethereum.EventParam("tokenId", ethereum.Value.fromI32(tokenId)),
+    new ethereum.EventParam("quantity", ethereum.Value.fromI32(quantity)),
+    new ethereum.EventParam("pricePerItem", ethereum.Value.fromI32(price)),
+    new ethereum.EventParam(
+      "paymentToken",
+      ethereum.Value.fromAddress(paymentToken)
+    ),
+  ];
+
+  return newEvent;
+};
+
 export const createItemUpdatedEvent = (
   user: string,
   contract: Address,
@@ -127,6 +199,38 @@ export const createItemUpdatedEvent = (
     new ethereum.EventParam("quantity", ethereum.Value.fromI32(quantity)),
     new ethereum.EventParam("pricePerItem", ethereum.Value.fromI32(price)),
     new ethereum.EventParam("expirationTime", ethereum.Value.fromI32(expires)),
+  ];
+
+  return newEvent;
+};
+
+export const createTroveItemUpdatedEvent = (
+  user: string,
+  contract: Address,
+  tokenId: i32,
+  quantity: i32,
+  price: i32,
+  expires: i32 = 1656403681,
+  timestamp: i32 = expires,
+  paymentToken: Address = TROVE_MAGIC_ADDRESS
+): TroveItemUpdated => {
+  const newEvent = changetype<TroveItemUpdated>(newMockEvent());
+  newEvent.address = MARKETPLACE_ADDRESS;
+  newEvent.block.timestamp = BigInt.fromI32(timestamp);
+  newEvent.parameters = [
+    new ethereum.EventParam(
+      "seller",
+      ethereum.Value.fromAddress(Address.fromString(user))
+    ),
+    new ethereum.EventParam("nftAddress", ethereum.Value.fromAddress(contract)),
+    new ethereum.EventParam("tokenId", ethereum.Value.fromI32(tokenId)),
+    new ethereum.EventParam("quantity", ethereum.Value.fromI32(quantity)),
+    new ethereum.EventParam("pricePerItem", ethereum.Value.fromI32(price)),
+    new ethereum.EventParam("expirationTime", ethereum.Value.fromI32(expires)),
+    new ethereum.EventParam(
+      "paymentToken",
+      ethereum.Value.fromAddress(paymentToken)
+    ),
   ];
 
   return newEvent;

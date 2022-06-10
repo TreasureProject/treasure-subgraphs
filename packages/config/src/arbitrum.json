@@ -96,7 +96,9 @@
   "treasure_marketplace_start_block": 2983469,
   "treasure_marketplace_v2_address": "0x09986B4e255B3c548041a30A2Ee312Fe176731c2",
   "treasure_marketplace_v2_start_block": 7764399,
+  "treasure_marketplace_trove_start_block": 14096500,
   "treasure_marketplace_pause_start_block": 7322795,
+  "trove_magic_address": "0x539bdE0d7Dbd336b79148AA742883198BBF60342",
 
   "peek_a_boo_address": "0xbb5e6438336187ef87e21798dcda8fc98fcfa65a",
   "peek_a_boo_start_block": 8279648,

@@ -1,10 +1,4 @@
-import {
-  Address,
-  BigInt,
-  TypedMap,
-  ethereum,
-  store,
-} from "@graphprotocol/graph-ts";
+import { Address, BigInt, TypedMap, store } from "@graphprotocol/graph-ts";
 
 import {
   EXPLORER,
@@ -14,11 +8,17 @@ import {
   TALES_OF_ELLERIA_ADDRESS,
   TALES_OF_ELLERIA_DATA_ADDRESS,
   TREASURE_ADDRESS,
+  TROVE_MAGIC_ADDRESS,
 } from "@treasure/constants";
 
 import { DropGym, JoinGym } from "../generated/Smol Bodies Gym/Gym";
 import { DropSchool, JoinSchool } from "../generated/Smol Brains School/School";
-import { UpdateCollectionOwnerFee } from "../generated/TreasureMarketplace v2/Marketplace";
+import {
+  ItemListed as TroveItemListed,
+  ItemSold as TroveItemSold,
+  ItemUpdated as TroveItemUpdated,
+} from "../generated/TreasureMarketplace Trove/TreasureMarketplaceTrove";
+import { UpdateCollectionOwnerFee } from "../generated/TreasureMarketplace v2/TreasureMarketplaceV2";
 import { Transfer } from "../generated/TreasureMarketplace/ERC721";
 import {
   TransferBatch,
@@ -374,8 +374,8 @@ function normalizeTime(value: BigInt): BigInt {
     : value;
 }
 
-function getTime(event: ethereum.Event): i64 {
-  return event.block.timestamp.toI64() * 1000;
+function getTime(timestamp: BigInt): i64 {
+  return timestamp.toI64() * 1000;
 }
 
 export function handleItemCanceled(event: ItemCanceled): void {
@@ -410,22 +410,21 @@ export function handleItemCanceled(event: ItemCanceled): void {
     stats.save();
   }
 
-  updateCollectionFloorAndTotal(listing.collection, getTime(event));
+  updateCollectionFloorAndTotal(
+    listing.collection,
+    getTime(event.block.timestamp)
+  );
 }
 
-export function handleItemListed(event: ItemListed): void {
-  // Do nothing if paused
-  if (isPaused(event)) {
-    return;
-  }
-
-  let params = event.params;
-  let pricePerItem = params.pricePerItem;
-  let quantity = params.quantity;
-  let tokenAddress = params.nftAddress;
-  let tokenId = params.tokenId;
-  let seller = params.seller;
-
+function handleItemListed(
+  timestamp: BigInt,
+  seller: Address,
+  tokenAddress: Address,
+  tokenId: BigInt,
+  quantity: BigInt,
+  pricePerItem: BigInt,
+  expirationTime: BigInt
+): void {
   let token = getToken(tokenAddress, tokenId);
   let collection = getCollection(token.collection);
 
@@ -440,9 +439,9 @@ export function handleItemListed(event: ItemListed): void {
 
   let listing = getListing(seller, tokenAddress, tokenId);
 
-  listing.blockTimestamp = event.block.timestamp;
+  listing.blockTimestamp = timestamp;
   listing.collection = token.collection;
-  listing.expires = normalizeTime(params.expirationTime);
+  listing.expires = normalizeTime(expirationTime);
   listing.pricePerItem = pricePerItem;
   listing.quantity = quantity.toI32();
   listing.status = exists("StakedToken", listing.id) ? "Inactive" : "Active";
@@ -454,20 +453,56 @@ export function handleItemListed(event: ItemListed): void {
     collection.save();
   }
 
-  updateCollectionFloorAndTotal(collection.id, getTime(event));
+  updateCollectionFloorAndTotal(collection.id, getTime(timestamp));
 }
 
-export function handleItemSold(event: ItemSold): void {
-  let params = event.params;
-  let quantity = params.quantity.toI32();
-  let seller = params.seller;
-  let address = params.nftAddress;
-  let tokenId = params.tokenId;
-  let buyer = params.buyer.equals(MARKETPLACE_BUYER_ADDRESS)
-    ? event.transaction.from
-    : params.buyer;
+export function handleMarketplaceItemListed(event: ItemListed): void {
+  // Do nothing if paused
+  if (isPaused(event)) {
+    return;
+  }
 
-  let listing = getListing(seller, address, tokenId);
+  const params = event.params;
+  handleItemListed(
+    event.block.timestamp,
+    params.seller,
+    params.nftAddress,
+    params.tokenId,
+    params.quantity,
+    params.pricePerItem,
+    params.expirationTime
+  );
+}
+
+export function handleTroveItemListed(event: TroveItemListed): void {
+  const params = event.params;
+
+  // Do nothing if not a MAGIC transaction
+  if (!params.paymentToken.equals(TROVE_MAGIC_ADDRESS)) {
+    return;
+  }
+
+  handleItemListed(
+    event.block.timestamp,
+    params.seller,
+    params.nftAddress,
+    params.tokenId,
+    params.quantity,
+    params.pricePerItem,
+    params.expirationTime
+  );
+}
+
+function handleItemSold(
+  transactionHash: string,
+  timestamp: BigInt,
+  seller: Address,
+  buyer: Address,
+  tokenAddress: Address,
+  tokenId: BigInt,
+  quantity: i32
+): void {
+  let listing = getListing(seller, tokenAddress, tokenId);
 
   // Was invalid listing, likely a Recruit. Should never happen as contract would revert the transfer anyways.
   if (listing.quantity == 0) {
@@ -483,11 +518,11 @@ export function handleItemSold(event: ItemSold): void {
     listing.save();
   }
 
-  let hash = event.transaction.hash.toHexString();
-  let sold = getListing(seller, address, tokenId);
+  let hash = transactionHash;
+  let sold = getListing(seller, tokenAddress, tokenId);
 
   sold.id = `${sold.id}-${hash}`;
-  sold.blockTimestamp = event.block.timestamp;
+  sold.blockTimestamp = timestamp;
   sold.buyer = getUser(buyer).id;
   sold.collection = listing.collection;
   sold.expires = BigInt.zero();
@@ -537,31 +572,73 @@ export function handleItemSold(event: ItemSold): void {
     stats.save();
   }
 
-  updateCollectionFloorAndTotal(collection.id, getTime(event));
+  updateCollectionFloorAndTotal(collection.id, getTime(timestamp));
 }
 
-export function handleItemUpdated(event: ItemUpdated): void {
-  // Do nothing if paused
-  if (isPaused(event)) {
+export function handleMarketplaceItemSold(event: ItemSold): void {
+  const params = event.params;
+  const buyer = params.buyer.equals(MARKETPLACE_BUYER_ADDRESS)
+    ? event.transaction.from
+    : params.buyer;
+
+  handleItemSold(
+    event.transaction.hash.toHexString(),
+    event.block.timestamp,
+    params.seller,
+    buyer,
+    params.nftAddress,
+    params.tokenId,
+    params.quantity.toI32()
+  );
+}
+
+export function handleTroveItemSold(event: TroveItemSold): void {
+  const params = event.params;
+
+  // Do nothing if not a MAGIC transaction
+  if (!params.paymentToken.equals(TROVE_MAGIC_ADDRESS)) {
     return;
   }
 
-  let params = event.params;
-  let listing = getListing(params.seller, params.nftAddress, params.tokenId);
+  const buyer = params.buyer.equals(MARKETPLACE_BUYER_ADDRESS)
+    ? event.transaction.from
+    : params.buyer;
+
+  handleItemSold(
+    event.transaction.hash.toHexString(),
+    event.block.timestamp,
+    params.seller,
+    buyer,
+    params.nftAddress,
+    params.tokenId,
+    params.quantity.toI32()
+  );
+}
+
+function handleItemUpdated(
+  timestamp: BigInt,
+  seller: Address,
+  tokenAddress: Address,
+  tokenId: BigInt,
+  quantity: BigInt,
+  pricePerItem: BigInt,
+  expirationTime: BigInt
+): void {
+  let listing = getListing(seller, tokenAddress, tokenId);
 
   // Was invalid listing, likely a Recruit
   if (listing.quantity == 0) {
     return;
   }
 
-  if (!listing.pricePerItem.equals(params.pricePerItem)) {
-    listing.blockTimestamp = event.block.timestamp;
+  if (!listing.pricePerItem.equals(pricePerItem)) {
+    listing.blockTimestamp = timestamp;
   }
 
-  listing.expires = normalizeTime(params.expirationTime);
+  listing.expires = normalizeTime(expirationTime);
   listing.status = exists("StakedToken", listing.id) ? "Inactive" : "Active";
-  listing.quantity = params.quantity.toI32();
-  listing.pricePerItem = params.pricePerItem;
+  listing.quantity = quantity.toI32();
+  listing.pricePerItem = pricePerItem;
 
   // Bug existed in contract that allowed quantity to be updated to 0, but then couldn't be sold.
   // Remove this listing as it is invalid.
@@ -571,7 +648,44 @@ export function handleItemUpdated(event: ItemUpdated): void {
     listing.save();
   }
 
-  updateCollectionFloorAndTotal(listing.collection, getTime(event));
+  updateCollectionFloorAndTotal(listing.collection, getTime(timestamp));
+}
+
+export function handleMarketplaceItemUpdated(event: ItemUpdated): void {
+  // Do nothing if paused
+  if (isPaused(event)) {
+    return;
+  }
+
+  const params = event.params;
+  handleItemUpdated(
+    event.block.timestamp,
+    params.seller,
+    params.nftAddress,
+    params.tokenId,
+    params.quantity,
+    params.pricePerItem,
+    params.expirationTime
+  );
+}
+
+export function handleTroveItemUpdated(event: TroveItemUpdated): void {
+  const params = event.params;
+
+  // Do nothing if not a MAGIC transaction
+  if (!params.paymentToken.equals(TROVE_MAGIC_ADDRESS)) {
+    return;
+  }
+
+  handleItemUpdated(
+    event.block.timestamp,
+    params.seller,
+    params.nftAddress,
+    params.tokenId,
+    params.quantity,
+    params.pricePerItem,
+    params.expirationTime
+  );
 }
 
 export function handleOracleUpdate(event: UpdateOracle): void {
@@ -666,7 +780,7 @@ export function handleTransfer721(event: Transfer): void {
     params.to,
     params.tokenId,
     1,
-    getTime(event)
+    getTime(event.block.timestamp)
   );
 }
 
@@ -690,7 +804,7 @@ export function handleTransferBatch(event: TransferBatch): void {
       params.to,
       id,
       amounts[index].toI32(),
-      getTime(event)
+      getTime(event.block.timestamp)
     );
   }
 }
@@ -709,7 +823,7 @@ export function handleTransferSingle(event: TransferSingle): void {
     params.to,
     params.id,
     params.value.toI32(),
-    getTime(event)
+    getTime(event.block.timestamp)
   );
 }
 
@@ -724,7 +838,7 @@ export function handleJoinGym(event: JoinGym): void {
     event.transaction.from,
     event.address,
     event.params.tokenId,
-    getTime(event)
+    getTime(event.block.timestamp)
   );
 }
 
@@ -739,7 +853,7 @@ export function handleJoinSchool(event: JoinSchool): void {
     event.transaction.from,
     event.address,
     event.params.tokenId,
-    getTime(event)
+    getTime(event.block.timestamp)
   );
 }
 
@@ -750,7 +864,7 @@ export function handleStake721(event: Staked): void {
     event.transaction.from,
     event.address,
     event.params.tokenId,
-    getTime(event)
+    getTime(event.block.timestamp)
   );
 }
 

@@ -8,7 +8,10 @@ import {
   SMOL_TREASURES_ADDRESS,
 } from "@treasure/constants";
 
-import { handleItemListed, handleItemSold } from "../src/mapping";
+import {
+  handleMarketplaceItemListed,
+  handleMarketplaceItemSold,
+} from "../src/mapping";
 import {
   handleTransferBatch,
   handleTransferSingle,
@@ -134,7 +137,7 @@ test("smol treasures work via marketplace", () => {
     50
   );
 
-  handleItemListed(itemListedEvent);
+  handleMarketplaceItemListed(itemListedEvent);
 
   const collectionId = SMOL_TREASURES_ADDRESS.toHexString();
   const id = `${collectionId}-0x2`;
@@ -173,7 +176,7 @@ test("smol treasures work via marketplace", () => {
     50
   );
 
-  handleItemSold(itemSoldEvent);
+  handleMarketplaceItemSold(itemSoldEvent);
 
   // Transfer from marketplace buyer to actual buyer
   const buyerTransfer = createTransferSingleEvent(

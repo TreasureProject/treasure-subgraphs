@@ -3,6 +3,7 @@ import { assert, clearStore, test } from "matchstick-as/assembly";
 import { Address, BigInt } from "@graphprotocol/graph-ts";
 
 import {
+  BURNER_ADDRESS,
   LEGION_ADDRESS,
   MARKETPLACE_ADDRESS,
   MARKETPLACE_BUYER_ADDRESS,
@@ -13,10 +14,13 @@ import {
 
 import {
   handleItemCanceled,
-  handleItemListed,
-  handleItemSold,
-  handleItemUpdated,
+  handleMarketplaceItemListed,
+  handleMarketplaceItemSold,
+  handleMarketplaceItemUpdated,
   handleOracleUpdate,
+  handleTroveItemListed,
+  handleTroveItemSold,
+  handleTroveItemUpdated,
 } from "../src/mapping";
 import {
   handleLegionCreated,
@@ -32,6 +36,9 @@ import {
   createLegionCreatedEvent,
   createTransferEvent,
   createTransferSingleEvent,
+  createTroveItemListedEvent,
+  createTroveItemSoldEvent,
+  createTroveItemUpdatedEvent,
   createUpdateOracleEvent,
 } from "./utils";
 
@@ -68,7 +75,7 @@ test("recruit legions via marketplace contract are not added", () => {
     50
   );
 
-  handleItemListed(itemListedEvent);
+  handleMarketplaceItemListed(itemListedEvent);
 
   const itemUpdatedEvent = createItemUpdatedEvent(
     USER_ADDRESS,
@@ -78,7 +85,7 @@ test("recruit legions via marketplace contract are not added", () => {
     100
   );
 
-  handleItemUpdated(itemUpdatedEvent);
+  handleMarketplaceItemUpdated(itemUpdatedEvent);
 
   const itemCanceledEvent = createItemCanceledEvent(
     USER_ADDRESS,
@@ -148,7 +155,7 @@ test("legions genesis work via marketplace", () => {
     50
   );
 
-  handleItemListed(itemListedEvent);
+  handleMarketplaceItemListed(itemListedEvent);
 
   const itemUpdatedEvent = createItemUpdatedEvent(
     USER_ADDRESS,
@@ -158,7 +165,7 @@ test("legions genesis work via marketplace", () => {
     100
   );
 
-  handleItemUpdated(itemUpdatedEvent);
+  handleMarketplaceItemUpdated(itemUpdatedEvent);
 
   const contract = LEGION_ADDRESS.toHexString();
   const collectionId = `${contract}-0`;
@@ -211,7 +218,7 @@ test("legions genesis work via marketplace", () => {
     100
   );
 
-  handleItemSold(itemSoldEvent);
+  handleMarketplaceItemSold(itemSoldEvent);
 
   // Transfer from marketplace buyer to actual buyer
   const buyerTransfer = createTransferEvent(
@@ -265,7 +272,7 @@ test("smol brains work via marketplace", () => {
     50
   );
 
-  handleItemListed(itemListedEvent);
+  handleMarketplaceItemListed(itemListedEvent);
 
   const itemUpdatedEvent = createItemUpdatedEvent(
     USER_ADDRESS,
@@ -275,7 +282,7 @@ test("smol brains work via marketplace", () => {
     100
   );
 
-  handleItemUpdated(itemUpdatedEvent);
+  handleMarketplaceItemUpdated(itemUpdatedEvent);
 
   const contract = SMOL_BRAINS_ADDRESS.toHexString();
   const collectionId = contract;
@@ -326,7 +333,7 @@ test("smol brains work via marketplace", () => {
     100
   );
 
-  handleItemSold(itemSoldEvent);
+  handleMarketplaceItemSold(itemSoldEvent);
 
   // Transfer from marketplace buyer to actual buyer
   const buyerTransfer = createTransferEvent(
@@ -379,7 +386,7 @@ test("removes listing when quantity updated to 0", () => {
     50
   );
 
-  handleItemListed(itemListedEvent);
+  handleMarketplaceItemListed(itemListedEvent);
 
   const contract = SMOL_BRAINS_ADDRESS.toHexString();
   const collectionId = contract;
@@ -419,7 +426,7 @@ test("removes listing when quantity updated to 0", () => {
     100
   );
 
-  handleItemUpdated(itemUpdatedEvent);
+  handleMarketplaceItemUpdated(itemUpdatedEvent);
 
   assert.notInStore(LISTING_ENTITY_TYPE, listingId);
 });
@@ -448,7 +455,7 @@ test("supports expires in milliseconds", () => {
     expires / 1000
   );
 
-  handleItemListed(itemListedEvent);
+  handleMarketplaceItemListed(itemListedEvent);
 
   const contract = SMOL_BRAINS_ADDRESS.toHexString();
   const collectionId = contract;
@@ -490,7 +497,7 @@ test("supports expires in milliseconds", () => {
     expires + 10_000
   );
 
-  handleItemUpdated(itemUpdatedEvent);
+  handleMarketplaceItemUpdated(itemUpdatedEvent);
 
   assert.fieldEquals(
     LISTING_ENTITY_TYPE,
@@ -523,7 +530,7 @@ test("supports expires in seconds", () => {
     expires
   );
 
-  handleItemListed(itemListedEvent);
+  handleMarketplaceItemListed(itemListedEvent);
 
   const contract = SMOL_BRAINS_ADDRESS.toHexString();
   const collectionId = contract;
@@ -570,7 +577,7 @@ test("supports expires in seconds", () => {
     expires + 10
   );
 
-  handleItemUpdated(itemUpdatedEvent);
+  handleMarketplaceItemUpdated(itemUpdatedEvent);
 
   assert.fieldEquals(
     LISTING_ENTITY_TYPE,
@@ -609,7 +616,7 @@ test("expire listing when block timestamp is past", () => {
     50
   );
 
-  handleItemListed(itemListedEvent);
+  handleMarketplaceItemListed(itemListedEvent);
 
   const contract = SMOL_BRAINS_ADDRESS.toHexString();
   const collectionId = contract;
@@ -661,7 +668,7 @@ test("expire listing when block timestamp is past", () => {
     1656403682 as i32
   );
 
-  handleItemListed(itemListedEvent);
+  handleMarketplaceItemListed(itemListedEvent);
 
   const secondId = `${contract}-0x2`;
   const secondListingId = `${USER_ADDRESS}-${secondId}`;
@@ -749,7 +756,7 @@ test("handles the stats properly", () => {
     50
   );
 
-  handleItemListed(itemListedEvent);
+  handleMarketplaceItemListed(itemListedEvent);
 
   const collectionId = TREASURE_ADDRESS.toHexString();
   const firstId = `${collectionId}-0x5f`;
@@ -784,7 +791,7 @@ test("handles the stats properly", () => {
     500
   );
 
-  handleItemListed(itemListedEvent);
+  handleMarketplaceItemListed(itemListedEvent);
 
   const itemUpdatedEvent = createItemUpdatedEvent(
     USER_ADDRESS,
@@ -794,7 +801,7 @@ test("handles the stats properly", () => {
     200
   );
 
-  handleItemUpdated(itemUpdatedEvent);
+  handleMarketplaceItemUpdated(itemUpdatedEvent);
 
   let itemSoldEvent = createItemSoldEvent(
     USER_ADDRESS,
@@ -805,7 +812,7 @@ test("handles the stats properly", () => {
     200
   );
 
-  handleItemSold(itemSoldEvent);
+  handleMarketplaceItemSold(itemSoldEvent);
 
   let volume = BigInt.fromI32(200);
 
@@ -844,7 +851,7 @@ test("handles the stats properly", () => {
     200
   );
 
-  handleItemSold(itemSoldEvent);
+  handleMarketplaceItemSold(itemSoldEvent);
 
   volume = volume.plus(BigInt.fromI32(200));
 
@@ -922,7 +929,7 @@ test("mark listings sold with 0 quantity as invalid", () => {
     50
   );
 
-  handleItemListed(itemListedEvent);
+  handleMarketplaceItemListed(itemListedEvent);
 
   const itemSoldEvent = createItemSoldEvent(
     USER_ADDRESS,
@@ -933,7 +940,7 @@ test("mark listings sold with 0 quantity as invalid", () => {
     50
   );
 
-  handleItemSold(itemSoldEvent);
+  handleMarketplaceItemSold(itemSoldEvent);
 
   const contract = SMOL_BRAINS_ADDRESS.toHexString();
   const collectionId = contract;
@@ -994,7 +1001,7 @@ test("handle when marketplace purchasing was shut off", () => {
     50
   );
 
-  handleItemListed(itemListedEvent);
+  handleMarketplaceItemListed(itemListedEvent);
 
   itemListedEvent = createItemListedEvent(
     USER_ADDRESS,
@@ -1004,7 +1011,7 @@ test("handle when marketplace purchasing was shut off", () => {
     50
   );
 
-  handleItemListed(itemListedEvent);
+  handleMarketplaceItemListed(itemListedEvent);
 
   const itemSoldEvent = createItemSoldEvent(
     USER_ADDRESS,
@@ -1015,7 +1022,7 @@ test("handle when marketplace purchasing was shut off", () => {
     50
   );
 
-  handleItemSold(itemSoldEvent);
+  handleMarketplaceItemSold(itemSoldEvent);
 
   const updateOracleEvent = createUpdateOracleEvent();
 
@@ -1034,7 +1041,7 @@ test("handle when marketplace purchasing was shut off", () => {
     BigInt.fromI32(1)
   );
 
-  handleItemListed(itemListedEvent);
+  handleMarketplaceItemListed(itemListedEvent);
 
   const contract = SMOL_BRAINS_ADDRESS.toHexString();
   const collectionId = contract;
@@ -1098,7 +1105,7 @@ test("item listed works for updates as well", () => {
 
   itemListedEvent.address = MP_ADDRESS;
 
-  handleItemListed(itemListedEvent);
+  handleMarketplaceItemListed(itemListedEvent);
 
   const contract = SMOL_BRAINS_ADDRESS.toHexString();
   const collectionId = contract;
@@ -1156,7 +1163,7 @@ test("item listed works for updates as well", () => {
 
   itemListedEvent.address = MP_ADDRESS;
 
-  handleItemListed(itemListedEvent);
+  handleMarketplaceItemListed(itemListedEvent);
 
   price = BigInt.fromI32(500).toString();
 
@@ -1196,4 +1203,134 @@ test("item listed works for updates as well", () => {
   assert.fieldEquals(STATS_ENTITY_TYPE, collectionId, "listings", "1");
   assert.fieldEquals(STATS_ENTITY_TYPE, collectionId, "sales", "0");
   assert.fieldEquals(STATS_ENTITY_TYPE, collectionId, "volume", "0");
+});
+
+test("smol brains work via trove", () => {
+  clearStore();
+
+  handleSmolBrainsTransfer(
+    createTransferEvent(
+      SMOL_BRAINS_ADDRESS,
+      Address.zero().toHexString(),
+      USER_ADDRESS,
+      1
+    )
+  );
+
+  handleTroveItemListed(
+    createTroveItemListedEvent(USER_ADDRESS, SMOL_BRAINS_ADDRESS, 1, 1, 50)
+  );
+
+  handleTroveItemUpdated(
+    createTroveItemUpdatedEvent(USER_ADDRESS, SMOL_BRAINS_ADDRESS, 1, 1, 100)
+  );
+
+  const contract = SMOL_BRAINS_ADDRESS.toHexString();
+  const collectionId = contract;
+  const id = `${contract}-0x1`;
+  const listingId = `${USER_ADDRESS}-${id}`;
+
+  assert.fieldEquals(LISTING_ENTITY_TYPE, listingId, "status", "Active");
+  assert.fieldEquals(LISTING_ENTITY_TYPE, listingId, "token", id);
+  assert.fieldEquals(LISTING_ENTITY_TYPE, listingId, "quantity", "1");
+  assert.fieldEquals(LISTING_ENTITY_TYPE, listingId, "pricePerItem", "100");
+  assert.fieldEquals(
+    LISTING_ENTITY_TYPE,
+    listingId,
+    "collection",
+    collectionId
+  );
+  assert.fieldEquals(LISTING_ENTITY_TYPE, listingId, "seller", USER_ADDRESS);
+
+  assert.fieldEquals(
+    COLLECTION_ENTITY_TYPE,
+    collectionId,
+    "totalListings",
+    "1"
+  );
+  assert.fieldEquals(
+    COLLECTION_ENTITY_TYPE,
+    collectionId,
+    "listings",
+    `[${listingId}]`
+  );
+
+  // Transfer from seller to marketplace buyer
+  handleSmolBrainsTransfer(
+    createTransferEvent(
+      SMOL_BRAINS_ADDRESS,
+      USER_ADDRESS,
+      MARKETPLACE_BUYER_ADDRESS.toHexString(),
+      1
+    )
+  );
+
+  handleTroveItemSold(
+    createTroveItemSoldEvent(
+      USER_ADDRESS,
+      BUYER_ADDRESS,
+      SMOL_BRAINS_ADDRESS,
+      1,
+      1,
+      100
+    )
+  );
+
+  // Transfer from marketplace buyer to actual buyer
+  handleSmolBrainsTransfer(
+    createTransferEvent(
+      SMOL_BRAINS_ADDRESS,
+      MARKETPLACE_BUYER_ADDRESS.toHexString(),
+      BUYER_ADDRESS,
+      1
+    )
+  );
+
+  const soldId = `${listingId}-0xa16081f360e3847006db660bae1c6d1b2e17ec2a`;
+
+  assert.notInStore(LISTING_ENTITY_TYPE, listingId);
+
+  assert.fieldEquals(LISTING_ENTITY_TYPE, soldId, "status", "Sold");
+  assert.fieldEquals(LISTING_ENTITY_TYPE, soldId, "token", id);
+  assert.fieldEquals(LISTING_ENTITY_TYPE, soldId, "quantity", "1");
+  assert.fieldEquals(LISTING_ENTITY_TYPE, soldId, "pricePerItem", "100");
+  assert.fieldEquals(LISTING_ENTITY_TYPE, soldId, "collection", collectionId);
+  assert.fieldEquals(LISTING_ENTITY_TYPE, soldId, "seller", USER_ADDRESS);
+  assert.fieldEquals(LISTING_ENTITY_TYPE, soldId, "buyer", BUYER_ADDRESS);
+
+  assert.fieldEquals(
+    COLLECTION_ENTITY_TYPE,
+    collectionId,
+    "totalListings",
+    "0"
+  );
+  assert.fieldEquals(COLLECTION_ENTITY_TYPE, collectionId, "listings", "[]");
+});
+
+test("non-magic trove listings are ignored", () => {
+  clearStore();
+
+  handleSmolBrainsTransfer(
+    createTransferEvent(
+      SMOL_BRAINS_ADDRESS,
+      Address.zero().toHexString(),
+      USER_ADDRESS,
+      1
+    )
+  );
+
+  handleTroveItemListed(
+    createTroveItemListedEvent(
+      USER_ADDRESS,
+      SMOL_BRAINS_ADDRESS,
+      1,
+      1,
+      50,
+      1656403681,
+      1656403681,
+      BURNER_ADDRESS
+    )
+  );
+
+  assert.entityCount(LISTING_ENTITY_TYPE, 0);
 });
