@@ -1,4 +1,5 @@
 import { BigInt } from "@graphprotocol/graph-ts";
+
 import { ImbuedSoulCreate } from "../../generated/Imbued Soul/ImbuedSoul";
 import { Attribute } from "../../generated/schema";
 import { ATTRIBUTE_CALCULATION_UPDATE_INTERVAL } from "../helpers/constants";
@@ -110,7 +111,7 @@ export function handleImbuedSoulCreated(event: ImbuedSoulCreate): void {
     )
   );
 
-  token.attributes = attributes.map<string>(attribute => attribute.id);
+  token.attributes = attributes.map<string>((attribute) => attribute.id);
 
   if (
     timestamp.gt(
