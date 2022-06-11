@@ -944,9 +944,9 @@ dataSources:
     kind: ethereum/contract
     network: {{ network }}
     source:
-      address: "{{ imbued_soul_address }}"
+      address: "{{ imbued_souls_address }}"
       abi: ERC721
-      startBlock: {{ imbued_soul_start_block }}
+      startBlock: {{ imbued_souls_start_block }}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -961,7 +961,7 @@ dataSources:
       eventHandlers:
         - event: Transfer(indexed address,indexed address,indexed uint256)
           handler: handleTransfer
-      file: ./src/mappings/imbued-soul.ts
+      file: ./src/mappings/imbued-souls.ts
   - name: Seed of Life Resources
     kind: ethereum/contract
     network: {{ network }}
