@@ -1,42 +1,80 @@
-import { Address, BigInt, log } from "@graphprotocol/graph-ts";
+import { Address, BigInt, Bytes, json } from "@graphprotocol/graph-ts";
 
 import {
+  ERC1155,
   TransferBatch,
   TransferSingle,
 } from "../../generated/Seed of Life Resources/ERC1155";
-import { getOrCreateCollection, getOrCreateToken } from "../helpers/models";
+import { Collection, Token } from "../../generated/schema";
+import { decode } from "../helpers/base64";
+import { updateTokenMetadata } from "../helpers/metadata";
+import { isMint } from "../helpers/utils";
+import * as common from "../mapping";
 
-function handleTransfer(address: Address, tokenId: BigInt): void {
-  const collection = getOrCreateCollection(address);
-  const token = getOrCreateToken(collection, tokenId);
-
+function fetchTokenMetadata(
+  collection: Collection,
+  token: Token,
+  timestamp: BigInt
+): void {
   if (token.name != "") {
     return;
   }
 
-  if (token.tokenId == BigInt.fromI32(1)) {
-    token.name = "Skill Reset Potion";
-    token.image = "ipfs://QmS3YBo7xCh7h5rmXu96Y6zumjUMWCH43G333HvTeV2qhA";
-  } else {
-    log.warning("[seed-of-life-resources] Unknown token ID: {}", [
-      token.tokenId.toString(),
-    ]);
+  const contract = ERC1155.bind(Address.fromString(collection.id));
+  const tokenUri = contract.try_uri(token.tokenId);
 
-    token.name = `Seed of Life Resource #${token.tokenId.toString()}`;
+  if (!tokenUri.reverted && tokenUri.value != "") {
+    const uri = Bytes.fromUint8Array(
+      decode(tokenUri.value.replace("data:application/json;base64,", ""))
+    );
+
+    const data = json.fromBytes(uri).toObject();
+
+    if (data) {
+      updateTokenMetadata(collection, token, data, timestamp);
+    } else {
+      collection._missingMetadataTokens =
+        collection._missingMetadataTokens.concat([token.id]);
+    }
   }
-
-  token.save();
 }
 
 export function handleTransferSingle(event: TransferSingle): void {
-  handleTransfer(event.address, event.params.id);
+  const params = event.params;
+
+  if (params.id.toI32() == 0) {
+    return;
+  }
+
+  const transfer = new common.TransferEvent(
+    event.address,
+    params.id,
+    isMint(params.from),
+    event.block.timestamp
+  );
+
+  common.handleTransfer(transfer, fetchTokenMetadata);
 }
 
 export function handleTransferBatch(event: TransferBatch): void {
   const params = event.params;
   const ids = params.ids;
+  const length = ids.length;
 
-  for (let i = 0; i < ids.length; i++) {
-    handleTransfer(event.address, ids[i]);
+  for (let index = 0; index < length; index++) {
+    const id = ids[index];
+
+    if (id.toI32() == 0) {
+      continue;
+    }
+
+    const transfer = new common.TransferEvent(
+      event.address,
+      id,
+      isMint(params.from),
+      event.block.timestamp
+    );
+
+    common.handleTransfer(transfer, fetchTokenMetadata);
   }
 }
