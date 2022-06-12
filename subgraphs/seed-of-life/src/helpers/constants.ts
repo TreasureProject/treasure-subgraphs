@@ -3,7 +3,7 @@ import { BigInt } from "@graphprotocol/graph-ts";
 // Collections
 export const SEED_OF_LIFE_NAME = "Seed of Life";
 export const SEED_OF_LIFE_RESOURCES_NAME = "Seed of Life Resources";
-export const IMBUED_SOUL_NAME = "Imbued Soul";
+export const IMBUED_SOULS_NAME = "Imbued Souls";
 export const BALANCER_CRYSTAL_NAME = "Balancer Crystal";
 export const TREASURES_NAME = "Treasures";
 

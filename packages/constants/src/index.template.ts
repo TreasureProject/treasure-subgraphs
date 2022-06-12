@@ -62,8 +62,8 @@ export const SEED_OF_LIFE_RESOURCES_ADDRESS = Address.fromString(
 export const SEED_EVOLUTION_ADDRESS = Address.fromString(
   "{{ seed_evolution_address }}"
 );
-export const IMBUED_SOUL_ADDRESS = Address.fromString(
-  "{{ imbued_soul_address }}"
+export const IMBUED_SOULS_ADDRESS = Address.fromString(
+  "{{ imbued_souls_address }}"
 );
 export const SEED_OF_LIFE_TREASURES_ADDRESS = Address.fromString(
   "{{ seed_of_life_treasures_address }}"

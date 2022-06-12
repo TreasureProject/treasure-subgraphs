@@ -1,10 +1,6 @@
-import { Address, BigInt, Bytes, json } from "@graphprotocol/graph-ts";
+import { Address, BigInt, Bytes, json, log } from "@graphprotocol/graph-ts";
 
-import {
-  ERC1155,
-  TransferBatch,
-  TransferSingle,
-} from "../../generated/Seed of Life Resources/ERC1155";
+import { ERC721, Transfer } from "../../generated/Imbued Souls/ERC721";
 import { Collection, Token } from "../../generated/schema";
 import { decode } from "../helpers/base64";
 import { updateTokenMetadata } from "../helpers/metadata";
@@ -16,12 +12,12 @@ function fetchTokenMetadata(
   token: Token,
   timestamp: BigInt
 ): void {
-  if (token.name != "") {
-    return;
-  }
+  const tokenIdString = token.tokenId.toString();
 
-  const contract = ERC1155.bind(Address.fromString(collection.id));
-  const tokenUri = contract.try_uri(token.tokenId);
+  token.name = `Imbued Soul #${tokenIdString}`;
+
+  const contract = ERC721.bind(Address.fromString(collection.id));
+  const tokenUri = contract.try_tokenURI(token.tokenId);
 
   if (!tokenUri.reverted && tokenUri.value != "") {
     const uri = Bytes.fromUint8Array(
@@ -39,42 +35,14 @@ function fetchTokenMetadata(
   }
 }
 
-export function handleTransferSingle(event: TransferSingle): void {
+export function handleTransfer(event: Transfer): void {
   const params = event.params;
-
-  if (params.id.toI32() == 0) {
-    return;
-  }
-
   const transfer = new common.TransferEvent(
     event.address,
-    params.id,
+    params.tokenId,
     isMint(params.from),
     event.block.timestamp
   );
 
   common.handleTransfer(transfer, fetchTokenMetadata);
-}
-
-export function handleTransferBatch(event: TransferBatch): void {
-  const params = event.params;
-  const ids = params.ids;
-  const length = ids.length;
-
-  for (let index = 0; index < length; index++) {
-    const id = ids[index];
-
-    if (id.toI32() == 0) {
-      continue;
-    }
-
-    const transfer = new common.TransferEvent(
-      event.address,
-      id,
-      isMint(params.from),
-      event.block.timestamp
-    );
-
-    common.handleTransfer(transfer, fetchTokenMetadata);
-  }
 }

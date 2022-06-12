@@ -2,7 +2,7 @@ import { Address, TypedMap, log } from "@graphprotocol/graph-ts";
 
 import {
   BALANCER_CRYSTAL_ADDRESS,
-  IMBUED_SOUL_ADDRESS,
+  IMBUED_SOULS_ADDRESS,
   SEED_OF_LIFE_ADDRESS,
   SEED_OF_LIFE_RESOURCES_ADDRESS,
   SEED_OF_LIFE_TREASURES_ADDRESS,
@@ -11,7 +11,7 @@ import {
 import { Collection } from "../../generated/schema";
 import {
   BALANCER_CRYSTAL_NAME,
-  IMBUED_SOUL_NAME,
+  IMBUED_SOULS_NAME,
   SEED_OF_LIFE_NAME,
   SEED_OF_LIFE_RESOURCES_NAME,
   TREASURES_NAME,
@@ -20,7 +20,7 @@ import {
 const collections = new TypedMap<Address, string>();
 collections.set(SEED_OF_LIFE_ADDRESS, SEED_OF_LIFE_NAME);
 collections.set(SEED_OF_LIFE_RESOURCES_ADDRESS, SEED_OF_LIFE_RESOURCES_NAME);
-collections.set(IMBUED_SOUL_ADDRESS, IMBUED_SOUL_NAME);
+collections.set(IMBUED_SOULS_ADDRESS, IMBUED_SOULS_NAME);
 collections.set(BALANCER_CRYSTAL_ADDRESS, BALANCER_CRYSTAL_NAME);
 collections.set(SEED_OF_LIFE_TREASURES_ADDRESS, TREASURES_NAME);
 
