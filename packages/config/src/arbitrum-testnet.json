@@ -70,6 +70,8 @@
   "smol_treasures_start_block": 9141902,
   "swolercycles_address": "0xdA1c260309D12F65a1CEAA8FdEc71bD7bB3912F8",
   "swolercycles_start_block": 11498954,
+  "wrapped_smols_address": "0x939b27773AB84454Bd921DFb20B2c43e23271F56",
+  "wrapped_smols_start_block": 12256622,
 
   "randomizer_seed_of_life_start_block": 9687394,
   "seed_of_life_address": "0xfB3DD6c293bc2f987884641dA4af9E0f64538Dc7",

@@ -27,12 +27,14 @@ export function handleTransfer(event: Transfer): void {
   );
 
   // Manually create IQ attribute for this smol
-  getOrCreateAttribute(
-    collection,
-    token,
-    "IQ",
-    "0",
-    getAttributeId(collection, "IQ", token.tokenId.toHexString()),
-    true
-  );
+  if (token) {
+    getOrCreateAttribute(
+      collection,
+      token,
+      "IQ",
+      "0",
+      getAttributeId(collection, "IQ", token.tokenId.toHexString()),
+      true
+    );
+  }
 }
