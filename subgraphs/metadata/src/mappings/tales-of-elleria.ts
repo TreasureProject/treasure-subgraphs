@@ -265,67 +265,69 @@ function fetchTokenMetadata(
 
   if (!tokenUri.reverted) {
     const metadata = tokenUri.value.split(";");
-    const totalStats = parseInt(metadata[Metadata.TotalAttributes]) as i32;
-    const rarityId = getRarityId(token.tokenId.toI32(), totalStats);
-    const class_ = new Stat("Class", metadata[Metadata.ClassName]);
-    const rarity = new Stat("Rarity", RARITY[rarityId]);
-    const fallbackKey =
-      rarityId > 2
-        ? rarity.value
-        : `${metadata[Metadata.ClassName]}${rarityId}`;
-    const image = changetype<string>(FALLBACK_IMAGES.get(fallbackKey));
-    const level = new Stat("Level", metadata[Metadata.Level]);
-    const strength = new Stat("Strength", metadata[Metadata.Strength]);
-    const agility = new Stat("Agility", metadata[Metadata.Agility]);
-    const vitality = new Stat("Vitality", metadata[Metadata.Vitality]);
-    const endurance = new Stat("Endurance", metadata[Metadata.Endurance]);
-    const intelligence = new Stat(
-      "Intelligence",
-      metadata[Metadata.Intelligence]
-    );
-    const will = new Stat("Will", metadata[Metadata.Will]);
-    const total = new Stat("Total Stats", metadata[Metadata.TotalAttributes]);
-    const maxTotal = new Stat("Max Total Stats", "445");
-    const max = getMaxStats(parseInt(metadata[Metadata.ClassId]) as i32);
+    if (metadata.length >= 16) {
+      const totalStats = parseInt(metadata[Metadata.TotalAttributes]) as i32;
+      const rarityId = getRarityId(token.tokenId.toI32(), totalStats);
+      const class_ = new Stat("Class", metadata[Metadata.ClassName]);
+      const rarity = new Stat("Rarity", RARITY[rarityId]);
+      const fallbackKey =
+        rarityId > 2
+          ? rarity.value
+          : `${metadata[Metadata.ClassName]}${rarityId}`;
+      const image = changetype<string>(FALLBACK_IMAGES.get(fallbackKey));
+      const level = new Stat("Level", metadata[Metadata.Level]);
+      const strength = new Stat("Strength", metadata[Metadata.Strength]);
+      const agility = new Stat("Agility", metadata[Metadata.Agility]);
+      const vitality = new Stat("Vitality", metadata[Metadata.Vitality]);
+      const endurance = new Stat("Endurance", metadata[Metadata.Endurance]);
+      const intelligence = new Stat(
+        "Intelligence",
+        metadata[Metadata.Intelligence]
+      );
+      const will = new Stat("Will", metadata[Metadata.Will]);
+      const total = new Stat("Total Stats", metadata[Metadata.TotalAttributes]);
+      const maxTotal = new Stat("Max Total Stats", "445");
+      const max = getMaxStats(parseInt(metadata[Metadata.ClassId]) as i32);
 
-    const attributes = [
-      class_,
-      rarity,
-      level,
-      strength,
-      max.strength,
-      agility,
-      max.agility,
-      vitality,
-      max.vitality,
-      endurance,
-      max.endurance,
-      intelligence,
-      max.intelligence,
-      will,
-      max.will,
-      total,
-      maxTotal,
-    ].map<string>(
-      (stat) => `"trait_type": "${stat.name}", "value": "${stat.value}"`
-    );
+      const attributes = [
+        class_,
+        rarity,
+        level,
+        strength,
+        max.strength,
+        agility,
+        max.agility,
+        vitality,
+        max.vitality,
+        endurance,
+        max.endurance,
+        intelligence,
+        max.intelligence,
+        will,
+        max.will,
+        total,
+        maxTotal,
+      ].map<string>(
+        (stat) => `"trait_type": "${stat.name}", "value": "${stat.value}"`
+      );
 
-    const bytes = Bytes.fromUTF8(`
-    {
-      "name": "${token.name}",
-      "description": "",
-      "image": "${image}",
-      "attributes": [{${attributes.join("},{")}}]
-    }
-  `);
+      const bytes = Bytes.fromUTF8(`
+      {
+        "name": "${token.name}",
+        "description": "",
+        "image": "${image}",
+        "attributes": [{${attributes.join("},{")}}]
+      }
+    `);
 
-    const data = json.fromBytes(bytes).toObject();
+      const data = json.fromBytes(bytes).toObject();
 
-    if (data) {
-      updateTokenMetadata(collection, token, data, timestamp);
-    } else {
-      collection._missingMetadataTokens =
-        collection._missingMetadataTokens.concat([token.id]);
+      if (data) {
+        updateTokenMetadata(collection, token, data, timestamp);
+      } else {
+        collection._missingMetadataTokens =
+          collection._missingMetadataTokens.concat([token.id]);
+      }
     }
   }
 }
@@ -386,8 +388,14 @@ export function handleAttributeChange(event: AttributeChange): void {
       continue;
     }
 
+    const existingAttributeIndexString = existing.get(stat.name.toLowerCase());
+
+    if (!existingAttributeIndexString) {
+      continue;
+    }
+
     const existingAttributeIndex = parseInt(
-      existing.get(stat.name.toLowerCase()) as string
+      existingAttributeIndexString as string
     ) as i32;
 
     if (existingAttributeIndex == -1) {
