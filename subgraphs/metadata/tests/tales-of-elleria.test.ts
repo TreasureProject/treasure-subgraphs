@@ -91,7 +91,7 @@ createMockedFunction(
   .withArgs([ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(0))])
   .returns([
     ethereum.Value.fromString(
-      "0;https://ipfs.moralis.io:2053/ipfs/Qmaz7KeBF4sEHZbdQ1pfuBG9qWhsxF2xMJ72CbdW1Tbcr1;84;94;75;25;25;5;308;2;Assassin;1;0;1648214189;0"
+      "0;https://ipfs.moralis.io:2053/ipfs/Qmaz7KeBF4sEHZbdQ1pfuBG9qWhsxF2xMJ72CbdW1Tbcr1;84;94;75;25;25;5;308;2;Assassin;1;0;1648214189;0;0"
     ),
   ]);
 
@@ -103,7 +103,7 @@ createMockedFunction(
   .withArgs([ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(1))])
   .returns([
     ethereum.Value.fromString(
-      "1;https://ipfs.moralis.io:2053/ipfs/Qmaz7KeBF4sEHZbdQ1pfuBG9qWhsxF2xMJ72CbdW1Tbcr1;84;94;75;25;25;5;308;2;Assassin;1;0;1648214189;0"
+      "1;https://ipfs.moralis.io:2053/ipfs/Qmaz7KeBF4sEHZbdQ1pfuBG9qWhsxF2xMJ72CbdW1Tbcr1;84;94;75;25;25;5;308;2;Assassin;1;0;1648214189;0;0"
     ),
   ]);
 
@@ -115,7 +115,7 @@ createMockedFunction(
   .withArgs([ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(2))])
   .returns([
     ethereum.Value.fromString(
-      "2;https://ipfs.moralis.io:2053/ipfs/Qmaz7KeBF4sEHZbdQ1pfuBG9qWhsxF2xMJ72CbdW1Tbcr1;84;94;75;25;25;5;308;2;Assassin;1;0;1648214189;0"
+      "2;https://ipfs.moralis.io:2053/ipfs/Qmaz7KeBF4sEHZbdQ1pfuBG9qWhsxF2xMJ72CbdW1Tbcr1;84;94;75;25;25;5;308;2;Assassin;1;0;1648214189;0;0"
     ),
   ]);
 
