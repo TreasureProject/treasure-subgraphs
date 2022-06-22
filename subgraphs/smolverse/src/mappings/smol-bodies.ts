@@ -37,12 +37,14 @@ export function handleTransfer(event: Transfer): void {
   );
 
   // Manually create plates attribute for this swol
-  getOrCreateAttribute(
-    collection,
-    token,
-    "Plates",
-    "0",
-    getAttributeId(collection, "Plates", token.tokenId.toHexString()),
-    true
-  );
+  if (token) {
+    getOrCreateAttribute(
+      collection,
+      token,
+      "Plates",
+      "0",
+      getAttributeId(collection, "Plates", token.tokenId.toHexString()),
+      true
+    );
+  }
 }

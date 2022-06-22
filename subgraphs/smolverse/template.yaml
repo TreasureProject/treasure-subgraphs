@@ -265,3 +265,23 @@ dataSources:
         - event: Transfer(indexed address,indexed address,indexed uint256)
           handler: handleTransfer
       file: ./src/mappings/swolercycles.ts
+  - name: Wrapped Smols
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ wrapped_smols_address }}"
+      abi: ERC721
+      startBlock: {{ wrapped_smols_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Transfer
+      abis:
+        - name: ERC721
+          file: {{{ abis }}}/721.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,indexed uint256)
+          handler: handleTransfer
+      file: ./src/mappings/wrapped-smols.ts

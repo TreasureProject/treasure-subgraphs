@@ -108,3 +108,6 @@ export const TOADSTOOLZ_ITEMZ_ADDRESS = Address.fromString(
 export const KOTE_QUESTING_ADDRESS = Address.fromString(
   "{{ kote_questing_address }}"
 );
+export const WRAPPED_SMOLS_ADDRESS = Address.fromString(
+  "{{ wrapped_smols_address }}"
+);

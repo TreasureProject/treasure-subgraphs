@@ -12,8 +12,9 @@ import {
   getOrCreateCollection,
   getOrCreateToken,
   getOrCreateUser,
+  removeToken,
 } from "../helpers/models";
-import { isMint } from "../helpers/utils";
+import { isZero } from "../helpers/utils";
 
 export function handleTransfer(
   timestamp: BigInt,
@@ -21,12 +22,19 @@ export function handleTransfer(
   from: Address,
   to: Address,
   tokenId: BigInt
-): Token {
+): Token | null {
+  if (isZero(to)) {
+    // Burn
+    removeToken(collection, tokenId);
+    return null;
+  }
+
   const owner = getOrCreateUser(to.toHexString());
   const token = getOrCreateToken(collection, tokenId);
   token.owner = owner.id;
 
-  if (isMint(from)) {
+  if (isZero(from)) {
+    // Mint
     fetchTokenMetadata(collection, token);
 
     collection._tokenIds = collection._tokenIds.concat([token.id]);

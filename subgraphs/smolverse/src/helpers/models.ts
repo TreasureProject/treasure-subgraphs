@@ -1,4 +1,4 @@
-import { Address, BigInt } from "@graphprotocol/graph-ts";
+import { Address, BigInt, store } from "@graphprotocol/graph-ts";
 
 import { SMOL_TREASURES_ADDRESS } from "@treasure/constants";
 
@@ -110,6 +110,13 @@ export function getOrCreateToken(
   }
 
   return token;
+}
+
+export function removeToken(collection: Collection, tokenId: BigInt): void {
+  collection.tokensCount -= 1;
+  collection.save();
+
+  store.remove("Token", getTokenId(collection, tokenId));
 }
 
 export function getOrCreateRewardToken(tokenId: BigInt): Token {

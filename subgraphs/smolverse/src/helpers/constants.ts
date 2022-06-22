@@ -7,6 +7,7 @@ export const SMOL_BODIES_PETS_COLLECTION_NAME = "Smol Bodies Pets";
 export const SMOL_CARS_COLLECTION_NAME = "Smol Cars";
 export const SMOL_TREASURES_COLLECTION_NAME = "Smol Treasures";
 export const SWOLERCYCLES_COLLECTION_NAME = "Swolercycles";
+export const WRAPPED_SMOLS_COLLECTTION_NAME = "Wrapped Smols";
 
 // Cron jobs
 export const MISSING_METADATA_UPDATE_INTERVAL = 600;
