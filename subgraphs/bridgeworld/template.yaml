@@ -335,6 +335,8 @@ dataSources:
           handler: handleQuestRevealed
         - event: QuestFinished(indexed address,indexed uint256)
           handler: handleQuestFinished
+        - event: QPGained(uint256,uint8,uint256)
+          handler: handleQuestXpGained
       file: ./src/mappings/questing.ts
   - name: Questing Legacy
     kind: ethereum/contract
@@ -490,6 +492,8 @@ dataSources:
           handler: handleTreasureTriadPlayed
         - event: AdvancedQuestEnded(address,uint256,(uint256,uint256,uint256,uint256)[])
           handler: handleAdvancedQuestEnded
+        - event: QPForEndingPart(uint8,uint256)
+          handler: handleAdvancedQuestXpGained
       file: ./src/mappings/advanced-questing.ts
   - name: Treasure Triad
     kind: ethereum/contract

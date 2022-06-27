@@ -10,6 +10,7 @@ import {
 } from "@treasure/constants";
 
 import { AdvancedQuest } from "../generated/schema";
+import { setQuestingXpGainedBlockNumberIfEmpty } from "../src/helpers/config";
 import { getAddressId } from "../src/helpers/utils";
 import { getXpPerLevel } from "../src/helpers/xp";
 import {
@@ -206,6 +207,55 @@ test("XP doesn't increase at level 6", () => {
 
   simulateAdvancedQuest(USER_ADDRESS, legionId);
   assert.fieldEquals("LegionInfo", mdId, "questingXp", "0");
+});
+
+test("XP doesn't increase at level 6", () => {
+  const legionId = 1;
+  const legionStoreId = advancedQuestingSetup(legionId);
+  const mdId = `${legionStoreId}-metadata`;
+
+  mockEndTimeForLegion(legionId, new Date(0).getTime(), 0);
+
+  handleLegionQuestLevelUp(createLegionQuestLevelUpEvent(legionId, 6));
+  assert.fieldEquals("LegionInfo", mdId, "questing", "6");
+
+  simulateAdvancedQuest(USER_ADDRESS, legionId);
+  assert.fieldEquals("LegionInfo", mdId, "questingXp", "0");
+
+  simulateAdvancedQuest(USER_ADDRESS, legionId);
+  assert.fieldEquals("LegionInfo", mdId, "questingXp", "0");
+});
+
+test("XP doesn't increase after upgrade block", () => {
+  const legionId = 1;
+  const legionStoreId = advancedQuestingSetup(legionId);
+  const mdId = `${legionStoreId}-metadata`;
+
+  mockEndTimeForLegion(legionId, new Date(0).getTime(), 0);
+
+  simulateAdvancedQuest(USER_ADDRESS, legionId);
+  assert.fieldEquals("LegionInfo", mdId, "questingXp", "10");
+
+  simulateAdvancedQuest(USER_ADDRESS, legionId);
+  assert.fieldEquals("LegionInfo", mdId, "questingXp", "20");
+
+  // Set the new Questing XP gained block number
+  const blockNumber = 12345678;
+  setQuestingXpGainedBlockNumberIfEmpty(BigInt.fromI32(blockNumber));
+
+  // Simulate new quest after block
+  simulateAdvancedQuest(
+    USER_ADDRESS,
+    legionId,
+    1,
+    1,
+    true,
+    false,
+    blockNumber + 1
+  );
+
+  // Legion should NOT have gained XP
+  assert.fieldEquals("LegionInfo", mdId, "questingXp", "20");
 });
 
 test("Quest and Triad ids are changed when quest is ended", () => {

@@ -69,7 +69,8 @@ export function simulateAdvancedQuest(
   requestId: i32 = 1,
   parts: i8 = 1,
   endQuest: boolean = true,
-  playTreasureTriad: boolean = false
+  playTreasureTriad: boolean = false,
+  blockNumber: i32 = 0
 ): void {
   handleAdvancedQuestStarted(
     createAdvancedQuestStartedEvent(user, legionId, requestId)
@@ -87,9 +88,12 @@ export function simulateAdvancedQuest(
 
   if (endQuest) {
     handleAdvancedQuestEnded(
-      createAdvancedQuestEndedEvent(user, legionId, [
-        new RewardParam(1, 1, 1, 1),
-      ])
+      createAdvancedQuestEndedEvent(
+        user,
+        legionId,
+        [new RewardParam(1, 1, 1, 1)],
+        blockNumber
+      )
     );
   }
 }
@@ -152,10 +156,14 @@ export function createAdvancedQuestContinuedEvent(
 export function createAdvancedQuestEndedEvent(
   user: string = USER_ADDRESS,
   legionId: i32 = 1,
-  rewards: RewardParam[] = []
+  rewards: RewardParam[] = [],
+  blockNumber: i32 = 0
 ): AdvancedQuestEnded {
   const newEvent = newMockEvent();
   newEvent.address = ADVANCED_QUESTING_ADDRESS;
+  if (blockNumber > 0) {
+    newEvent.block.number = BigInt.fromI32(blockNumber);
+  }
 
   const rewardsTupleArray: Array<ethereum.Tuple> = rewards.map<ethereum.Tuple>(
     (reward) => {

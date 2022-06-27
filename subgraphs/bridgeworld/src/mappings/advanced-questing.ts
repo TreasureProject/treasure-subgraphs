@@ -1,7 +1,6 @@
 import { BigInt, log, store } from "@graphprotocol/graph-ts";
 
 import {
-  ADVANCED_QUESTING_ADDRESS,
   CONSUMABLE_ADDRESS,
   LEGION_ADDRESS,
   TREASURE_ADDRESS,
@@ -12,7 +11,7 @@ import {
   AdvancedQuestContinued,
   AdvancedQuestEnded,
   AdvancedQuestStarted,
-  AdvancedQuesting,
+  QPForEndingPart,
   TreasureTriadPlayed,
 } from "../../generated/Advanced Questing/AdvancedQuesting";
 import {
@@ -26,6 +25,10 @@ import {
   User,
 } from "../../generated/schema";
 import { setQuestEndTime } from "../helpers/advanced-questing";
+import {
+  isQuestingXpGainedEnabled,
+  setQuestingXpGainedBlockNumberIfEmpty,
+} from "../helpers/config";
 import { getAddressId } from "../helpers/utils";
 import { getXpPerLevel } from "../helpers/xp";
 
@@ -235,17 +238,27 @@ export function handleAdvancedQuestEnded(event: AdvancedQuestEnded): void {
 
   quest.save();
 
-  const metadata = LegionInfo.load(`${quest.token}-metadata`);
-
-  if (metadata) {
-    if (metadata.type != "Recruit" && metadata.questing != 6) {
-      metadata.questingXp += getXpPerLevel(metadata.questing);
-      metadata.save();
+  // Prefer the QPGained event if it's available at this block
+  if (!isQuestingXpGainedEnabled(event.block.number)) {
+    const metadata = LegionInfo.load(`${quest.token}-metadata`);
+    if (metadata) {
+      if (metadata.type != "Recruit" && metadata.questing != 6) {
+        metadata.questingXp += getXpPerLevel(metadata.questing);
+        metadata.save();
+      }
+    } else {
+      log.warning(
+        "[advanced-quest-end] Failed to update XP, metadata not found: {}",
+        [quest.token]
+      );
     }
-  } else {
-    log.warning(
-      "[advanced-quest-end] Failed to update XP, metadata not found: {}",
-      [quest.token]
-    );
   }
+}
+
+/*
+  Not required for logging new XP, but we need it to know the block number
+  when the new Questing XP flow was deployed.
+ */
+export function handleAdvancedQuestXpGained(event: QPForEndingPart): void {
+  setQuestingXpGainedBlockNumberIfEmpty(event.block.number);
 }

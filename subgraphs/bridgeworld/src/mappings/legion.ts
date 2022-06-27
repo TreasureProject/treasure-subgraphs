@@ -30,7 +30,14 @@ import {
   getImageHash,
   isMint,
 } from "../helpers";
-import { CLASS, RARITY, TYPE, getLegionImage } from "../helpers/legion";
+import { isQuestingXpGainedEnabled } from "../helpers/config";
+import {
+  CLASS,
+  RARITY,
+  TYPE,
+  getLegionImage,
+  getLegionMetadata,
+} from "../helpers/legion";
 import * as common from "../mapping";
 
 const BOOST_MATRIX = [
@@ -66,18 +73,6 @@ function getConstellation(id: string): Constellation {
   }
 
   return constellation;
-}
-
-function getMetadata(tokenId: BigInt): LegionInfo {
-  let metadata = LegionInfo.load(
-    `${getAddressId(LEGION_ADDRESS, tokenId)}-metadata`
-  );
-
-  if (!metadata) {
-    throw new Error(`Metadata not available: ${tokenId.toString()}`);
-  }
-
-  return metadata;
 }
 
 function setMetadata(contract: Address, tokenId: BigInt): void {
@@ -200,7 +195,7 @@ export function handleLegionConstellationRankUp(
 
 export function handleLegionCraftLevelUp(event: LegionCraftLevelUp): void {
   let params = event.params;
-  let metadata = getMetadata(params._tokenId);
+  let metadata = getLegionMetadata(params._tokenId);
 
   metadata.crafting = params._craftLevel;
   metadata.craftingXp = 0;
@@ -269,12 +264,14 @@ export function handleLegionCreated(event: LegionCreated): void {
 }
 
 export function handleLegionQuestLevelUp(event: LegionQuestLevelUp): void {
-  let params = event.params;
-  let metadata = getMetadata(params._tokenId);
-
-  metadata.questing = params._questLevel;
-  metadata.questingXp = 0;
-  metadata.save();
+  // Prefer the QPGained event if it's available at this block
+  if (!isQuestingXpGainedEnabled(event.block.number)) {
+    const params = event.params;
+    const metadata = getLegionMetadata(params._tokenId);
+    metadata.questing = params._questLevel;
+    metadata.questingXp = 0;
+    metadata.save();
+  }
 }
 
 export function handleTransfer(event: Transfer): void {

@@ -1,10 +1,11 @@
 import { newMockEvent } from "matchstick-as/assembly";
 
-import { Address, ethereum } from "@graphprotocol/graph-ts";
+import { Address, BigInt, ethereum } from "@graphprotocol/graph-ts";
 
 import { QUESTING_ADDRESS } from ".";
 import * as questingLegacy from "../../generated/Questing Legacy/Questing";
 import {
+  QPGained,
   QuestFinished,
   QuestRevealed,
   QuestStarted,
@@ -68,10 +69,14 @@ export const createQuestRevealedEvent = (
   starlights: i32 = 0,
   crystals: i32 = 0,
   locks: i32 = 0,
-  treasureId: i32 = 0
+  treasureId: i32 = 0,
+  blockNumber: i32 = 0
 ): QuestRevealed => {
   const newEvent = changetype<QuestRevealed>(newMockEvent());
   newEvent.address = Address.fromString(QUESTING_ADDRESS);
+  if (blockNumber > 0) {
+    newEvent.block.number = BigInt.fromI32(blockNumber);
+  }
   newEvent.parameters = [
     new ethereum.EventParam(
       "_owner",
@@ -109,4 +114,19 @@ export const createQuestFinishedEvent = (
   ];
 
   return newEvent;
+};
+
+export const createQuestXpGainedEvent = (
+  tokenId: i32,
+  questLevel: i32,
+  qpFinal: i32
+): QPGained => {
+  const event = changetype<QPGained>(newMockEvent());
+  event.parameters = [
+    new ethereum.EventParam("_tokenId", ethereum.Value.fromI32(tokenId)),
+    new ethereum.EventParam("_questLevel", ethereum.Value.fromI32(questLevel)),
+    new ethereum.EventParam("_qpFinal", ethereum.Value.fromI32(qpFinal)),
+  ];
+
+  return event;
 };
