@@ -48,6 +48,13 @@ interface Metadata {
   id: ID!
 }
 
+type _BlockConfig @entity {
+  id: ID!
+
+  "Block number at which the new Questing XP gained events were made available"
+  questingXpGainedBlockNumber: BigInt
+}
+
 type Constellation @entity {
   id: ID!
 

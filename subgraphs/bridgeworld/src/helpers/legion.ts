@@ -1,7 +1,11 @@
 import { BigInt, log } from "@graphprotocol/graph-ts";
 
+import { LEGION_ADDRESS } from "@treasure/constants";
+
+import { LegionInfo } from "../../generated/schema";
 import { LEGION_PFP_IPFS } from "./constants";
 import { getName, getRole } from "./token-id";
+import { getAddressId } from "./utils";
 
 export const TYPE = ["Genesis", "Auxiliary", "Recruit"];
 
@@ -421,4 +425,16 @@ export const getLegacyGenesisLegionImage = (
     legacyTokenId,
     legacyTokenId
   );
+};
+
+export const getLegionMetadata = (tokenId: BigInt): LegionInfo => {
+  const metadata = LegionInfo.load(
+    `${getAddressId(LEGION_ADDRESS, tokenId)}-metadata`
+  );
+
+  if (!metadata) {
+    throw new Error(`Metadata not available: ${tokenId.toString()}`);
+  }
+
+  return metadata;
 };

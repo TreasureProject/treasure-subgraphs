@@ -1,12 +1,21 @@
 import { assert, clearStore, test } from "matchstick-as/assembly";
 
-import { Address } from "@graphprotocol/graph-ts";
+import { Address, BigInt } from "@graphprotocol/graph-ts";
 
 import { LEGION_ADDRESS } from "@treasure/constants";
 
-import { LEGION_IPFS, LEGION_PFP_IPFS } from "../src/helpers/index";
+import { setQuestingXpGainedBlockNumberIfEmpty } from "../src/helpers/config";
+import {
+  LEGION_IPFS,
+  LEGION_PFP_IPFS,
+  getAddressId,
+} from "../src/helpers/index";
 import { handleTransferSingle } from "../src/mappings/legacy-legion-genesis";
-import { handleLegionCreated, handleTransfer } from "../src/mappings/legion";
+import {
+  handleLegionCreated,
+  handleLegionQuestLevelUp,
+  handleTransfer,
+} from "../src/mappings/legion";
 import {
   handlePilgrimagesFinished,
   handlePilgrimagesStarted,
@@ -18,6 +27,7 @@ import {
   USER_ADDRESS,
   createLegacyLegionGenesisTransferEvent,
   createLegionCreatedEvent,
+  createLegionQuestLevelUpEvent,
   createLegionTransferEvent,
   createPilgrimagesFinishedEvent,
   createPilgrimagesStartedEvent,
@@ -423,4 +433,34 @@ test("legion metadata is correct for recruit", () => {
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "rarity", "Recruit");
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "role", "Recruit");
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "boost", "0.0");
+});
+
+test("XP doesn't increase after upgrade block", () => {
+  clearStore();
+
+  // Create Legion
+  handleTransfer(
+    createLegionTransferEvent(Address.zero().toHexString(), USER_ADDRESS, 1)
+  );
+  handleLegionCreated(createLegionCreatedEvent(USER_ADDRESS, 1, 0, 6, 2));
+
+  // Quest Level up Legion
+  handleLegionQuestLevelUp(createLegionQuestLevelUpEvent(1, 3));
+
+  // Legion should have the new Questing Level
+  const legionId = getAddressId(LEGION_ADDRESS, BigInt.fromI32(1));
+  const metadataId = `${legionId}-metadata`;
+  assert.fieldEquals("LegionInfo", metadataId, "questing", "3");
+
+  // Set the new Questing XP gained block number
+  const blockNumber = 12345678;
+  setQuestingXpGainedBlockNumberIfEmpty(BigInt.fromI32(blockNumber));
+
+  // Quest Level up Legion
+  handleLegionQuestLevelUp(
+    createLegionQuestLevelUpEvent(1, 4, blockNumber + 1)
+  );
+
+  // Legion should NOT have the new Questing Level
+  assert.fieldEquals("LegionInfo", metadataId, "questing", "3");
 });

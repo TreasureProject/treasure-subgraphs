@@ -4,12 +4,15 @@ import { LEGION_ADDRESS, TREASURE_ADDRESS } from "@treasure/constants";
 
 import * as questingLegacy from "../../generated/Questing Legacy/Questing";
 import {
+  QPGained,
   QuestFinished,
   QuestRevealed,
   QuestStarted,
 } from "../../generated/Questing/Questing";
 import { LegionInfo, Quest, Random, Reward } from "../../generated/schema";
 import { DIFFICULTY, getAddressId, getXpPerLevel } from "../helpers";
+import { isQuestingXpGainedEnabled } from "../helpers/config";
+import { getLegionMetadata } from "../helpers/legion";
 
 function handleQuestStarted(
   address: Address,
@@ -84,12 +87,13 @@ export function handleQuestRevealed(event: QuestRevealed): void {
     return;
   }
 
-  // Increase Xp
-  let metadata = LegionInfo.load(`${quest.token}-metadata`);
-
-  if (metadata && metadata.type != "Recruit" && metadata.questing != 6) {
-    metadata.questingXp += getXpPerLevel(metadata.questing);
-    metadata.save();
+  // Prefer the QPGained event if it's available at this block
+  if (!isQuestingXpGainedEnabled(event.block.number)) {
+    const metadata = LegionInfo.load(`${quest.token}-metadata`);
+    if (metadata && metadata.type != "Recruit" && metadata.questing != 6) {
+      metadata.questingXp += getXpPerLevel(metadata.questing);
+      metadata.save();
+    }
   }
 
   let reward = new Reward(`${id}-${quest.random}`);
@@ -127,4 +131,12 @@ export function handleQuestFinished(event: QuestFinished): void {
   quest.save();
 
   store.remove("Quest", id);
+}
+
+export function handleQuestXpGained(event: QPGained): void {
+  const params = event.params;
+  const metadata = getLegionMetadata(params._tokenId);
+  metadata.questing = params._questLevel;
+  metadata.questingXp = params._qpFinal.toI32();
+  metadata.save();
 }

@@ -1,6 +1,6 @@
 import { newMockEvent } from "matchstick-as/assembly";
 
-import { Address, ethereum } from "@graphprotocol/graph-ts";
+import { Address, BigInt, ethereum } from "@graphprotocol/graph-ts";
 
 import {
   LEGACY_LEGION_GENESIS_ADDRESS,
@@ -56,9 +56,13 @@ export const createLegionCraftLevelUpEvent = (
 
 export const createLegionQuestLevelUpEvent = (
   tokenId: i32,
-  level: i32
+  level: i32,
+  blockNumber: i32 = 0
 ): LegionQuestLevelUp => {
   const newEvent = changetype<LegionQuestLevelUp>(newMockEvent());
+  if (blockNumber > 0) {
+    newEvent.block.number = BigInt.fromI32(blockNumber);
+  }
   newEvent.address = Address.fromString(LEGION_METADATA_STORE_ADDRESS);
   newEvent.parameters = [
     new ethereum.EventParam("_tokenId", ethereum.Value.fromI32(tokenId)),
