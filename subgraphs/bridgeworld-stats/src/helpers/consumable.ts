@@ -16,7 +16,7 @@ export function getConsumableName(tokenId: BigInt): string {
     case 6:
       return "Large Extractor";
     case 7:
-      return "Harvestor";
+      return "Harvester Part";
     case 8:
       return "Essence of Starlight";
     case 9:
@@ -29,6 +29,8 @@ export function getConsumableName(tokenId: BigInt): string {
       return "Essence of Honeycomb";
     case 13:
       return "Essence of Grin";
+    case 14:
+      return "Shrouded Tesseract";
     default:
       log.error("Unhandled consumable name: {}", [tokenId.toString()]);
       return "";

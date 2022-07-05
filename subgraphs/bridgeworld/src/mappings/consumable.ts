@@ -12,7 +12,7 @@ import {
   User,
   UserApproval,
 } from "../../generated/schema";
-import { getAddressId, isMint } from "../helpers";
+import { CONSUMABLE_IPFS, getAddressId, isMint } from "../helpers";
 import * as common from "../mapping";
 
 // @ts-ignore - i32 undefined
@@ -31,7 +31,7 @@ function getName(tokenId: i32): string {
     case 6:
       return "Large Extractor";
     case 7:
-      return "Harvestor";
+      return "Harvester Part";
     case 8:
       return "Essence of Starlight";
     case 9:
@@ -44,6 +44,8 @@ function getName(tokenId: i32): string {
       return "Essence of Honeycomb";
     case 13:
       return "Essence of Grin";
+    case 14:
+      return "Shrouded Tesseract";
     default:
       log.error("Unhandled consumable name: {}", [tokenId.toString()]);
 
@@ -80,7 +82,7 @@ function getType(tokenId: i32): string {
     case 6:
       return "Extractor";
     case 7:
-      return "Harvestor Part";
+      return "Harvester Part";
     case 8:
     case 12:
     case 13:
@@ -91,38 +93,36 @@ function getType(tokenId: i32): string {
       return "Lock";
     case 11:
       return "Dust";
+    case 14:
+      return "Tesseract";
     default:
       log.error("Unhandled consumable type: {}", [tokenId.toString()]);
-
       return "";
   }
 }
 
 function setMetadata(contract: Address, tokenId: BigInt): void {
-  let token = Token.load(getAddressId(contract, tokenId));
+  const token = Token.load(getAddressId(contract, tokenId));
 
   if (!token) {
     log.error("Unknown consumable token: {}", [tokenId.toString()]);
-
     return;
   }
 
-  let metadata = new ConsumableInfo(`${token.id}-metadata`);
-  let size = getSize(tokenId.toI32());
-
+  const tokenIdNum = tokenId.toI32();
+  const metadata = new ConsumableInfo(`${token.id}-metadata`);
+  const size = getSize(tokenIdNum);
   if (size !== "") {
     metadata.size = size;
   }
-
-  metadata.type = getType(tokenId.toI32());
+  metadata.type = getType(tokenIdNum);
   metadata.save();
 
   token.category = "Consumable";
-  token.name = getName(tokenId.toI32());
-  token.image = `ipfs://Qmd1hsvPDWrxtnfUna3pQyfmChyAkMenuziHS1gszM34P8/Consumables/${tokenId.toString()}.jpg`;
+  token.name = getName(tokenIdNum);
+  token.image = `${CONSUMABLE_IPFS}/${tokenIdNum}.jpg`;
   token.metadata = metadata.id;
   token.rarity = "None";
-
   token.save();
 }
 
