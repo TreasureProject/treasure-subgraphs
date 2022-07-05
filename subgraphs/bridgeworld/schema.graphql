@@ -25,6 +25,12 @@ enum Size {
   Large
 }
 
+enum Generation {
+  Genesis
+  Auxiliary
+  Recruit
+}
+
 enum Rarity {
   Common
   Epic
@@ -71,22 +77,54 @@ type ConsumableInfo implements Metadata @entity {
 
   type: String!
   size: Size
+
+  "Boost value when added to a Harvester"
+  harvestersBoost: Int!
+
+  "Duration, in seconds, of Consumable's lifespan when added to a Harvester"
+  harvestersLifespanSeconds: Int!
 }
 
 type LegionInfo implements Metadata @entity {
   id: ID!
 
+  "Boost value when staked in Atlas Mine"
   boost: String!
+
+  "Constellations tattooed to Legion"
   constellation: Constellation
+
+  "Summoning cooldown time"
   cooldown: BigInt
+
+  "Crafting Level"
   crafting: Int!
+
+  "Crafting XP"
   craftingXp: Int!
+
+  "Rank value when deposited in Harvester"
+  harvestersRank: Int!
+
+  "Weight value when deposited in Harvester"
+  harvestersWeight: Int!
+
+  "Questing Level"
   questing: Int!
+
+  "Questing XP"
   questingXp: Int!
+
+  "Rarity (Common, Rare, etc.)"
   rarity: String!
-  "This is `class`, but we can't use that word"
+
+  "Class (Fighter, Ranger, etc.)"
   role: String!
+
+  "Generation (Genesis, Auxiliary, Recruit)"
   type: String!
+
+  "Number of summons already performed by Legion"
   summons: BigInt!
 }
 
@@ -128,7 +166,8 @@ type Deposit @entity {
   depositId: BigInt!
   endTimestamp: BigInt!
   lock: Int!
-  mine: AtlasMine!
+  mine: AtlasMine
+  harvester: Harvester
   user: User!
   withdrawal: Withdraw
 }
@@ -138,7 +177,8 @@ type Withdraw @entity {
 
   amount: BigInt!
   deposit: Deposit!
-  mine: AtlasMine!
+  mine: AtlasMine
+  harvester: Harvester
   user: User!
 }
 
@@ -378,4 +418,93 @@ type TokenQuantity @entity {
 
   quantity: Int!
   token: Token!
+}
+
+type Harvester @entity {
+  id: ID!
+
+  "Timestamp, in seconds, when this Harvester was deployed"
+  deployedTime: BigInt!
+
+  "Maximum amount of MAGIC that can be staked (6,000,000)"
+  maxMagicDeposited: Int!
+
+  "Maximum number of Harvester Parts that can be staked (800)"
+  maxPartsStaked: Int!
+
+  "Maximum number of Harvester Parts that can be staked to this Harvester by a single `User` (40)"
+  maxPartsStakedPerUser: Int!
+
+  "Maximum number of Extractors that can be staked (10)"
+  maxExtractorsStaked: Int!
+
+  "Maximum number of Legions that can be staked (2,400)"
+  maxLegionsStaked: Int!
+
+  "Maximum weight of Legions that can be staked to this Harvester by a single `User` (200)"
+  maxLegionsWeightPerUser: Int!
+
+  "Maximum number of Treasures that can be staked to this Harvester by a single `User` (20)"
+  maxTreasuresStakedPerUser: Int!
+
+  "Amount of MAGIC allocated for deposits with the staking of each Harvester Part (30,000)"
+  magicDepositAllocationPerPart: Int!
+
+  "Amount of MAGIC deposited to this Harvester"
+  magicDeposited: Int!
+
+  "Number of Harvester Parts staked to this Harvester"
+  partsStaked: Int!
+
+  "Number of Extractors staked to this Harvester"
+  extractorsStaked: Int!
+
+  "Number of Legions staked to this Harvester"
+  legionsStaked: Int!
+
+  "Configurable boost factor for Harvester Parts"
+  partsBoostFactor: BigInt!
+
+  "Boost value of staked Harvester Parts (1 + ((2n - n^2/maxParts)/maxParts) * partsBoostFactor)"
+  partsBoost: BigInt!
+
+  "Boost value of staked Extractors (1 + Boost1 + Boost2 + ... BoostN)"
+  extractorsBoost: BigInt!
+
+  "Total rank value of Legions staked to this Harvester"
+  legionsTotalRank: Int!
+
+  "Rank boost value of staked Legions (0.9 + avgLegionRank/10)"
+  legionsRankBoost: BigInt!
+
+  "Boost value of staked Legions (1 + ((2n - n^2/maxLegions)/maxLegions) * legionsRankBoost)"
+  legionsBoost: BigInt!
+
+  "Percentage of emissions Harvester is earning based on capacity utilization"
+  emissionsActivated: Int!
+
+  "All tokens staked to this Harvester"
+  stakedTokens: [HarvesterStakedToken!]! @derivedFrom(field: "harvester")
+
+  "All MAGIC deposit records to this Harvester"
+  magicDeposits: [Deposit!]! @derivedFrom(field: "harvester")
+
+  "All MAGIC withdrawal records from this Harvester"
+  magicWithdrawals: [Withdraw!]! @derivedFrom(field: "harvester")
+}
+
+type HarvesterStakedToken @entity {
+  id: ID!
+
+  "Harvester in which the `Token` is deposited"
+  harvester: Harvester!
+
+  "Token that was deposited"
+  token: Token!
+
+  "User that initiated the deposit"
+  user: User!
+
+  "Timestamp, in seconds, when this token's deposit effect will expire"
+  expirationTime: BigInt
 }
