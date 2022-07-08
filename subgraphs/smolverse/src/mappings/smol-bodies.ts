@@ -1,18 +1,39 @@
+import { BigInt } from "@graphprotocol/graph-ts";
+
 import {
   BaseURIChanged,
   SmolBodies,
   Transfer,
 } from "../../generated/Smol Bodies/SmolBodies";
-import { SMOL_BODIES_BASE_URI } from "../helpers/constants";
+import {
+  MISSING_METADATA_UPDATE_INTERVAL,
+  SMOL_BODIES_BASE_URI,
+} from "../helpers/constants";
 import { getAttributeId } from "../helpers/ids";
+import { checkMissingMetadata } from "../helpers/metadata";
 import { getOrCreateAttribute, getOrCreateCollection } from "../helpers/models";
 import { handleTransfer as commonHandleTransfer } from "./common";
 
 export function handleBaseUriChanged(event: BaseURIChanged): void {
-  const collection = getOrCreateCollection(event.address);
+  const collection = getOrCreateCollection(event.address, false);
+
+  // Add current tokenIds to missing metadata to be reprocessed
+  collection._missingMetadataTokens = collection._missingMetadataTokens.concat(
+    collection._tokenIds
+  );
+
+  // Set last timestamp in the past so the reprocess of metadata starts
+  collection._missingMetadataLastUpdated =
+    collection._missingMetadataLastUpdated.minus(
+      BigInt.fromI32(MISSING_METADATA_UPDATE_INTERVAL)
+    );
+
+  // Save new base URI
   collection.baseUri = event.params.to;
-  collection._missingMetadataTokens = collection._tokenIds.concat([]);
   collection.save();
+
+  // Start metadata re-fetching
+  checkMissingMetadata(collection, event.block.timestamp);
 }
 
 export function handleTransfer(event: Transfer): void {
