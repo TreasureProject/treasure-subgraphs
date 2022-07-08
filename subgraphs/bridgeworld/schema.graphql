@@ -423,8 +423,8 @@ type TokenQuantity @entity {
 type Harvester @entity {
   id: ID!
 
-  "Timestamp, in seconds, when this Harvester was deployed"
-  deployedTime: BigInt!
+  "Block when this Harvester was deployed"
+  deployedBlockNumber: BigInt!
 
   "Maximum amount of MAGIC that can be staked (6,000,000)"
   maxMagicDeposited: Int!
@@ -491,6 +491,18 @@ type Harvester @entity {
 
   "All MAGIC withdrawal records from this Harvester"
   magicWithdrawals: [Withdraw!]! @derivedFrom(field: "harvester")
+}
+
+type HarvesterNftHandler @entity {
+  id: ID!
+
+  harvester: Harvester!
+}
+
+type HarvesterStakingRule @entity {
+  id: ID!
+
+  harvester: Harvester!
 }
 
 type HarvesterStakedToken @entity {

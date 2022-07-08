@@ -517,3 +517,111 @@ dataSources:
         - event: TreasureCardInfoSet(uint256,(uint8,uint8,uint8,uint8,uint8))
           handler: handleTreasureCardInfoSet
       file: ./src/mappings/treasure-triad.ts
+  - name: Harvester Factory
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ harvester_factory_address }}"
+      abi: HarvesterFactory
+      startBlock: {{ harvester_factory_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Harvester
+        - HarvesterNftHandler
+      abis:
+        - name: HarvesterFactory
+          file: ../../node_modules/@treasure/subgraph-abis/src/HarvesterFactory.json
+      eventHandlers:
+        - event: HarvesterDeployed(address,address)
+          handler: handleHarvesterDeployed
+      file: ./src/mappings/harvester.ts
+templates:
+  - name: NftHandler
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      abi: NftHandler
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - HarvesterNftHandler
+      abis:
+        - name: NftHandler
+          file: ../../node_modules/@treasure/subgraph-abis/src/NftHandler.json
+      eventHandlers:
+        - event: NftConfigSet(indexed address,(uint8,address))
+          handler: handleNftConfigSet
+      file: ./src/mappings/harvester-config.ts
+  - name: PartsStakingRules
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      abi: PartsStakingRules
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - HarvesterStakingRule
+      abis:
+        - name: PartsStakingRules
+          file: ../../node_modules/@treasure/subgraph-abis/src/PartsStakingRules.json
+      eventHandlers:
+        - event: BoostFactor(uint256)
+          handler: handleUpdatedPartsBoostFactor
+        - event: MaxStakeablePerUser(uint256)
+          handler: handleUpdatedPartsMaxStakeablePerUser
+        - event: MaxStakeableTotal(uint256)
+          handler: handleUpdatedPartsStakeableTotal
+      file: ./src/mappings/harvester-config.ts
+  - name: LegionsStakingRules
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      abi: LegionsStakingRules
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - HarvesterStakingRule
+      abis:
+        - name: LegionsStakingRules
+          file: ../../node_modules/@treasure/subgraph-abis/src/LegionStakingRules.json
+      eventHandlers:
+        # - event: BoostFactor(uint256)
+        #   handler: handleUpdatedLegionsBoostFactor
+        # - event: LegionBoostMatrix(uint256[][])
+        #   handler: handleUpdatedLegionsBoostMatrix
+        # - event: LegionRankMatrix(uint256[][])
+        #   handler: handleUpdatedLegionsRankMatrix
+        # - event: LegionWeightMatrix(uint256[][])
+        #   handler: handleUpdatedLegionsWeightMatrix
+        - event: MaxStakeableTotal(uint256)
+          handler: handleUpdatedLegionsMaxStakeableTotal
+        - event: MaxWeight(uint256)
+          handler: handleUpdatedLegionsMaxWeight
+      file: ./src/mappings/harvester-config.ts
+  - name: TreasuresStakingRules
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      abi: TreasuresStakingRules
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - HarvesterStakingRule
+      abis:
+        - name: TreasuresStakingRules
+          file: ../../node_modules/@treasure/subgraph-abis/src/TreasureStakingRules.json
+      eventHandlers:
+        - event: MaxStakeablePerUser(uint256)
+          handler: handleUpdatedTreasuresMaxStakeablePerUser
+      file: ./src/mappings/harvester-config.ts
