@@ -7,7 +7,6 @@ import {
 } from "@treasure/constants";
 
 import {
-  Harvester,
   HarvesterNftHandler,
   HarvesterStakingRule,
 } from "../../generated/schema";
@@ -45,7 +44,7 @@ export function handleNftConfigSet(event: NftConfigSet): void {
   // Load associated NftHandler
   const nftHandler = HarvesterNftHandler.load(event.address.toHexString());
   if (!nftHandler) {
-    log.error("NFT config set on unknown NFT handler: []", [
+    log.error("NFT config set on unknown NFT handler: {}", [
       event.address.toHexString(),
     ]);
     return;

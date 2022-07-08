@@ -9,7 +9,7 @@ import {
 const getHarvesterById = (id: string): Harvester | null => {
   const harvester = Harvester.load(id);
   if (!harvester) {
-    log.error("Unknown Harvester:", [id]);
+    log.error("Unknown Harvester: {}", [id]);
   }
 
   return harvester;
@@ -24,7 +24,7 @@ export const getHarvesterForNftHandler = (
   const nftHandlerId = address.toHexString();
   const nftHandler = HarvesterNftHandler.load(nftHandlerId);
   if (!nftHandler) {
-    log.error("Unknown HarvesterNftHandler:", [nftHandlerId]);
+    log.error("Unknown HarvesterNftHandler: {}", [nftHandlerId]);
     return null;
   }
 
@@ -37,7 +37,7 @@ export const getHarvesterForStakingRule = (
   const stakingRuleId = address.toHexString();
   const stakingRule = HarvesterStakingRule.load(stakingRuleId);
   if (!stakingRule) {
-    log.error("Unknown HarvesterStakingRule:", [stakingRuleId]);
+    log.error("Unknown HarvesterStakingRule: {}", [stakingRuleId]);
     return null;
   }
 

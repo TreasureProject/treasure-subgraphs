@@ -1,3 +1,5 @@
+import { BigInt, log } from "@graphprotocol/graph-ts";
+
 import {
   CONSUMABLE_ADDRESS,
   LEGION_ADDRESS,
@@ -5,7 +7,13 @@ import {
 } from "@treasure/constants";
 
 import { HarvesterDeployed } from "../../generated/Harvester Factory/HarvesterFactory";
-import { Harvester, HarvesterNftHandler } from "../../generated/schema";
+import {
+  Deposit,
+  Harvester,
+  HarvesterNftHandler,
+  User,
+  Withdraw,
+} from "../../generated/schema";
 import {
   HarvesterConfig,
   Harvester as HarvesterTemplate,
@@ -13,15 +21,16 @@ import {
   NftHandlerConfig,
 } from "../../generated/templates";
 import {
-  Deposit,
-  Harvest,
-  Withdraw,
+  Deposit as DepositEvent,
+  Harvest as HarvestEvent,
+  Withdraw as WithdrawEvent,
 } from "../../generated/templates/Harvester/Harvester";
 import {
   Replaced,
   Staked,
   Unstaked,
 } from "../../generated/templates/NftHandler/NftHandler";
+import { LOCK_PERIOD_IN_SECONDS, getAddressId } from "../helpers";
 import { getHarvester, getHarvesterForNftHandler } from "../helpers/harvester";
 
 export function handleHarvesterDeployed(event: HarvesterDeployed): void {
@@ -81,21 +90,70 @@ export function handleExtractorReplaced(event: Replaced): void {
   }
 }
 
-export function handleMagicDeposited(event: Deposit): void {
+export function handleMagicDeposited(event: DepositEvent): void {
   const harvester = getHarvester(event.address);
   if (!harvester) {
     return;
   }
+
+  const params = event.params;
+  const userAddress = params.user;
+  const lock = params.lock.toI32();
+
+  // Save deposit
+  const deposit = new Deposit(getAddressId(userAddress, params.index));
+  deposit.amount = params.amount;
+  deposit.depositId = params.index;
+  deposit.endTimestamp = event.block.timestamp
+    .plus(BigInt.fromI32(LOCK_PERIOD_IN_SECONDS[lock]))
+    .times(BigInt.fromI32(1000));
+  deposit.lock = lock;
+  deposit.harvester = harvester.id;
+  deposit.user = userAddress.toHexString();
+  deposit.save();
+
+  // Update Harvester with new deposit
+  harvester.magicDeposited = harvester.magicDeposited.plus(params.amount);
+  harvester.save();
 }
 
-export function handleMagicWithdrawn(event: Withdraw): void {
+export function handleMagicWithdrawn(event: WithdrawEvent): void {
   const harvester = getHarvester(event.address);
   if (!harvester) {
     return;
   }
+
+  const params = event.params;
+  const userAddress = params.user;
+  const id = getAddressId(userAddress, params.index);
+
+  const deposit = Deposit.load(id);
+  if (!deposit) {
+    log.error("Withdrawing from unknown Deposit: {}", [id]);
+    return;
+  }
+
+  // Save withdrawal
+  let withdraw = Withdraw.load(id);
+  if (!withdraw) {
+    withdraw = new Withdraw(id);
+    withdraw.deposit = deposit.id;
+    withdraw.harvester = harvester.id;
+    withdraw.user = userAddress.toHexString();
+  }
+  withdraw.amount = withdraw.amount.plus(params.amount);
+  withdraw.save();
+
+  // Update Deposit with new withdrawal
+  deposit.withdrawal = id;
+  deposit.save();
+
+  // Update Harvester with new withdrawal
+  harvester.magicDeposited = harvester.magicDeposited.minus(params.amount);
+  harvester.save();
 }
 
-export function handleMagicHarvested(event: Harvest): void {
+export function handleMagicHarvested(event: HarvestEvent): void {
   const harvester = getHarvester(event.address);
   if (!harvester) {
     return;

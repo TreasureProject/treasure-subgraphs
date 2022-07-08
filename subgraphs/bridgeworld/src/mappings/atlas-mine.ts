@@ -21,25 +21,10 @@ import {
   User,
   Withdraw,
 } from "../../generated/schema";
+import { LOCK_PERIOD_IN_SECONDS } from "../helpers";
 import { getAddressId } from "../helpers/utils";
 
 const ONE = BigDecimal.fromString((1e18).toString());
-
-const DAY = 86_400;
-const ONE_WEEK = DAY * 7;
-const TWO_WEEKS = ONE_WEEK * 2;
-const ONE_MONTH = DAY * 30;
-const THREE_MONTHS = ONE_MONTH * 3;
-const SIX_MONTHS = ONE_MONTH * 6;
-const TWELVE_MONTHS = DAY * 365;
-
-const TIMESTAMPS = [
-  TWO_WEEKS,
-  ONE_MONTH,
-  THREE_MONTHS,
-  SIX_MONTHS,
-  TWELVE_MONTHS,
-];
 
 function getUserOrMultisig(event: ethereum.Event): string {
   let transaction = event.transaction;
@@ -68,7 +53,7 @@ export function handleDeposit(event: DepositEvent): void {
   deposit.amount = params.amount;
   deposit.depositId = params.index;
   deposit.endTimestamp = event.block.timestamp
-    .plus(BigInt.fromI32(TIMESTAMPS[lock]))
+    .plus(BigInt.fromI32(LOCK_PERIOD_IN_SECONDS[lock]))
     .times(BigInt.fromI32(1000));
   deposit.lock = lock;
   deposit.mine = mine;
