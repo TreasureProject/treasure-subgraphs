@@ -8,14 +8,12 @@ import { Address, BigInt, ethereum } from "@graphprotocol/graph-ts";
 
 import { ADVANCED_QUESTING_ADDRESS, LEGION_ADDRESS } from "@treasure/constants";
 
-import { createRandomRequestEvent } from ".";
 import {
   AdvancedQuestContinued,
   AdvancedQuestEnded,
   AdvancedQuestStarted,
   TreasureTriadPlayed,
 } from "../../generated/Advanced Questing/AdvancedQuesting";
-import { AdvancedQuestReward } from "../../generated/schema";
 import { getAddressId } from "../../src/helpers";
 import {
   handleAdvancedQuestContinued,
@@ -27,6 +25,7 @@ import { handleLegionCreated, handleTransfer } from "../../src/mappings/legion";
 import { handleRandomRequest } from "../../src/mappings/randomizer";
 import { USER_ADDRESS } from "./constants";
 import { createLegionCreatedEvent, createLegionTransferEvent } from "./legion";
+import { createRandomRequestEvent } from "./randomizer";
 
 export class RewardParam {
   public consumableId: i32;

@@ -27,16 +27,22 @@ import {
   LEGION_INFO_ENTITY_TYPE,
   SUMMONING_CIRCLE_ENTITY_TYPE,
   USER_ADDRESS,
+} from "./helpers/constants";
+import {
   createCraftingFinishedEvent,
   createCraftingRevealedEvent,
   createCraftingStartedEvent,
   createCraftingStartedWithoutDifficultyEvent,
+} from "./helpers/crafting";
+import {
   createLegionCraftLevelUpEvent,
   createLegionCreatedEvent,
   createLegionTransferEvent,
+} from "./helpers/legion";
+import {
   createRandomRequestEvent,
   createRandomSeededEvent,
-} from "./helpers/index";
+} from "./helpers/randomizer";
 
 test("crafting increases xp when completed successfully", () => {
   clearStore();

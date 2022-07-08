@@ -11,10 +11,12 @@ import {
   MINI_CRAFT_ENTITY_TYPE,
   OUTCOME_ENTITY_TYPE,
   USER_ADDRESS,
+} from "./helpers/constants";
+import {
   createLegionCreatedEvent,
   createLegionTransferEvent,
-  createMiniCraftingFinishedEvent,
-} from "./helpers";
+} from "./helpers/legion";
+import { createMiniCraftingFinishedEvent } from "./helpers/mini-crafting";
 
 test("mini crafting outcome is stored", () => {
   clearStore();

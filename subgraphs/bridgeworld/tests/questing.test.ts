@@ -27,17 +27,23 @@ import {
   QUESTING_ADDRESS,
   QUEST_ENTITY_TYPE,
   USER_ADDRESS,
+} from "./helpers/constants";
+import {
   createLegionCreatedEvent,
   createLegionQuestLevelUpEvent,
   createLegionTransferEvent,
+} from "./helpers/legion";
+import {
   createQuestFinishedEvent,
   createQuestRevealedEvent,
   createQuestStartedEvent,
   createQuestStartedWithoutDifficultyEvent,
   createQuestXpGainedEvent,
+} from "./helpers/questing";
+import {
   createRandomRequestEvent,
   createRandomSeededEvent,
-} from "./helpers/index";
+} from "./helpers/randomizer";
 
 test("questing increases xp when completed", () => {
   clearStore();

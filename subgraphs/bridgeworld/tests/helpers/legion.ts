@@ -7,7 +7,6 @@ import {
   LEGION_ADDRESS,
 } from "@treasure/constants";
 
-import { LEGION_METADATA_STORE_ADDRESS } from ".";
 import { TransferSingle } from "../../generated/Legacy Legion Genesis/ERC1155";
 import {
   LegionCraftLevelUp,
@@ -15,6 +14,7 @@ import {
   LegionQuestLevelUp,
 } from "../../generated/Legion Metadata Store/LegionMetadataStore";
 import { Transfer } from "../../generated/Legion/ERC721";
+import { LEGION_METADATA_STORE_ADDRESS } from "./constants";
 import { createTransferEvent } from "./transfer";
 
 export const createLegionCreatedEvent = (

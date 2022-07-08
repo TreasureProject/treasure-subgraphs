@@ -2,8 +2,8 @@ import { newMockEvent } from "matchstick-as";
 
 import { Address, ethereum } from "@graphprotocol/graph-ts";
 
-import { MAGIC_ADDRESS } from ".";
 import { Approval } from "../../generated/Magic/ERC20";
+import { MAGIC_ADDRESS } from "./constants";
 
 export const createApprovalEvent = (
   user: string,

@@ -2,13 +2,14 @@ import { newMockEvent } from "matchstick-as";
 
 import { Address, BigInt, ethereum } from "@graphprotocol/graph-ts";
 
-import { ATLAS_MINE_ADDRESS, Lock, toBigIntString } from ".";
 import {
   Deposit,
   Staked,
   Unstaked,
   Withdraw,
 } from "../../generated/Atlas Mine/AtlasMine";
+import { toBigIntString } from "./common";
+import { ATLAS_MINE_ADDRESS, Lock } from "./constants";
 
 export const createDepositEvent = (
   user: string,

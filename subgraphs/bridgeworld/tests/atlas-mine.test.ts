@@ -13,6 +13,13 @@ import {
 import { handleApproval } from "../src/mappings/magic";
 import { handleTransferBatch } from "../src/mappings/treasure";
 import {
+  createDepositEvent,
+  createStakedEvent,
+  createUnstakedEvent,
+  createWithdrawEvent,
+} from "./helpers/atlas-mine";
+import { toBigIntString } from "./helpers/common";
+import {
   ATLAS_MINE_ADDRESS,
   DEPOSIT_ENTITY_TYPE,
   Lock,
@@ -21,14 +28,9 @@ import {
   USER_ADDRESS,
   USER_ENTITY_TYPE,
   WITHDRAW_ENTITY_TYPE,
-  createApprovalEvent,
-  createDepositEvent,
-  createStakedEvent,
-  createTreasureTransferEvent,
-  createUnstakedEvent,
-  createWithdrawEvent,
-  toBigIntString,
-} from "./helpers/index";
+} from "./helpers/constants";
+import { createApprovalEvent } from "./helpers/magic";
+import { createTreasureTransferEvent } from "./helpers/treasure";
 
 test("withdrawals will add to existing when depositId matches", () => {
   clearStore();

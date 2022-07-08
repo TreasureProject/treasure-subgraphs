@@ -25,13 +25,19 @@ import {
   SUMMON_FATIGUE_ENTITY_TYPE,
   TOKEN_ENTITY_TYPE,
   USER_ADDRESS,
+} from "./helpers/constants";
+import {
   createLegionCreatedEvent,
   createLegionTransferEvent,
+} from "./helpers/legion";
+import {
   createRandomRequestEvent,
   createRandomSeededEvent,
+} from "./helpers/randomizer";
+import {
   createSummoningStartedEvent,
   createdSummoningFinishedEvent,
-} from "./helpers/index";
+} from "./helpers/summoning";
 
 test("summon is started and finished with result token", () => {
   clearStore();
