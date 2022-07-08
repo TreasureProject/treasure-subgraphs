@@ -11,6 +11,7 @@ import { handleTransfer as commonHandleTransfer } from "./common";
 export function handleBaseUriChanged(event: BaseURIChanged): void {
   const collection = getOrCreateCollection(event.address);
   collection.baseUri = event.params.to;
+  collection._missingMetadataTokens = collection._tokenIds.concat([]);
   collection.save();
 }
 
