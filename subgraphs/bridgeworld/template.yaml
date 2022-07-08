@@ -579,6 +579,26 @@ templates:
         - event: MaxStakeableTotal(uint256)
           handler: handleUpdatedPartsStakeableTotal
       file: ./src/mappings/harvester-config.ts
+  - name: ExtractorsStakingRules
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      abi: ExtractorsStakingRules
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - HarvesterStakingRule
+      abis:
+        - name: ExtractorsStakingRules
+          file: ../../node_modules/@treasure/subgraph-abis/src/ExtractorStakingRules.json
+      eventHandlers:
+        - event: Lifetime(uint256)
+          handler: handleUpdatedExtractorsLifetime
+        - event: MaxStakeable(uint256)
+          handler: handleUpdatedExtractorsMaxStakeable
+      file: ./src/mappings/harvester-config.ts
   - name: LegionsStakingRules
     kind: ethereum/contract
     network: {{ network }}

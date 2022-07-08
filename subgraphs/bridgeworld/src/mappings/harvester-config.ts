@@ -15,6 +15,10 @@ import {
   PartsStakingRules,
   TreasuresStakingRules,
 } from "../../generated/templates";
+import {
+  Lifetime,
+  MaxStakeable,
+} from "../../generated/templates/ExtractorsStakingRules/ExtractorsStakingRules";
 import { MaxWeight } from "../../generated/templates/LegionsStakingRules/LegionsStakingRules";
 import { NftConfigSet } from "../../generated/templates/NftHandler/NftHandler";
 import {
@@ -46,6 +50,7 @@ export function handleNftConfigSet(event: NftConfigSet): void {
 
   // Determine the type of StakingRule and start listening for events at this address
   if (params._nft.equals(CONSUMABLE_ADDRESS)) {
+    // TODO: Swap to consumables staking rules when ABI is available
     PartsStakingRules.create(stakingRulesAddress);
   } else if (params._nft.equals(LEGION_ADDRESS)) {
     LegionsStakingRules.create(stakingRulesAddress);
@@ -76,6 +81,20 @@ export function handleUpdatedPartsStakeableTotal(
   const harvester = getHarvesterForStakingRule(event.address);
   if (harvester) {
     harvester.maxPartsStaked = event.params.maxStakeableTotal.toI32();
+  }
+}
+
+export function handleUpdatedExtractorsLifetime(event: Lifetime): void {
+  const harvester = getHarvesterForStakingRule(event.address);
+  if (harvester) {
+    harvester.extractorsLifetime = event.params.lifetime;
+  }
+}
+
+export function handleUpdatedExtractorsMaxStakeable(event: MaxStakeable): void {
+  const harvester = getHarvesterForStakingRule(event.address);
+  if (harvester) {
+    harvester.maxExtractorsStaked = event.params.maxStakeable.toI32();
   }
 }
 

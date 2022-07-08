@@ -459,6 +459,9 @@ type Harvester @entity {
   "Number of Extractors staked to this Harvester"
   extractorsStaked: Int!
 
+  "Time, in seconds, that an extractor is active when staked"
+  extractorsLifetime: BigInt!
+
   "Number of Legions staked to this Harvester"
   legionsStaked: Int!
 
