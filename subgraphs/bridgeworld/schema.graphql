@@ -427,7 +427,7 @@ type Harvester @entity {
   deployedBlockNumber: BigInt!
 
   "Maximum amount of MAGIC that can be staked (6,000,000)"
-  maxMagicDeposited: Int!
+  maxMagicDeposited: BigInt!
 
   "Maximum number of Harvester Parts that can be staked (800)"
   maxPartsStaked: Int!
@@ -448,10 +448,10 @@ type Harvester @entity {
   maxTreasuresStakedPerUser: Int!
 
   "Amount of MAGIC allocated for deposits with the staking of each Harvester Part (30,000)"
-  magicDepositAllocationPerPart: Int!
+  magicDepositAllocationPerPart: BigInt!
 
   "Amount of MAGIC deposited to this Harvester"
-  magicDeposited: Int!
+  magicDeposited: BigInt!
 
   "Number of Harvester Parts staked to this Harvester"
   partsStaked: Int!

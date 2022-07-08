@@ -539,7 +539,69 @@ dataSources:
           handler: handleHarvesterDeployed
       file: ./src/mappings/harvester.ts
 templates:
+  - name: Harvester
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      abi: Harvester
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Harvester
+      abis:
+        - name: Harvester
+          file: ../../node_modules/@treasure/subgraph-abis/src/Harvester.json
+      eventHandlers:
+        - event: Deposit(indexed address,indexed uint256,uint256,uint256)
+          handler: handleMagicDeposited
+        - event: Harvest(indexed address,uint256)
+          handler: handleMagicHarvested
+        - event: Withdraw(indexed address,indexed uint256,uint256)
+          handler: handleMagicWithdrawn
+      file: ./src/mappings/harvester.ts
   - name: NftHandler
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      abi: NftHandler
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - HarvesterNftHandler
+      abis:
+        - name: NftHandler
+          file: ../../node_modules/@treasure/subgraph-abis/src/NftHandler.json
+      eventHandlers:
+        - event: Replaced(indexed address,uint256,uint256,uint256)
+          handler: handleExtractorReplaced
+        - event: Staked(indexed address,uint256,uint256)
+          handler: handleNftStaked
+        - event: Unstaked(indexed address,uint256,uint256)
+          handler: handleNftUnstaked
+      file: ./src/mappings/harvester.ts
+  - name: HarvesterConfig
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      abi: Harvester
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Harvester
+      abis:
+        - name: Harvester
+          file: ../../node_modules/@treasure/subgraph-abis/src/Harvester.json
+      eventHandlers:
+        - event: TotalDepositCap(uint256)
+          handler: handleUpdatedMagicTotalDepositCap
+      file: ./src/mappings/harvester-config.ts
+  - name: NftHandlerConfig
     kind: ethereum/contract
     network: {{ network }}
     source:

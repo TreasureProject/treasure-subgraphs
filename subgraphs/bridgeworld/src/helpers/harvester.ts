@@ -1,6 +1,35 @@
 import { Address, log } from "@graphprotocol/graph-ts";
 
-import { Harvester, HarvesterStakingRule } from "../../generated/schema";
+import {
+  Harvester,
+  HarvesterNftHandler,
+  HarvesterStakingRule,
+} from "../../generated/schema";
+
+const getHarvesterById = (id: string): Harvester | null => {
+  const harvester = Harvester.load(id);
+  if (!harvester) {
+    log.error("Unknown Harvester:", [id]);
+  }
+
+  return harvester;
+};
+
+export const getHarvester = (address: Address): Harvester | null =>
+  getHarvesterById(address.toHexString());
+
+export const getHarvesterForNftHandler = (
+  address: Address
+): Harvester | null => {
+  const nftHandlerId = address.toHexString();
+  const nftHandler = HarvesterNftHandler.load(nftHandlerId);
+  if (!nftHandler) {
+    log.error("Unknown HarvesterNftHandler:", [nftHandlerId]);
+    return null;
+  }
+
+  return getHarvesterById(nftHandler.harvester);
+};
 
 export const getHarvesterForStakingRule = (
   address: Address
@@ -12,10 +41,5 @@ export const getHarvesterForStakingRule = (
     return null;
   }
 
-  const harvester = Harvester.load(stakingRule.harvester);
-  if (!harvester) {
-    log.error("Unknown Harvester:", [stakingRule.harvester]);
-  }
-
-  return harvester;
+  return getHarvesterById(stakingRule.harvester);
 };
