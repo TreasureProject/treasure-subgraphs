@@ -1,4 +1,4 @@
-import { BigInt, log } from "@graphprotocol/graph-ts";
+import { BigInt, log, store } from "@graphprotocol/graph-ts";
 
 import {
   CONSUMABLE_ADDRESS,
@@ -11,7 +11,7 @@ import {
   Deposit,
   Harvester,
   HarvesterNftHandler,
-  User,
+  StakedToken,
   Withdraw,
 } from "../../generated/schema";
 import {
@@ -63,7 +63,24 @@ export function handleNftStaked(event: Staked): void {
     return;
   }
 
-  const nftAddress = event.params.nft;
+  const userAddress = event.transaction.from;
+  const params = event.params;
+  const nftAddress = params.nft;
+
+  const stakedTokenId = `${
+    harvester.id
+  }-${userAddress.toHexString()}-${getAddressId(nftAddress, params.tokenId)}`;
+  let stakedToken = StakedToken.load(stakedTokenId);
+  if (!stakedToken) {
+    stakedToken = new StakedToken(stakedTokenId);
+    stakedToken.user = userAddress.toHexString();
+    stakedToken.token = getAddressId(nftAddress, params.tokenId);
+    stakedToken.harvester = harvester.id;
+  }
+
+  stakedToken.quantity = stakedToken.quantity.plus(params.amount);
+  stakedToken.save();
+
   if (nftAddress.equals(CONSUMABLE_ADDRESS)) {
   } else if (nftAddress.equals(LEGION_ADDRESS)) {
   } else if (nftAddress.equals(TREASURE_ADDRESS)) {
@@ -76,7 +93,26 @@ export function handleNftUnstaked(event: Unstaked): void {
     return;
   }
 
-  const nftAddress = event.params.nft;
+  const userAddress = event.transaction.from;
+  const params = event.params;
+  const nftAddress = params.nft;
+
+  const stakedTokenId = `${
+    harvester.id
+  }-${userAddress.toHexString()}-${getAddressId(nftAddress, params.tokenId)}`;
+  const stakedToken = StakedToken.load(stakedTokenId);
+  if (!stakedToken) {
+    log.error("Unstaking from unknown StakedToken: {}", [stakedTokenId]);
+    return;
+  }
+
+  if (stakedToken.quantity.equals(params.amount)) {
+    store.remove("StakedToken", stakedTokenId);
+  } else {
+    stakedToken.quantity = stakedToken.quantity.minus(params.amount);
+    stakedToken.save();
+  }
+
   if (nftAddress.equals(CONSUMABLE_ADDRESS)) {
   } else if (nftAddress.equals(LEGION_ADDRESS)) {
   } else if (nftAddress.equals(TREASURE_ADDRESS)) {

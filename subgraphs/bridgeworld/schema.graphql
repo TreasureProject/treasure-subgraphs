@@ -316,9 +316,20 @@ type TreasureTriadCardInfo @entity {
 type StakedToken @entity {
   id: ID!
 
-  quantity: BigInt!
-  token: Token!
+  "User who owns the Token"
   user: User!
+
+  "Generic Token that was staked"
+  token: Token!
+
+  "Atlas Min this token was staked to, if applicable"
+  mine: AtlasMine
+
+  "Harvester this token was staked to, if applicable"
+  harvester: Harvester
+
+  "Quantity of Token that was staked"
+  quantity: BigInt!
 }
 
 type Summon @entity {
@@ -487,7 +498,7 @@ type Harvester @entity {
   emissionsActivated: Int!
 
   "All tokens staked to this Harvester"
-  stakedTokens: [HarvesterStakedToken!]! @derivedFrom(field: "harvester")
+  stakedTokens: [StakedToken!]! @derivedFrom(field: "harvester")
 
   "All MAGIC deposit records to this Harvester"
   magicDeposits: [Deposit!]! @derivedFrom(field: "harvester")
@@ -506,20 +517,4 @@ type HarvesterStakingRule @entity {
   id: ID!
 
   harvester: Harvester!
-}
-
-type HarvesterStakedToken @entity {
-  id: ID!
-
-  "Harvester in which the `Token` is deposited"
-  harvester: Harvester!
-
-  "Token that was deposited"
-  token: Token!
-
-  "User that initiated the deposit"
-  user: User!
-
-  "Timestamp, in seconds, when this token's deposit effect will expire"
-  expirationTime: BigInt
 }
