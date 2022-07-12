@@ -1,4 +1,7 @@
-import { SmolBrains, Transfer } from "../../generated/Smol Brains/SmolBrains";
+import {
+  ERC721WithBaseUri,
+  Transfer,
+} from "../../generated/Smol Brains/ERC721WithBaseUri";
 import { SMOL_BRAINS_BASE_URI } from "../helpers/constants";
 import { getAttributeId } from "../helpers/ids";
 import { getOrCreateAttribute, getOrCreateCollection } from "../helpers/models";
@@ -10,7 +13,7 @@ export function handleTransfer(event: Transfer): void {
 
   const collection = getOrCreateCollection(address);
   if (!collection.baseUri) {
-    const contract = SmolBrains.bind(address);
+    const contract = ERC721WithBaseUri.bind(address);
     const baseUriCall = contract.try_baseURI();
     collection.baseUri = baseUriCall.reverted
       ? SMOL_BRAINS_BASE_URI

@@ -4,7 +4,7 @@ import { Address, ethereum } from "@graphprotocol/graph-ts";
 
 import { SMOL_BRAINS_ADDRESS } from "@treasure/constants";
 
-import { Transfer } from "../../generated/Smol Brains/SmolBrains";
+import { Transfer } from "../../generated/Smol Brains/ERC721WithBaseUri";
 
 export const createTransferEvent = (
   from: string,

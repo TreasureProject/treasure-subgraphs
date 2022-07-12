@@ -6,7 +6,7 @@ import {
   DropSchool,
   JoinSchool,
 } from "../../generated/Smol Brains School/School";
-import { SmolBrains } from "../../generated/Smol Brains/SmolBrains";
+import { SmolBrains } from "../../generated/Smol Brains School/SmolBrains";
 import { LOCATION_SCHOOL } from "../helpers/constants";
 import { getAttributeId } from "../helpers/ids";
 import {
