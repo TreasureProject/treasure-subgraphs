@@ -4,7 +4,10 @@ import { Address, ethereum } from "@graphprotocol/graph-ts";
 
 import { SMOL_CARS_ADDRESS } from "@treasure/constants";
 
-import { BaseURIChanged, Transfer } from "../../generated/Smol Cars/SmolCars";
+import {
+  BaseURIChanged,
+  Transfer,
+} from "../../generated/Smol Cars/ERC721WithBaseUri";
 
 export function createBaseUriChangedEvent(
   from: string,

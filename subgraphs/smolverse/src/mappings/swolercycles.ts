@@ -2,9 +2,9 @@ import { BigInt } from "@graphprotocol/graph-ts";
 
 import {
   BaseURIChanged,
-  Swolercycles,
+  ERC721WithBaseUri,
   Transfer,
-} from "../../generated/Swolercycles/Swolercycles";
+} from "../../generated/Swolercycles/ERC721WithBaseUri";
 import {
   MISSING_METADATA_UPDATE_INTERVAL,
   SWOLERCYCLES_BASE_URI,
@@ -38,7 +38,7 @@ export function handleTransfer(event: Transfer): void {
 
   const collection = getOrCreateCollection(address, false);
   if (!collection.baseUri) {
-    const contract = Swolercycles.bind(address);
+    const contract = ERC721WithBaseUri.bind(address);
     const baseUriCall = contract.try_baseURI();
     collection.baseUri = baseUriCall.reverted
       ? SWOLERCYCLES_BASE_URI

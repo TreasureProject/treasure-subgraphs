@@ -2,9 +2,9 @@ import { BigInt } from "@graphprotocol/graph-ts";
 
 import {
   BaseURIChanged,
-  SmolBodies,
+  ERC721WithBaseUri,
   Transfer,
-} from "../../generated/Smol Bodies/SmolBodies";
+} from "../../generated/Smol Bodies/ERC721WithBaseUri";
 import {
   MISSING_METADATA_UPDATE_INTERVAL,
   SMOL_BODIES_BASE_URI,
@@ -42,7 +42,7 @@ export function handleTransfer(event: Transfer): void {
 
   const collection = getOrCreateCollection(address);
   if (!collection.baseUri) {
-    const contract = SmolBodies.bind(address);
+    const contract = ERC721WithBaseUri.bind(address);
     const baseUriCall = contract.try_baseURI();
     collection.baseUri = baseUriCall.reverted
       ? SMOL_BODIES_BASE_URI

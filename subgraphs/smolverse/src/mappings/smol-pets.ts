@@ -2,9 +2,9 @@ import { SMOL_BODIES_PETS_ADDRESS } from "@treasure/constants";
 
 import {
   BaseURIChanged,
+  ERC721WithBaseUri,
   Transfer,
-} from "../../generated/Smol Bodies Pets/SmolPets";
-import { SmolPets } from "../../generated/Smol Brains Pets/SmolPets";
+} from "../../generated/Smol Brains Pets/ERC721WithBaseUri";
 import {
   SMOL_BODIES_PETS_BASE_URI,
   SMOL_BRAINS_PETS_BASE_URI,
@@ -25,7 +25,7 @@ export function handleTransfer(event: Transfer): void {
 
   const collection = getOrCreateCollection(address);
   if (!collection.baseUri) {
-    const contract = SmolPets.bind(address);
+    const contract = ERC721WithBaseUri.bind(address);
     const baseUriCall = contract.try_baseURI();
     const defaultBaseUri =
       collection.id == getCollectionId(SMOL_BODIES_PETS_ADDRESS)

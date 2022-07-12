@@ -7,7 +7,7 @@ import { SWOLERCYCLES_ADDRESS } from "@treasure/constants";
 import {
   BaseURIChanged,
   Transfer,
-} from "../../generated/Swolercycles/Swolercycles";
+} from "../../generated/Swolercycles/ERC721WithBaseUri";
 
 export function createBaseUriChangedEvent(
   from: string,
