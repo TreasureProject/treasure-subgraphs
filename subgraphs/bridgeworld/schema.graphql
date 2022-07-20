@@ -104,10 +104,10 @@ type LegionInfo implements Metadata @entity {
   craftingXp: Int!
 
   "Rank value when deposited in Harvester"
-  harvestersRank: Int!
+  harvestersRank: BigInt!
 
   "Weight value when deposited in Harvester"
-  harvestersWeight: Int!
+  harvestersWeight: BigInt!
 
   "Questing Level"
   questing: Int!

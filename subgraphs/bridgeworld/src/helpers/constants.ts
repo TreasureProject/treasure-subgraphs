@@ -27,5 +27,6 @@ export const LOCK_PERIOD_IN_SECONDS = [
 ];
 
 export const ONE_WEI = BigDecimal.fromString((1e18).toString());
+export const ZERO_BI = BigInt.zero();
 export const ONE_BI = BigInt.fromI32(1);
 export const TWO_BI = BigInt.fromI32(2);
