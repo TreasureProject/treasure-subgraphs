@@ -437,28 +437,31 @@ type Harvester @entity {
   "Block when this Harvester was deployed"
   deployedBlockNumber: BigInt!
 
-  "Maximum amount of MAGIC that can be staked (6,000,000)"
+  "Associated NftHandler that will be used for staking to Harvester"
+  nftHandler: HarvesterNftHandler! @derivedFrom(field: "harvester")
+
+  "Maximum amount of MAGIC that can be staked"
   maxMagicDeposited: BigInt!
 
-  "Maximum number of Harvester Parts that can be staked (800)"
+  "Maximum number of Harvester Parts that can be staked"
   maxPartsStaked: Int!
 
-  "Maximum number of Harvester Parts that can be staked to this Harvester by a single `User` (40)"
+  "Maximum number of Harvester Parts that can be staked to this Harvester by a single `User`"
   maxPartsStakedPerUser: Int!
 
-  "Maximum number of Extractors that can be staked (10)"
+  "Maximum number of Extractors that can be staked"
   maxExtractorsStaked: Int!
 
-  "Maximum number of Legions that can be staked (2,400)"
+  "Maximum number of Legions that can be staked"
   maxLegionsStaked: Int!
 
-  "Maximum weight of Legions that can be staked to this Harvester by a single `User` (200)"
+  "Maximum weight of Legions that can be staked to this Harvester by a single `User`"
   maxLegionsWeightPerUser: BigInt!
 
-  "Maximum number of Treasures that can be staked to this Harvester by a single `User` (20)"
+  "Maximum number of Treasures that can be staked to this Harvester by a single `User`"
   maxTreasuresStakedPerUser: Int!
 
-  "Amount of MAGIC allocated for deposits with the staking of each Harvester Part (30,000)"
+  "Amount of MAGIC allocated for deposits with the staking of each Harvester Part"
   magicDepositAllocationPerPart: BigInt!
 
   "Amount of MAGIC deposited to this Harvester"

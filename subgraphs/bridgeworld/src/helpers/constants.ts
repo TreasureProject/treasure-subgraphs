@@ -1,3 +1,5 @@
+import { BigDecimal, BigInt } from "@graphprotocol/graph-ts";
+
 export const DIFFICULTY = ["Easy", "Medium", "Hard"];
 export const CONSUMABLE_IPFS =
   "ipfs://Qma82rv8QoVuBkWUcovNcDbxHFaCEGrNHr5XtmdvKE4W98/Consumables";
@@ -23,3 +25,7 @@ export const LOCK_PERIOD_IN_SECONDS = [
   SIX_MONTHS,
   TWELVE_MONTHS,
 ];
+
+export const ONE_WEI = BigDecimal.fromString((1e18).toString());
+export const ONE_BI = BigInt.fromI32(1);
+export const TWO_BI = BigInt.fromI32(2);

@@ -1,10 +1,12 @@
-import { Address, log } from "@graphprotocol/graph-ts";
+import { Address, BigInt, log } from "@graphprotocol/graph-ts";
 
+import { etherToWei } from "../../../bridgeworld-stats/src/helpers/number";
 import {
   Harvester,
   HarvesterNftHandler,
   HarvesterStakingRule,
 } from "../../generated/schema";
+import { ONE_BI, TWO_BI } from "./constants";
 
 const getHarvesterById = (id: string): Harvester | null => {
   const harvester = Harvester.load(id);
@@ -42,4 +44,16 @@ export const getHarvesterForStakingRule = (
   }
 
   return getHarvesterById(stakingRule.harvester);
+};
+
+export const calculateHarvesterPartsBoost = (harvester: Harvester): BigInt => {
+  // (1 + ((2n - n^2/maxParts)/maxParts) * partsBoostFactor)
+  const stakedAmount = etherToWei(harvester.partsStaked);
+  const maxStakedAmount = etherToWei(harvester.maxPartsStaked);
+  const boostNumerator = stakedAmount
+    .times(TWO_BI)
+    .minus(stakedAmount.pow(2).div(maxStakedAmount));
+  return etherToWei(1).plus(
+    boostNumerator.times(harvester.partsBoostFactor).div(maxStakedAmount)
+  );
 };
