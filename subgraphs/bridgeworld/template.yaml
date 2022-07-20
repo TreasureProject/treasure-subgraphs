@@ -19,7 +19,7 @@ dataSources:
         - UserToken
       abis:
         - name: AtlasMine
-          file: ../../node_modules/@treasure/subgraph-abis/src/AtlasMine.json
+          file: ./abis/AtlasMine.json
       eventHandlers:
         - event: Deposit(indexed address,indexed uint256,uint256,uint8)
           handler: handleDeposit
@@ -49,7 +49,7 @@ dataSources:
         - UserToken
       abis:
         - name: ERC1155
-          file: ../../node_modules/@treasure/subgraph-abis/src/1155.json
+          file: ./abis/1155.json
       eventHandlers:
         - event: ApprovalForAll(indexed address,indexed address,bool)
           handler: handleApprovalForAll
@@ -75,7 +75,7 @@ dataSources:
         - UserToken
       abis:
         - name: ERC1155
-          file: ../../node_modules/@treasure/subgraph-abis/src/1155.json
+          file: ./abis/1155.json
       eventHandlers:
         - event: ApprovalForAll(indexed address,indexed address,bool)
           handler: handleApprovalForAll
@@ -101,7 +101,7 @@ dataSources:
         - UserToken
       abis:
         - name: Crafting
-          file: ../../node_modules/@treasure/subgraph-abis/src/Crafting.json
+          file: ./abis/Crafting.json
       eventHandlers:
         - event: CraftingStarted(indexed address,indexed uint256,indexed uint256,uint256,uint256[],uint8[],uint8)
           handler: handleCraftingStartedWithDifficulty
@@ -127,7 +127,7 @@ dataSources:
         - UserToken
       abis:
         - name: Crafting
-          file: ../../node_modules/@treasure/subgraph-abis/src/CraftingLegacy.json
+          file: ./abis/CraftingLegacy.json
       eventHandlers:
         - event: CraftingStarted(indexed address,indexed uint256,indexed uint256,uint256,uint256[],uint8[])
           handler: handleCraftingStartedWithoutDifficulty
@@ -149,9 +149,8 @@ dataSources:
         - UserToken
       abis:
         - name: MiniCrafting
-          file: ../../node_modules/@treasure/subgraph-abis/src/MiniCrafting.json
+          file: ./abis/MiniCrafting.json
       eventHandlers:
-              # emit CraftingFinished(msg.sender, _craftTreasureParam.legionId, _fragmentInfo.tier, _tierInfo.craftingCPGained, _treasureIdToMint);
         - event: CraftingFinished(address,uint256,uint8,uint8,uint256)
           handler: handleCraftingFinished
       file: ./src/mappings/mini-crafting.ts
@@ -172,7 +171,7 @@ dataSources:
         - UserToken
       abis:
         - name: ERC721
-          file: ../../node_modules/@treasure/subgraph-abis/src/721.json
+          file: ./abis/721.json
       eventHandlers:
         - event: ApprovalForAll(indexed address,indexed address,bool)
           handler: handleApprovalForAll
@@ -196,7 +195,7 @@ dataSources:
         - UserToken
       abis:
         - name: LegionMetadataStore
-          file: ../../node_modules/@treasure/subgraph-abis/src/LegionMetadataStore.json
+          file: ./abis/LegionMetadataStore.json
       eventHandlers:
         - event: LegionConstellationRankUp(indexed uint256,indexed uint8,uint8)
           handler: handleLegionConstellationRankUp
@@ -224,7 +223,7 @@ dataSources:
         - UserToken
       abis:
         - name: ERC1155
-          file: ../../node_modules/@treasure/subgraph-abis/src/1155.json
+          file: ./abis/1155.json
       eventHandlers:
         - event: ApprovalForAll(indexed address,indexed address,bool)
           handler: handleApprovalForAll
@@ -250,7 +249,7 @@ dataSources:
         - UserToken
       abis:
         - name: ERC1155
-          file: ../../node_modules/@treasure/subgraph-abis/src/1155.json
+          file: ./abis/1155.json
       eventHandlers:
         - event: ApprovalForAll(indexed address,indexed address,bool)
           handler: handleApprovalForAll
@@ -276,7 +275,7 @@ dataSources:
         - UserApproval
       abis:
         - name: ERC20
-          file: ../../node_modules/@treasure/subgraph-abis/src/20.json
+          file: ./abis/20.json
       eventHandlers:
         - event: Approval(indexed address,indexed address,uint256)
           handler: handleApproval
@@ -299,9 +298,9 @@ dataSources:
         - UserToken
       abis:
         - name: Pilgrimage
-          file: ../../node_modules/@treasure/subgraph-abis/src/Pilgrimage.json
+          file: ./abis/Pilgrimage.json
         - name: ERC1155
-          file: ../../node_modules/@treasure/subgraph-abis/src/1155.json
+          file: ./abis/1155.json
       eventHandlers:
         - event: PilgrimagesStarted(indexed address,indexed address,indexed uint256,uint256[],uint256[],uint256[])
           handler: handlePilgrimagesStarted
@@ -327,7 +326,7 @@ dataSources:
         - UserToken
       abis:
         - name: Questing
-          file: ../../node_modules/@treasure/subgraph-abis/src/Questing.json
+          file: ./abis/Questing.json
       eventHandlers:
         - event: QuestStarted(indexed address,indexed uint256,indexed uint256,uint256,uint8)
           handler: handleQuestStartedWithDifficulty
@@ -355,7 +354,7 @@ dataSources:
         - UserToken
       abis:
         - name: Questing
-          file: ../../node_modules/@treasure/subgraph-abis/src/QuestingLegacy.json
+          file: ./abis/QuestingLegacy.json
       eventHandlers:
         - event: QuestStarted(indexed address,indexed uint256,indexed uint256,uint256)
           handler: handleQuestStartedWithoutDifficulty
@@ -378,11 +377,11 @@ dataSources:
         - UserToken
       abis:
         - name: Randomizer
-          file: ../../node_modules/@treasure/subgraph-abis/src/Randomizer.json
+          file: ./abis/Randomizer.json
         - name: Summoning
-          file: ../../node_modules/@treasure/subgraph-abis/src/Summoning.json
+          file: ./abis/Summoning.json
         - name: AdvancedQuesting
-          file: ../../node_modules/@treasure/subgraph-abis/src/AdvancedQuesting.json
+          file: ./abis/AdvancedQuesting.json
       eventHandlers:
         - event: RandomRequest(indexed uint256,indexed uint256)
           handler: handleRandomRequest
@@ -406,7 +405,7 @@ dataSources:
         - UserToken
       abis:
         - name: Summoning
-          file: ../../node_modules/@treasure/subgraph-abis/src/Summoning.json
+          file: ./abis/Summoning.json
       eventHandlers:
         - event: SummoningStarted(indexed address,indexed uint256,indexed uint256,uint256)
           handler: handleSummoningStarted
@@ -430,7 +429,7 @@ dataSources:
         - UserToken
       abis:
         - name: ERC1155
-          file: ../../node_modules/@treasure/subgraph-abis/src/1155.json
+          file: ./abis/1155.json
       eventHandlers:
         - event: ApprovalForAll(indexed address,indexed address,bool)
           handler: handleApprovalForAll
@@ -456,7 +455,7 @@ dataSources:
         - UserToken
       abis:
         - name: ERC1155
-          file: ../../node_modules/@treasure/subgraph-abis/src/1155.json
+          file: ./abis/1155.json
       eventHandlers:
         - event: ApprovalForAll(indexed address,indexed address,bool)
           handler: handleApprovalForAll
@@ -482,7 +481,7 @@ dataSources:
         - UserToken
       abis:
         - name: AdvancedQuesting
-          file: ../../node_modules/@treasure/subgraph-abis/src/AdvancedQuesting.json
+          file: ./abis/AdvancedQuesting.json
       eventHandlers:
         - event: AdvancedQuestStarted(address,uint256,(uint256,string,uint8,uint256[],uint256[]))
           handler: handleAdvancedQuestStarted
@@ -512,7 +511,7 @@ dataSources:
         - UserToken
       abis:
         - name: TreasureTriad
-          file: ../../node_modules/@treasure/subgraph-abis/src/TreasureTriad.json
+          file: ./abis/TreasureTriad.json
       eventHandlers:
         - event: TreasureCardInfoSet(uint256,(uint8,uint8,uint8,uint8,uint8))
           handler: handleTreasureCardInfoSet
@@ -533,7 +532,7 @@ dataSources:
         - HarvesterNftHandler
       abis:
         - name: HarvesterFactory
-          file: ../../node_modules/@treasure/subgraph-abis/src/HarvesterFactory.json
+          file: ./abis/HarvesterFactory.json
       eventHandlers:
         - event: HarvesterDeployed(address,address)
           handler: handleHarvesterDeployed
@@ -552,7 +551,7 @@ templates:
         - Harvester
       abis:
         - name: Harvester
-          file: ../../node_modules/@treasure/subgraph-abis/src/Harvester.json
+          file: ./abis/Harvester.json
       eventHandlers:
         - event: Deposit(indexed address,indexed uint256,uint256,uint256)
           handler: handleMagicDeposited
@@ -574,7 +573,7 @@ templates:
         - HarvesterNftHandler
       abis:
         - name: NftHandler
-          file: ../../node_modules/@treasure/subgraph-abis/src/NftHandler.json
+          file: ./abis/NftHandler.json
       eventHandlers:
         - event: Replaced(indexed address,uint256,uint256,uint256)
           handler: handleExtractorReplaced
@@ -596,10 +595,12 @@ templates:
         - Harvester
       abis:
         - name: Harvester
-          file: ../../node_modules/@treasure/subgraph-abis/src/Harvester.json
+          file: ./abis/Harvester.json
       eventHandlers:
         - event: TotalDepositCap(uint256)
           handler: handleUpdatedMagicTotalDepositCap
+        - event: DepositCapPerWallet((address,uint256,uint256))
+          handler: handleUpdatedPartsDepositCap
       file: ./src/mappings/harvester-config.ts
   - name: NftHandlerConfig
     kind: ethereum/contract
@@ -614,9 +615,17 @@ templates:
         - HarvesterNftHandler
       abis:
         - name: NftHandler
-          file: ../../node_modules/@treasure/subgraph-abis/src/NftHandler.json
+          file: ./abis/NftHandler.json
+        - name: PartsStakingRules
+          file: ./abis/PartsStakingRules.json
+        - name: ExtractorsStakingRules
+          file: ./abis/ExtractorStakingRules.json
+        - name: LegionsStakingRules
+          file: ./abis/LegionStakingRules.json
+        - name: TreasuresStakingRules
+          file: ./abis/TreasureStakingRules.json
       eventHandlers:
-        - event: NftConfigSet(indexed address,(uint8,address))
+        - event: NftConfigSet(indexed address,indexed uint256,(uint8,address))
           handler: handleNftConfigSet
       file: ./src/mappings/harvester-config.ts
   - name: PartsStakingRules
@@ -632,7 +641,7 @@ templates:
         - HarvesterStakingRule
       abis:
         - name: PartsStakingRules
-          file: ../../node_modules/@treasure/subgraph-abis/src/PartsStakingRules.json
+          file: ./abis/PartsStakingRules.json
       eventHandlers:
         - event: BoostFactor(uint256)
           handler: handleUpdatedPartsBoostFactor
@@ -654,7 +663,7 @@ templates:
         - HarvesterStakingRule
       abis:
         - name: ExtractorsStakingRules
-          file: ../../node_modules/@treasure/subgraph-abis/src/ExtractorStakingRules.json
+          file: ./abis/ExtractorStakingRules.json
       eventHandlers:
         - event: Lifetime(uint256)
           handler: handleUpdatedExtractorsLifetime
@@ -674,7 +683,7 @@ templates:
         - HarvesterStakingRule
       abis:
         - name: LegionsStakingRules
-          file: ../../node_modules/@treasure/subgraph-abis/src/LegionStakingRules.json
+          file: ./abis/LegionStakingRules.json
       eventHandlers:
         # - event: BoostFactor(uint256)
         #   handler: handleUpdatedLegionsBoostFactor
@@ -702,7 +711,7 @@ templates:
         - HarvesterStakingRule
       abis:
         - name: TreasuresStakingRules
-          file: ../../node_modules/@treasure/subgraph-abis/src/TreasureStakingRules.json
+          file: ./abis/TreasureStakingRules.json
       eventHandlers:
         - event: MaxStakeablePerUser(uint256)
           handler: handleUpdatedTreasuresMaxStakeablePerUser

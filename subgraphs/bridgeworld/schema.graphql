@@ -453,7 +453,7 @@ type Harvester @entity {
   maxLegionsStaked: Int!
 
   "Maximum weight of Legions that can be staked to this Harvester by a single `User` (200)"
-  maxLegionsWeightPerUser: Int!
+  maxLegionsWeightPerUser: BigInt!
 
   "Maximum number of Treasures that can be staked to this Harvester by a single `User` (20)"
   maxTreasuresStakedPerUser: Int!

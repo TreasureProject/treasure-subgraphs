@@ -1,4 +1,4 @@
-import { log } from "@graphprotocol/graph-ts";
+import { Address, BigInt, log } from "@graphprotocol/graph-ts";
 
 import {
   CONSUMABLE_ADDRESS,
@@ -6,28 +6,39 @@ import {
   TREASURE_ADDRESS,
 } from "@treasure/constants";
 
+import { Harvester, HarvesterStakingRule } from "../../generated/schema";
 import {
-  HarvesterNftHandler,
-  HarvesterStakingRule,
-} from "../../generated/schema";
-import {
+  ExtractorsStakingRules,
   LegionsStakingRules,
   PartsStakingRules,
   TreasuresStakingRules,
 } from "../../generated/templates";
 import {
+  ExtractorsStakingRules as ExtractorsStakingRulesContract,
   Lifetime,
   MaxStakeable,
 } from "../../generated/templates/ExtractorsStakingRules/ExtractorsStakingRules";
-import { TotalDepositCap } from "../../generated/templates/HarvesterConfig/Harvester";
-import { MaxWeight } from "../../generated/templates/LegionsStakingRules/LegionsStakingRules";
+import {
+  DepositCapPerWallet,
+  TotalDepositCap,
+} from "../../generated/templates/HarvesterConfig/Harvester";
+import {
+  LegionsStakingRules as LegionsStakingRulesContract,
+  MaxWeight,
+} from "../../generated/templates/LegionsStakingRules/LegionsStakingRules";
 import { NftConfigSet } from "../../generated/templates/NftHandler/NftHandler";
 import {
   BoostFactor,
   MaxStakeablePerUser,
   MaxStakeableTotal,
+  PartsStakingRules as PartsStakingRulesContract,
 } from "../../generated/templates/PartsStakingRules/PartsStakingRules";
-import { getHarvester, getHarvesterForStakingRule } from "../helpers/harvester";
+import { TreasuresStakingRules as TreasuresStakingRulesContract } from "../../generated/templates/TreasuresStakingRules/TreasuresStakingRules";
+import {
+  getHarvester,
+  getHarvesterForNftHandler,
+  getHarvesterForStakingRule,
+} from "../helpers/harvester";
 
 export function handleUpdatedMagicTotalDepositCap(
   event: TotalDepositCap
@@ -38,15 +49,24 @@ export function handleUpdatedMagicTotalDepositCap(
   }
 
   harvester.maxMagicDeposited = event.params.totalDepositCap;
+  harvester.save();
+}
+
+export function handleUpdatedPartsDepositCap(event: DepositCapPerWallet): void {
+  const harvester = getHarvester(event.address);
+  if (!harvester) {
+    return;
+  }
+
+  harvester.magicDepositAllocationPerPart =
+    event.params.depositCapPerWallet.capPerPart;
+  harvester.save();
 }
 
 export function handleNftConfigSet(event: NftConfigSet): void {
-  // Load associated NftHandler
-  const nftHandler = HarvesterNftHandler.load(event.address.toHexString());
-  if (!nftHandler) {
-    log.error("NFT config set on unknown NFT handler: {}", [
-      event.address.toHexString(),
-    ]);
+  // Load associated Harvester
+  const harvester = getHarvesterForNftHandler(event.address);
+  if (!harvester) {
     return;
   }
 
@@ -57,19 +77,136 @@ export function handleNftConfigSet(event: NftConfigSet): void {
   const stakingRule = new HarvesterStakingRule(
     stakingRulesAddress.toHexString()
   );
-  stakingRule.harvester = nftHandler.harvester;
+  stakingRule.harvester = harvester.id;
   stakingRule.save();
 
+  const nftAddress = params._nft;
+
   // Determine the type of StakingRule and start listening for events at this address
-  if (params._nft.equals(CONSUMABLE_ADDRESS)) {
-    // TODO: Swap to consumables staking rules when ABI is available
-    PartsStakingRules.create(stakingRulesAddress);
-  } else if (params._nft.equals(LEGION_ADDRESS)) {
+  // Pull initial rules from the contract because we weren't listening for init events
+  if (nftAddress.equals(CONSUMABLE_ADDRESS)) {
+    // Check Consumable token ID
+    if (params._tokenId.equals(BigInt.fromI32(7))) {
+      PartsStakingRules.create(stakingRulesAddress);
+      processPartsStakingRules(stakingRulesAddress, harvester);
+    } else {
+      ExtractorsStakingRules.create(stakingRulesAddress);
+      processExtractorsStakingRules(stakingRulesAddress, harvester);
+    }
+  } else if (nftAddress.equals(LEGION_ADDRESS)) {
     LegionsStakingRules.create(stakingRulesAddress);
-  } else if (params._nft.equals(TREASURE_ADDRESS)) {
+    processLegionsStakingRules(stakingRulesAddress, harvester);
+  } else if (nftAddress.equals(TREASURE_ADDRESS)) {
     TreasuresStakingRules.create(stakingRulesAddress);
+    processTreasuresStakingRules(stakingRulesAddress, harvester);
   }
+
+  harvester.save();
 }
+
+const processPartsStakingRules = (
+  address: Address,
+  harvester: Harvester
+): void => {
+  const contract = PartsStakingRulesContract.bind(address);
+
+  let result = contract.try_boostFactor();
+  if (!result.reverted) {
+    harvester.partsBoostFactor = result.value;
+  } else {
+    log.error("Error fetching Parts boost factor: {}", [address.toHexString()]);
+  }
+
+  result = contract.try_maxStakeablePerUser();
+  if (!result.reverted) {
+    harvester.maxPartsStakedPerUser = result.value.toI32();
+  } else {
+    log.error("Error fetching Parts max stakeable per user: {}", [
+      address.toHexString(),
+    ]);
+  }
+
+  result = contract.try_maxStakeableTotal();
+  if (!result.reverted) {
+    harvester.maxPartsStaked = result.value.toI32();
+  } else {
+    log.error("Error fetching Parts max stakeable: {}", [
+      address.toHexString(),
+    ]);
+  }
+
+  harvester.save();
+};
+
+const processExtractorsStakingRules = (
+  address: Address,
+  harvester: Harvester
+): void => {
+  const contract = ExtractorsStakingRulesContract.bind(address);
+
+  let result = contract.try_lifetime();
+  if (!result.reverted) {
+    harvester.extractorsLifetime = result.value;
+  } else {
+    log.error("Error fetching Extractors lifetime: {}", [
+      address.toHexString(),
+    ]);
+  }
+
+  result = contract.try_maxStakeable();
+  if (!result.reverted) {
+    harvester.maxExtractorsStaked = result.value.toI32();
+  } else {
+    log.error("Error fetching Extractors max stakeable: {}", [
+      address.toHexString(),
+    ]);
+  }
+
+  harvester.save();
+};
+
+const processLegionsStakingRules = (
+  address: Address,
+  harvester: Harvester
+): void => {
+  const contract = LegionsStakingRulesContract.bind(address);
+
+  let result = contract.try_maxStakeableTotal();
+  if (!result.reverted) {
+    harvester.maxLegionsStaked = result.value.toI32();
+  } else {
+    log.error("Error fetching Legions max stakeable: {}", [
+      address.toHexString(),
+    ]);
+  }
+
+  result = contract.try_maxLegionWeight();
+  if (!result.reverted) {
+    harvester.maxLegionsWeightPerUser = result.value;
+  } else {
+    log.error("Error fetching Legions max weight: {}", [address.toHexString()]);
+  }
+
+  harvester.save();
+};
+
+const processTreasuresStakingRules = (
+  address: Address,
+  harvester: Harvester
+): void => {
+  const contract = TreasuresStakingRulesContract.bind(address);
+
+  let result = contract.try_maxStakeablePerUser();
+  if (!result.reverted) {
+    harvester.maxTreasuresStakedPerUser = result.value.toI32();
+  } else {
+    log.error("Error fetching Treasures max stakeable: {}", [
+      address.toHexString(),
+    ]);
+  }
+
+  harvester.save();
+};
 
 export function handleUpdatedPartsBoostFactor(event: BoostFactor): void {
   const harvester = getHarvesterForStakingRule(event.address);
@@ -78,6 +215,7 @@ export function handleUpdatedPartsBoostFactor(event: BoostFactor): void {
   }
 
   harvester.partsBoostFactor = event.params.boostFactor;
+  harvester.save();
 }
 
 export function handleUpdatedPartsMaxStakeablePerUser(
@@ -89,6 +227,7 @@ export function handleUpdatedPartsMaxStakeablePerUser(
   }
 
   harvester.maxPartsStakedPerUser = event.params.maxStakeablePerUser.toI32();
+  harvester.save();
 }
 
 export function handleUpdatedPartsStakeableTotal(
@@ -100,6 +239,7 @@ export function handleUpdatedPartsStakeableTotal(
   }
 
   harvester.maxPartsStaked = event.params.maxStakeableTotal.toI32();
+  harvester.save();
 }
 
 export function handleUpdatedExtractorsLifetime(event: Lifetime): void {
@@ -109,6 +249,7 @@ export function handleUpdatedExtractorsLifetime(event: Lifetime): void {
   }
 
   harvester.extractorsLifetime = event.params.lifetime;
+  harvester.save();
 }
 
 export function handleUpdatedExtractorsMaxStakeable(event: MaxStakeable): void {
@@ -118,6 +259,7 @@ export function handleUpdatedExtractorsMaxStakeable(event: MaxStakeable): void {
   }
 
   harvester.maxExtractorsStaked = event.params.maxStakeable.toI32();
+  harvester.save();
 }
 
 export function handleUpdatedLegionsMaxStakeableTotal(
@@ -129,6 +271,7 @@ export function handleUpdatedLegionsMaxStakeableTotal(
   }
 
   harvester.maxLegionsStaked = event.params.maxStakeableTotal.toI32();
+  harvester.save();
 }
 
 export function handleUpdatedLegionsMaxWeight(event: MaxWeight): void {
@@ -137,7 +280,8 @@ export function handleUpdatedLegionsMaxWeight(event: MaxWeight): void {
     return;
   }
 
-  harvester.maxLegionsWeightPerUser = event.params.maxLegionWeight.toI32();
+  harvester.maxLegionsWeightPerUser = event.params.maxLegionWeight;
+  harvester.save();
 }
 
 export function handleUpdatedTreasuresMaxStakeablePerUser(
@@ -150,4 +294,5 @@ export function handleUpdatedTreasuresMaxStakeablePerUser(
 
   harvester.maxTreasuresStakedPerUser =
     event.params.maxStakeablePerUser.toI32();
+  harvester.save();
 }

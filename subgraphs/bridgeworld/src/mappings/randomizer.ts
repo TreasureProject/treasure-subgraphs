@@ -1,12 +1,7 @@
 import { BigInt, log } from "@graphprotocol/graph-ts";
 
-import {
-  ADVANCED_QUESTING_ADDRESS,
-  LEGION_ADDRESS,
-  SUMMONING_ADDRESS,
-} from "@treasure/constants";
+import { SUMMONING_ADDRESS } from "@treasure/constants";
 
-import { AdvancedQuesting } from "../../generated/Advanced Questing/AdvancedQuesting";
 import {
   RandomRequest,
   RandomSeeded,
@@ -21,7 +16,7 @@ import {
   Summon,
   Token,
 } from "../../generated/schema";
-import { checkSummonFatigue, getAddressId } from "../helpers";
+import { checkSummonFatigue } from "../helpers";
 import { setQuestEndTime } from "../helpers/advanced-questing";
 
 function toI32(value: string): i32 {
@@ -34,7 +29,7 @@ export function handleRandomRequest(event: RandomRequest): void {
   let requestId = params._requestId.toHexString();
 
   let random = new Random(requestId);
-
+  random.requestId = params._requestId;
   random.seeded = commitId;
   random.save();
 
