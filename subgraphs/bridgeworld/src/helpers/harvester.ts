@@ -47,13 +47,12 @@ export const getHarvesterForStakingRule = (
 };
 
 export const calculateHarvesterPartsBoost = (harvester: Harvester): BigInt => {
-  // (1 + ((2n - n^2/maxParts)/maxParts) * partsBoostFactor)
+  // (2n - n^2/maxParts)/maxParts) * partsBoostFactor
   const stakedAmount = etherToWei(harvester.partsStaked);
   const maxStakedAmount = etherToWei(harvester.maxPartsStaked);
-  const boostNumerator = stakedAmount
+  return stakedAmount
     .times(TWO_BI)
-    .minus(stakedAmount.pow(2).div(maxStakedAmount));
-  return etherToWei(1).plus(
-    boostNumerator.times(harvester.partsBoostFactor).div(maxStakedAmount)
-  );
+    .minus(stakedAmount.pow(2).div(maxStakedAmount))
+    .times(harvester.partsBoostFactor)
+    .div(maxStakedAmount);
 };

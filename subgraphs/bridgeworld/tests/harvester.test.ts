@@ -11,7 +11,7 @@ test("parts boost is calculated", () => {
   harvester.partsBoostFactor = BigInt.fromString("500000000000000000");
   harvester.partsStaked = 200;
   assert.bigIntEquals(
-    BigInt.fromString("1218750000000000000"),
+    BigInt.fromString("218750000000000000"),
     calculateHarvesterPartsBoost(harvester)
   );
 
@@ -20,7 +20,7 @@ test("parts boost is calculated", () => {
   harvester.partsBoostFactor = BigInt.fromString("500000000000000000");
   harvester.partsStaked = 800;
   assert.bigIntEquals(
-    BigInt.fromString("1500000000000000000"),
+    BigInt.fromString("500000000000000000"),
     calculateHarvesterPartsBoost(harvester)
   );
 });
