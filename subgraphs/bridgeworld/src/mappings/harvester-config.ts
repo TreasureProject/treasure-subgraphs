@@ -6,7 +6,7 @@ import {
   TREASURE_ADDRESS,
 } from "@treasure/constants";
 
-import { Harvester, HarvesterStakingRule } from "../../generated/schema";
+import { Harvester, HarvesterStakingRule, Token } from "../../generated/schema";
 import {
   ExtractorsStakingRules,
   LegionsStakingRules,
@@ -14,6 +14,7 @@ import {
   TreasuresStakingRules,
 } from "../../generated/templates";
 import {
+  ExtractorBoost,
   ExtractorsStakingRules as ExtractorsStakingRulesContract,
   Lifetime,
   MaxStakeable,
@@ -34,10 +35,12 @@ import {
   PartsStakingRules as PartsStakingRulesContract,
 } from "../../generated/templates/PartsStakingRules/PartsStakingRules";
 import { TreasuresStakingRules as TreasuresStakingRulesContract } from "../../generated/templates/TreasuresStakingRules/TreasuresStakingRules";
+import { getAddressId } from "../helpers";
 import {
   getHarvester,
   getHarvesterForNftHandler,
   getHarvesterForStakingRule,
+  getOrCreateHarvesterTokenBoost,
 } from "../helpers/harvester";
 
 export function handleUpdatedMagicTotalDepositCap(
@@ -162,6 +165,28 @@ const processExtractorsStakingRules = (
     ]);
   }
 
+  for (let i = 4; i <= 6; i++) {
+    const token = Token.load(
+      getAddressId(CONSUMABLE_ADDRESS, BigInt.fromI32(i))
+    );
+    if (!token) {
+      log.error("Error fetching Extractor token: {}", [i.toString()]);
+      continue;
+    }
+
+    result = contract.try_extractorBoost(BigInt.fromI32(i));
+    if (!result.reverted) {
+      const tokenBoost = getOrCreateHarvesterTokenBoost(harvester, token);
+      tokenBoost.boost = result.value;
+      tokenBoost.save();
+    } else {
+      log.error("Error fetching Extractor boost: {}, {}", [
+        i.toString(),
+        address.toHexString(),
+      ]);
+    }
+  }
+
   harvester.save();
 };
 
@@ -260,6 +285,29 @@ export function handleUpdatedExtractorsMaxStakeable(event: MaxStakeable): void {
 
   harvester.maxExtractorsStaked = event.params.maxStakeable.toI32();
   harvester.save();
+}
+
+export function handleUpdatedExtractorsBoost(event: ExtractorBoost): void {
+  const harvester = getHarvesterForStakingRule(event.address);
+  if (!harvester) {
+    return;
+  }
+
+  const params = event.params;
+
+  const token = Token.load(getAddressId(CONSUMABLE_ADDRESS, params.tokenId));
+  if (!token) {
+    log.error("Error fetching Extractor token: {}", [
+      params.tokenId.toString(),
+    ]);
+    return;
+  }
+
+  const tokenBoost = getOrCreateHarvesterTokenBoost(harvester, token);
+  tokenBoost.boost = params.boost;
+  tokenBoost.save();
+
+  // TODO: Re-calculate Harvester extractors boost?
 }
 
 export function handleUpdatedLegionsMaxStakeableTotal(

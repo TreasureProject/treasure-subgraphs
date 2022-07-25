@@ -5,8 +5,10 @@ import {
   Harvester,
   HarvesterNftHandler,
   HarvesterStakingRule,
+  HarvesterTokenBoost,
+  Token,
 } from "../../generated/schema";
-import { ONE_BI, TWO_BI } from "./constants";
+import { TWO_BI } from "./constants";
 
 const getHarvesterById = (id: string): Harvester | null => {
   const harvester = Harvester.load(id);
@@ -55,4 +57,19 @@ export const calculateHarvesterPartsBoost = (harvester: Harvester): BigInt => {
     .minus(stakedAmount.pow(2).div(maxStakedAmount))
     .times(harvester.partsBoostFactor)
     .div(maxStakedAmount);
+};
+
+export const getOrCreateHarvesterTokenBoost = (
+  harvester: Harvester,
+  token: Token
+): HarvesterTokenBoost => {
+  const tokenBoostId = `${harvester.id}-${token.id}`;
+  let tokenBoost = HarvesterTokenBoost.load(tokenBoostId);
+  if (!tokenBoost) {
+    tokenBoost = new HarvesterTokenBoost(tokenBoostId);
+    tokenBoost.token = token.id;
+    tokenBoost.save();
+  }
+
+  return tokenBoost;
 };

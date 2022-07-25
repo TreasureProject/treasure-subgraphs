@@ -77,12 +77,6 @@ type ConsumableInfo implements Metadata @entity {
 
   type: String!
   size: Size
-
-  "Boost value when added to a Harvester"
-  harvestersBoost: Int!
-
-  "Duration, in seconds, of Consumable's lifespan when added to a Harvester"
-  harvestersLifespanSeconds: Int!
 }
 
 type LegionInfo implements Metadata @entity {
@@ -500,6 +494,9 @@ type Harvester @entity {
   "Percentage of emissions Harvester is earning based on capacity utilization"
   emissionsActivated: Int!
 
+  "Boost values for tokens when added to this Harvester"
+  tokenBoosts: [HarvesterTokenBoost!]! @derivedFrom(field: "harvester")
+
   "All tokens staked to this Harvester"
   stakedTokens: [StakedToken!]! @derivedFrom(field: "harvester")
 
@@ -513,11 +510,26 @@ type Harvester @entity {
 type HarvesterNftHandler @entity {
   id: ID!
 
+  "Harvester associated with this NftHandler"
   harvester: Harvester!
 }
 
 type HarvesterStakingRule @entity {
   id: ID!
 
+  "Harvester associated with this StakingRule"
   harvester: Harvester!
+}
+
+type HarvesterTokenBoost @entity {
+  id: ID!
+
+  "Harvester associated with this boost"
+  harvester: Harvester!
+
+  "Token associated with this boost"
+  token: Token!
+
+  "Boost value of the token when added to the associated Harvester"
+  boost: BigInt!
 }
