@@ -340,6 +340,12 @@ type StakedToken @entity {
 
   "Quantity of Token that was staked"
   quantity: BigInt!
+
+  "Order of the staked token, if applicable"
+  index: Int
+
+  "Timestamp, in seconds, when the effects of this staked token expire, if applicable"
+  expirationTime: BigInt
 }
 
 type Summon @entity {

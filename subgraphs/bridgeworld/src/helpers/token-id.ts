@@ -7,6 +7,11 @@ const TREASURE_IDS: number[] = [
 ];
 
 export const HARVESTER_PART_TOKEN_ID = BigInt.fromI32(7);
+export const HARVESTER_EXTRACTOR_TOKEN_IDS: BigInt[] = [
+  BigInt.fromI32(4),
+  BigInt.fromI32(5),
+  BigInt.fromI32(6),
+];
 
 function isTreasure(tokenId: number): bool {
   return TREASURE_IDS.includes(tokenId);

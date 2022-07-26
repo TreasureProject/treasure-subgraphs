@@ -1,4 +1,4 @@
-import { BigInt, log, store } from "@graphprotocol/graph-ts";
+import { Address, BigInt, log, store } from "@graphprotocol/graph-ts";
 
 import { CONSUMABLE_ADDRESS, LEGION_ADDRESS } from "@treasure/constants";
 
@@ -18,16 +18,20 @@ import {
   NftHandlerConfig,
 } from "../../generated/templates";
 import {
+  ExtractorReplaced,
+  ExtractorStaked,
+} from "../../generated/templates/ExtractorsStakingRules/ExtractorsStakingRules";
+import {
   Deposit as DepositEvent,
   Harvest as HarvestEvent,
   Withdraw as WithdrawEvent,
 } from "../../generated/templates/Harvester/Harvester";
 import {
-  Replaced,
   Staked,
   Unstaked,
 } from "../../generated/templates/NftHandler/NftHandler";
 import {
+  HARVESTER_EXTRACTOR_TOKEN_IDS,
   HARVESTER_PART_TOKEN_ID,
   LOCK_PERIOD_IN_SECONDS,
   getAddressId,
@@ -37,6 +41,7 @@ import {
   calculateHarvesterPartsBoost,
   getHarvester,
   getHarvesterForNftHandler,
+  getHarvesterForStakingRule,
 } from "../helpers/harvester";
 import { getLegionMetadata } from "../helpers/legion";
 
@@ -64,43 +69,60 @@ export function handleHarvesterDeployed(event: HarvesterDeployed): void {
   NftHandler.create(nftHandlerAddress);
 }
 
+const handleTokenStaked = (
+  harvester: Harvester,
+  userAddress: Address,
+  nftAddress: Address,
+  tokenId: BigInt,
+  amount: BigInt
+): StakedToken => {
+  const stakedTokenId = `${
+    harvester.id
+  }-${userAddress.toHexString()}-${getAddressId(nftAddress, tokenId)}`;
+  let stakedToken = StakedToken.load(stakedTokenId);
+  if (!stakedToken) {
+    stakedToken = new StakedToken(stakedTokenId);
+    stakedToken.user = userAddress.toHexString();
+    stakedToken.token = getAddressId(nftAddress, tokenId);
+    stakedToken.harvester = harvester.id;
+  }
+
+  stakedToken.quantity = stakedToken.quantity.plus(amount);
+  return stakedToken;
+};
+
 export function handleNftStaked(event: Staked): void {
+  const params = event.params;
+  const nftAddress = params.nft;
+  const tokenId = params.tokenId;
+  const isConsumable = nftAddress.equals(CONSUMABLE_ADDRESS);
+  if (isConsumable && HARVESTER_EXTRACTOR_TOKEN_IDS.includes(tokenId)) {
+    // Extractors will be handled separately because they require the spotId param
+    return;
+  }
+
   const harvester = getHarvesterForNftHandler(event.address);
   if (!harvester) {
     return;
   }
 
-  const userAddress = event.transaction.from;
-  const params = event.params;
-  const nftAddress = params.nft;
-
-  const stakedTokenId = `${
-    harvester.id
-  }-${userAddress.toHexString()}-${getAddressId(nftAddress, params.tokenId)}`;
-  let stakedToken = StakedToken.load(stakedTokenId);
-  if (!stakedToken) {
-    stakedToken = new StakedToken(stakedTokenId);
-    stakedToken.user = userAddress.toHexString();
-    stakedToken.token = getAddressId(nftAddress, params.tokenId);
-    stakedToken.harvester = harvester.id;
-  }
-
-  stakedToken.quantity = stakedToken.quantity.plus(params.amount);
+  const stakedToken = handleTokenStaked(
+    harvester,
+    event.transaction.from,
+    nftAddress,
+    tokenId,
+    params.amount
+  );
   stakedToken.save();
 
   const amount = params.amount.toI32();
-  if (nftAddress.equals(CONSUMABLE_ADDRESS)) {
-    // Check Consumable token ID
-    if (params.tokenId.equals(HARVESTER_PART_TOKEN_ID)) {
-      harvester.partsStaked += amount;
-      harvester.partsBoost = calculateHarvesterPartsBoost(harvester);
-    } else {
-      harvester.extractorsStaked += amount;
-    }
+  if (isConsumable && tokenId.equals(HARVESTER_PART_TOKEN_ID)) {
+    harvester.partsStaked += amount;
+    harvester.partsBoost = calculateHarvesterPartsBoost(harvester);
   } else if (nftAddress.equals(LEGION_ADDRESS)) {
     harvester.legionsStaked += amount;
 
-    const metadata = getLegionMetadata(params.tokenId);
+    const metadata = getLegionMetadata(tokenId);
     harvester.legionsTotalRank = harvester.legionsTotalRank.plus(
       metadata.harvestersRank.times(params.amount)
     );
@@ -137,14 +159,13 @@ export function handleNftUnstaked(event: Unstaked): void {
   }
 
   const amount = params.amount.toI32();
-  if (nftAddress.equals(CONSUMABLE_ADDRESS)) {
-    // Check Consumable token ID
-    if (params.tokenId.equals(HARVESTER_PART_TOKEN_ID)) {
-      harvester.partsStaked -= amount;
-      harvester.partsBoost = calculateHarvesterPartsBoost(harvester);
-    } else {
-      harvester.extractorsStaked -= amount;
-    }
+  if (
+    nftAddress.equals(CONSUMABLE_ADDRESS) &&
+    params.tokenId.equals(HARVESTER_PART_TOKEN_ID)
+  ) {
+    // Extractors cannot be unstaked
+    harvester.partsStaked -= amount;
+    harvester.partsBoost = calculateHarvesterPartsBoost(harvester);
   } else if (nftAddress.equals(LEGION_ADDRESS)) {
     harvester.legionsStaked -= amount;
 
@@ -158,7 +179,32 @@ export function handleNftUnstaked(event: Unstaked): void {
   harvester.save();
 }
 
-export function handleExtractorReplaced(event: Replaced): void {
+export function handleExtractorStaked(event: ExtractorStaked): void {
+  const harvester = getHarvesterForStakingRule(event.address);
+  if (!harvester) {
+    return;
+  }
+
+  const params = event.params;
+  const tokenId = params.tokenId;
+  const stakedToken = handleTokenStaked(
+    harvester,
+    event.transaction.from,
+    CONSUMABLE_ADDRESS,
+    tokenId,
+    params.amount
+  );
+  stakedToken.expirationTime = event.block.timestamp.plus(
+    harvester.extractorsLifetime
+  );
+  stakedToken.index = params.spotId.toI32();
+  stakedToken.save();
+
+  harvester.extractorsStaked += params.amount.toI32();
+  harvester.save();
+}
+
+export function handleExtractorReplaced(event: ExtractorReplaced): void {
   const harvester = getHarvesterForNftHandler(event.address);
   if (!harvester) {
     return;

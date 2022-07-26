@@ -575,12 +575,30 @@ templates:
         - name: NftHandler
           file: ./abis/NftHandler.json
       eventHandlers:
-        - event: Replaced(indexed address,uint256,uint256,uint256)
-          handler: handleExtractorReplaced
         - event: Staked(indexed address,uint256,uint256)
           handler: handleNftStaked
         - event: Unstaked(indexed address,uint256,uint256)
           handler: handleNftUnstaked
+      file: ./src/mappings/harvester.ts
+  - name: ExtractorsStakingRules
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      abi: ExtractorsStakingRules
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - HarvesterStakingRule
+      abis:
+        - name: ExtractorsStakingRules
+          file: ./abis/ExtractorStakingRules.json
+      eventHandlers:
+        - event: ExtractorReplaced(uint256,uint256)
+          handler: handleExtractorReplaced
+        - event: ExtractorStaked(uint256,uint256,uint256)
+          handler: handleExtractorStaked
       file: ./src/mappings/harvester.ts
   - name: HarvesterConfig
     kind: ethereum/contract
@@ -650,7 +668,7 @@ templates:
         - event: MaxStakeableTotal(uint256)
           handler: handleUpdatedPartsStakeableTotal
       file: ./src/mappings/harvester-config.ts
-  - name: ExtractorsStakingRules
+  - name: ExtractorsStakingRulesConfig
     kind: ethereum/contract
     network: {{ network }}
     source:

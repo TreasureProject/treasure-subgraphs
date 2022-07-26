@@ -18,7 +18,7 @@ import {
   ExtractorsStakingRules as ExtractorsStakingRulesContract,
   Lifetime,
   MaxStakeable,
-} from "../../generated/templates/ExtractorsStakingRules/ExtractorsStakingRules";
+} from "../../generated/templates/ExtractorsStakingRulesConfig/ExtractorsStakingRules";
 import {
   DepositCapPerWallet,
   TotalDepositCap,
