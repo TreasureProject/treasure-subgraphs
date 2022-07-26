@@ -669,6 +669,8 @@ templates:
           handler: handleUpdatedExtractorsLifetime
         - event: MaxStakeable(uint256)
           handler: handleUpdatedExtractorsMaxStakeable
+        - event: ExtractorBoost(uint256,uint256)
+          handler: handleUpdatedExtractorsBoost
       file: ./src/mappings/harvester-config.ts
   - name: LegionsStakingRules
     kind: ethereum/contract
