@@ -187,7 +187,7 @@ type Harvest @entity {
 
   "Associated `Harvester`, if applicable"
   harvester: Harvester
-  
+
   "`User` who initiated with the harvest"
   user: User!
 }
@@ -499,10 +499,7 @@ type Harvester @entity {
   extractorsBoost: BigInt!
 
   "Total rank value of Legions staked to this Harvester"
-  legionsTotalRank: Int!
-
-  "Rank boost value of staked Legions (0.9 + avgLegionRank/10)"
-  legionsRankBoost: BigInt!
+  legionsTotalRank: BigInt!
 
   "Boost value of staked Legions (1 + ((2n - n^2/maxLegions)/maxLegions) * legionsRankBoost)"
   legionsBoost: BigInt!

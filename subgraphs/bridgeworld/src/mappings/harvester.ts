@@ -1,10 +1,6 @@
 import { BigInt, log, store } from "@graphprotocol/graph-ts";
 
-import {
-  CONSUMABLE_ADDRESS,
-  LEGION_ADDRESS,
-  TREASURE_ADDRESS,
-} from "@treasure/constants";
+import { CONSUMABLE_ADDRESS, LEGION_ADDRESS } from "@treasure/constants";
 
 import { HarvesterDeployed } from "../../generated/Harvester Factory/HarvesterFactory";
 import {
@@ -31,12 +27,18 @@ import {
   Staked,
   Unstaked,
 } from "../../generated/templates/NftHandler/NftHandler";
-import { LOCK_PERIOD_IN_SECONDS, getAddressId } from "../helpers";
 import {
+  HARVESTER_PART_TOKEN_ID,
+  LOCK_PERIOD_IN_SECONDS,
+  getAddressId,
+} from "../helpers";
+import {
+  calculateHarvesterLegionsBoost,
   calculateHarvesterPartsBoost,
   getHarvester,
   getHarvesterForNftHandler,
 } from "../helpers/harvester";
+import { getLegionMetadata } from "../helpers/legion";
 
 export function handleHarvesterDeployed(event: HarvesterDeployed): void {
   const params = event.params;
@@ -89,7 +91,7 @@ export function handleNftStaked(event: Staked): void {
   const amount = params.amount.toI32();
   if (nftAddress.equals(CONSUMABLE_ADDRESS)) {
     // Check Consumable token ID
-    if (params.tokenId.equals(BigInt.fromI32(7))) {
+    if (params.tokenId.equals(HARVESTER_PART_TOKEN_ID)) {
       harvester.partsStaked += amount;
       harvester.partsBoost = calculateHarvesterPartsBoost(harvester);
     } else {
@@ -97,7 +99,12 @@ export function handleNftStaked(event: Staked): void {
     }
   } else if (nftAddress.equals(LEGION_ADDRESS)) {
     harvester.legionsStaked += amount;
-  } else if (nftAddress.equals(TREASURE_ADDRESS)) {
+
+    const metadata = getLegionMetadata(params.tokenId);
+    harvester.legionsTotalRank = harvester.legionsTotalRank.plus(
+      metadata.harvestersRank.times(params.amount)
+    );
+    harvester.legionsBoost = calculateHarvesterLegionsBoost(harvester);
   }
 
   harvester.save();
@@ -132,7 +139,7 @@ export function handleNftUnstaked(event: Unstaked): void {
   const amount = params.amount.toI32();
   if (nftAddress.equals(CONSUMABLE_ADDRESS)) {
     // Check Consumable token ID
-    if (params.tokenId.equals(BigInt.fromI32(7))) {
+    if (params.tokenId.equals(HARVESTER_PART_TOKEN_ID)) {
       harvester.partsStaked -= amount;
       harvester.partsBoost = calculateHarvesterPartsBoost(harvester);
     } else {
@@ -140,7 +147,12 @@ export function handleNftUnstaked(event: Unstaked): void {
     }
   } else if (nftAddress.equals(LEGION_ADDRESS)) {
     harvester.legionsStaked -= amount;
-  } else if (nftAddress.equals(TREASURE_ADDRESS)) {
+
+    const metadata = getLegionMetadata(params.tokenId);
+    harvester.legionsTotalRank = harvester.legionsTotalRank.minus(
+      metadata.harvestersRank.times(params.amount)
+    );
+    harvester.legionsBoost = calculateHarvesterLegionsBoost(harvester);
   }
 
   harvester.save();
