@@ -9,6 +9,7 @@ import {
 import { HarvesterDeployed } from "../../generated/Harvester Factory/HarvesterFactory";
 import {
   Deposit,
+  Harvest,
   Harvester,
   HarvesterNftHandler,
   StakedToken,
@@ -163,7 +164,9 @@ export function handleMagicDeposited(event: DepositEvent): void {
   const lock = params.lock.toI32();
 
   // Save deposit
-  const deposit = new Deposit(getAddressId(userAddress, params.index));
+  const deposit = new Deposit(
+    `${harvester.id}-${getAddressId(userAddress, params.index)}`
+  );
   deposit.amount = params.amount;
   deposit.depositId = params.index;
   deposit.endTimestamp = event.block.timestamp
@@ -187,7 +190,7 @@ export function handleMagicWithdrawn(event: WithdrawEvent): void {
 
   const params = event.params;
   const userAddress = params.user;
-  const id = getAddressId(userAddress, params.index);
+  const id = `${harvester.id}-${getAddressId(userAddress, params.index)}`;
 
   const deposit = Deposit.load(id);
   if (!deposit) {
@@ -220,4 +223,13 @@ export function handleMagicHarvested(event: HarvestEvent): void {
   if (!harvester) {
     return;
   }
+
+  const params = event.params;
+  const harvest = new Harvest(
+    `${harvester.id}-${event.transaction.hash.toHexString()}`
+  );
+  harvest.harvester = harvester.id;
+  harvest.user = params.user.toHexString();
+  harvest.amount = params.amount;
+  harvest.save();
 }

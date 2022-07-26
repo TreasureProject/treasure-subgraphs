@@ -176,6 +176,22 @@ type Withdraw @entity {
   user: User!
 }
 
+type Harvest @entity {
+  id: ID!
+
+  "Amount claimed"
+  amount: BigInt!
+
+  "Associated `AtlasMine`, if applicable"
+  mine: AtlasMine
+
+  "Associated `Harvester`, if applicable"
+  harvester: Harvester
+  
+  "`User` who initiated with the harvest"
+  user: User!
+}
+
 type Random @entity {
   id: ID!
 
@@ -505,6 +521,9 @@ type Harvester @entity {
 
   "All MAGIC withdrawal records from this Harvester"
   magicWithdrawals: [Withdraw!]! @derivedFrom(field: "harvester")
+
+  "All MAGIC rewards harvest records from this Harvester"
+  magicHarvests: [Harvest!]! @derivedFrom(field: "harvester")
 }
 
 type HarvesterNftHandler @entity {
