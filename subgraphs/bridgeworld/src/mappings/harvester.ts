@@ -8,6 +8,7 @@ import {
   Harvest,
   Harvester,
   HarvesterNftHandler,
+  HarvesterTokenBoost,
   StakedToken,
   Withdraw,
 } from "../../generated/schema";
@@ -34,6 +35,7 @@ import {
   HARVESTER_EXTRACTOR_TOKEN_IDS,
   HARVESTER_PART_TOKEN_ID,
   LOCK_PERIOD_IN_SECONDS,
+  ONE_BI,
   getAddressId,
 } from "../helpers";
 import {
@@ -69,28 +71,6 @@ export function handleHarvesterDeployed(event: HarvesterDeployed): void {
   NftHandler.create(nftHandlerAddress);
 }
 
-const handleTokenStaked = (
-  harvester: Harvester,
-  userAddress: Address,
-  nftAddress: Address,
-  tokenId: BigInt,
-  amount: BigInt
-): StakedToken => {
-  const stakedTokenId = `${
-    harvester.id
-  }-${userAddress.toHexString()}-${getAddressId(nftAddress, tokenId)}`;
-  let stakedToken = StakedToken.load(stakedTokenId);
-  if (!stakedToken) {
-    stakedToken = new StakedToken(stakedTokenId);
-    stakedToken.user = userAddress.toHexString();
-    stakedToken.token = getAddressId(nftAddress, tokenId);
-    stakedToken.harvester = harvester.id;
-  }
-
-  stakedToken.quantity = stakedToken.quantity.plus(amount);
-  return stakedToken;
-};
-
 export function handleNftStaked(event: Staked): void {
   const params = event.params;
   const nftAddress = params.nft;
@@ -106,13 +86,19 @@ export function handleNftStaked(event: Staked): void {
     return;
   }
 
-  const stakedToken = handleTokenStaked(
-    harvester,
-    event.transaction.from,
-    nftAddress,
-    tokenId,
-    params.amount
-  );
+  const userAddress = event.transaction.from;
+  const stakedTokenId = `${
+    harvester.id
+  }-${userAddress.toHexString()}-${getAddressId(nftAddress, tokenId)}`;
+  let stakedToken = StakedToken.load(stakedTokenId);
+  if (!stakedToken) {
+    stakedToken = new StakedToken(stakedTokenId);
+    stakedToken.user = userAddress.toHexString();
+    stakedToken.token = getAddressId(nftAddress, tokenId);
+    stakedToken.harvester = harvester.id;
+  }
+
+  stakedToken.quantity = stakedToken.quantity.plus(params.amount);
   stakedToken.save();
 
   const amount = params.amount.toI32();
@@ -187,13 +173,30 @@ export function handleExtractorStaked(event: ExtractorStaked): void {
 
   const params = event.params;
   const tokenId = params.tokenId;
-  const stakedToken = handleTokenStaked(
-    harvester,
-    event.transaction.from,
-    CONSUMABLE_ADDRESS,
-    tokenId,
-    params.amount
+
+  const tokenBoost = HarvesterTokenBoost.load(
+    `${harvester.id}-${getAddressId(CONSUMABLE_ADDRESS, tokenId)}`
   );
+  if (!tokenBoost) {
+    log.error("Extractor boost info not found: {}, {}", [
+      harvester.id,
+      tokenId.toString(),
+    ]);
+    return;
+  }
+
+  const stakedTokenId = `${harvester.id}-${CONSUMABLE_ADDRESS.toHexString()}-${
+    params.spotId
+  }`;
+  let stakedToken = StakedToken.load(stakedTokenId);
+  if (!stakedToken) {
+    stakedToken = new StakedToken(stakedTokenId);
+    stakedToken.harvester = harvester.id;
+  }
+
+  stakedToken.user = event.transaction.from.toHexString();
+  stakedToken.token = getAddressId(CONSUMABLE_ADDRESS, tokenId);
+  stakedToken.quantity = ONE_BI;
   stakedToken.expirationTime = event.block.timestamp.plus(
     harvester.extractorsLifetime
   );
@@ -201,6 +204,7 @@ export function handleExtractorStaked(event: ExtractorStaked): void {
   stakedToken.save();
 
   harvester.extractorsStaked += params.amount.toI32();
+  harvester.extractorsBoost = harvester.extractorsBoost.plus(tokenBoost.boost);
   harvester.save();
 }
 
@@ -209,6 +213,29 @@ export function handleExtractorReplaced(event: ExtractorReplaced): void {
   if (!harvester) {
     return;
   }
+
+  const params = event.params;
+  const tokenId = params.tokenId;
+  const stakedToken = StakedToken.load(
+    `${harvester.id}-${CONSUMABLE_ADDRESS.toHexString()}-${
+      params.replacedSpotId
+    }`
+  );
+  if (!stakedToken) {
+    log.error("Replacing unknown Extract spot ID: {}, {}", [
+      harvester.id,
+      params.replacedSpotId.toString(),
+    ]);
+    return;
+  }
+
+  stakedToken.user = event.transaction.from.toHexString();
+  stakedToken.token = getAddressId(CONSUMABLE_ADDRESS, tokenId);
+  stakedToken.quantity = ONE_BI;
+  stakedToken.expirationTime = event.block.timestamp.plus(
+    harvester.extractorsLifetime
+  );
+  stakedToken.save();
 }
 
 export function handleMagicDeposited(event: DepositEvent): void {
