@@ -9,6 +9,7 @@ import {
 import { Harvester, HarvesterStakingRule, Token } from "../../generated/schema";
 import {
   ExtractorsStakingRules,
+  ExtractorsStakingRulesConfig,
   LegionsStakingRules,
   PartsStakingRules,
   TreasuresStakingRules,
@@ -35,12 +36,16 @@ import {
   PartsStakingRules as PartsStakingRulesContract,
 } from "../../generated/templates/PartsStakingRules/PartsStakingRules";
 import { TreasuresStakingRules as TreasuresStakingRulesContract } from "../../generated/templates/TreasuresStakingRules/TreasuresStakingRules";
-import { getAddressId } from "../helpers";
 import {
+  HARVESTER_EXTRACTOR_TOKEN_IDS,
+  HARVESTER_PART_TOKEN_ID,
+  getAddressId,
+} from "../helpers";
+import {
+  createOrUpdateHarvesterTokenBoost,
   getHarvester,
   getHarvesterForNftHandler,
   getHarvesterForStakingRule,
-  getOrCreateHarvesterTokenBoost,
 } from "../helpers/harvester";
 
 export function handleUpdatedMagicTotalDepositCap(
@@ -84,15 +89,17 @@ export function handleNftConfigSet(event: NftConfigSet): void {
   stakingRule.save();
 
   const nftAddress = params._nft;
+  const tokenId = params._tokenId;
 
   // Determine the type of StakingRule and start listening for events at this address
   // Pull initial rules from the contract because we weren't listening for init events
   if (nftAddress.equals(CONSUMABLE_ADDRESS)) {
     // Check Consumable token ID
-    if (params._tokenId.equals(BigInt.fromI32(7))) {
+    if (tokenId.equals(HARVESTER_PART_TOKEN_ID)) {
       PartsStakingRules.create(stakingRulesAddress);
       processPartsStakingRules(stakingRulesAddress, harvester);
-    } else {
+    } else if (HARVESTER_EXTRACTOR_TOKEN_IDS.includes(tokenId)) {
+      ExtractorsStakingRulesConfig.create(stakingRulesAddress);
       ExtractorsStakingRules.create(stakingRulesAddress);
       processExtractorsStakingRules(stakingRulesAddress, harvester);
     }
@@ -176,9 +183,7 @@ const processExtractorsStakingRules = (
 
     result = contract.try_extractorBoost(BigInt.fromI32(i));
     if (!result.reverted) {
-      const tokenBoost = getOrCreateHarvesterTokenBoost(harvester, token);
-      tokenBoost.boost = result.value;
-      tokenBoost.save();
+      createOrUpdateHarvesterTokenBoost(harvester, token, result.value);
     } else {
       log.error("Error fetching Extractor boost: {}, {}", [
         i.toString(),
@@ -303,9 +308,7 @@ export function handleUpdatedExtractorsBoost(event: ExtractorBoost): void {
     return;
   }
 
-  const tokenBoost = getOrCreateHarvesterTokenBoost(harvester, token);
-  tokenBoost.boost = params.boost;
-  tokenBoost.save();
+  createOrUpdateHarvesterTokenBoost(harvester, token, params.boost);
 
   // TODO: Re-calculate Harvester extractors boost?
 }

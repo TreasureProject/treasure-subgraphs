@@ -391,6 +391,9 @@ type Token @entity {
   owners: [UserToken!]! @derivedFrom(field: "token")
   rarity: Rarity!
   tokenId: BigInt!
+
+  "Boosts for when token is added to a Harvester"
+  harvesterBoosts: [HarvesterTokenBoost!]! @derivedFrom(field: "token")
 }
 
 type User @entity {

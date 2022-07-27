@@ -77,17 +77,21 @@ export const calculateHarvesterLegionsBoost = (
     .div(maxStakedAmount);
 };
 
-export const getOrCreateHarvesterTokenBoost = (
+export const createOrUpdateHarvesterTokenBoost = (
   harvester: Harvester,
-  token: Token
+  token: Token,
+  boost: BigInt
 ): HarvesterTokenBoost => {
   const tokenBoostId = `${harvester.id}-${token.id}`;
   let tokenBoost = HarvesterTokenBoost.load(tokenBoostId);
   if (!tokenBoost) {
     tokenBoost = new HarvesterTokenBoost(tokenBoostId);
+    tokenBoost.harvester = harvester.id;
     tokenBoost.token = token.id;
-    tokenBoost.save();
   }
+
+  tokenBoost.boost = boost;
+  tokenBoost.save();
 
   return tokenBoost;
 };
