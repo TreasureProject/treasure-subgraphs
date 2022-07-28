@@ -252,8 +252,10 @@ export function handleMagicDeposited(event: DepositEvent): void {
   const deposit = new Deposit(
     `${harvester.id}-${getAddressId(userAddress, params.index)}`
   );
+  deposit.transactionHash = event.transaction.hash;
   deposit.amount = params.amount;
   deposit.depositId = params.index;
+  deposit.startTimestamp = event.block.timestamp.times(BigInt.fromI32(1000));
   deposit.endTimestamp = event.block.timestamp
     .plus(BigInt.fromI32(LOCK_PERIOD_IN_SECONDS[lock]))
     .times(BigInt.fromI32(1000));

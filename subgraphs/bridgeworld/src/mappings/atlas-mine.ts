@@ -50,8 +50,10 @@ export function handleDeposit(event: DepositEvent): void {
     user.save();
   }
 
+  deposit.transactionHash = event.transaction.hash;
   deposit.amount = params.amount;
   deposit.depositId = params.index;
+  deposit.startTimestamp = event.block.timestamp.times(BigInt.fromI32(1000));
   deposit.endTimestamp = event.block.timestamp
     .plus(BigInt.fromI32(LOCK_PERIOD_IN_SECONDS[lock]))
     .times(BigInt.fromI32(1000));

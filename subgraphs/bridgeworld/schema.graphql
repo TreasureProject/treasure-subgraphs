@@ -156,13 +156,34 @@ type AtlasMine @entity {
 type Deposit @entity {
   id: ID!
 
-  amount: BigInt!
-  depositId: BigInt!
-  endTimestamp: BigInt!
-  lock: Int!
+  "Hash for the deposit transaction"
+  transactionHash: Bytes!
+
+  "Associated `AtlasMine`, if applicable"
   mine: AtlasMine
+
+  "Associated `Harvester`, if applicable"
   harvester: Harvester
+
+  "Unique identifier for deposit"
+  depositId: BigInt!
+
+  "Amount of MAGIC deposited"
+  amount: BigInt!
+
+  "Deposit time, in milliseconds"
+  startTimestamp: BigInt!
+
+  "Unlock time, in milliseconds"
+  endTimestamp: BigInt!
+
+  "Initial lock period (0 = 2 Weeks, 1 = 1 Month, 2 = 3 Months, 3 = 6 Months, 4 = 12 Months"
+  lock: Int!
+
+  "`User` who initiated the deposit"
   user: User!
+
+  "Associated `Withdraw`, if applicable"
   withdrawal: Withdraw
 }
 
@@ -188,7 +209,7 @@ type Harvest @entity {
   "Associated `Harvester`, if applicable"
   harvester: Harvester
 
-  "`User` who initiated with the harvest"
+  "`User` who initiated the harvest"
   user: User!
 }
 
@@ -393,7 +414,7 @@ type Token @entity {
   tokenId: BigInt!
 
   "Boosts for when token is added to a Harvester"
-  harvesterBoosts: [HarvesterTokenBoost!]! @derivedFrom(field: "token")
+  harvesterBoosts: [HarvesterTokenBoost!] @derivedFrom(field: "token")
 }
 
 type User @entity {
@@ -512,9 +533,6 @@ type Harvester @entity {
 
   "Boost value of staked Legions (1 + ((2n - n^2/maxLegions)/maxLegions) * legionsRankBoost)"
   legionsBoost: BigInt!
-
-  "Percentage of emissions Harvester is earning based on capacity utilization"
-  emissionsActivated: Int!
 
   "Boost values for tokens when added to this Harvester"
   tokenBoosts: [HarvesterTokenBoost!]! @derivedFrom(field: "harvester")
