@@ -471,6 +471,14 @@ type TokenQuantity @entity {
   token: Token!
 }
 
+type _HarvesterConfig @entity {
+  "Singleton with ID `only`"
+  id: ID!
+
+  "List of all deployed Harvesters"
+  harvesters: [Harvester!]!
+}
+
 type Harvester @entity {
   id: ID!
 
@@ -479,6 +487,9 @@ type Harvester @entity {
 
   "Associated NftHandler that will be used for staking to Harvester"
   nftHandler: HarvesterNftHandler! @derivedFrom(field: "harvester")
+
+  "Internal field for tracking the next upcoming Extractor expiration time"
+  _nextExpirationTime: BigInt
 
   "Maximum amount of MAGIC that can be staked"
   maxMagicDeposited: BigInt!
@@ -533,9 +544,6 @@ type Harvester @entity {
 
   "Boost value of staked Legions (1 + ((2n - n^2/maxLegions)/maxLegions) * legionsRankBoost)"
   legionsBoost: BigInt!
-
-  "Internal field for tracking the IDs of Extractors staked to this Harvester"
-  _stakedExtractorIds: [String!]!
 
   "Boost values for tokens when added to this Harvester"
   tokenBoosts: [HarvesterTokenBoost!]! @derivedFrom(field: "harvester")

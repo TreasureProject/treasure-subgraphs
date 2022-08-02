@@ -11,6 +11,7 @@ import {
   HarvesterTokenBoost,
   StakedToken,
   Withdraw,
+  _HarvesterConfig,
 } from "../../generated/schema";
 import {
   HarvesterConfig,
@@ -41,9 +42,11 @@ import {
 import {
   calculateHarvesterLegionsBoost,
   calculateHarvesterPartsBoost,
+  createStakedExtractorId,
   getHarvester,
   getHarvesterForNftHandler,
   getHarvesterForStakingRule,
+  removeExpiredExtractors,
 } from "../helpers/harvester";
 import { getLegionMetadata } from "../helpers/legion";
 
@@ -54,7 +57,6 @@ export function handleHarvesterDeployed(event: HarvesterDeployed): void {
   const harvesterAddress = params.harvester;
   const harvester = new Harvester(harvesterAddress.toHexString());
   harvester.deployedBlockNumber = event.block.number;
-  harvester._stakedExtractorIds = [];
   harvester.save();
 
   // Start listening for Harvester events at this address
@@ -70,6 +72,18 @@ export function handleHarvesterDeployed(event: HarvesterDeployed): void {
   // Start listening for NftHandler events at this address
   NftHandlerConfig.create(nftHandlerAddress);
   NftHandler.create(nftHandlerAddress);
+
+  // Save Harvester to config
+  let harvesterConfig = _HarvesterConfig.load("only");
+  if (!harvesterConfig) {
+    harvesterConfig = new _HarvesterConfig("only");
+    harvesterConfig.harvesters = [];
+  }
+
+  harvesterConfig.harvesters = harvesterConfig.harvesters.concat([
+    harvester.id,
+  ]);
+  harvesterConfig.save();
 }
 
 export function handleNftStaked(event: Staked): void {
@@ -117,6 +131,8 @@ export function handleNftStaked(event: Staked): void {
   }
 
   harvester.save();
+
+  removeExpiredExtractors(harvester, event.block.timestamp);
 }
 
 export function handleNftUnstaked(event: Unstaked): void {
@@ -164,6 +180,8 @@ export function handleNftUnstaked(event: Unstaked): void {
   }
 
   harvester.save();
+
+  removeExpiredExtractors(harvester, event.block.timestamp);
 }
 
 export function handleExtractorStaked(event: ExtractorStaked): void {
@@ -186,9 +204,10 @@ export function handleExtractorStaked(event: ExtractorStaked): void {
     return;
   }
 
-  const stakedTokenId = `${harvester.id}-${CONSUMABLE_ADDRESS.toHexString()}-${
-    params.spotId
-  }`;
+  const stakedTokenId = createStakedExtractorId(
+    harvester,
+    params.spotId.toI32()
+  );
   let stakedToken = StakedToken.load(stakedTokenId);
   if (!stakedToken) {
     stakedToken = new StakedToken(stakedTokenId);
@@ -204,12 +223,23 @@ export function handleExtractorStaked(event: ExtractorStaked): void {
   stakedToken.index = params.spotId.toI32();
   stakedToken.save();
 
-  harvester.extractorsStaked += params.amount.toI32();
+  // Update staked Extractors count
+  harvester.extractorsStaked += 1;
+
+  // Update staked Extractors boost
   harvester.extractorsBoost = harvester.extractorsBoost.plus(tokenBoost.boost);
-  harvester._stakedExtractorIds = harvester._stakedExtractorIds.concat([
-    stakedToken.id,
-  ]);
+
+  // Update Harvester's next expiration time if this Extractor will expire sooner
+  if (
+    !harvester._nextExpirationTime ||
+    stakedToken.expirationTime.lt(harvester._nextExpirationTime)
+  ) {
+    harvester._nextExpirationTime = stakedToken.expirationTime;
+  }
+
   harvester.save();
+
+  removeExpiredExtractors(harvester, event.block.timestamp);
 }
 
 export function handleExtractorReplaced(event: ExtractorReplaced): void {
@@ -221,9 +251,7 @@ export function handleExtractorReplaced(event: ExtractorReplaced): void {
   const params = event.params;
   const tokenId = params.tokenId;
   const stakedToken = StakedToken.load(
-    `${harvester.id}-${CONSUMABLE_ADDRESS.toHexString()}-${
-      params.replacedSpotId
-    }`
+    createStakedExtractorId(harvester, params.replacedSpotId.toI32())
   );
   if (!stakedToken) {
     log.error("Replacing unknown Extractor spot ID: {}, {}", [
@@ -233,7 +261,6 @@ export function handleExtractorReplaced(event: ExtractorReplaced): void {
     return;
   }
 
-  const oldTokenId = stakedToken.token;
   const oldTokenBoost = HarvesterTokenBoost.load(
     `${harvester.id}-${stakedToken.token}`
   );
@@ -265,17 +292,22 @@ export function handleExtractorReplaced(event: ExtractorReplaced): void {
   );
   stakedToken.save();
 
+  // Update staked Extractors boost
   harvester.extractorsBoost = harvester.extractorsBoost
     .minus(oldTokenBoost.boost)
     .plus(newTokenBoost.boost);
-  const stakedExtractorIds = harvester._stakedExtractorIds;
-  const tokenIndex = harvester._stakedExtractorIds.indexOf(oldTokenId);
-  if (tokenIndex >= 0) {
-    stakedExtractorIds.splice(tokenIndex, 1);
+
+  // Update Harvester's next expiration time if this Extractor will expire sooner
+  if (
+    !harvester._nextExpirationTime ||
+    stakedToken.expirationTime.lt(harvester._nextExpirationTime)
+  ) {
+    harvester._nextExpirationTime = stakedToken.expirationTime;
   }
-  stakedExtractorIds.push(newTokenId);
-  harvester._stakedExtractorIds = stakedExtractorIds;
+
   harvester.save();
+
+  removeExpiredExtractors(harvester, event.block.timestamp);
 }
 
 export function handleMagicDeposited(event: DepositEvent): void {
