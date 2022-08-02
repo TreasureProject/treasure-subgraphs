@@ -8,7 +8,10 @@ import {
   MARKETPLACE_BUYER_ADDRESS,
 } from "@treasure/constants";
 
-import { handleItemListed, handleItemSold } from "../src/mapping";
+import {
+  handleMarketplaceItemListed,
+  handleMarketplaceItemSold,
+} from "../src/mapping";
 import {
   handleTransferBatch,
   handleTransferSingle,
@@ -142,7 +145,7 @@ test("consumables work via marketplace", () => {
     50
   );
 
-  handleItemListed(itemListedEvent);
+  handleMarketplaceItemListed(itemListedEvent);
 
   const collectionId = CONSUMABLE_ADDRESS.toHexString();
   const id = `${collectionId}-0x8`;
@@ -181,7 +184,7 @@ test("consumables work via marketplace", () => {
     50
   );
 
-  handleItemSold(itemSoldEvent);
+  handleMarketplaceItemSold(itemSoldEvent);
 
   // Transfer from marketplace buyer to actual buyer
   const buyerTransfer = createTransferSingleEvent(

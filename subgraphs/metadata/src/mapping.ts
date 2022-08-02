@@ -4,6 +4,8 @@ import { Collection, Token } from "../generated/schema";
 import { MISSING_METADATA_UPDATE_INTERVAL } from "./helpers/constants";
 import { getOrCreateCollection, getOrCreateToken } from "./helpers/models";
 
+const TOKEN_REFETCH_COUNT = 100;
+
 export class TransferEvent {
   constructor(
     public address: Address,
@@ -38,21 +40,27 @@ export function handleTransfer(
       )
     )
   ) {
-    const tokenIds = collection._missingMetadataTokens;
+    const missingMetadataTokens = collection._missingMetadataTokens;
+
+    // Reprocess max of 100 at a time.
+    const tokenIds = missingMetadataTokens.slice(0, TOKEN_REFETCH_COUNT);
 
     log.debug("Re-fetching missing metadata from {} tokens", [
       tokenIds.length.toString(),
     ]);
 
     // Reset list of missing metadata before we attempt to re-fetch them
-    collection._missingMetadataTokens = [];
+    collection._missingMetadataTokens =
+      missingMetadataTokens.slice(TOKEN_REFETCH_COUNT);
 
     for (let index = 0; index < tokenIds.length; index++) {
       const token = Token.load(tokenIds[index]);
-
-      if (token) {
-        fetchTokenMetadata(collection, token, timestamp);
+      if (!token) {
+        log.warning("[fetch-metadata] token not found: {}", [tokenIds[index]]);
+        continue;
       }
+
+      fetchTokenMetadata(collection, token, timestamp);
     }
 
     // Update cron job's last run time

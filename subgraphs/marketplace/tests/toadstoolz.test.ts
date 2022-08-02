@@ -9,6 +9,7 @@ const COLLECTION_ENTITY_TYPE = "Collection";
 const TOKEN_ENTITY_TYPE = "Token";
 const STATS_ENTITY_TYPE = "StatsData";
 const USER_ENTITY_TYPE = "User";
+const USER_TOKEN_ENTITY_TYPE = "UserToken";
 const TOADSTOOLZ_ADDRESS = Address.fromString(
   "0x09CAE384C6626102ABE47Ff50588A1dBe8432174"
 );
@@ -42,6 +43,16 @@ test("toadstoolz collection is setup properly", () => {
   //   "tokens",
   //   `[${userTokenId}]`
   // );
+
+  assert.fieldEquals(USER_TOKEN_ENTITY_TYPE, userTokenId, "quantity", "1");
+  assert.fieldEquals(USER_TOKEN_ENTITY_TYPE, userTokenId, "user", USER_ADDRESS);
+  assert.fieldEquals(
+    USER_TOKEN_ENTITY_TYPE,
+    userTokenId,
+    "collection",
+    collectionId
+  );
+  assert.fieldEquals(USER_TOKEN_ENTITY_TYPE, userTokenId, "token", id);
 
   assert.fieldEquals(COLLECTION_ENTITY_TYPE, collectionId, "totalSales", "0");
   assert.fieldEquals(COLLECTION_ENTITY_TYPE, collectionId, "totalVolume", "0");
@@ -129,5 +140,6 @@ test("burn mechanic works", () => {
     "standard",
     "ERC721"
   );
+  assert.fieldEquals(STATS_ENTITY_TYPE, collectionId, "burned", "1");
   assert.fieldEquals(STATS_ENTITY_TYPE, collectionId, "items", "0");
 });

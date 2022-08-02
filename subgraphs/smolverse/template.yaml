@@ -21,7 +21,7 @@ dataSources:
         - Seeded
       abis:
         - name: Randomizer
-          file: ../../node_modules/@treasure/subgraph-abis/src/Randomizer.json
+          file: ./abis/Randomizer.json
       eventHandlers:
         - event: RandomRequest(indexed uint256,indexed uint256)
           handler: handleRandomRequest
@@ -33,7 +33,7 @@ dataSources:
     network: {{ network }}
     source:
       address: "{{ smol_bodies_pets_address }}"
-      abi: SmolPets
+      abi: ERC721WithBaseUri
       startBlock: {{ smol_bodies_pets_start_block }}
     mapping:
       kind: ethereum/events
@@ -46,8 +46,8 @@ dataSources:
         - Transfer
         - User
       abis:
-        - name: SmolPets
-          file: ../../node_modules/@treasure/subgraph-abis/src/SmolPets.json
+        - name: ERC721WithBaseUri
+          file: ./abis/ERC721WithBaseUri.json
       eventHandlers:
         - event: BaseURIChanged(string,string)
           handler: handleBaseUriChanged
@@ -59,7 +59,7 @@ dataSources:
     network: {{ network }}
     source:
       address: "{{ smol_brains_pets_address }}"
-      abi: SmolPets
+      abi: ERC721WithBaseUri
       startBlock: {{ smol_brains_pets_start_block }}
     mapping:
       kind: ethereum/events
@@ -72,8 +72,8 @@ dataSources:
         - Transfer
         - User
       abis:
-        - name: SmolPets
-          file: ../../node_modules/@treasure/subgraph-abis/src/SmolPets.json
+        - name: ERC721WithBaseUri
+          file: ./abis/ERC721WithBaseUri.json
       eventHandlers:
         - event: BaseURIChanged(string,string)
           handler: handleBaseUriChanged
@@ -101,7 +101,7 @@ dataSources:
         - User
       abis:
         - name: SmolFarm
-          file: ../../node_modules/@treasure/subgraph-abis/src/SmolFarm.json
+          file: ./abis/SmolFarm.json
       eventHandlers:
         - event: SmolStaked(indexed address,indexed address,indexed uint256,uint256)
           handler: handleSmolStaked
@@ -117,7 +117,7 @@ dataSources:
     network: {{ network }}
     source:
       address: "{{ smol_brains_address }}"
-      abi: SmolBrains
+      abi: ERC721WithBaseUri
       startBlock: {{ smol_brains_start_block }}
     mapping:
       kind: ethereum/events
@@ -126,8 +126,8 @@ dataSources:
       entities:
         - Transfer
       abis:
-        - name: SmolBrains
-          file: {{{ abis }}}/SmolBrains.json
+        - name: ERC721WithBaseUri
+          file: ./abis/ERC721WithBaseUri.json
       eventHandlers:
         - event: Transfer(indexed address,indexed address,indexed uint256)
           handler: handleTransfer
@@ -137,7 +137,7 @@ dataSources:
     network: {{ network }}
     source:
       address: "{{ smol_brains_land_address }}"
-      abi: SmolBrainsLand
+      abi: ERC721WithBaseUri
       startBlock: {{ smol_brains_land_start_block }}
     mapping:
       kind: ethereum/events
@@ -146,8 +146,8 @@ dataSources:
       entities:
         - Transfer
       abis:
-        - name: SmolBrainsLand
-          file: {{{ abis }}}/SmolBrainsLand.json
+        - name: ERC721WithBaseUri
+          file: ./abis/ERC721WithBaseUri.json
       eventHandlers:
         - event: Transfer(indexed address,indexed address,indexed uint256)
           handler: handleTransfer
@@ -167,9 +167,9 @@ dataSources:
         - Transfer
       abis:
         - name: School
-          file: {{{ abis }}}/SmolBrainsSchool.json
+          file: ./abis/SmolBrainsSchool.json
         - name: SmolBrains
-          file: {{{ abis }}}/SmolBrains.json
+          file: ./abis/SmolBrains.json
       eventHandlers:
         - event: DropSchool(uint256)
           handler: handleDropSchool
@@ -181,18 +181,17 @@ dataSources:
     network: {{ network }}
     source:
       address: "{{ smol_bodies_address }}"
-      abi: SmolBodies
+      abi: ERC721WithBaseUri
       startBlock: {{ smol_bodies_start_block }}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
       language: wasm/assemblyscript
       entities:
-        - Transfer
-        - SmolBodiesMint
+        - Token
       abis:
-        - name: SmolBodies
-          file: {{{ abis }}}/SmolBodies.json
+        - name: ERC721WithBaseUri
+          file: ./abis/ERC721WithBaseUri.json
       eventHandlers:
         - event: BaseURIChanged(string,string)
           handler: handleBaseUriChanged
@@ -214,10 +213,74 @@ dataSources:
         - Transfer
       abis:
         - name: Gym
-          file: {{{ abis }}}/SmolBodiesGym.json
+          file: ./abis/SmolBodiesGym.json
       eventHandlers:
         - event: DropGym(uint256,uint256,uint256)
           handler: handleDropGym
         - event: JoinGym(uint256)
           handler: handleJoinGym
       file: ./src/mappings/smol-bodies-gym.ts
+  - name: Smol Cars
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ smol_cars_address }}"
+      abi: ERC721WithBaseUri
+      startBlock: {{ smol_cars_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Transfer
+      abis:
+        - name: ERC721WithBaseUri
+          file: ./abis/ERC721WithBaseUri.json
+      eventHandlers:
+        - event: BaseURIChanged(string,string)
+          handler: handleBaseUriChanged
+        - event: Transfer(indexed address,indexed address,indexed uint256)
+          handler: handleTransfer
+      file: ./src/mappings/smol-cars.ts
+  - name: Swolercycles
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ swolercycles_address }}"
+      abi: ERC721WithBaseUri
+      startBlock: {{ swolercycles_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Transfer
+      abis:
+        - name: ERC721WithBaseUri
+          file: ./abis/ERC721WithBaseUri.json
+      eventHandlers:
+        - event: BaseURIChanged(string,string)
+          handler: handleBaseUriChanged
+        - event: Transfer(indexed address,indexed address,indexed uint256)
+          handler: handleTransfer
+      file: ./src/mappings/swolercycles.ts
+  - name: Wrapped Smols
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ wrapped_smols_address }}"
+      abi: ERC721
+      startBlock: {{ wrapped_smols_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Transfer
+      abis:
+        - name: ERC721
+          file: ./abis/ERC721.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,indexed uint256)
+          handler: handleTransfer
+      file: ./src/mappings/wrapped-smols.ts

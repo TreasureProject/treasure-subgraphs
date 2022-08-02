@@ -23,32 +23,22 @@ import {
   User,
   UserApproval,
 } from "../../generated/schema";
-import { LEGION_IPFS, getAddressId, getImageHash, isMint } from "../helpers";
+import {
+  LEGION_IPFS,
+  LEGION_PFP_IPFS,
+  getAddressId,
+  getImageHash,
+  isMint,
+} from "../helpers";
+import { isQuestingXpGainedEnabled } from "../helpers/config";
+import {
+  CLASS,
+  RARITY,
+  TYPE,
+  getLegionImage,
+  getLegionMetadata,
+} from "../helpers/legion";
 import * as common from "../mapping";
-
-const RARITY = [
-  "Legendary",
-  "Rare",
-  "Special",
-  "Uncommon",
-  "Common",
-  "Recruit",
-];
-
-const CLASS = [
-  "Recruit",
-  "Siege",
-  "Fighter",
-  "Assassin",
-  "Ranged",
-  "Spellcaster",
-  "Riverman",
-  "Numeraire",
-  "All-Class",
-  "Origin",
-];
-
-const TYPE = ["Genesis", "Auxiliary", "Recruit"];
 
 const BOOST_MATRIX = [
   // GENESIS
@@ -83,18 +73,6 @@ function getConstellation(id: string): Constellation {
   }
 
   return constellation;
-}
-
-function getMetadata(tokenId: BigInt): LegionInfo {
-  let metadata = LegionInfo.load(
-    `${getAddressId(LEGION_ADDRESS, tokenId)}-metadata`
-  );
-
-  if (!metadata) {
-    throw new Error(`Metadata not available: ${tokenId.toString()}`);
-  }
-
-  return metadata;
 }
 
 function setMetadata(contract: Address, tokenId: BigInt): void {
@@ -217,7 +195,7 @@ export function handleLegionConstellationRankUp(
 
 export function handleLegionCraftLevelUp(event: LegionCraftLevelUp): void {
   let params = event.params;
-  let metadata = getMetadata(params._tokenId);
+  let metadata = getLegionMetadata(params._tokenId);
 
   metadata.crafting = params._craftLevel;
   metadata.craftingXp = 0;
@@ -251,11 +229,24 @@ export function handleLegionCreated(event: LegionCreated): void {
   metadata.save();
 
   token.category = "Legion";
-  token.image = `${LEGION_IPFS}/${metadata.rarity}%20${metadata.role}.gif`;
+  token.image = getLegionImage(
+    LEGION_IPFS,
+    metadata.type,
+    metadata.rarity,
+    metadata.role,
+    tokenId
+  );
+  token.imageAlt = getLegionImage(
+    LEGION_PFP_IPFS,
+    metadata.type,
+    metadata.rarity,
+    metadata.role,
+    tokenId
+  );
   token.name = `${metadata.type} ${metadata.rarity}`;
   token.metadata = metadata.id;
   token.generation = params._generation;
-  token.rarity = metadata.rarity.replace("Recruit", "None");
+  token.rarity = metadata.rarity;
 
   if (metadata.type == "Recruit") {
     let user = User.load(params._owner.toHexString());
@@ -265,20 +256,22 @@ export function handleLegionCreated(event: LegionCreated): void {
       user.save();
     }
 
-    token.image = `${LEGION_IPFS}/Recruit.gif`;
     token.name = "Recruit";
+    token.rarity = "None";
   }
 
   token.save();
 }
 
 export function handleLegionQuestLevelUp(event: LegionQuestLevelUp): void {
-  let params = event.params;
-  let metadata = getMetadata(params._tokenId);
-
-  metadata.questing = params._questLevel;
-  metadata.questingXp = 0;
-  metadata.save();
+  // Prefer the QPGained event if it's available at this block
+  if (!isQuestingXpGainedEnabled(event.block.number)) {
+    const params = event.params;
+    const metadata = getLegionMetadata(params._tokenId);
+    metadata.questing = params._questLevel;
+    metadata.questingXp = 0;
+    metadata.save();
+  }
 }
 
 export function handleTransfer(event: Transfer): void {

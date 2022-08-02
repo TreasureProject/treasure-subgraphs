@@ -5,7 +5,7 @@ import { Address, ethereum } from "@graphprotocol/graph-ts";
 import {
   BaseURIChanged,
   Transfer,
-} from "../../generated/Smol Bodies Pets/SmolPets";
+} from "../../generated/Smol Brains Pets/ERC721WithBaseUri";
 
 export const createBaseUriChangedEvent = (
   from: string,

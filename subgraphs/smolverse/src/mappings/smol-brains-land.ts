@@ -1,4 +1,4 @@
-import { Transfer } from "../../generated/Smol Brains Land/SmolBrainsLand";
+import { Transfer } from "../../generated/Smol Brains Land/ERC721WithBaseUri";
 import { SMOL_BRAINS_LAND_BASE_URI } from "../helpers/constants";
 import { getOrCreateCollection } from "../helpers/models";
 import { handleTransfer as commonHandleTransfer } from "./common";

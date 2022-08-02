@@ -7,7 +7,7 @@ import { SMOL_BODIES_ADDRESS } from "@treasure/constants";
 import {
   BaseURIChanged,
   Transfer,
-} from "../../generated/Smol Bodies/SmolBodies";
+} from "../../generated/Smol Bodies/ERC721WithBaseUri";
 
 export function createBaseUriChangedEvent(
   from: string,

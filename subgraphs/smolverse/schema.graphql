@@ -31,6 +31,12 @@ type Collection @entity {
   _missingMetadataTokens: [Token!]!
   _missingMetadataLastUpdated: BigInt!
 
+  "Internal for token naming"
+  _includeNameInTokenName: Boolean
+
+  "Internal tracking to refetch metadata when baseURI changes"
+  _tokenIds: [String!]!
+
   name: String!
   standard: TokenStandard
   baseUri: String

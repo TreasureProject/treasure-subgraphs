@@ -1,6 +1,9 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts";
 
 export const BURNER_ADDRESS = Address.fromString("{{ burner_address }}");
+export const TROVE_MAGIC_ADDRESS = Address.fromString(
+  "{{ trove_magic_address }}"
+);
 export const BALANCER_CRYSTAL_ADDRESS = Address.fromString(
   "{{ balancer_crystal_address }}"
 );
@@ -11,8 +14,17 @@ export const CRAFTING_ADDRESS = Address.fromString("{{ crafting_address }}");
 export const EXPLORER = "{{ explorer }}";
 export const LEGION_ADDRESS = Address.fromString("{{ legion_address }}");
 export const QUESTING_ADDRESS = Address.fromString("{{ questing_address }}");
+export const ADVANCED_QUESTING_ADDRESS = Address.fromString(
+  "{{ advanced_questing_address }}"
+);
+export const TREASURE_TRIAD_ADDRESS = Address.fromString(
+  "{{ treasure_triad_address }}"
+);
 export const SUMMONING_ADDRESS = Address.fromString("{{ summoning_address }}");
 export const TREASURE_ADDRESS = Address.fromString("{{ treasure_address }}");
+export const TREASURE_FRAGMENT_ADDRESS = Address.fromString(
+  "{{ treasure_fragment_address }}"
+);
 export const SMOL_BODIES_ADDRESS = Address.fromString(
   "{{ smol_bodies_address }}"
 );
@@ -44,14 +56,14 @@ export const MARKETPLACE_BUYER_ADDRESS = Address.fromString(
 export const SEED_OF_LIFE_ADDRESS = Address.fromString(
   "{{ seed_of_life_address }}"
 );
-export const SEED_OF_LIFE_ITEM_ADDRESS = Address.fromString(
-  "{{ sol_item_address }}"
+export const SEED_OF_LIFE_RESOURCES_ADDRESS = Address.fromString(
+  "{{ sol_resources_address }}"
 );
 export const SEED_EVOLUTION_ADDRESS = Address.fromString(
   "{{ seed_evolution_address }}"
 );
-export const IMBUED_SOUL_ADDRESS = Address.fromString(
-  "{{ imbued_soul_address }}"
+export const IMBUED_SOULS_ADDRESS = Address.fromString(
+  "{{ imbued_souls_address }}"
 );
 export const SEED_OF_LIFE_TREASURES_ADDRESS = Address.fromString(
   "{{ seed_of_life_treasures_address }}"
@@ -65,6 +77,9 @@ export const EXTRA_LIFE_ADDRESS = Address.fromString(
 );
 export const KEYS_ADDRESS = Address.fromString("{{ keys_address }}");
 export const SMOL_CARS_ADDRESS = Address.fromString("{{ smol_cars_address }}");
+export const SWOLERCYCLES_ADDRESS = Address.fromString(
+  "{{ swolercycles_address }}"
+);
 export const BATTLEFLY_ADDRESS = Address.fromString("{{ battlefly_address }}");
 export const BATTLEFLY_FOUNDERS_ADDRESS = Address.fromString(
   "{{ battlefly_founders_address }}"
@@ -81,8 +96,20 @@ export const TREASURE_MARKETPLACE_PAUSE_START_BLOCK = BigInt.fromString(
 export const TALES_OF_ELLERIA_ADDRESS = Address.fromString(
   "{{ tales_of_elleria_address }}"
 );
+export const TALES_OF_ELLERIA_DATA_ADDRESS = Address.fromString(
+  "{{ tales_of_elleria_data_address }}"
+);
+export const TOADSTOOLZ_ADDRESS = Address.fromString(
+  "{{ toadstoolz_address }}"
+);
 export const TOADSTOOLZ_ITEMZ_ADDRESS = Address.fromString(
   "{{ toadstoolz_itemz_address }}"
+);
+export const KOTE_QUESTING_ADDRESS = Address.fromString(
+  "{{ kote_questing_address }}"
+);
+export const WRAPPED_SMOLS_ADDRESS = Address.fromString(
+  "{{ wrapped_smols_address }}"
 );
 
 // AMM

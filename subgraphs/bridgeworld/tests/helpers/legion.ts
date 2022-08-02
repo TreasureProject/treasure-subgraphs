@@ -1,10 +1,14 @@
 import { newMockEvent } from "matchstick-as/assembly";
 
-import { Address, ethereum } from "@graphprotocol/graph-ts";
+import { Address, BigInt, ethereum } from "@graphprotocol/graph-ts";
 
-import { LEGION_ADDRESS } from "@treasure/constants";
+import {
+  LEGACY_LEGION_GENESIS_ADDRESS,
+  LEGION_ADDRESS,
+} from "@treasure/constants";
 
 import { LEGION_METADATA_STORE_ADDRESS } from ".";
+import { TransferSingle } from "../../generated/Legacy Legion Genesis/ERC1155";
 import {
   LegionCraftLevelUp,
   LegionCreated,
@@ -52,9 +56,13 @@ export const createLegionCraftLevelUpEvent = (
 
 export const createLegionQuestLevelUpEvent = (
   tokenId: i32,
-  level: i32
+  level: i32,
+  blockNumber: i32 = 0
 ): LegionQuestLevelUp => {
   const newEvent = changetype<LegionQuestLevelUp>(newMockEvent());
+  if (blockNumber > 0) {
+    newEvent.block.number = BigInt.fromI32(blockNumber);
+  }
   newEvent.address = Address.fromString(LEGION_METADATA_STORE_ADDRESS);
   newEvent.parameters = [
     new ethereum.EventParam("_tokenId", ethereum.Value.fromI32(tokenId)),
@@ -73,4 +81,31 @@ export const createLegionTransferEvent = (
   newEvent.address = LEGION_ADDRESS;
 
   return newEvent;
+};
+
+export const createLegacyLegionGenesisTransferEvent = (
+  from: string,
+  to: string,
+  tokenId: i32
+): TransferSingle => {
+  const event = changetype<TransferSingle>(newMockEvent());
+  event.address = LEGACY_LEGION_GENESIS_ADDRESS;
+  event.parameters = [
+    new ethereum.EventParam(
+      "operator",
+      ethereum.Value.fromAddress(LEGACY_LEGION_GENESIS_ADDRESS)
+    ),
+    new ethereum.EventParam(
+      "from",
+      ethereum.Value.fromAddress(Address.fromString(from))
+    ),
+    new ethereum.EventParam(
+      "to",
+      ethereum.Value.fromAddress(Address.fromString(to))
+    ),
+    new ethereum.EventParam("id", ethereum.Value.fromI32(tokenId)),
+    new ethereum.EventParam("value", ethereum.Value.fromI32(1)),
+  ];
+
+  return event;
 };

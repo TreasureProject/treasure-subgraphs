@@ -1,4 +1,4 @@
-import { Address, BigInt } from "@graphprotocol/graph-ts";
+import { Address, BigInt, store } from "@graphprotocol/graph-ts";
 
 import { SMOL_TREASURES_ADDRESS } from "@treasure/constants";
 
@@ -70,7 +70,10 @@ export function getOrCreateAttribute(
   return attribute;
 }
 
-export function getOrCreateCollection(address: Address): Collection {
+export function getOrCreateCollection(
+  address: Address,
+  includeNameInTokenName: boolean = true
+): Collection {
   const id = getCollectionId(address);
   let collection = Collection.load(id);
 
@@ -79,7 +82,9 @@ export function getOrCreateCollection(address: Address): Collection {
     collection.name = getNameForCollection(address);
     collection.standard = TOKEN_STANDARD_ERC721;
     collection._attributeIds = [];
+    collection._includeNameInTokenName = includeNameInTokenName;
     collection._missingMetadataTokens = [];
+    collection._tokenIds = [];
     collection.save();
   }
 
@@ -105,6 +110,13 @@ export function getOrCreateToken(
   }
 
   return token;
+}
+
+export function removeToken(collection: Collection, tokenId: BigInt): void {
+  collection.tokensCount -= 1;
+  collection.save();
+
+  store.remove("Token", getTokenId(collection, tokenId));
 }
 
 export function getOrCreateRewardToken(tokenId: BigInt): Token {
