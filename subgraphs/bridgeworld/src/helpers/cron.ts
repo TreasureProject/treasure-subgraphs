@@ -4,7 +4,7 @@ import { Harvester, _HarvesterConfig } from "../../generated/schema";
 import { checkSummonFatigue } from "./fatigue";
 import { removeExpiredExtractors } from "./harvester";
 
-export const runHarvestersScheduledJobs = (timestamp: BigInt) => {
+export const runHarvestersScheduledJobs = (timestamp: BigInt): void => {
   const harvesterConfig = _HarvesterConfig.load("only");
   if (!harvesterConfig) {
     log.error("Harvester config not found", []);
@@ -20,14 +20,14 @@ export const runHarvestersScheduledJobs = (timestamp: BigInt) => {
 
     if (
       harvester._nextExpirationTime &&
-      timestamp.ge(harvester._nextExpirationTime)
+      timestamp.ge(harvester._nextExpirationTime as BigInt)
     ) {
       removeExpiredExtractors(harvester, timestamp);
     }
   }
 };
 
-export const runScheduledJobs = (timestamp: BigInt) => {
+export const runScheduledJobs = (timestamp: BigInt): void => {
   runHarvestersScheduledJobs(timestamp);
   checkSummonFatigue(timestamp.toI64() * 1000);
 };

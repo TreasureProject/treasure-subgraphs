@@ -214,12 +214,13 @@ export function handleExtractorStaked(event: ExtractorStaked): void {
     stakedToken.harvester = harvester.id;
   }
 
+  const expirationTime = event.block.timestamp.plus(
+    harvester.extractorsLifetime
+  );
   stakedToken.user = event.transaction.from.toHexString();
   stakedToken.token = getAddressId(CONSUMABLE_ADDRESS, tokenId);
   stakedToken.quantity = ONE_BI;
-  stakedToken.expirationTime = event.block.timestamp.plus(
-    harvester.extractorsLifetime
-  );
+  stakedToken.expirationTime = expirationTime;
   stakedToken.index = params.spotId.toI32();
   stakedToken.save();
 
@@ -232,9 +233,9 @@ export function handleExtractorStaked(event: ExtractorStaked): void {
   // Update Harvester's next expiration time if this Extractor will expire sooner
   if (
     !harvester._nextExpirationTime ||
-    stakedToken.expirationTime.lt(harvester._nextExpirationTime)
+    expirationTime.lt(harvester._nextExpirationTime as BigInt)
   ) {
-    harvester._nextExpirationTime = stakedToken.expirationTime;
+    harvester._nextExpirationTime = expirationTime;
   }
 
   harvester.save();
@@ -284,12 +285,13 @@ export function handleExtractorReplaced(event: ExtractorReplaced): void {
     return;
   }
 
+  const expirationTime = event.block.timestamp.plus(
+    harvester.extractorsLifetime
+  );
   stakedToken.user = event.transaction.from.toHexString();
   stakedToken.token = newTokenId;
   stakedToken.quantity = ONE_BI;
-  stakedToken.expirationTime = event.block.timestamp.plus(
-    harvester.extractorsLifetime
-  );
+  stakedToken.expirationTime = expirationTime;
   stakedToken.save();
 
   // Update staked Extractors boost
@@ -300,9 +302,9 @@ export function handleExtractorReplaced(event: ExtractorReplaced): void {
   // Update Harvester's next expiration time if this Extractor will expire sooner
   if (
     !harvester._nextExpirationTime ||
-    stakedToken.expirationTime.lt(harvester._nextExpirationTime)
+    expirationTime.lt(harvester._nextExpirationTime as BigInt)
   ) {
-    harvester._nextExpirationTime = stakedToken.expirationTime;
+    harvester._nextExpirationTime = expirationTime;
   }
 
   harvester.save();

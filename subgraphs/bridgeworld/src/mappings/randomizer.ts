@@ -61,32 +61,35 @@ export function handleRandomSeeded(event: RandomSeeded): void {
       continue;
     }
 
-    if (random.craft) {
-      const craft = Craft.load(random.craft);
+    const craftId = random.craft;
+    if (craftId) {
+      const craft = Craft.load(craftId);
       if (craft) {
         craft.status = "Revealable";
         craft.save();
       } else {
-        log.error("[randomizer] Craft not found: {}", [random.craft]);
+        log.error("[randomizer] Craft not found: {}", [craftId]);
       }
 
       continue;
     }
 
-    if (random.quest) {
-      const quest = Quest.load(random.quest);
+    const questId = random.quest;
+    if (questId) {
+      const quest = Quest.load(questId);
       if (quest) {
         quest.status = "Revealable";
         quest.save();
       } else {
-        log.error("[randomizer] Quest not found: {}", [random.quest]);
+        log.error("[randomizer] Quest not found: {}", [questId]);
       }
 
       continue;
     }
 
-    if (random.advancedQuest) {
-      const quest = AdvancedQuest.load(random.advancedQuest);
+    const advancedQuestId = random.advancedQuest;
+    if (advancedQuestId) {
+      const quest = AdvancedQuest.load(advancedQuestId);
       if (quest !== null && quest.token !== null) {
         const token = Token.load(quest.token);
         if (token !== null) {
@@ -109,17 +112,20 @@ export function handleRandomSeeded(event: RandomSeeded): void {
 
           quest.save();
         } else {
-          log.error("[randomizer] Token not found: {}", [random.id]);
+          log.error("[randomizer] Token not found: {}", [quest.token]);
         }
       } else {
-        log.error("[randomizer] AdvancedQuest not found: {}", [random.id]);
+        log.error("[randomizer] AdvancedQuest not found: {}", [
+          advancedQuestId,
+        ]);
       }
 
       continue;
     }
 
-    if (random.summon) {
-      const summon = Summon.load(random.summon);
+    const summonId = random.summon;
+    if (summonId) {
+      const summon = Summon.load(summonId);
       if (summon) {
         let summoning = Summoning.bind(SUMMONING_ADDRESS);
         let tokenId = BigInt.fromI32(toI32(summon.token.slice(45)));
@@ -133,7 +139,7 @@ export function handleRandomSeeded(event: RandomSeeded): void {
         summon.status = "Revealable";
         summon.save();
       } else {
-        log.error("[randomizer] Summon not found: {}", [random.summon]);
+        log.error("[randomizer] Summon not found: {}", [summonId]);
       }
 
       continue;
