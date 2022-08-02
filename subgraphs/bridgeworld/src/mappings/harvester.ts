@@ -244,7 +244,7 @@ export function handleExtractorStaked(event: ExtractorStaked): void {
 }
 
 export function handleExtractorReplaced(event: ExtractorReplaced): void {
-  const harvester = getHarvesterForNftHandler(event.address);
+  const harvester = getHarvesterForStakingRule(event.address);
   if (!harvester) {
     return;
   }

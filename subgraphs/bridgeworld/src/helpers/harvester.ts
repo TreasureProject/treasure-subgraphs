@@ -118,7 +118,7 @@ export const removeExpiredExtractors = (
     }
 
     if (stakedToken.expirationTime) {
-      if ((stakedToken.expirationTime as BigInt).ge(timestamp)) {
+      if (timestamp.ge(stakedToken.expirationTime as BigInt)) {
         const tokenBoost = HarvesterTokenBoost.load(
           `${harvester.id}-${stakedToken.token}`
         );
@@ -134,6 +134,11 @@ export const removeExpiredExtractors = (
         harvester.extractorsBoost = harvester.extractorsBoost.minus(
           tokenBoost.boost
         );
+
+        log.info("Removing expired Extractor from Harvester {} in spot {}", [
+          harvester.id,
+          stakedToken.index.toString(),
+        ]);
 
         store.remove("StakedToken", stakedToken.id);
       } else if (
