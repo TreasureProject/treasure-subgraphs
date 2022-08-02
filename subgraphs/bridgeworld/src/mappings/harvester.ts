@@ -1,4 +1,4 @@
-import { Address, BigInt, log, store } from "@graphprotocol/graph-ts";
+import { BigInt, log, store } from "@graphprotocol/graph-ts";
 
 import { CONSUMABLE_ADDRESS, LEGION_ADDRESS } from "@treasure/constants";
 
@@ -54,6 +54,7 @@ export function handleHarvesterDeployed(event: HarvesterDeployed): void {
   const harvesterAddress = params.harvester;
   const harvester = new Harvester(harvesterAddress.toHexString());
   harvester.deployedBlockNumber = event.block.number;
+  harvester._stakedExtractorIds = [];
   harvester.save();
 
   // Start listening for Harvester events at this address
@@ -205,6 +206,9 @@ export function handleExtractorStaked(event: ExtractorStaked): void {
 
   harvester.extractorsStaked += params.amount.toI32();
   harvester.extractorsBoost = harvester.extractorsBoost.plus(tokenBoost.boost);
+  harvester._stakedExtractorIds = harvester._stakedExtractorIds.concat([
+    stakedToken.id,
+  ]);
   harvester.save();
 }
 
@@ -222,20 +226,56 @@ export function handleExtractorReplaced(event: ExtractorReplaced): void {
     }`
   );
   if (!stakedToken) {
-    log.error("Replacing unknown Extract spot ID: {}, {}", [
+    log.error("Replacing unknown Extractor spot ID: {}, {}", [
       harvester.id,
       params.replacedSpotId.toString(),
     ]);
     return;
   }
 
+  const oldTokenId = stakedToken.token;
+  const oldTokenBoost = HarvesterTokenBoost.load(
+    `${harvester.id}-${stakedToken.token}`
+  );
+  if (!oldTokenBoost) {
+    log.error("Extractor boost info not found: {}, {}", [
+      harvester.id,
+      stakedToken.token.toString(),
+    ]);
+    return;
+  }
+
+  const newTokenId = getAddressId(CONSUMABLE_ADDRESS, tokenId);
+  const newTokenBoost = HarvesterTokenBoost.load(
+    `${harvester.id}-${newTokenId}`
+  );
+  if (!newTokenBoost) {
+    log.error("Extractor boost info not found: {}, {}", [
+      harvester.id,
+      tokenId.toString(),
+    ]);
+    return;
+  }
+
   stakedToken.user = event.transaction.from.toHexString();
-  stakedToken.token = getAddressId(CONSUMABLE_ADDRESS, tokenId);
+  stakedToken.token = newTokenId;
   stakedToken.quantity = ONE_BI;
   stakedToken.expirationTime = event.block.timestamp.plus(
     harvester.extractorsLifetime
   );
   stakedToken.save();
+
+  harvester.extractorsBoost = harvester.extractorsBoost
+    .minus(oldTokenBoost.boost)
+    .plus(newTokenBoost.boost);
+  const stakedExtractorIds = harvester._stakedExtractorIds;
+  const tokenIndex = harvester._stakedExtractorIds.indexOf(oldTokenId);
+  if (tokenIndex >= 0) {
+    stakedExtractorIds.splice(tokenIndex, 1);
+  }
+  stakedExtractorIds.push(newTokenId);
+  harvester._stakedExtractorIds = stakedExtractorIds;
+  harvester.save();
 }
 
 export function handleMagicDeposited(event: DepositEvent): void {

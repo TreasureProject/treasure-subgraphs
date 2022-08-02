@@ -534,6 +534,9 @@ type Harvester @entity {
   "Boost value of staked Legions (1 + ((2n - n^2/maxLegions)/maxLegions) * legionsRankBoost)"
   legionsBoost: BigInt!
 
+  "Internal field for tracking the IDs of Extractors staked to this Harvester"
+  _stakedExtractorIds: [String!]!
+
   "Boost values for tokens when added to this Harvester"
   tokenBoosts: [HarvesterTokenBoost!]! @derivedFrom(field: "harvester")
 
