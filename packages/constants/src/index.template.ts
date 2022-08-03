@@ -117,11 +117,6 @@ export const MAGICSWAP_FACTORY_ADDRESS = Address.fromString(
   "{{ magicswap_factory_address }}"
 );
 
-export const MAGICSWAP_TOKEN_WHITELIST: string[] = [
-  "{{ magic_address }}",
-  "{{ usdc_address }}",
-];
-
 export const USDC =
   "{{ usdc_address }}{{^usdc_address}}0x0000000000000000000000000000000000000000{{/usdc_address}}";
 
@@ -144,3 +139,5 @@ export const USDT_WETH_PAIR =
 
 export const SUSHI_USDT_PAIR =
   "{{ sushi_usdt_pair }}{{^sushi_usdt_pair}}0x0000000000000000000000000000000000000000{{/sushi_usdt_pair}}";
+
+export const MAGICSWAP_TOKEN_WHITELIST = [NATIVE.toHexString()];

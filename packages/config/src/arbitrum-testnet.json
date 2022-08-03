@@ -145,8 +145,6 @@
 
   "hourly_stat_interval_start_block": 8952193,
 
-  "magicswap_factory_address": "0x5dda5fd562026e54c7a18825948afd629e29bd39",
-  "magicswap_factory_start_block": "11393878",
-  "usdc_address": "0x5bb20ee8ec1741f718064c609b87285774f8b6df",
-  "usdc_weth_pair_address": "0xe2b2063b63ab69f43fd01328a5b01b252169ba87"
+  "magicswap_factory_address": "0xA145fb7646276Ea0428D3b011530B399DA680196",
+  "magicswap_factory_start_block": 13899689
 }
