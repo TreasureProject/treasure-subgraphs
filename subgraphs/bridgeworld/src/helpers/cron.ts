@@ -7,7 +7,6 @@ import { removeExpiredExtractors } from "./harvester";
 export const runHarvestersScheduledJobs = (timestamp: BigInt): void => {
   const harvesterConfig = _HarvesterConfig.load("only");
   if (!harvesterConfig) {
-    log.error("Harvester config not found", []);
     return;
   }
 
