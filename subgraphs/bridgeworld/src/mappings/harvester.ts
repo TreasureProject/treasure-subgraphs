@@ -49,6 +49,7 @@ import {
   removeExpiredExtractors,
 } from "../helpers/harvester";
 import { getLegionMetadata } from "../helpers/legion";
+import { getUserOrMultisigAddress } from "../helpers/user";
 
 export function handleHarvesterDeployed(event: HarvesterDeployed): void {
   const params = event.params;
@@ -101,7 +102,7 @@ export function handleNftStaked(event: Staked): void {
     return;
   }
 
-  const userAddress = event.transaction.from;
+  const userAddress = getUserOrMultisigAddress(event);
   const stakedTokenId = `${
     harvester.id
   }-${userAddress.toHexString()}-${getAddressId(nftAddress, tokenId)}`;
@@ -141,7 +142,7 @@ export function handleNftUnstaked(event: Unstaked): void {
     return;
   }
 
-  const userAddress = event.transaction.from;
+  const userAddress = getUserOrMultisigAddress(event);
   const params = event.params;
   const nftAddress = params.nft;
 
@@ -222,7 +223,7 @@ export function handleExtractorStaked(event: ExtractorStaked): void {
       stakedToken.harvester = harvester.id;
     }
 
-    stakedToken.user = event.transaction.from.toHexString();
+    stakedToken.user = getUserOrMultisigAddress(event).toHexString();
     stakedToken.token = getAddressId(CONSUMABLE_ADDRESS, tokenId);
     stakedToken.quantity = ONE_BI;
     stakedToken.expirationTime = expirationTime;
@@ -297,7 +298,7 @@ export function handleExtractorReplaced(event: ExtractorReplaced): void {
   const newExpirationTime = event.block.timestamp.plus(
     harvester.extractorsLifetime
   );
-  stakedToken.user = event.transaction.from.toHexString();
+  stakedToken.user = getUserOrMultisigAddress(event).toHexString();
   stakedToken.token = newTokenId;
   stakedToken.quantity = ONE_BI;
   stakedToken.expirationTime = newExpirationTime;
