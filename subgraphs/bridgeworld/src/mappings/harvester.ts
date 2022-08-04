@@ -204,31 +204,39 @@ export function handleExtractorStaked(event: ExtractorStaked): void {
     return;
   }
 
-  const stakedTokenId = createStakedExtractorId(
-    harvester,
-    params.spotId.toI32()
-  );
-  let stakedToken = StakedToken.load(stakedTokenId);
-  if (!stakedToken) {
-    stakedToken = new StakedToken(stakedTokenId);
-    stakedToken.harvester = harvester.id;
-  }
-
+  const amount = params.amount.toI32();
   const expirationTime = event.block.timestamp.plus(
     harvester.extractorsLifetime
   );
-  stakedToken.user = event.transaction.from.toHexString();
-  stakedToken.token = getAddressId(CONSUMABLE_ADDRESS, tokenId);
-  stakedToken.quantity = ONE_BI;
-  stakedToken.expirationTime = expirationTime;
-  stakedToken.index = params.spotId.toI32();
-  stakedToken.save();
+
+  // Save Extractors as StakedTokens based on spotId instead of tokenId
+  // Only one event is fired for multiple Extractors staked
+  // Determine the starting spotId by subtracting the amount from the event's spotId
+  const endSpotId = params.spotId.toI32();
+  const startSpotId = endSpotId - (amount - 1);
+  for (let spotId = startSpotId; spotId <= endSpotId; spotId++) {
+    const stakedTokenId = createStakedExtractorId(harvester, spotId);
+    let stakedToken = StakedToken.load(stakedTokenId);
+    if (!stakedToken) {
+      stakedToken = new StakedToken(stakedTokenId);
+      stakedToken.harvester = harvester.id;
+    }
+
+    stakedToken.user = event.transaction.from.toHexString();
+    stakedToken.token = getAddressId(CONSUMABLE_ADDRESS, tokenId);
+    stakedToken.quantity = ONE_BI;
+    stakedToken.expirationTime = expirationTime;
+    stakedToken.index = params.spotId.toI32();
+    stakedToken.save();
+  }
 
   // Update staked Extractors count
-  harvester.extractorsStaked += 1;
+  harvester.extractorsStaked += amount;
 
   // Update staked Extractors boost
-  harvester.extractorsBoost = harvester.extractorsBoost.plus(tokenBoost.boost);
+  harvester.extractorsBoost = harvester.extractorsBoost.plus(
+    tokenBoost.boost.times(params.amount)
+  );
 
   // Update Harvester's next expiration time if this Extractor will expire sooner
   if (
@@ -285,26 +293,33 @@ export function handleExtractorReplaced(event: ExtractorReplaced): void {
     return;
   }
 
-  const expirationTime = event.block.timestamp.plus(
+  const oldExpirationTime = stakedToken.expirationTime;
+  const newExpirationTime = event.block.timestamp.plus(
     harvester.extractorsLifetime
   );
   stakedToken.user = event.transaction.from.toHexString();
   stakedToken.token = newTokenId;
   stakedToken.quantity = ONE_BI;
-  stakedToken.expirationTime = expirationTime;
+  stakedToken.expirationTime = newExpirationTime;
   stakedToken.save();
 
   // Update staked Extractors boost
-  harvester.extractorsBoost = harvester.extractorsBoost
-    .minus(oldTokenBoost.boost)
-    .plus(newTokenBoost.boost);
+  let nextExtractorsBoost = harvester.extractorsBoost.plus(newTokenBoost.boost);
+  // Subtract old boost if it wasn't expired yet
+  if (
+    oldExpirationTime &&
+    (oldExpirationTime as BigInt).gt(event.block.timestamp)
+  ) {
+    nextExtractorsBoost = nextExtractorsBoost.minus(oldTokenBoost.boost);
+  }
+  harvester.extractorsBoost = nextExtractorsBoost;
 
   // Update Harvester's next expiration time if this Extractor will expire sooner
   if (
     !harvester._nextExpirationTime ||
-    expirationTime.lt(harvester._nextExpirationTime as BigInt)
+    newExpirationTime.lt(harvester._nextExpirationTime as BigInt)
   ) {
-    harvester._nextExpirationTime = expirationTime;
+    harvester._nextExpirationTime = newExpirationTime;
   }
 
   harvester.save();

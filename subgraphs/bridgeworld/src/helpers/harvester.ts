@@ -1,4 +1,4 @@
-import { Address, BigInt, log, store } from "@graphprotocol/graph-ts";
+import { Address, BigInt, log } from "@graphprotocol/graph-ts";
 
 import { CONSUMABLE_ADDRESS } from "@treasure/constants";
 
@@ -117,7 +117,7 @@ export const removeExpiredExtractors = (
       continue;
     }
 
-    if (stakedToken.expirationTime) {
+    if (stakedToken.expirationTime && !stakedToken.expirationProcessed) {
       if (timestamp.ge(stakedToken.expirationTime as BigInt)) {
         const tokenBoost = HarvesterTokenBoost.load(
           `${harvester.id}-${stakedToken.token}`
@@ -130,17 +130,16 @@ export const removeExpiredExtractors = (
           continue;
         }
 
-        harvester.extractorsStaked -= 1;
+        log.info(
+          "Removing boost value for expired Extractor from Harvester {} in spot {}",
+          [harvester.id, stakedToken.index.toString()]
+        );
+
         harvester.extractorsBoost = harvester.extractorsBoost.minus(
           tokenBoost.boost
         );
-
-        log.info("Removing expired Extractor from Harvester {} in spot {}", [
-          harvester.id,
-          stakedToken.index.toString(),
-        ]);
-
-        store.remove("StakedToken", stakedToken.id);
+        stakedToken.expirationProcessed = true;
+        stakedToken.save();
       } else if (
         !nextExpirationTime ||
         (stakedToken.expirationTime as BigInt).lt(nextExpirationTime)

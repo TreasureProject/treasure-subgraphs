@@ -367,6 +367,9 @@ type StakedToken @entity {
 
   "Timestamp, in seconds, when the effects of this staked token expire, if applicable"
   expirationTime: BigInt
+
+  "Flag is true if `expirationTime` has already been processed by the subgraph"
+  expirationProcessed: Boolean!
 }
 
 type Summon @entity {
