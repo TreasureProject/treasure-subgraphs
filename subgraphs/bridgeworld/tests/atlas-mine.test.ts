@@ -1,4 +1,4 @@
-import { assert, clearStore, logStore, test } from "matchstick-as/assembly";
+import { assert, clearStore, test } from "matchstick-as/assembly";
 
 import { Address } from "@graphprotocol/graph-ts";
 
@@ -122,6 +122,12 @@ test("stake/unstake handles when a user does the event", () => {
   const stakedId = `${USER_ADDRESS}-${tokenId}`;
 
   assert.fieldEquals(USER_ENTITY_TYPE, USER_ADDRESS, "staked", `[${stakedId}]`);
+  assert.fieldEquals(
+    STAKED_TOKEN_ENTITY_TYPE,
+    stakedId,
+    "mine",
+    ATLAS_MINE_ADDRESS
+  );
   assert.fieldEquals(STAKED_TOKEN_ENTITY_TYPE, stakedId, "user", USER_ADDRESS);
   assert.fieldEquals(STAKED_TOKEN_ENTITY_TYPE, stakedId, "token", tokenId);
   assert.fieldEquals(STAKED_TOKEN_ENTITY_TYPE, stakedId, "quantity", "1");
