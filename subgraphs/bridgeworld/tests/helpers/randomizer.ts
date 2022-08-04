@@ -28,6 +28,7 @@ export const createRandomSeededEvent = (commitId: i32): RandomSeeded => {
   event.parameters = [
     new ethereum.EventParam("_commitId", ethereum.Value.fromI32(commitId)),
   ];
+  event.block.timestamp = BigInt.fromI32(1645060164);
 
   return event;
 };

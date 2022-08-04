@@ -261,9 +261,8 @@ test("summon fatigue is tracked and cleared properly", () => {
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "summons", "1");
 
   // Now fire a random request and should clear summon fatigue
-  const anotherRandomRequestEvent = createRandomRequestEvent(1, 2);
-
-  handleRandomRequest(anotherRandomRequestEvent);
+  handleRandomRequest(createRandomRequestEvent(1, 2));
+  handleRandomSeeded(createRandomSeededEvent(2));
 
   assert.fieldEquals(SUMMON_FATIGUE_ENTITY_TYPE, "all", "data", "[]");
   assert.fieldEquals(
