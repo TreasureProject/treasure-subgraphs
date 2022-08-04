@@ -11,6 +11,8 @@ export const TREASURE_FRAGMENT_IPFS =
   "ipfs://QmUv5UT7X9qahf8bqcqZjX7TKqrJeMyRX3kxjVowz2WkRm";
 export const SUMMONING_SUCCESS_SENSITIVITY: f32 = 1;
 
+export const QUEST_DISTANCE_TRAVELLED_PER_PART = 10;
+
 const DAY = 86_400;
 const ONE_WEEK = DAY * 7;
 const TWO_WEEKS = ONE_WEEK * 2;
