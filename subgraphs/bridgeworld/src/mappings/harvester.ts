@@ -193,10 +193,9 @@ export function handleExtractorStaked(event: ExtractorStaked): void {
 
   const params = event.params;
   const tokenId = params.tokenId;
+  const extractorId = getAddressId(CONSUMABLE_ADDRESS, tokenId);
 
-  const tokenBoost = HarvesterTokenBoost.load(
-    `${harvester.id}-${getAddressId(CONSUMABLE_ADDRESS, tokenId)}`
-  );
+  const tokenBoost = HarvesterTokenBoost.load(`${harvester.id}-${extractorId}`);
   if (!tokenBoost) {
     log.error("Extractor boost info not found: {}, {}", [
       harvester.id,
@@ -205,6 +204,7 @@ export function handleExtractorStaked(event: ExtractorStaked): void {
     return;
   }
 
+  const userId = getUserOrMultisigAddress(event).toHexString();
   const amount = params.amount.toI32();
   const expirationTime = event.block.timestamp.plus(
     harvester.extractorsLifetime
@@ -221,13 +221,13 @@ export function handleExtractorStaked(event: ExtractorStaked): void {
     if (!stakedToken) {
       stakedToken = new StakedToken(stakedTokenId);
       stakedToken.harvester = harvester.id;
+      stakedToken.index = spotId;
     }
 
-    stakedToken.user = getUserOrMultisigAddress(event).toHexString();
-    stakedToken.token = getAddressId(CONSUMABLE_ADDRESS, tokenId);
+    stakedToken.user = userId;
+    stakedToken.token = extractorId;
     stakedToken.quantity = ONE_BI;
     stakedToken.expirationTime = expirationTime;
-    stakedToken.index = params.spotId.toI32();
     stakedToken.save();
   }
 
