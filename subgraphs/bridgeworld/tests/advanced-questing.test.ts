@@ -154,17 +154,17 @@ test("Part increase as quest continues", () => {
   handleAdvancedQuestStarted(
     createAdvancedQuestStartedEvent(USER_ADDRESS, legionId)
   );
-  assert.fieldEquals("AdvancedQuest", questId, "part", "0");
-
-  handleAdvancedQuestContinued(
-    createAdvancedQuestContinuedEvent(USER_ADDRESS, legionId, 1, 1)
-  );
   assert.fieldEquals("AdvancedQuest", questId, "part", "1");
 
   handleAdvancedQuestContinued(
     createAdvancedQuestContinuedEvent(USER_ADDRESS, legionId, 1, 2)
   );
   assert.fieldEquals("AdvancedQuest", questId, "part", "2");
+
+  handleAdvancedQuestContinued(
+    createAdvancedQuestContinuedEvent(USER_ADDRESS, legionId, 1, 3)
+  );
+  assert.fieldEquals("AdvancedQuest", questId, "part", "3");
 });
 
 test("XP increases based on level when quest ends", () => {
@@ -177,11 +177,23 @@ test("XP increases based on level when quest ends", () => {
   for (let level = 1; level < 6; level++) {
     assert.fieldEquals("LegionInfo", mdId, "questing", `${level}`);
     assert.fieldEquals("LegionInfo", mdId, "questingXp", "0");
-
     for (let questIndex = 1; questIndex <= 3; questIndex++) {
       simulateAdvancedQuest(USER_ADDRESS, legionId);
       const xp = getXpPerLevel(level) * questIndex;
+      const questsCompleted = level * 3 - (3 - questIndex);
       assert.fieldEquals("LegionInfo", mdId, "questingXp", `${xp}`);
+      assert.fieldEquals(
+        "LegionInfo",
+        mdId,
+        "questsCompleted",
+        questsCompleted.toString()
+      );
+      assert.fieldEquals(
+        "LegionInfo",
+        mdId,
+        "questsDistanceTravelled",
+        (questsCompleted * 10).toString()
+      );
     }
 
     handleLegionQuestLevelUp(
@@ -190,23 +202,6 @@ test("XP increases based on level when quest ends", () => {
   }
 
   assert.fieldEquals("LegionInfo", mdId, "questing", "6");
-});
-
-test("XP doesn't increase at level 6", () => {
-  const legionId = 1;
-  const legionStoreId = advancedQuestingSetup(legionId);
-  const mdId = `${legionStoreId}-metadata`;
-
-  mockEndTimeForLegion(legionId, new Date(0).getTime(), 0);
-
-  handleLegionQuestLevelUp(createLegionQuestLevelUpEvent(legionId, 6));
-  assert.fieldEquals("LegionInfo", mdId, "questing", "6");
-
-  simulateAdvancedQuest(USER_ADDRESS, legionId);
-  assert.fieldEquals("LegionInfo", mdId, "questingXp", "0");
-
-  simulateAdvancedQuest(USER_ADDRESS, legionId);
-  assert.fieldEquals("LegionInfo", mdId, "questingXp", "0");
 });
 
 test("XP doesn't increase at level 6", () => {

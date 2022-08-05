@@ -136,8 +136,10 @@ export function handleQuestFinished(event: QuestFinished): void {
   if (metadata) {
     metadata.questsCompleted += 1;
     metadata.questsDistanceTravelled +=
-      difficulty * QUEST_DISTANCE_TRAVELLED_PER_PART;
+      (difficulty + 1) * QUEST_DISTANCE_TRAVELLED_PER_PART;
     metadata.save();
+  } else {
+    log.warning("Legion metadata not found: {}", [quest.token]);
   }
 
   quest.id = `${quest.id}-${quest.random}`;

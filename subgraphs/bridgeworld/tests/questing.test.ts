@@ -65,6 +65,13 @@ test("questing increases xp when completed", () => {
 
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "questing", "1");
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "questingXp", "0");
+  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "questsCompleted", "0");
+  assert.fieldEquals(
+    LEGION_INFO_ENTITY_TYPE,
+    metadata,
+    "questsDistanceTravelled",
+    "0"
+  );
 
   let questsToLevelUp = 10;
 
@@ -111,6 +118,19 @@ test("questing increases xp when completed", () => {
 
     handleQuestFinished(questFinishedEvent);
   }
+
+  assert.fieldEquals(
+    LEGION_INFO_ENTITY_TYPE,
+    metadata,
+    "questsCompleted",
+    questsToLevelUp.toString()
+  );
+  assert.fieldEquals(
+    LEGION_INFO_ENTITY_TYPE,
+    metadata,
+    "questsDistanceTravelled",
+    (questsToLevelUp * 10).toString()
+  );
 
   questsToLevelUp = 20;
 
@@ -315,6 +335,13 @@ test("questing xp does not increase at max level (6)", () => {
 
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "questing", "1");
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "questingXp", "0");
+  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "questsCompleted", "0");
+  assert.fieldEquals(
+    LEGION_INFO_ENTITY_TYPE,
+    metadata,
+    "questsDistanceTravelled",
+    "0"
+  );
 
   // Short cut to max level
   const questLevelUp = createLegionQuestLevelUpEvent(1, 6);
@@ -351,6 +378,14 @@ test("questing xp does not increase at max level (6)", () => {
   const questFinishedEvent = createQuestFinishedEvent(USER_ADDRESS, 1);
 
   handleQuestFinished(questFinishedEvent);
+
+  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "questsCompleted", "1");
+  assert.fieldEquals(
+    LEGION_INFO_ENTITY_TYPE,
+    metadata,
+    "questsDistanceTravelled",
+    "10"
+  );
 });
 
 test("legacy questing xp does not increase after upgrade block", () => {

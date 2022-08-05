@@ -159,9 +159,14 @@ export function handleCraftingFinished(event: CraftingFinished): void {
   let id = getAddressId(event.address, event.params._tokenId);
 
   const craft = Craft.load(id);
-  const outcome = Outcome.load(id);
-  if (!craft || !outcome) {
+  if (!craft) {
     log.error("[craft-finished] Unknown craft: {}", [id]);
+    return;
+  }
+
+  const outcome = Outcome.load(`${id}-${craft.random}`);
+  if (!outcome) {
+    log.error("[craft-finished] Unknown craft outcome: {}", [id]);
     return;
   }
 

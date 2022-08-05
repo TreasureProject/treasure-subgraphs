@@ -102,7 +102,7 @@ export function createAdvancedQuestStartedEvent(
   legionId: i32 = 1,
   requestId: i32 = 1,
   zoneName: string = "A",
-  toPart: i8 = 0,
+  toPart: i8 = 1,
   treasureIds: i32[] = [1, 2, 3],
   treasureAmounts: i32[] = [1, 1, 1]
 ): AdvancedQuestStarted {
