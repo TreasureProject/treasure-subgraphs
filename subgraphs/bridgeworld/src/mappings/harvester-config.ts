@@ -6,7 +6,12 @@ import {
   TREASURE_ADDRESS,
 } from "@treasure/constants";
 
-import { Harvester, HarvesterStakingRule, Token } from "../../generated/schema";
+import {
+  Harvester,
+  HarvesterStakingRule,
+  HarvesterTimelock,
+  Token,
+} from "../../generated/schema";
 import {
   ExtractorsStakingRules,
   ExtractorsStakingRulesConfig,
@@ -22,6 +27,9 @@ import {
 } from "../../generated/templates/ExtractorsStakingRulesConfig/ExtractorsStakingRules";
 import {
   DepositCapPerWallet,
+  TimelockOption,
+  TimelockOptionDisabled,
+  TimelockOptionEnabled,
   TotalDepositCap,
 } from "../../generated/templates/HarvesterConfig/Harvester";
 import {
@@ -71,6 +79,55 @@ export function handleUpdatedPartsDepositCap(event: DepositCapPerWallet): void {
   harvester.save();
 }
 
+export function handleAddedTimelockOption(event: TimelockOption): void {
+  const harvesterId = event.address.toHexString();
+  const params = event.params;
+  const timelock = new HarvesterTimelock(
+    `${harvesterId}-${params.id.toHexString()}`
+  );
+  timelock.harvester = harvesterId;
+  timelock.enabled = params.timelock.enabled;
+  timelock.timelockId = params.id;
+  timelock.boost = params.timelock.boost;
+  timelock.duration = params.timelock.timelock;
+  timelock.vestingDuration = params.timelock.vesting;
+  timelock.save();
+}
+
+export function handleEnabledTimelockOption(
+  event: TimelockOptionEnabled
+): void {
+  const harvesterId = event.address.toHexString();
+  const params = event.params;
+  const timelock = HarvesterTimelock.load(
+    `${harvesterId}-${params.id.toHexString()}`
+  );
+  if (!timelock) {
+    log.error("Unknown timelock option: {}", [params.id.toString()]);
+    return;
+  }
+
+  timelock.enabled = true;
+  timelock.save();
+}
+
+export function handleDisabledTimelockOption(
+  event: TimelockOptionDisabled
+): void {
+  const harvesterId = event.address.toHexString();
+  const params = event.params;
+  const timelock = HarvesterTimelock.load(
+    `${harvesterId}-${params.id.toHexString()}`
+  );
+  if (!timelock) {
+    log.error("Unknown timelock option: {}", [params.id.toString()]);
+    return;
+  }
+
+  timelock.enabled = false;
+  timelock.save();
+}
+
 export function handleNftConfigSet(event: NftConfigSet): void {
   // Load associated Harvester
   const harvester = getHarvesterForNftHandler(event.address);
@@ -110,8 +167,6 @@ export function handleNftConfigSet(event: NftConfigSet): void {
     TreasuresStakingRules.create(stakingRulesAddress);
     processTreasuresStakingRules(stakingRulesAddress, harvester);
   }
-
-  harvester.save();
 }
 
 const processPartsStakingRules = (

@@ -8,6 +8,7 @@ import {
   Harvest,
   Harvester,
   HarvesterNftHandler,
+  HarvesterTimelock,
   HarvesterTokenBoost,
   StakedToken,
   Withdraw,
@@ -35,7 +36,6 @@ import {
 import {
   HARVESTER_EXTRACTOR_TOKEN_IDS,
   HARVESTER_PART_TOKEN_ID,
-  LOCK_PERIOD_IN_SECONDS,
   ONE_BI,
   getAddressId,
 } from "../helpers";
@@ -336,7 +336,14 @@ export function handleMagicDeposited(event: DepositEvent): void {
 
   const params = event.params;
   const userAddress = params.user;
-  const lock = params.lock.toI32();
+
+  const timelock = HarvesterTimelock.load(
+    `${harvester.id}-${params.lock.toHexString()}`
+  );
+  if (!timelock) {
+    log.error("Unknown timelock option: {}", [params.lock.toString()]);
+    return;
+  }
 
   // Save deposit
   const deposit = new Deposit(
@@ -347,10 +354,10 @@ export function handleMagicDeposited(event: DepositEvent): void {
   deposit.depositId = params.index;
   deposit.startTimestamp = event.block.timestamp.times(BigInt.fromI32(1000));
   deposit.endTimestamp = event.block.timestamp
-    .plus(BigInt.fromI32(LOCK_PERIOD_IN_SECONDS[lock]))
+    .plus(timelock.duration)
     .times(BigInt.fromI32(1000));
-  deposit.lock = lock;
   deposit.harvester = harvester.id;
+  deposit.harvesterTimelock = timelock.id;
   deposit.user = userAddress.toHexString();
   deposit.save();
 

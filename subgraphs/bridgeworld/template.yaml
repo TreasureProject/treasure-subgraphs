@@ -619,6 +619,12 @@ templates:
           handler: handleUpdatedMagicTotalDepositCap
         - event: DepositCapPerWallet((address,uint256,uint256))
           handler: handleUpdatedPartsDepositCap
+        - event: TimelockOption((uint256,uint256,uint256,bool),uint256)
+          handler: handleAddedTimelockOption
+        - event: TimelockOptionEnabled((uint256,uint256,uint256,bool),uint256)
+          handler: handleEnabledTimelockOption
+        - event: TimelockOptionDisabled((uint256,uint256,uint256,bool),uint256)
+          handler: handleDisabledTimelockOption
       file: ./src/mappings/harvester-config.ts
   - name: NftHandlerConfig
     kind: ethereum/contract

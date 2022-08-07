@@ -177,8 +177,11 @@ type Deposit @entity {
   "Unlock time, in milliseconds"
   endTimestamp: BigInt!
 
-  "Initial lock period (0 = 2 Weeks, 1 = 1 Month, 2 = 3 Months, 3 = 6 Months, 4 = 12 Months"
-  lock: Int!
+  "Lock period ID (0 = 2 Weeks, 1 = 1 Month, 2 = 3 Months, 3 = 6 Months, 4 = 12 Months)"
+  lock: Int
+
+  "Associated timelock for this deposit in the Harvester, if applicable"
+  harvesterTimelock: HarvesterTimelock
 
   "`User` who initiated the deposit"
   user: User!
@@ -548,6 +551,9 @@ type Harvester @entity {
   "Boost value of staked Legions (1 + ((2n - n^2/maxLegions)/maxLegions) * legionsRankBoost)"
   legionsBoost: BigInt!
 
+  "Options for timelocking deposits to this Harvester"
+  timelockOptions: [HarvesterTimelock!]! @derivedFrom(field: "harvester")
+
   "Boost values for tokens when added to this Harvester"
   tokenBoosts: [HarvesterTokenBoost!]! @derivedFrom(field: "harvester")
 
@@ -589,4 +595,26 @@ type HarvesterTokenBoost @entity {
 
   "Boost value of the token when added to the associated Harvester"
   boost: BigInt!
+}
+
+type HarvesterTimelock @entity {
+  id: ID!
+
+  "Harvester associated with this timelock"
+  harvester: Harvester!
+
+  "True if timelock option is available for use"
+  enabled: Boolean!
+
+  "Identifier for this timelock"
+  timelockId: BigInt!
+
+  "Boost value for deposits with this timelock"
+  boost: BigInt!
+
+  "Duration, in seconds, of this timelock"
+  duration: BigInt!
+
+  "Duration, in seconds, of the vesting period for this timelock"
+  vestingDuration: BigInt!
 }
