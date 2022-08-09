@@ -158,12 +158,24 @@ export function handleCraftingRevealed(event: CraftingRevealed): void {
 export function handleCraftingFinished(event: CraftingFinished): void {
   let id = getAddressId(event.address, event.params._tokenId);
 
-  let craft = Craft.load(id);
-
+  const craft = Craft.load(id);
   if (!craft) {
     log.error("[craft-finished] Unknown craft: {}", [id]);
-
     return;
+  }
+
+  const outcome = Outcome.load(`${id}-${craft.random}`);
+  if (!outcome) {
+    log.error("[craft-finished] Unknown craft outcome: {}", [id]);
+    return;
+  }
+
+  if (outcome.success) {
+    const metadata = LegionInfo.load(`${craft.token}-metadata`);
+    if (metadata) {
+      metadata.majorCraftsCompleted += 1;
+      metadata.save();
+    }
   }
 
   craft.id = `${craft.id}-${craft.random}`;

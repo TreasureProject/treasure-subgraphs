@@ -10,7 +10,12 @@ import {
   QuestStarted,
 } from "../../generated/Questing/Questing";
 import { LegionInfo, Quest, Random, Reward } from "../../generated/schema";
-import { DIFFICULTY, getAddressId, getXpPerLevel } from "../helpers";
+import {
+  DIFFICULTY,
+  QUEST_DISTANCE_TRAVELLED_PER_PART,
+  getAddressId,
+  getXpPerLevel,
+} from "../helpers";
 import { isQuestingXpGainedEnabled } from "../helpers/config";
 import { getLegionMetadata } from "../helpers/legion";
 
@@ -124,6 +129,17 @@ export function handleQuestFinished(event: QuestFinished): void {
     log.error("[finished] Unknown quest: {}", [id]);
 
     return;
+  }
+
+  const difficulty = DIFFICULTY.indexOf(quest.difficulty);
+  const metadata = LegionInfo.load(`${quest.token}-metadata`);
+  if (metadata) {
+    metadata.questsCompleted += 1;
+    metadata.questsDistanceTravelled +=
+      (difficulty + 1) * QUEST_DISTANCE_TRAVELLED_PER_PART;
+    metadata.save();
+  } else {
+    log.warning("Legion metadata not found: {}", [quest.token]);
   }
 
   quest.id = `${quest.id}-${quest.random}`;
