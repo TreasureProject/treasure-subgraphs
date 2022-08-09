@@ -1,34 +1,13 @@
 [
     {
-      "inputs": [
-        {
-          "internalType": "contract IERC20",
-          "name": "_magic",
-          "type": "address"
-        },
-        {
-          "internalType": "contract IMiddleman",
-          "name": "_middleman",
-          "type": "address"
-        },
-        {
-          "internalType": "address",
-          "name": "_admin",
-          "type": "address"
-        },
-        {
-          "internalType": "address",
-          "name": "_harvesterImpl",
-          "type": "address"
-        },
-        {
-          "internalType": "address",
-          "name": "_nftHandlerImpl",
-          "type": "address"
-        }
-      ],
+      "inputs": [],
       "stateMutability": "nonpayable",
       "type": "constructor"
+    },
+    {
+      "inputs": [],
+      "name": "HarvesterExists",
+      "type": "error"
     },
     {
       "anonymous": false,
@@ -218,6 +197,11 @@
             },
             {
               "internalType": "uint256",
+              "name": "partsTokenId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
               "name": "capPerPart",
               "type": "uint256"
             }
@@ -230,6 +214,11 @@
           "internalType": "address[]",
           "name": "_nfts",
           "type": "address[]"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "_tokenIds",
+          "type": "uint256[]"
         },
         {
           "components": [
@@ -278,6 +267,19 @@
       "name": "enableHarvester",
       "outputs": [],
       "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getAllActiveHarvesters",
+      "outputs": [
+        {
+          "internalType": "address[]",
+          "name": "allActiveHarvesters",
+          "type": "address[]"
+        }
+      ],
+      "stateMutability": "view",
       "type": "function"
     },
     {
@@ -440,6 +442,39 @@
         }
       ],
       "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "contract IERC20",
+          "name": "_magic",
+          "type": "address"
+        },
+        {
+          "internalType": "contract IMiddleman",
+          "name": "_middleman",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_admin",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_harvesterImpl",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_nftHandlerImpl",
+          "type": "address"
+        }
+      ],
+      "name": "init",
+      "outputs": [],
+      "stateMutability": "nonpayable",
       "type": "function"
     },
     {

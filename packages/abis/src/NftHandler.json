@@ -1,5 +1,70 @@
 [
     {
+      "inputs": [],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "inputs": [],
+      "name": "AmountTooBig",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "InvalidData",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "InvalidNftAddress",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "MustBeERC1155",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "NftAlreadyStaked",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "NftNotAllowed",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "NftNotStaked",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "NoStakingRules",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "NothingToStake",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "StakingRulesRequired",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "WrongAmountForERC721",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "WrongInterface",
+      "type": "error"
+    },
+    {
       "anonymous": false,
       "inputs": [
         {
@@ -7,6 +72,12 @@
           "internalType": "address",
           "name": "_nft",
           "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "_tokenId",
+          "type": "uint256"
         },
         {
           "components": [
@@ -33,6 +104,12 @@
     {
       "anonymous": false,
       "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
+        },
         {
           "indexed": true,
           "internalType": "address",
@@ -142,6 +219,12 @@
         {
           "indexed": true,
           "internalType": "address",
+          "name": "user",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
           "name": "nft",
           "type": "address"
         },
@@ -164,6 +247,12 @@
     {
       "anonymous": false,
       "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
+        },
         {
           "indexed": true,
           "internalType": "address",
@@ -201,6 +290,19 @@
     },
     {
       "inputs": [],
+      "name": "DEFAULT_ID",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
       "name": "NH_ADMIN",
       "outputs": [
         {
@@ -231,6 +333,11 @@
           "internalType": "address",
           "name": "",
           "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
         }
       ],
       "name": "allowedNfts",
@@ -250,8 +357,82 @@
       "type": "function"
     },
     {
+      "inputs": [
+        {
+          "internalType": "address[]",
+          "name": "_nft",
+          "type": "address[]"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "_tokenId",
+          "type": "uint256[]"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "_amount",
+          "type": "uint256[]"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "_replacedSpotId",
+          "type": "uint256[]"
+        }
+      ],
+      "name": "batchReplaceExtractor",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address[]",
+          "name": "_nft",
+          "type": "address[]"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "_tokenId",
+          "type": "uint256[]"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "_amount",
+          "type": "uint256[]"
+        }
+      ],
+      "name": "batchStakeNft",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address[]",
+          "name": "_nft",
+          "type": "address[]"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "_tokenId",
+          "type": "uint256[]"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "_amount",
+          "type": "uint256[]"
+        }
+      ],
+      "name": "batchUnstakeNft",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
       "inputs": [],
-      "name": "getAllAllowedNFTs",
+      "name": "getAllStakingRules",
       "outputs": [
         {
           "internalType": "address[]",
@@ -264,7 +445,7 @@
     },
     {
       "inputs": [],
-      "name": "getAllAllowedNFTsLength",
+      "name": "getAllStakingRulesLength",
       "outputs": [
         {
           "internalType": "uint256",
@@ -390,12 +571,17 @@
           "internalType": "address",
           "name": "_nft",
           "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_tokenId",
+          "type": "uint256"
         }
       ],
       "name": "getStakingRules",
       "outputs": [
         {
-          "internalType": "address",
+          "internalType": "contract IStakingRules",
           "name": "",
           "type": "address"
         }
@@ -409,6 +595,11 @@
           "internalType": "address",
           "name": "_nft",
           "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_tokenId",
+          "type": "uint256"
         }
       ],
       "name": "getSupportedInterface",
@@ -514,6 +705,11 @@
           "type": "address[]"
         },
         {
+          "internalType": "uint256[]",
+          "name": "_tokenIds",
+          "type": "uint256[]"
+        },
+        {
           "components": [
             {
               "internalType": "enum INftHandler.Interfaces",
@@ -617,6 +813,40 @@
     {
       "inputs": [
         {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bytes",
+          "name": "",
+          "type": "bytes"
+        }
+      ],
+      "name": "onERC721Received",
+      "outputs": [
+        {
+          "internalType": "bytes4",
+          "name": "",
+          "type": "bytes4"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
           "internalType": "bytes32",
           "name": "role",
           "type": "bytes32"
@@ -686,6 +916,11 @@
           "type": "address"
         },
         {
+          "internalType": "uint256",
+          "name": "_tokenId",
+          "type": "uint256"
+        },
+        {
           "components": [
             {
               "internalType": "enum INftHandler.Interfaces",
@@ -750,6 +985,25 @@
         }
       ],
       "name": "stakedNfts",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "stakingRulesUsage",
       "outputs": [
         {
           "internalType": "uint256",

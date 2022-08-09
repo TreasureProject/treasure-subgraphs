@@ -102,7 +102,7 @@ export function handleNftStaked(event: Staked): void {
     return;
   }
 
-  const userAddress = getUserOrMultisigAddress(event);
+  const userAddress = params.user;
   const stakedTokenId = `${
     harvester.id
   }-${userAddress.toHexString()}-${getAddressId(nftAddress, tokenId)}`;
@@ -142,9 +142,9 @@ export function handleNftUnstaked(event: Unstaked): void {
     return;
   }
 
-  const userAddress = getUserOrMultisigAddress(event);
   const params = event.params;
   const nftAddress = params.nft;
+  const userAddress = params.user;
 
   const stakedTokenId = `${
     harvester.id

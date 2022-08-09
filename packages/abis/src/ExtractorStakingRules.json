@@ -1,34 +1,43 @@
 [
     {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "_admin",
-          "type": "address"
-        },
-        {
-          "internalType": "address",
-          "name": "_harvesterFactory",
-          "type": "address"
-        },
-        {
-          "internalType": "address",
-          "name": "_extractorAddress",
-          "type": "address"
-        },
-        {
-          "internalType": "uint256",
-          "name": "_maxStakeable",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "_lifetime",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "nonpayable",
-      "type": "constructor"
+      "inputs": [],
+      "name": "CannotUnstake",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "InvalidAddress",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "InvalidSpotId",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "MaxStakeableReached",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "MustReplaceOne",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "MustReplaceWithHigherBoost",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "ZeroAmount",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "ZeroBoost",
+      "type": "error"
     },
     {
       "anonymous": false,
@@ -88,6 +97,12 @@
           "indexed": false,
           "internalType": "uint256",
           "name": "tokenId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "spotId",
           "type": "uint256"
         },
         {
@@ -312,62 +327,6 @@
           "type": "uint256"
         }
       ],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "_user",
-          "type": "address"
-        },
-        {
-          "internalType": "address",
-          "name": "_nft",
-          "type": "address"
-        },
-        {
-          "internalType": "uint256",
-          "name": "_tokenId",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "_amount",
-          "type": "uint256"
-        }
-      ],
-      "name": "canStake",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "_user",
-          "type": "address"
-        },
-        {
-          "internalType": "address",
-          "name": "_nft",
-          "type": "address"
-        },
-        {
-          "internalType": "uint256",
-          "name": "_tokenId",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "_amount",
-          "type": "uint256"
-        }
-      ],
-      "name": "canUnstake",
-      "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
     },
@@ -626,6 +585,39 @@
     {
       "inputs": [
         {
+          "internalType": "address",
+          "name": "_admin",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_harvesterFactory",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_extractorAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_maxStakeable",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_lifetime",
+          "type": "uint256"
+        }
+      ],
+      "name": "init",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
           "internalType": "uint256",
           "name": "_spotId",
           "type": "uint256"
@@ -669,6 +661,75 @@
       "type": "function"
     },
     {
+      "inputs": [],
+      "name": "nftHandler",
+      "outputs": [
+        {
+          "internalType": "contract INftHandler",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_user",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_nft",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_tokenId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "processStake",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_user",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_nft",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_tokenId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "processUnstake",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
       "inputs": [
         {
           "internalType": "bytes32",
@@ -700,19 +761,6 @@
         }
       ],
       "name": "revokeRole",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "_extractorAddress",
-          "type": "address"
-        }
-      ],
-      "name": "setExtractorAddress",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"

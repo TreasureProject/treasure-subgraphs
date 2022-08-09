@@ -1,5 +1,60 @@
 [
     {
+      "inputs": [],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "inputs": [],
+      "name": "AmountTooBig",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "DepositDoesNotExists",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "Disabled",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "InvalidValueOrDisabledTimelock",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "MaxTotalDeposit",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "MaxUserGlobalDeposit",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "OnlyFactory",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "RunOnBank",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "StillLocked",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "ZeroAmount",
+      "type": "error"
+    },
+    {
       "anonymous": false,
       "inputs": [
         {
@@ -39,6 +94,11 @@
               "internalType": "address",
               "name": "parts",
               "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "partsTokenId",
+              "type": "uint256"
             },
             {
               "internalType": "uint256",
@@ -339,25 +399,6 @@
       "anonymous": false,
       "inputs": [
         {
-          "indexed": true,
-          "internalType": "address",
-          "name": "to",
-          "type": "address"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "amount",
-          "type": "uint256"
-        }
-      ],
-      "name": "UndistributedRewardsWithdraw",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
           "indexed": false,
           "internalType": "bool",
           "name": "value",
@@ -583,7 +624,7 @@
           "type": "uint256"
         }
       ],
-      "name": "calcualteVestedPrincipal",
+      "name": "calculateVestedPrincipal",
       "outputs": [
         {
           "internalType": "uint256",
@@ -592,6 +633,19 @@
         }
       ],
       "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "callUpdateRewards",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "nonpayable",
       "type": "function"
     },
     {
@@ -639,6 +693,11 @@
           "internalType": "address",
           "name": "parts",
           "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "partsTokenId",
+          "type": "uint256"
         },
         {
           "internalType": "uint256",
@@ -795,6 +854,25 @@
         {
           "internalType": "uint256",
           "name": "timelock",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_user",
+          "type": "address"
+        }
+      ],
+      "name": "getMaxWithdrawableAmount",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "withdrawable",
           "type": "uint256"
         }
       ],
@@ -1071,6 +1149,11 @@
             },
             {
               "internalType": "uint256",
+              "name": "partsTokenId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
               "name": "capPerPart",
               "type": "uint256"
             }
@@ -1093,7 +1176,7 @@
           "type": "address"
         }
       ],
-      "name": "isMaxUserGlobalDeposit",
+      "name": "isUserExceedingDepositCap",
       "outputs": [
         {
           "internalType": "bool",
@@ -1193,6 +1276,11 @@
               "internalType": "address",
               "name": "parts",
               "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "partsTokenId",
+              "type": "uint256"
             },
             {
               "internalType": "uint256",
@@ -1410,11 +1498,6 @@
         },
         {
           "internalType": "uint256",
-          "name": "vestingLastUpdate",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
           "name": "lock",
           "type": "uint256"
         }
@@ -1425,6 +1508,19 @@
     {
       "inputs": [],
       "name": "withdrawAll",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "withdrawAmountFromAll",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
