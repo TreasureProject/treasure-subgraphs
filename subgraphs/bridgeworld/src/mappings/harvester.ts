@@ -49,6 +49,7 @@ import {
   removeExpiredExtractors,
 } from "../helpers/harvester";
 import { getLegionMetadata } from "../helpers/legion";
+import { weiToEther } from "../helpers/number";
 import { getUserOrMultisigAddress } from "../helpers/user";
 
 export function handleHarvesterDeployed(event: HarvesterDeployed): void {
@@ -115,7 +116,6 @@ export function handleNftStaked(event: Staked): void {
   }
 
   stakedToken.quantity = stakedToken.quantity.plus(params.amount);
-  stakedToken.save();
 
   const amount = params.amount.toI32();
   if (isConsumable && tokenId.equals(HARVESTER_PART_TOKEN_ID)) {
@@ -125,12 +125,15 @@ export function handleNftStaked(event: Staked): void {
     harvester.legionsStaked += amount;
 
     const metadata = getLegionMetadata(tokenId);
+    stakedToken.index = weiToEther(metadata.harvestersRank) as i32;
+
     harvester.legionsTotalRank = harvester.legionsTotalRank.plus(
       metadata.harvestersRank.times(params.amount)
     );
     harvester.legionsBoost = calculateHarvesterLegionsBoost(harvester);
   }
 
+  stakedToken.save();
   harvester.save();
 
   removeExpiredExtractors(harvester, event.block.timestamp);
