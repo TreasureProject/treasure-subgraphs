@@ -42,6 +42,8 @@
   "treasure_start_block": 2416540,
   "treasure_fragment_address": "0x756E4F3bb69c47d492aBf2a52af320190c174c55",
   "treasure_fragment_start_block": 11370538,
+  "harvester_factory_address": "0xE59aEc5f6F631EF380dd4e60D531ff3aE2985CFd",
+  "harvester_factory_start_block": 19852121,
 
   "extra_life_address": "0x21e1969884D477afD2Afd4Ad668864a0EebD644c",
   "extra_life_start_block": 2416557,
