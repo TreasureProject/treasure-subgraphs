@@ -5,8 +5,8 @@
   "burner_address": "0x0000000000000000000000000000000000000000",
   "explorer": "testnet.arbiscan.io",
 
-  "atlas_mine_address": "0x3408c2c134d0de67e593a73cd3d02427667c9aa6",
-  "atlas_mine_start_block": 10586174,
+  "atlas_mine_address": "0x7475e64a8ff32e68d50a3d3a23cbe18e606570aa",
+  "atlas_mine_start_block": 13738912,
   "balancer_crystal_address": "0xc088fd9272ca23c32df5c8d6c8c2faab028b705a",
   "balancer_crystal_start_block": 9623621,
   "consumable_address": "0x711b70aab6a64970d9ea02ca37f1eeafb7ec6fc9",
@@ -42,6 +42,9 @@
   "treasure_start_block": 9623644,
   "treasure_fragment_address": "0xa6e6f86de093ffd15a6f9a506107d08efb3d0305",
   "treasure_fragment_start_block": 11543263,
+  "harvester_factory_address": "0x4be2f1309c4163bcb9661179b05953277eaedcb2",
+  "harvester_factory_start_block": 13741244,
+
   "extra_life_address": "0x0000000000000000000000000000000000000000",
   "extra_life_start_block": 9265867,
   "keys_address": "0x0000000000000000000000000000000000000000",

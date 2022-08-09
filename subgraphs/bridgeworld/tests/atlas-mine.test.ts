@@ -1,4 +1,4 @@
-import { assert, clearStore, logStore, test } from "matchstick-as/assembly";
+import { assert, clearStore, test } from "matchstick-as/assembly";
 
 import { Address } from "@graphprotocol/graph-ts";
 
@@ -13,6 +13,13 @@ import {
 import { handleApproval } from "../src/mappings/magic";
 import { handleTransferBatch } from "../src/mappings/treasure";
 import {
+  createDepositEvent,
+  createStakedEvent,
+  createUnstakedEvent,
+  createWithdrawEvent,
+} from "./helpers/atlas-mine";
+import { toBigIntString } from "./helpers/common";
+import {
   ATLAS_MINE_ADDRESS,
   DEPOSIT_ENTITY_TYPE,
   Lock,
@@ -21,14 +28,9 @@ import {
   USER_ADDRESS,
   USER_ENTITY_TYPE,
   WITHDRAW_ENTITY_TYPE,
-  createApprovalEvent,
-  createDepositEvent,
-  createStakedEvent,
-  createTreasureTransferEvent,
-  createUnstakedEvent,
-  createWithdrawEvent,
-  toBigIntString,
-} from "./helpers/index";
+} from "./helpers/constants";
+import { createApprovalEvent } from "./helpers/magic";
+import { createTreasureTransferEvent } from "./helpers/treasure";
 
 test("withdrawals will add to existing when depositId matches", () => {
   clearStore();
@@ -120,6 +122,12 @@ test("stake/unstake handles when a user does the event", () => {
   const stakedId = `${USER_ADDRESS}-${tokenId}`;
 
   assert.fieldEquals(USER_ENTITY_TYPE, USER_ADDRESS, "staked", `[${stakedId}]`);
+  assert.fieldEquals(
+    STAKED_TOKEN_ENTITY_TYPE,
+    stakedId,
+    "mine",
+    ATLAS_MINE_ADDRESS
+  );
   assert.fieldEquals(STAKED_TOKEN_ENTITY_TYPE, stakedId, "user", USER_ADDRESS);
   assert.fieldEquals(STAKED_TOKEN_ENTITY_TYPE, stakedId, "token", tokenId);
   assert.fieldEquals(STAKED_TOKEN_ENTITY_TYPE, stakedId, "quantity", "1");

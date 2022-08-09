@@ -26,6 +26,7 @@ import {
 import {
   LEGION_IPFS,
   LEGION_PFP_IPFS,
+  ZERO_BI,
   getAddressId,
   getImageHash,
   isMint,
@@ -50,6 +51,52 @@ const BOOST_MATRIX = [
   // RECRUIT
   // LEGENDARY,RARE,SPECIAL,UNCOMMON,COMMON,RECRUIT
   [0, 0, 0, 0, 0, 0],
+];
+
+const HARVESTERS_WEIGHT_MATRIX = [
+  // Genesis
+  [
+    BigInt.fromString("120000000000000000000"), // Legendary = 120
+    BigInt.fromString("40000000000000000000"), // Rare = 40
+    BigInt.fromString("15000000000000000000"), // Special = 15
+    BigInt.fromString("20000000000000000000"), // Uncommon = 20
+    BigInt.fromString("10000000000000000000"), // Common = 10
+    ZERO_BI, // Recruit = N/A
+  ],
+  // Auxiliary
+  [
+    ZERO_BI, // Legendary = N/A
+    BigInt.fromString("5500000000000000000"), // Rare = 5.5
+    ZERO_BI, // Special = N/A
+    BigInt.fromString("4000000000000000000"), // Uncommon = 4
+    BigInt.fromString("2500000000000000000"), // Common = 2.5
+    ZERO_BI, // Recruit = N/A
+  ],
+  // Recruit
+  [ZERO_BI, ZERO_BI, ZERO_BI, ZERO_BI, ZERO_BI, ZERO_BI],
+];
+
+const HARVESTERS_RANK_MATRIX = [
+  // Genesis
+  [
+    BigInt.fromString("4000000000000000000"), // Legendary = 4
+    BigInt.fromString("4000000000000000000"), // Rare = 4
+    BigInt.fromString("2000000000000000000"), // Special = 2
+    BigInt.fromString("3000000000000000000"), // Uncommon = 3
+    BigInt.fromString("1500000000000000000"), // Common = 1.5
+    ZERO_BI, // Recruit = N/A
+  ],
+  // Auxiliary
+  [
+    ZERO_BI, // Legendary = N/A
+    BigInt.fromString("1200000000000000000"), // Rare = 1.2
+    ZERO_BI, // Special = N/A
+    BigInt.fromString("1100000000000000000"), // Uncommon = 1.1
+    BigInt.fromString("1000000000000000000"), // Common = 1
+    ZERO_BI, // Recruit = N/A
+  ],
+  // Recruit
+  [ZERO_BI, ZERO_BI, ZERO_BI, ZERO_BI, ZERO_BI, ZERO_BI],
 ];
 
 function getLegionId(tokenId: BigInt): string {
@@ -87,6 +134,8 @@ function setMetadata(contract: Address, tokenId: BigInt): void {
   let metadata = new LegionInfo(`${token.id}-metadata`);
 
   metadata.boost = `${BOOST_MATRIX[0][0] / 1e18}`;
+  metadata.harvestersRank = HARVESTERS_RANK_MATRIX[0][0];
+  metadata.harvestersWeight = HARVESTERS_WEIGHT_MATRIX[0][0];
   metadata.constellation = token.id;
   metadata.crafting = 1;
   metadata.craftingXp = 0;
@@ -203,29 +252,30 @@ export function handleLegionCraftLevelUp(event: LegionCraftLevelUp): void {
 }
 
 export function handleLegionCreated(event: LegionCreated): void {
-  let params = event.params;
-  let tokenId = params._tokenId;
-  let token = Token.load(getLegionId(tokenId));
+  const params = event.params;
 
+  const tokenId = params._tokenId;
+  const token = Token.load(getLegionId(tokenId));
   if (!token) {
     log.error("Unknown token: {}", [tokenId.toString()]);
-
     return;
   }
 
-  let metadata = new LegionInfo(`${token.id}-metadata`);
-
-  metadata.boost = `${BOOST_MATRIX[params._generation][params._rarity] / 1e18}`;
+  const generation = params._generation;
+  const rarity = params._rarity;
+  const metadata = new LegionInfo(`${token.id}-metadata`);
+  metadata.boost = `${BOOST_MATRIX[generation][rarity] / 1e18}`;
+  metadata.harvestersRank = HARVESTERS_RANK_MATRIX[generation][rarity];
+  metadata.harvestersWeight = HARVESTERS_WEIGHT_MATRIX[generation][rarity];
   metadata.constellation = token.id;
   metadata.crafting = 1;
   metadata.craftingXp = 0;
   metadata.questing = 1;
   metadata.questingXp = 0;
-  metadata.rarity = RARITY[params._rarity];
+  metadata.rarity = RARITY[rarity];
   metadata.role = CLASS[params._class];
-  metadata.type = TYPE[params._generation];
+  metadata.type = TYPE[generation];
   metadata.summons = BigInt.zero();
-
   metadata.save();
 
   token.category = "Legion";
@@ -245,12 +295,11 @@ export function handleLegionCreated(event: LegionCreated): void {
   );
   token.name = `${metadata.type} ${metadata.rarity}`;
   token.metadata = metadata.id;
-  token.generation = params._generation;
+  token.generation = generation;
   token.rarity = metadata.rarity;
 
   if (metadata.type == "Recruit") {
-    let user = User.load(params._owner.toHexString());
-
+    const user = User.load(params._owner.toHexString());
     if (user) {
       user.recruit = token.id;
       user.save();

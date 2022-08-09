@@ -2,10 +2,6 @@ import { BigInt, log } from "@graphprotocol/graph-ts";
 
 import { LegionInfo, _SummonFatigue } from "../../generated/schema";
 
-class Fatigue {
-  constructor(public id: string, public cooldown: BigInt) {}
-}
-
 export function checkSummonFatigue(timestamp: i64): void {
   let fatigue = _SummonFatigue.load("all");
 

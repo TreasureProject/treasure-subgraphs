@@ -2,8 +2,8 @@ import { newMockEvent } from "matchstick-as/assembly";
 
 import { Address, BigInt, ethereum } from "@graphprotocol/graph-ts";
 
-import { MINI_CRAFTING_ADDRESS } from ".";
 import { CraftingFinished } from "../../generated/Mini Crafting/MiniCrafting";
+import { MINI_CRAFTING_ADDRESS } from "./constants";
 
 export const createMiniCraftingFinishedEvent = (
   timestamp: string,
