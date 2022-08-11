@@ -595,9 +595,9 @@ templates:
         - name: ExtractorsStakingRules
           file: {{{ abis }}}/ExtractorStakingRules.json
       eventHandlers:
-        - event: ExtractorReplaced(uint256,uint256)
+        - event: ExtractorReplaced(address,uint256,uint256)
           handler: handleExtractorReplaced
-        - event: ExtractorStaked(uint256,uint256,uint256)
+        - event: ExtractorStaked(address,uint256,uint256,uint256)
           handler: handleExtractorStaked
       file: ./src/mappings/harvester.ts
   - name: HarvesterConfig

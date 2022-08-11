@@ -206,7 +206,6 @@ export function handleExtractorStaked(event: ExtractorStaked): void {
     return;
   }
 
-  const userId = event.transaction.from.toHexString();
   const amount = params.amount.toI32();
   const expirationTime = event.block.timestamp.plus(
     harvester.extractorsLifetime
@@ -226,7 +225,7 @@ export function handleExtractorStaked(event: ExtractorStaked): void {
       stakedToken.index = spotId;
     }
 
-    stakedToken.user = userId;
+    stakedToken.user = params.user.toHexString();
     stakedToken.token = extractorId;
     stakedToken.quantity = ONE_BI;
     stakedToken.expirationTime = expirationTime;
@@ -300,7 +299,7 @@ export function handleExtractorReplaced(event: ExtractorReplaced): void {
   const newExpirationTime = event.block.timestamp.plus(
     harvester.extractorsLifetime
   );
-  stakedToken.user = event.transaction.from.toHexString();
+  stakedToken.user = params.user.toHexString();
   stakedToken.token = newTokenId;
   stakedToken.quantity = ONE_BI;
   stakedToken.expirationTime = newExpirationTime;
