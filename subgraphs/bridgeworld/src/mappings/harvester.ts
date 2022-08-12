@@ -50,7 +50,6 @@ import {
 } from "../helpers/harvester";
 import { getLegionMetadata } from "../helpers/legion";
 import { weiToEther } from "../helpers/number";
-import { getUserOrMultisigAddress } from "../helpers/user";
 
 export function handleHarvesterDeployed(event: HarvesterDeployed): void {
   const params = event.params;
@@ -207,7 +206,6 @@ export function handleExtractorStaked(event: ExtractorStaked): void {
     return;
   }
 
-  const userId = getUserOrMultisigAddress(event).toHexString();
   const amount = params.amount.toI32();
   const expirationTime = event.block.timestamp.plus(
     harvester.extractorsLifetime
@@ -227,7 +225,7 @@ export function handleExtractorStaked(event: ExtractorStaked): void {
       stakedToken.index = spotId;
     }
 
-    stakedToken.user = userId;
+    stakedToken.user = params.user.toHexString();
     stakedToken.token = extractorId;
     stakedToken.quantity = ONE_BI;
     stakedToken.expirationTime = expirationTime;
@@ -301,7 +299,7 @@ export function handleExtractorReplaced(event: ExtractorReplaced): void {
   const newExpirationTime = event.block.timestamp.plus(
     harvester.extractorsLifetime
   );
-  stakedToken.user = getUserOrMultisigAddress(event).toHexString();
+  stakedToken.user = params.user.toHexString();
   stakedToken.token = newTokenId;
   stakedToken.quantity = ONE_BI;
   stakedToken.expirationTime = newExpirationTime;

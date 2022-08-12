@@ -76,6 +76,12 @@
       "inputs": [
         {
           "indexed": false,
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
+        },
+        {
+          "indexed": false,
           "internalType": "uint256",
           "name": "tokenId",
           "type": "uint256"
@@ -93,6 +99,12 @@
     {
       "anonymous": false,
       "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
+        },
         {
           "indexed": false,
           "internalType": "uint256",
