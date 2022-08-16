@@ -28,7 +28,10 @@ import {
 } from "../helpers";
 
 function isXpPaused(event: ethereum.Event): boolean {
-  return event.block.number.gt(BigInt.fromI32(8456580));
+  return (
+    event.block.number.gt(BigInt.fromI32(8456580)) &&
+    event.block.number.lt(BigInt.fromI32(20419971))
+  );
 }
 
 function handleCraftingStarted(
