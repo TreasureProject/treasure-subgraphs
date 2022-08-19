@@ -27,16 +27,22 @@ import {
   LEGION_INFO_ENTITY_TYPE,
   SUMMONING_CIRCLE_ENTITY_TYPE,
   USER_ADDRESS,
+} from "./helpers/constants";
+import {
   createCraftingFinishedEvent,
   createCraftingRevealedEvent,
   createCraftingStartedEvent,
   createCraftingStartedWithoutDifficultyEvent,
+} from "./helpers/crafting";
+import {
   createLegionCraftLevelUpEvent,
   createLegionCreatedEvent,
   createLegionTransferEvent,
+} from "./helpers/legion";
+import {
   createRandomRequestEvent,
   createRandomSeededEvent,
-} from "./helpers/index";
+} from "./helpers/randomizer";
 
 test("crafting increases xp when completed successfully", () => {
   clearStore();
@@ -58,6 +64,12 @@ test("crafting increases xp when completed successfully", () => {
 
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "crafting", "1");
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "craftingXp", "0");
+  assert.fieldEquals(
+    LEGION_INFO_ENTITY_TYPE,
+    metadata,
+    "majorCraftsCompleted",
+    "0"
+  );
 
   let craftsToLevelUp = 14;
 
@@ -113,6 +125,13 @@ test("crafting increases xp when completed successfully", () => {
 
     handleCraftingFinished(craftFinishedEvent);
   }
+
+  assert.fieldEquals(
+    LEGION_INFO_ENTITY_TYPE,
+    metadata,
+    "majorCraftsCompleted",
+    craftsToLevelUp.toString()
+  );
 
   craftsToLevelUp = 16;
 
@@ -371,6 +390,12 @@ test("crafting xp does not increase on failure", () => {
 
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "crafting", "1");
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "craftingXp", "0");
+  assert.fieldEquals(
+    LEGION_INFO_ENTITY_TYPE,
+    metadata,
+    "majorCraftsCompleted",
+    "0"
+  );
 
   // Perform a craft
   const randomRequestEvent = createRandomRequestEvent(1, 2);
@@ -398,6 +423,12 @@ test("crafting xp does not increase on failure", () => {
   handleCraftingRevealed(craftRevealedEvent);
 
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "craftingXp", "0");
+  assert.fieldEquals(
+    LEGION_INFO_ENTITY_TYPE,
+    metadata,
+    "majorCraftsCompleted",
+    "0"
+  );
 
   const craftFinishedEvent = createCraftingFinishedEvent(USER_ADDRESS, 1);
 

@@ -1,12 +1,7 @@
 import { BigInt, log } from "@graphprotocol/graph-ts";
 
-import {
-  ADVANCED_QUESTING_ADDRESS,
-  LEGION_ADDRESS,
-  SUMMONING_ADDRESS,
-} from "@treasure/constants";
+import { SUMMONING_ADDRESS } from "@treasure/constants";
 
-import { AdvancedQuesting } from "../../generated/Advanced Questing/AdvancedQuesting";
 import {
   RandomRequest,
   RandomSeeded,
@@ -21,92 +16,80 @@ import {
   Summon,
   Token,
 } from "../../generated/schema";
-import { checkSummonFatigue, getAddressId } from "../helpers";
 import { setQuestEndTime } from "../helpers/advanced-questing";
+import { runScheduledJobs } from "../helpers/cron";
 
 function toI32(value: string): i32 {
   return parseInt(value, 16) as i32;
 }
 
 export function handleRandomRequest(event: RandomRequest): void {
-  let params = event.params;
-  let commitId = params._commitId.toHexString();
-  let requestId = params._requestId.toHexString();
+  const params = event.params;
+  const commitId = params._commitId.toHexString();
+  const requestId = params._requestId.toHexString();
 
-  let random = new Random(requestId);
-
+  const random = new Random(requestId);
+  random.requestId = params._requestId;
   random.seeded = commitId;
   random.save();
 
   let seeded = Seeded.load(commitId);
-
   if (!seeded) {
     seeded = new Seeded(commitId);
-
     seeded.randoms = [];
   }
 
   seeded.randoms = seeded.randoms.concat([requestId]);
   seeded.save();
-
-  // Every random request, check about clearing summoning fatigue
-  checkSummonFatigue(event.block.timestamp.toI64() * 1000);
 }
 
 export function handleRandomSeeded(event: RandomSeeded): void {
-  let params = event.params;
-  let commitId = params._commitId;
+  const params = event.params;
+  const commitId = params._commitId;
 
-  let seeded = Seeded.load(commitId.toHexString());
-
+  const seeded = Seeded.load(commitId.toHexString());
   if (!seeded) {
     log.error("[seeded] Unknown seeded: {}", [commitId.toHexString()]);
-
     return;
   }
 
-  let randoms = seeded.randoms;
-
-  for (let index = 0; index < randoms.length; index++) {
-    let id = randoms[index];
-    let random = Random.load(id);
-
+  for (let index = 0; index < seeded.randoms.length; index++) {
+    const id = seeded.randoms[index];
+    const random = Random.load(id);
     if (!random) {
       log.error("[seeded] Unknown random: {}", [id]);
-
-      return;
+      continue;
     }
 
-    let craftId = random.craft;
-    let questId = random.quest;
-    let summonId = random.summon;
-    let advancedQuestId = random.advancedQuest;
-
-    if (craftId !== null) {
-      let craft = Craft.load(craftId);
-
+    const craftId = random.craft;
+    if (craftId) {
+      const craft = Craft.load(craftId);
       if (craft) {
         craft.status = "Revealable";
         craft.save();
-
-        continue;
+      } else {
+        log.error("[randomizer] Craft not found: {}", [craftId]);
       }
+
+      continue;
     }
 
-    if (questId !== null) {
-      let quest = Quest.load(questId);
-
+    const questId = random.quest;
+    if (questId) {
+      const quest = Quest.load(questId);
       if (quest) {
         quest.status = "Revealable";
         quest.save();
-
-        continue;
+      } else {
+        log.error("[randomizer] Quest not found: {}", [questId]);
       }
+
+      continue;
     }
 
-    if (advancedQuestId !== null) {
+    const advancedQuestId = random.advancedQuest;
+    if (advancedQuestId) {
       const quest = AdvancedQuest.load(advancedQuestId);
-
       if (quest !== null && quest.token !== null) {
         const token = Token.load(quest.token);
         if (token !== null) {
@@ -128,18 +111,21 @@ export function handleRandomSeeded(event: RandomSeeded): void {
           }
 
           quest.save();
-          continue;
         } else {
-          log.error("[random-advanced-quest] Token not found: {}", [random.id]);
+          log.error("[randomizer] Token not found: {}", [quest.token]);
         }
       } else {
-        log.error("[random-advanced-quest] Quest not found: {}", [random.id]);
+        log.error("[randomizer] AdvancedQuest not found: {}", [
+          advancedQuestId,
+        ]);
       }
+
+      continue;
     }
 
-    if (summonId !== null) {
-      let summon = Summon.load(summonId);
-
+    const summonId = random.summon;
+    if (summonId) {
+      const summon = Summon.load(summonId);
       if (summon) {
         let summoning = Summoning.bind(SUMMONING_ADDRESS);
         let tokenId = BigInt.fromI32(toI32(summon.token.slice(45)));
@@ -152,11 +138,16 @@ export function handleRandomSeeded(event: RandomSeeded): void {
 
         summon.status = "Revealable";
         summon.save();
-
-        continue;
+      } else {
+        log.error("[randomizer] Summon not found: {}", [summonId]);
       }
+
+      continue;
     }
 
     log.error("Unhandled seeded: {}", [commitId.toString()]);
   }
+
+  // Every time a random is seeded (~5 min), check scheduled jobs
+  runScheduledJobs(event.block.timestamp);
 }

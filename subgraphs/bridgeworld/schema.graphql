@@ -25,6 +25,12 @@ enum Size {
   Large
 }
 
+enum Generation {
+  Genesis
+  Auxiliary
+  Recruit
+}
+
 enum Rarity {
   Common
   Epic
@@ -76,17 +82,55 @@ type ConsumableInfo implements Metadata @entity {
 type LegionInfo implements Metadata @entity {
   id: ID!
 
+  "Boost value when staked in Atlas Mine"
   boost: String!
+
+  "Constellations tattooed to Legion"
   constellation: Constellation
+
+  "Summoning cooldown time"
   cooldown: BigInt
+
+  "Crafting Level"
   crafting: Int!
+
+  "Crafting XP"
   craftingXp: Int!
+
+  "Number of mini crafts completed by this Legion"
+  miniCraftsCompleted: Int!
+
+  "Number of major crafts completed by this Legion"
+  majorCraftsCompleted: Int!
+
+  "Rank value when deposited in Harvester"
+  harvestersRank: BigInt!
+
+  "Weight value when deposited in Harvester"
+  harvestersWeight: BigInt!
+
+  "Questing Level"
   questing: Int!
+
+  "Questing XP"
   questingXp: Int!
+
+  "Number of full quests completed by this Legion"
+  questsCompleted: Int!
+
+  "Distance travelled by Legion on its quests"
+  questsDistanceTravelled: Int!
+
+  "Rarity (Common, Rare, etc.)"
   rarity: String!
-  "This is `class`, but we can't use that word"
+
+  "Class (Fighter, Ranger, etc.)"
   role: String!
+
+  "Generation (Genesis, Auxiliary, Recruit)"
   type: String!
+
+  "Number of summons already performed by Legion"
   summons: BigInt!
 }
 
@@ -124,12 +168,37 @@ type AtlasMine @entity {
 type Deposit @entity {
   id: ID!
 
-  amount: BigInt!
+  "Hash for the deposit transaction"
+  transactionHash: Bytes!
+
+  "Associated `AtlasMine`, if applicable"
+  mine: AtlasMine
+
+  "Associated `Harvester`, if applicable"
+  harvester: Harvester
+
+  "Unique identifier for deposit"
   depositId: BigInt!
+
+  "Amount of MAGIC deposited"
+  amount: BigInt!
+
+  "Deposit time, in milliseconds"
+  startTimestamp: BigInt!
+
+  "Unlock time, in milliseconds"
   endTimestamp: BigInt!
-  lock: Int!
-  mine: AtlasMine!
+
+  "Lock period ID (0 = 2 Weeks, 1 = 1 Month, 2 = 3 Months, 3 = 6 Months, 4 = 12 Months)"
+  lock: Int
+
+  "Associated timelock for this deposit in the Harvester, if applicable"
+  harvesterTimelock: HarvesterTimelock
+
+  "`User` who initiated the deposit"
   user: User!
+
+  "Associated `Withdraw`, if applicable"
   withdrawal: Withdraw
 }
 
@@ -138,7 +207,24 @@ type Withdraw @entity {
 
   amount: BigInt!
   deposit: Deposit!
-  mine: AtlasMine!
+  mine: AtlasMine
+  harvester: Harvester
+  user: User!
+}
+
+type Harvest @entity {
+  id: ID!
+
+  "Amount claimed"
+  amount: BigInt!
+
+  "Associated `AtlasMine`, if applicable"
+  mine: AtlasMine
+
+  "Associated `Harvester`, if applicable"
+  harvester: Harvester
+
+  "`User` who initiated the harvest"
   user: User!
 }
 
@@ -276,9 +362,29 @@ type TreasureTriadCardInfo @entity {
 type StakedToken @entity {
   id: ID!
 
-  quantity: BigInt!
-  token: Token!
+  "User who owns the Token"
   user: User!
+
+  "Generic Token that was staked"
+  token: Token!
+
+  "Atlas Min this token was staked to, if applicable"
+  mine: AtlasMine
+
+  "Harvester this token was staked to, if applicable"
+  harvester: Harvester
+
+  "Quantity of Token that was staked"
+  quantity: BigInt!
+
+  "Order of the staked token, if applicable"
+  index: Int
+
+  "Timestamp, in seconds, when the effects of this staked token expire, if applicable"
+  expirationTime: BigInt
+
+  "Flag is true if `expirationTime` has already been processed by the subgraph"
+  expirationProcessed: Boolean!
 }
 
 type Summon @entity {
@@ -324,6 +430,9 @@ type Token @entity {
   owners: [UserToken!]! @derivedFrom(field: "token")
   rarity: Rarity!
   tokenId: BigInt!
+
+  "Boosts for when token is added to a Harvester"
+  harvesterBoosts: [HarvesterTokenBoost!] @derivedFrom(field: "token")
 }
 
 type User @entity {
@@ -378,4 +487,146 @@ type TokenQuantity @entity {
 
   quantity: Int!
   token: Token!
+}
+
+type _HarvesterConfig @entity {
+  "Singleton with ID `only`"
+  id: ID!
+
+  "List of all deployed Harvesters"
+  harvesters: [Harvester!]!
+}
+
+type Harvester @entity {
+  id: ID!
+
+  "Block when this Harvester was deployed"
+  deployedBlockNumber: BigInt!
+
+  "Associated NftHandler that will be used for staking to Harvester"
+  nftHandler: HarvesterNftHandler! @derivedFrom(field: "harvester")
+
+  "Internal field for tracking the next upcoming Extractor expiration time"
+  _nextExpirationTime: BigInt
+
+  "Maximum amount of MAGIC that can be staked"
+  maxMagicDeposited: BigInt!
+
+  "Maximum number of Harvester Parts that can be staked"
+  maxPartsStaked: Int!
+
+  "Maximum number of Harvester Parts that can be staked to this Harvester by a single `User`"
+  maxPartsStakedPerUser: Int!
+
+  "Maximum number of Extractors that can be staked"
+  maxExtractorsStaked: Int!
+
+  "Maximum number of Legions that can be staked"
+  maxLegionsStaked: Int!
+
+  "Maximum weight of Legions that can be staked to this Harvester by a single `User`"
+  maxLegionsWeightPerUser: BigInt!
+
+  "Maximum number of Treasures that can be staked to this Harvester by a single `User`"
+  maxTreasuresStakedPerUser: Int!
+
+  "Amount of MAGIC allocated for deposits with the staking of each Harvester Part"
+  magicDepositAllocationPerPart: BigInt!
+
+  "Amount of MAGIC deposited to this Harvester"
+  magicDeposited: BigInt!
+
+  "Number of Harvester Parts staked to this Harvester"
+  partsStaked: Int!
+
+  "Number of Extractors staked to this Harvester"
+  extractorsStaked: Int!
+
+  "Time, in seconds, that an extractor is active when staked"
+  extractorsLifetime: BigInt!
+
+  "Number of Legions staked to this Harvester"
+  legionsStaked: Int!
+
+  "Configurable boost factor for Harvester Parts"
+  partsBoostFactor: BigInt!
+
+  "Boost value of staked Harvester Parts (1 + ((2n - n^2/maxParts)/maxParts) * partsBoostFactor)"
+  partsBoost: BigInt!
+
+  "Boost value of staked Extractors (1 + Boost1 + Boost2 + ... BoostN)"
+  extractorsBoost: BigInt!
+
+  "Total rank value of Legions staked to this Harvester"
+  legionsTotalRank: BigInt!
+
+  "Boost value of staked Legions (1 + ((2n - n^2/maxLegions)/maxLegions) * legionsRankBoost)"
+  legionsBoost: BigInt!
+
+  "Options for timelocking deposits to this Harvester"
+  timelockOptions: [HarvesterTimelock!]! @derivedFrom(field: "harvester")
+
+  "Boost values for tokens when added to this Harvester"
+  tokenBoosts: [HarvesterTokenBoost!]! @derivedFrom(field: "harvester")
+
+  "All tokens staked to this Harvester"
+  stakedTokens: [StakedToken!]! @derivedFrom(field: "harvester")
+
+  "All MAGIC deposit records to this Harvester"
+  magicDeposits: [Deposit!]! @derivedFrom(field: "harvester")
+
+  "All MAGIC withdrawal records from this Harvester"
+  magicWithdrawals: [Withdraw!]! @derivedFrom(field: "harvester")
+
+  "All MAGIC rewards harvest records from this Harvester"
+  magicHarvests: [Harvest!]! @derivedFrom(field: "harvester")
+}
+
+type HarvesterNftHandler @entity {
+  id: ID!
+
+  "Harvester associated with this NftHandler"
+  harvester: Harvester!
+}
+
+type HarvesterStakingRule @entity {
+  id: ID!
+
+  "Harvester associated with this StakingRule"
+  harvester: Harvester!
+}
+
+type HarvesterTokenBoost @entity {
+  id: ID!
+
+  "Harvester associated with this boost"
+  harvester: Harvester!
+
+  "Token associated with this boost"
+  token: Token!
+
+  "Boost value of the token when added to the associated Harvester"
+  boost: BigInt!
+}
+
+type HarvesterTimelock @entity {
+  id: ID!
+
+  "Harvester associated with this timelock"
+  harvester: Harvester!
+
+  "True if timelock option is available for use"
+  enabled: Boolean!
+
+  "Identifier for this timelock"
+  timelockId: BigInt!
+
+  "Boost value for deposits with this timelock"
+  boost: BigInt!
+
+  "Duration, in seconds, of this timelock"
+  duration: BigInt!
+
+  "Duration, in seconds, of the vesting period for this timelock"
+  vestingDuration: BigInt!
 }

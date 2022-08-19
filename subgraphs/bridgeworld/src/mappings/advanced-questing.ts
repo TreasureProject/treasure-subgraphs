@@ -24,6 +24,7 @@ import {
   TreasureTriadResult,
   User,
 } from "../../generated/schema";
+import { QUEST_DISTANCE_TRAVELLED_PER_PART } from "../helpers";
 import { setQuestEndTime } from "../helpers/advanced-questing";
 import {
   isQuestingXpGainedEnabled,
@@ -238,21 +239,27 @@ export function handleAdvancedQuestEnded(event: AdvancedQuestEnded): void {
 
   quest.save();
 
-  // Prefer the QPGained event if it's available at this block
-  if (!isQuestingXpGainedEnabled(event.block.number)) {
-    const metadata = LegionInfo.load(`${quest.token}-metadata`);
-    if (metadata) {
-      if (metadata.type != "Recruit" && metadata.questing != 6) {
-        metadata.questingXp += getXpPerLevel(metadata.questing);
-        metadata.save();
-      }
-    } else {
-      log.warning(
-        "[advanced-quest-end] Failed to update XP, metadata not found: {}",
-        [quest.token]
-      );
-    }
+  const metadata = LegionInfo.load(`${quest.token}-metadata`);
+  if (!metadata) {
+    log.error("[advanced-quest-end] Legion metadata not found: {}", [
+      quest.token,
+    ]);
+    return;
   }
+
+  // Prefer the QPGained event if it's available at this block
+  if (
+    !isQuestingXpGainedEnabled(event.block.number) &&
+    metadata.type != "Recruit" &&
+    metadata.questing != 6
+  ) {
+    metadata.questingXp += getXpPerLevel(metadata.questing);
+  }
+
+  metadata.questsCompleted += 1;
+  metadata.questsDistanceTravelled +=
+    QUEST_DISTANCE_TRAVELLED_PER_PART * quest.part;
+  metadata.save();
 }
 
 /*

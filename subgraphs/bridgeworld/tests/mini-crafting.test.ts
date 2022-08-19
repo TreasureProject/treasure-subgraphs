@@ -11,13 +11,21 @@ import {
   MINI_CRAFT_ENTITY_TYPE,
   OUTCOME_ENTITY_TYPE,
   USER_ADDRESS,
+} from "./helpers/constants";
+import {
   createLegionCreatedEvent,
   createLegionTransferEvent,
-  createMiniCraftingFinishedEvent,
-} from "./helpers";
+} from "./helpers/legion";
+import { createMiniCraftingFinishedEvent } from "./helpers/mini-crafting";
 
 test("mini crafting outcome is stored", () => {
   clearStore();
+
+  // Mint & create Legion
+  handleTransfer(
+    createLegionTransferEvent(Address.zero().toHexString(), USER_ADDRESS, 1)
+  );
+  handleLegionCreated(createLegionCreatedEvent(USER_ADDRESS, 1, 0, 6, 2));
 
   // Finish mini craft
   handleCraftingFinished(
@@ -63,10 +71,7 @@ test("mini crafting increases xp when emitted", () => {
   );
 
   // Assert Legion crafting XP was increased
-  assert.fieldEquals(
-    LEGION_INFO_ENTITY_TYPE,
-    `${LEGION_ADDRESS.toHexString()}-0x1-metadata`,
-    "craftingXp",
-    "20"
-  );
+  const id = `${LEGION_ADDRESS.toHexString()}-0x1-metadata`;
+  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, id, "craftingXp", "20");
+  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, id, "miniCraftsCompleted", "1");
 });

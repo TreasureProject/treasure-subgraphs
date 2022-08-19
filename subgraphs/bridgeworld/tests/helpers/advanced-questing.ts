@@ -8,14 +8,12 @@ import { Address, BigInt, ethereum } from "@graphprotocol/graph-ts";
 
 import { ADVANCED_QUESTING_ADDRESS, LEGION_ADDRESS } from "@treasure/constants";
 
-import { createRandomRequestEvent } from ".";
 import {
   AdvancedQuestContinued,
   AdvancedQuestEnded,
   AdvancedQuestStarted,
   TreasureTriadPlayed,
 } from "../../generated/Advanced Questing/AdvancedQuesting";
-import { AdvancedQuestReward } from "../../generated/schema";
 import { getAddressId } from "../../src/helpers";
 import {
   handleAdvancedQuestContinued,
@@ -27,6 +25,7 @@ import { handleLegionCreated, handleTransfer } from "../../src/mappings/legion";
 import { handleRandomRequest } from "../../src/mappings/randomizer";
 import { USER_ADDRESS } from "./constants";
 import { createLegionCreatedEvent, createLegionTransferEvent } from "./legion";
+import { createRandomRequestEvent } from "./randomizer";
 
 export class RewardParam {
   public consumableId: i32;
@@ -103,7 +102,7 @@ export function createAdvancedQuestStartedEvent(
   legionId: i32 = 1,
   requestId: i32 = 1,
   zoneName: string = "A",
-  toPart: i8 = 0,
+  toPart: i8 = 1,
   treasureIds: i32[] = [1, 2, 3],
   treasureAmounts: i32[] = [1, 1, 1]
 ): AdvancedQuestStarted {

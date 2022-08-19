@@ -5,11 +5,8 @@ import { Address, BigInt } from "@graphprotocol/graph-ts";
 import { LEGION_ADDRESS } from "@treasure/constants";
 
 import { setQuestingXpGainedBlockNumberIfEmpty } from "../src/helpers/config";
-import {
-  LEGION_IPFS,
-  LEGION_PFP_IPFS,
-  getAddressId,
-} from "../src/helpers/index";
+import { LEGION_IPFS, LEGION_PFP_IPFS } from "../src/helpers/constants";
+import { getAddressId } from "../src/helpers/utils";
 import { handleTransferSingle } from "../src/mappings/legacy-legion-genesis";
 import {
   handleLegionCreated,
@@ -25,13 +22,17 @@ import {
   LEGION_INFO_ENTITY_TYPE,
   TOKEN_ENTITY_TYPE,
   USER_ADDRESS,
+} from "./helpers/constants";
+import {
   createLegacyLegionGenesisTransferEvent,
   createLegionCreatedEvent,
   createLegionQuestLevelUpEvent,
   createLegionTransferEvent,
+} from "./helpers/legion";
+import {
   createPilgrimagesFinishedEvent,
   createPilgrimagesStartedEvent,
-} from "./helpers/index";
+} from "./helpers/pilgrimage";
 
 // PilgrimageId = 7 in production
 test("legion metadata is correct for pilgrimaged riverman", () => {

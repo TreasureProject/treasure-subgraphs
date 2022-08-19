@@ -1,3 +1,5 @@
+import { log } from "@graphprotocol/graph-ts";
+
 import { LEGION_ADDRESS, TREASURE_ADDRESS } from "@treasure/constants";
 
 import { CraftingFinished } from "../../generated/Mini Crafting/MiniCrafting";
@@ -25,15 +27,20 @@ export function handleCraftingFinished(event: CraftingFinished): void {
   outcome.success = true;
   outcome.save();
 
-  // Increase craft XP
-  if (xpGained > 0) {
-    const metadata = LegionInfo.load(`${miniCraft.token}-metadata`);
-    if (metadata && metadata.crafting != 6) {
-      metadata.craftingXp += xpGained;
-      metadata.save();
-    }
-  }
-
   miniCraft.outcome = outcome.id;
   miniCraft.save();
+
+  const metadata = LegionInfo.load(`${miniCraft.token}-metadata`);
+  if (!metadata) {
+    log.error("Legion metadata not found: {}", [miniCraft.token]);
+    return;
+  }
+
+  // Increase craft XP
+  if (xpGained > 0 && metadata.crafting != 6) {
+    metadata.craftingXp += xpGained;
+  }
+
+  metadata.miniCraftsCompleted += 1;
+  metadata.save();
 }

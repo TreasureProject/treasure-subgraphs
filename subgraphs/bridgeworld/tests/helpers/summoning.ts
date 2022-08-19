@@ -2,11 +2,11 @@ import { newMockEvent } from "matchstick-as/assembly";
 
 import { Address, Bytes, ethereum } from "@graphprotocol/graph-ts";
 
-import { SUMMONING_ADDRESS } from ".";
 import {
   SummoningFinished,
   SummoningStarted,
 } from "../../generated/Summoning/Summoning";
+import { SUMMONING_ADDRESS } from "./constants";
 
 function pad(input: i32): string {
   return `${"0".repeat(64)}${input.toString(16)}`.slice(-64);

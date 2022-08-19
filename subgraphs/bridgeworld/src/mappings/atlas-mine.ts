@@ -1,11 +1,4 @@
-import {
-  Address,
-  BigDecimal,
-  BigInt,
-  ethereum,
-  log,
-  store,
-} from "@graphprotocol/graph-ts";
+import { BigDecimal, BigInt, log, store } from "@graphprotocol/graph-ts";
 
 import {
   Deposit as DepositEvent,
@@ -21,35 +14,11 @@ import {
   User,
   Withdraw,
 } from "../../generated/schema";
+import { LOCK_PERIOD_IN_SECONDS } from "../helpers";
+import { getUserOrMultisigAddress } from "../helpers/user";
 import { getAddressId } from "../helpers/utils";
 
 const ONE = BigDecimal.fromString((1e18).toString());
-
-const DAY = 86_400;
-const ONE_WEEK = DAY * 7;
-const TWO_WEEKS = ONE_WEEK * 2;
-const ONE_MONTH = DAY * 30;
-const THREE_MONTHS = ONE_MONTH * 3;
-const SIX_MONTHS = ONE_MONTH * 6;
-const TWELVE_MONTHS = DAY * 365;
-
-const TIMESTAMPS = [
-  TWO_WEEKS,
-  ONE_MONTH,
-  THREE_MONTHS,
-  SIX_MONTHS,
-  TWELVE_MONTHS,
-];
-
-function getUserOrMultisig(event: ethereum.Event): string {
-  let transaction = event.transaction;
-  let transactionTo = transaction.to;
-  let to = transactionTo === null ? Address.zero() : transactionTo;
-  let isMultisig = to.notEqual(event.address);
-  let user = isMultisig ? to : transaction.from;
-
-  return user.toHexString();
-}
 
 export function handleDeposit(event: DepositEvent): void {
   let mine = event.address.toHexString();
@@ -65,10 +34,12 @@ export function handleDeposit(event: DepositEvent): void {
     user.save();
   }
 
+  deposit.transactionHash = event.transaction.hash;
   deposit.amount = params.amount;
   deposit.depositId = params.index;
+  deposit.startTimestamp = event.block.timestamp.times(BigInt.fromI32(1000));
   deposit.endTimestamp = event.block.timestamp
-    .plus(BigInt.fromI32(TIMESTAMPS[lock]))
+    .plus(BigInt.fromI32(LOCK_PERIOD_IN_SECONDS[lock]))
     .times(BigInt.fromI32(1000));
   deposit.lock = lock;
   deposit.mine = mine;
@@ -83,7 +54,7 @@ export function handleStaked(event: Staked): void {
   let quantity = params.amount;
   let boost = params.currentBoost;
   let addressId = getAddressId(nft, tokenId);
-  let userId = getUserOrMultisig(event);
+  let userId = getUserOrMultisigAddress(event).toHexString();
   let stakedTokenId = `${userId}-${addressId}`;
 
   let user = User.load(userId);
@@ -98,7 +69,7 @@ export function handleStaked(event: Staked): void {
 
   if (!stakedToken) {
     stakedToken = new StakedToken(stakedTokenId);
-
+    stakedToken.mine = event.address.toHexString();
     stakedToken.token = addressId;
     stakedToken.user = userId;
   }
@@ -114,7 +85,7 @@ export function handleUnstaked(event: Unstaked): void {
   let quantity = params.amount;
   let boost = params.currentBoost;
   let addressId = getAddressId(nft, tokenId);
-  let userId = getUserOrMultisig(event);
+  let userId = getUserOrMultisigAddress(event).toHexString();
   let stakedTokenId = `${userId}-${addressId}`;
 
   let user = User.load(userId);
