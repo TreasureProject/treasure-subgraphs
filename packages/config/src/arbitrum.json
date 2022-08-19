@@ -144,5 +144,8 @@
   "lost_donkeys_address": "0x5e84c1A06E6AD1a8ED66Bc48dBe5eB06BF2Fe4aA",
   "lost_donkeys_start_block": 11440957,
 
-  "hourly_stat_interval_start_block": 6470000
+  "hourly_stat_interval_start_block": 6470000,
+
+  "magicswap_factory_address": "0x015e379Ce0Ff195228b3A9eBDFA13F9afC155Dd7",
+  "magicswap_factory_start_block": 20547275
 }

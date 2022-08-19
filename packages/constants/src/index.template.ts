@@ -137,7 +137,4 @@ export const DAI_WETH_PAIR =
 export const USDT_WETH_PAIR =
   "{{ usdt_weth_pair }}{{^usdt_weth_pair}}0x0000000000000000000000000000000000000000{{/usdt_weth_pair}}";
 
-export const SUSHI_USDT_PAIR =
-  "{{ sushi_usdt_pair }}{{^sushi_usdt_pair}}0x0000000000000000000000000000000000000000{{/sushi_usdt_pair}}";
-
 export const MAGICSWAP_TOKEN_WHITELIST = [NATIVE.toHexString()];

@@ -5,7 +5,6 @@ import {
   DAI_WETH_PAIR,
   MAGICSWAP_FACTORY_ADDRESS,
   NATIVE,
-  SUSHI_USDT_PAIR,
   USDC,
   USDC_WETH_PAIR,
   USDT,
@@ -19,16 +18,6 @@ import { MINIMUM_LIQUIDITY_THRESHOLD_ETH, ONE_BD } from "./helpers/constants";
 // export const uniswapFactoryContract = FactoryContract.bind(Address.fromString("0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f"))
 
 export const factoryContract = FactoryContract.bind(MAGICSWAP_FACTORY_ADDRESS);
-
-export function getSushiPrice(): BigDecimal {
-  const pair = Pair.load(SUSHI_USDT_PAIR);
-
-  if (pair) {
-    return pair.token1Price;
-  }
-
-  return BigDecimal.zero();
-}
 
 export function getEthPrice(block: ethereum.Block | null = null): BigDecimal {
   // TODO: We can can get weighted averages, but this will do for now.
