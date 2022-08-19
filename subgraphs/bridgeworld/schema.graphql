@@ -427,6 +427,7 @@ type Token @entity {
   imageAlt: String
   metadata: Metadata
   name: String!
+  description: String
   owners: [UserToken!]! @derivedFrom(field: "token")
   rarity: Rarity!
   tokenId: BigInt!

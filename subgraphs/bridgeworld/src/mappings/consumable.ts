@@ -53,6 +53,15 @@ function getName(tokenId: i32): string {
   }
 }
 
+const getDescription = (tokenId: i32): string | null => {
+  switch (tokenId) {
+    case 7:
+      return "Please confirm that there are available Harvesters before buying a Harvester Part";
+    default:
+      return null;
+  }
+};
+
 // @ts-ignore - i32 undefined
 function getSize(tokenId: i32): string {
   switch (tokenId) {
@@ -120,6 +129,7 @@ function setMetadata(contract: Address, tokenId: BigInt): void {
 
   token.category = "Consumable";
   token.name = getName(tokenIdNum);
+  token.description = getDescription(tokenIdNum);
   token.image = `${CONSUMABLE_IPFS}/${tokenIdNum}.jpg`;
   token.metadata = metadata.id;
   token.rarity = "None";
