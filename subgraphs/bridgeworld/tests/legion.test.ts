@@ -104,6 +104,8 @@ test("legion metadata is correct for pilgrimaged riverman", () => {
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "summons", "0");
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "crafting", "1");
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "craftingXp", "0");
+  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "recruitLevel", "0");
+  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "recruitXp", "0");
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "rarity", "Special");
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "role", "Riverman");
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "boost", "0.75");
@@ -431,8 +433,10 @@ test("legion metadata is correct for recruit", () => {
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "summons", "0");
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "crafting", "1");
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "craftingXp", "0");
-  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "rarity", "Recruit");
-  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "role", "Recruit");
+  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "recruitLevel", "1");
+  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "recruitXp", "0");
+  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "rarity", "None");
+  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "role", "None");
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "boost", "0.0");
 });
 

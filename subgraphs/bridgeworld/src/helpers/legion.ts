@@ -39,6 +39,8 @@ export const RARE_CLASS = [
   "Shadowguard",
 ];
 
+export const RECRUIT_CLASS = ["None", "Arcane", "Archery", "Melee"];
+
 export const mapGenesisRareClass = (tokenId: BigInt): i32 => {
   const id = tokenId.toI32();
   switch (id) {

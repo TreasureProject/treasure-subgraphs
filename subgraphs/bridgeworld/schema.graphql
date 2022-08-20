@@ -124,6 +124,12 @@ type LegionInfo implements Metadata @entity {
   "Rarity (Common, Rare, etc.)"
   rarity: String!
 
+  "Recruit Level, if applicable"
+  recruitLevel: Int
+
+  "Recruit XP, if applicable"
+  recruitXp: Int
+
   "Class (Fighter, Ranger, etc.)"
   role: String!
 

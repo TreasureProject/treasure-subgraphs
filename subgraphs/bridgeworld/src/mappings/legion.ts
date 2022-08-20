@@ -263,6 +263,8 @@ export function handleLegionCreated(event: LegionCreated): void {
 
   const generation = params._generation;
   const rarity = params._rarity;
+  const type = TYPE[generation];
+  const isRecruit = type == "Recruit";
   const metadata = new LegionInfo(`${token.id}-metadata`);
   metadata.boost = `${BOOST_MATRIX[generation][rarity] / 1e18}`;
   metadata.harvestersRank = HARVESTERS_RANK_MATRIX[generation][rarity];
@@ -272,9 +274,11 @@ export function handleLegionCreated(event: LegionCreated): void {
   metadata.craftingXp = 0;
   metadata.questing = 1;
   metadata.questingXp = 0;
-  metadata.rarity = RARITY[rarity];
-  metadata.role = CLASS[params._class];
-  metadata.type = TYPE[generation];
+  metadata.recruitLevel = isRecruit ? 1 : 0;
+  metadata.recruitXp = 0;
+  metadata.rarity = isRecruit ? "None" : RARITY[rarity];
+  metadata.role = isRecruit ? "None" : CLASS[params._class];
+  metadata.type = type;
   metadata.summons = BigInt.zero();
   metadata.save();
 
@@ -298,7 +302,7 @@ export function handleLegionCreated(event: LegionCreated): void {
   token.generation = generation;
   token.rarity = metadata.rarity;
 
-  if (metadata.type == "Recruit") {
+  if (isRecruit) {
     const user = User.load(params._owner.toHexString());
     if (user) {
       user.recruit = token.id;

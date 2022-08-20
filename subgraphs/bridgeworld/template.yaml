@@ -537,6 +537,28 @@ dataSources:
         - event: HarvesterDeployed(address,address)
           handler: handleHarvesterDeployed
       file: ./src/mappings/harvester.ts
+  - name: Recruit Level
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ harvester_factory_address }}"
+      abi: RecruitLevel
+      startBlock: {{ harvester_factory_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Token
+      abis:
+        - name: RecruitLevel
+          file: {{{ abis }}}/RecruitLevel.json
+      eventHandlers:
+        - event: RecruitTypeChanged(indexed uint256,uint8)
+          handler: handleRecruitTypeChanged
+        - event: RecruitXPChanged(indexed uint256,uint16,uint32)
+          handler: handleRecruitXpChanged
+      file: ./src/mappings/recruit.ts
 templates:
   - name: Harvester
     kind: ethereum/contract
