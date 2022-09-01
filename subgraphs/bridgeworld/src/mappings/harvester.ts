@@ -203,8 +203,9 @@ export function handleExtractorStaked(event: ExtractorStaked): void {
       harvester.id,
       tokenId.toString(),
     ]);
-    return;
   }
+
+  const tokenBoostAmount = tokenBoost ? tokenBoost.boost : BigInt.zero();
 
   const amount = params.amount.toI32();
   const expirationTime = event.block.timestamp.plus(
@@ -237,7 +238,7 @@ export function handleExtractorStaked(event: ExtractorStaked): void {
 
   // Update staked Extractors boost
   harvester.extractorsBoost = harvester.extractorsBoost.plus(
-    tokenBoost.boost.times(params.amount)
+    tokenBoostAmount.times(params.amount)
   );
 
   // Update Harvester's next expiration time if this Extractor will expire sooner
@@ -280,8 +281,11 @@ export function handleExtractorReplaced(event: ExtractorReplaced): void {
       harvester.id,
       stakedToken.token.toString(),
     ]);
-    return;
   }
+
+  const oldTokenBoostAmount = oldTokenBoost
+    ? oldTokenBoost.boost
+    : BigInt.zero();
 
   const newTokenId = getAddressId(CONSUMABLE_ADDRESS, tokenId);
   const newTokenBoost = HarvesterTokenBoost.load(
@@ -292,29 +296,30 @@ export function handleExtractorReplaced(event: ExtractorReplaced): void {
       harvester.id,
       tokenId.toString(),
     ]);
-    return;
   }
 
+  const newTokenBoostAmount = newTokenBoost
+    ? newTokenBoost.boost
+    : BigInt.zero();
+
+  const timestamp = event.block.timestamp;
   const oldExpirationTime = stakedToken.expirationTime;
-  const newExpirationTime = event.block.timestamp.plus(
-    harvester.extractorsLifetime
-  );
+  const newExpirationTime = timestamp.plus(harvester.extractorsLifetime);
   stakedToken.user = params.user.toHexString();
   stakedToken.token = newTokenId;
   stakedToken.quantity = ONE_BI;
   stakedToken.expirationTime = newExpirationTime;
+  stakedToken.expirationProcessed = false;
   stakedToken.save();
 
   // Update staked Extractors boost
-  let nextExtractorsBoost = harvester.extractorsBoost.plus(newTokenBoost.boost);
+  let nextExtractorsBoost = harvester.extractorsBoost.plus(newTokenBoostAmount);
   // Subtract old boost if it wasn't expired yet
-  if (
-    oldExpirationTime &&
-    (oldExpirationTime as BigInt).gt(event.block.timestamp)
-  ) {
-    nextExtractorsBoost = nextExtractorsBoost.minus(oldTokenBoost.boost);
+  if (oldExpirationTime && (oldExpirationTime as BigInt).gt(timestamp)) {
+    nextExtractorsBoost = nextExtractorsBoost.minus(oldTokenBoostAmount);
   }
-  harvester.extractorsBoost = nextExtractorsBoost;
+  harvester.extractorsBoost =
+    nextExtractorsBoost.toI32() < 0 ? BigInt.zero() : nextExtractorsBoost;
 
   // Update Harvester's next expiration time if this Extractor will expire sooner
   if (
@@ -326,7 +331,7 @@ export function handleExtractorReplaced(event: ExtractorReplaced): void {
 
   harvester.save();
 
-  removeExpiredExtractors(harvester, event.block.timestamp);
+  removeExpiredExtractors(harvester, timestamp);
 }
 
 export function handleMagicDeposited(event: DepositEvent): void {
