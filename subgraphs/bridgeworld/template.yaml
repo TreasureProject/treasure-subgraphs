@@ -558,6 +558,12 @@ dataSources:
           handler: handleRecruitTypeChanged
         - event: RecruitXPChanged(indexed uint256,uint16,uint32)
           handler: handleRecruitXpChanged
+        - event: AscensionInfoSet(uint16,uint16,uint16)
+          handler: handleAscensionInfoSet
+        - event: LevelUpInfoSet(uint16,uint32)
+          handler: handleLevelUpInfoSet
+        - event: MaxLevelSet(uint16)
+          handler: handleMaxLevelSet
       file: ./src/mappings/recruit.ts
 templates:
   - name: Harvester

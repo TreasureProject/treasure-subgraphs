@@ -4,13 +4,19 @@ import { Address } from "@graphprotocol/graph-ts";
 
 import { LEGION_ADDRESS } from "@treasure/constants";
 
+import { getOrCreateRecruitConfig } from "../src/helpers/recruit";
 import { handleLegionCreated, handleTransfer } from "../src/mappings/legion";
 import {
+  handleAscensionInfoSet,
+  handleLevelUpInfoSet,
+  handleMaxLevelSet,
   handleRecruitTypeChanged,
   handleRecruitXpChanged,
 } from "../src/mappings/recruit";
 import {
   LEGION_INFO_ENTITY_TYPE,
+  RECRUIT_CONFIG_ENTITY_TYPE,
+  RECRUIT_LEVEL_CONFIG_ENTITY_TYPE,
   TOKEN_ENTITY_TYPE,
   USER_ADDRESS,
 } from "./helpers/constants";
@@ -19,9 +25,83 @@ import {
   createLegionTransferEvent,
 } from "./helpers/legion";
 import {
+  createAscensionInfoSetEvent,
+  createLevelUpInfoSetEvent,
+  createMaxLevelSetEvent,
   createRecruitTypeChangedEvent,
   createRecruitXpChangedEvent,
 } from "./helpers/recruit";
+
+test("that recruit config has default values and can be updated", () => {
+  clearStore();
+
+  // Create default config and assert default values
+  getOrCreateRecruitConfig();
+  assert.fieldEquals(RECRUIT_CONFIG_ENTITY_TYPE, "only", "maxLevel", "7");
+  assert.fieldEquals(
+    RECRUIT_CONFIG_ENTITY_TYPE,
+    "only",
+    "ascensionMinLevel",
+    "3"
+  );
+  assert.fieldEquals(
+    RECRUIT_CONFIG_ENTITY_TYPE,
+    "only",
+    "ascensionCostEssenceOfStarlight",
+    "6"
+  );
+  assert.fieldEquals(
+    RECRUIT_CONFIG_ENTITY_TYPE,
+    "only",
+    "ascensionCostPrismShards",
+    "6"
+  );
+
+  // Update max level and assert value was updated
+  handleMaxLevelSet(createMaxLevelSetEvent(8));
+  assert.fieldEquals(RECRUIT_CONFIG_ENTITY_TYPE, "only", "maxLevel", "8");
+
+  // Update ascension info and assert values were updated
+  handleAscensionInfoSet(createAscensionInfoSetEvent(4, 10, 10));
+  assert.fieldEquals(
+    RECRUIT_CONFIG_ENTITY_TYPE,
+    "only",
+    "ascensionMinLevel",
+    "4"
+  );
+  assert.fieldEquals(
+    RECRUIT_CONFIG_ENTITY_TYPE,
+    "only",
+    "ascensionCostEssenceOfStarlight",
+    "10"
+  );
+  assert.fieldEquals(
+    RECRUIT_CONFIG_ENTITY_TYPE,
+    "only",
+    "ascensionCostPrismShards",
+    "10"
+  );
+});
+
+test("that recruit level configs can be added", () => {
+  clearStore();
+
+  // Update level up info and assert values were added
+  handleLevelUpInfoSet(createLevelUpInfoSetEvent(1, 10));
+  handleLevelUpInfoSet(createLevelUpInfoSetEvent(2, 20));
+  assert.fieldEquals(
+    RECRUIT_LEVEL_CONFIG_ENTITY_TYPE,
+    "recruit-level-config-1",
+    "xpToNextLevel",
+    "10"
+  );
+  assert.fieldEquals(
+    RECRUIT_LEVEL_CONFIG_ENTITY_TYPE,
+    "recruit-level-config-2",
+    "xpToNextLevel",
+    "20"
+  );
+});
 
 test("that recruit xp is changed", () => {
   clearStore();

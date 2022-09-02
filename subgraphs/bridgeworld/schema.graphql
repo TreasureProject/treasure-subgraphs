@@ -637,3 +637,36 @@ type HarvesterTimelock @entity {
   "Duration, in seconds, of the vesting period for this timelock"
   vestingDuration: BigInt!
 }
+
+type RecruitConfig @entity {
+  "Singleton with ID `only`"
+  id: ID!
+
+  "Maximum level that Recruits can reach"
+  maxLevel: Int!
+
+  "Minimum level Recruit must achieve before ascending"
+  ascensionMinLevel: Int!
+
+  "Number of Essence of Starlight required to ascend Recruit"
+  ascensionCostEssenceOfStarlight: Int!
+
+  "Number of Prism Shards required to ascend Recruit"
+  ascensionCostPrismShards: Int!
+
+  "List of level-specific Recruit configs"
+  levelConfigs: [RecruitLevelConfig!]! @derivedFrom(field: "recruitConfig")
+}
+
+type RecruitLevelConfig @entity {
+  id: ID!
+
+  "Reference to the main Recruit config singleton"
+  recruitConfig: RecruitConfig!
+
+  "Recruit level for this configuration"
+  level: Int!
+
+  "Recruit XP required to gain before leveling up from this level"
+  xpToNextLevel: BigInt!
+}
