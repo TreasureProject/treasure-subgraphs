@@ -318,8 +318,9 @@ export function handleExtractorReplaced(event: ExtractorReplaced): void {
   if (oldExpirationTime && (oldExpirationTime as BigInt).gt(timestamp)) {
     nextExtractorsBoost = nextExtractorsBoost.minus(oldTokenBoostAmount);
   }
-  harvester.extractorsBoost =
-    nextExtractorsBoost.toI32() < 0 ? BigInt.zero() : nextExtractorsBoost;
+  harvester.extractorsBoost = nextExtractorsBoost.lt(BigInt.zero())
+    ? BigInt.zero()
+    : nextExtractorsBoost;
 
   // Update Harvester's next expiration time if this Extractor will expire sooner
   if (
