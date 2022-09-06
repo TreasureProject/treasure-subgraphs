@@ -541,9 +541,9 @@ dataSources:
     kind: ethereum/contract
     network: {{ network }}
     source:
-      address: "{{ harvester_factory_address }}"
+      address: "{{ recruit_level_address }}"
       abi: RecruitLevel
-      startBlock: {{ harvester_factory_start_block }}
+      startBlock: {{ recruit_level_start_block }}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
