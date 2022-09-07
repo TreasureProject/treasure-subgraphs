@@ -436,7 +436,7 @@ test("legion metadata is correct for recruit", () => {
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "recruitLevel", "1");
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "recruitXp", "0");
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "rarity", "None");
-  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "role", "None");
+  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "role", "Base Recruit");
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "boost", "0.0");
 });
 

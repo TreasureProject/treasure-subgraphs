@@ -277,7 +277,7 @@ export function handleLegionCreated(event: LegionCreated): void {
   metadata.recruitLevel = isRecruit ? 1 : 0;
   metadata.recruitXp = 0;
   metadata.rarity = isRecruit ? "None" : RARITY[rarity];
-  metadata.role = isRecruit ? "None" : CLASS[params._class];
+  metadata.role = isRecruit ? "Base Recruit" : CLASS[params._class];
   metadata.type = type;
   metadata.summons = BigInt.zero();
   metadata.save();

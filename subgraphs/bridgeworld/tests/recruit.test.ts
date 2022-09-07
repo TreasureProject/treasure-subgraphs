@@ -155,12 +155,13 @@ test("that recruit type is changed", () => {
 
   const metadata = `${id}-metadata`;
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "rarity", "None");
-  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "role", "None");
+  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "role", "Base Recruit");
 
   // Update and assert types
   handleRecruitTypeChanged(createRecruitTypeChangedEvent(tokenId, 1));
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "rarity", "None");
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "role", "Arcane");
+  assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "name", "Cadet");
   handleRecruitTypeChanged(createRecruitTypeChangedEvent(tokenId, 2));
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "role", "Archery");
   handleRecruitTypeChanged(createRecruitTypeChangedEvent(tokenId, 3));

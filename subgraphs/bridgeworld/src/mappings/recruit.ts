@@ -1,3 +1,6 @@
+import { log } from "@graphprotocol/graph-ts";
+
+import { getLegionId } from "../../../bridgeworld-stats/src/helpers/ids";
 import {
   AscensionInfoSet,
   LevelUpInfoSet,
@@ -5,6 +8,7 @@ import {
   RecruitTypeChanged,
   RecruitXPChanged,
 } from "../../generated/Recruit Level/RecruitLevel";
+import { Token } from "../../generated/schema";
 import { RECRUIT_CLASS, getLegionMetadata } from "../helpers/legion";
 import {
   getOrCreateRecruitConfig,
@@ -35,7 +39,17 @@ export function handleMaxLevelSet(event: MaxLevelSet): void {
 
 export function handleRecruitTypeChanged(event: RecruitTypeChanged): void {
   const params = event.params;
-  const metadata = getLegionMetadata(params.tokenId);
+  const tokenId = params.tokenId;
+  const token = Token.load(getLegionId(tokenId));
+  if (!token) {
+    log.error("Unknown Recruit token: {}", [tokenId.toString()]);
+    return;
+  }
+
+  token.name = "Cadet";
+  token.save();
+
+  const metadata = getLegionMetadata(tokenId);
   metadata.role = RECRUIT_CLASS[params.recruitType];
   metadata.save();
 }
