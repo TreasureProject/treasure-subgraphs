@@ -299,18 +299,14 @@ dataSources:
         - StakedToken
       abis:
         - name: SmolRacing
-          file: ./abis/SmolRacing.json
+          file: {{{ abis }}}/SmolRacing.json
       eventHandlers:
         - event: SmolStaked(indexed address,indexed address,indexed uint256,uint64)
           handler: handleSmolStaked
         - event: SmolUnstaked(indexed address,indexed address,indexed uint256)
           handler: handleSmolUnstaked
-        - event: StartRacing(indexed address,indexed address,indexed uint256,uint64,uint8,uint256)
+        - event: StartRacing(indexed address,indexed address,indexed uint256,uint64,uint8,uint64[4],uint256)
           handler: handleStartRacing
         - event: StopRacing(indexed address,indexed address,indexed uint256,uint64,uint8)
           handler: handleStopRacing
-        - event: RewardClaimed(indexed address,indexed address,indexed uint256,uint256,uint256)
-          handler: handleRewardClaimed
-        - event: NoRewardEarned(indexed address,indexed address,indexed uint256)
-          handler: handleNoRewardEarned
       file: ./src/mappings/smol-racing.ts

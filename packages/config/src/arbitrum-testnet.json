@@ -77,6 +77,8 @@
   "wrapped_smols_start_block": 12256622,
   "smol_racing_address": "0x6Ede56ade2d2904BcB4ad0212980276a2Ac5b78a",
   "smol_racing_start_block": 15263772,
+  "smol_racing_trophies_address": "0x05718e7e2918DB5b25405d52142b7A690F023f76",
+  "smol_racing_trophies_start_block": 15263764,
 
   "randomizer_seed_of_life_start_block": 9687394,
   "seed_of_life_address": "0xfB3DD6c293bc2f987884641dA4af9E0f64538Dc7",
