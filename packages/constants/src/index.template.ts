@@ -50,6 +50,7 @@ export const SMOL_RACING_ADDRESS = Address.fromString(
 export const SMOL_RACING_TROPHIES_ADDRESS = Address.fromString(
   "{{ smol_racing_trophies_address }}"
 );
+export const SMOLOWEEN_ADDRESS = Address.fromString("{{ smoloween_address }}");
 export const MARKETPLACE_ADDRESS = Address.fromString(
   "{{ treasure_marketplace_address }}"
 );

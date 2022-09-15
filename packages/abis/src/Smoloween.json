@@ -1,0 +1,7 @@
+[
+  "event Staked(address indexed owner, uint256 indexed id)",
+  "event Unstaked(address indexed owner, uint256 indexed id)",
+  "event SentToCopy(address indexed sender, uint256 smolId, uint256 targetId, uint256 trait)",
+  "event SentToAttack(address indexed sender, uint256 smolId, uint256 targetId)",
+  "event Converted(uint256 smol)"
+]

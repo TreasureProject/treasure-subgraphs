@@ -1,0 +1,34 @@
+enum TokenType {
+  SmolBrains
+  SmolBodies
+}
+
+"Tracks related Randomizer requests"
+type Random @entity {
+  id: ID!
+}
+
+"Tracks related Randomizer commits"
+type Seeded @entity {
+  id: ID!
+
+  "Random requests related to this commit"
+  randoms: [Random!]!
+}
+
+"NFTs that participate in Smoloween"
+type Token @entity {
+  id: ID!
+
+  "Display name of token contract"
+  type: TokenType!
+
+  "Token contract address"
+  contract: Bytes!
+
+  "Token ID"
+  tokenId: BigInt!
+
+  "True if token is staked in Smoloween contract"
+  isStaked: Boolean!
+}
