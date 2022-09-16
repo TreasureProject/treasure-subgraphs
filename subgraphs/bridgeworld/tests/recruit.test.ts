@@ -160,10 +160,27 @@ test("that recruit type is changed", () => {
   // Update and assert types
   handleRecruitTypeChanged(createRecruitTypeChangedEvent(tokenId, 1));
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "rarity", "None");
-  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "role", "Arcane");
-  assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "name", "Cadet");
+  assert.fieldEquals(
+    LEGION_INFO_ENTITY_TYPE,
+    metadata,
+    "role",
+    "Cognition Cadet"
+  );
+  assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "name", "Recruit");
+
   handleRecruitTypeChanged(createRecruitTypeChangedEvent(tokenId, 2));
-  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "role", "Archery");
+  assert.fieldEquals(
+    LEGION_INFO_ENTITY_TYPE,
+    metadata,
+    "role",
+    "Parabolics Cadet"
+  );
   handleRecruitTypeChanged(createRecruitTypeChangedEvent(tokenId, 3));
-  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "role", "Melee");
+
+  assert.fieldEquals(
+    LEGION_INFO_ENTITY_TYPE,
+    metadata,
+    "role",
+    "Lethality Cadet"
+  );
 });
