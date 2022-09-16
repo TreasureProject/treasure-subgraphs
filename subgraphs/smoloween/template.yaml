@@ -43,16 +43,16 @@ dataSources:
         - name: Smoloween
           file: {{{ abis }}}/Smoloween.json
       eventHandlers:
-        - event: SmolStaked(indexed address,indexed address,indexed uint256,uint64)
-          handler: handleSmolStaked
-        - event: SmolUnstaked(indexed address,indexed address,indexed uint256)
-          handler: handleSmolUnstaked
-        - event: StartRacing(indexed address,indexed address,indexed uint256,uint64,uint8,uint64[4],uint256)
-          handler: handleStartRacing
-        - event: StopRacing(indexed address,indexed address,indexed uint256,uint64,uint8)
-          handler: handleStopRacing
-        - event: RewardClaimed(indexed address,indexed address,indexed uint256,uint256,uint256)
-          handler: handleRewardClaimed
-        - event: NoRewardEarned(indexed address,indexed address,indexed uint256)
-          handler: handleNoRewardEarned
+        - event: Converted(uint256)
+          handler: handleConverted
+        - event: GotSidekick(uint256,uint256,uint256)
+          handler: handleGotSidekick
+        - event: SentToAttack(indexed address,uint256,uint256)
+          handler: handleSentToAttack
+        - event: SentToCopy(indexed address,uint256,uint256,uint256)
+          handler: handleSentToCopy
+        - event: Staked(indexed address,indexed uint256,uint256)
+          handler: handleStaked
+        - event: Unstaked(indexed address,indexed uint256)
+          handler: handleUnstaked
       file: ./src/mappings/smoloween.ts

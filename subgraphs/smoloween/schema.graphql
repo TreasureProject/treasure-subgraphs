@@ -1,8 +1,3 @@
-enum TokenType {
-  SmolBrains
-  SmolBodies
-}
-
 "Tracks related Randomizer requests"
 type Random @entity {
   id: ID!
@@ -20,15 +15,62 @@ type Seeded @entity {
 type Token @entity {
   id: ID!
 
-  "Display name of token contract"
-  type: TokenType!
-
-  "Token contract address"
-  contract: Bytes!
-
   "Token ID"
   tokenId: BigInt!
 
   "True if token is staked in Smoloween contract"
   isStaked: Boolean!
+
+  "True if token has been converted to a ghoul"
+  isGhoul: Boolean!
+
+  sidekicks: [Sidekick!]! @derivedFrom(field: "owner")
+}
+
+"Sidekicks that can be dispatched by NFTs"
+type Sidekick @entity {
+  id: ID!
+
+  "Token that owns this sidekick"
+  owner: Token!
+
+  "Day this sidekick was obtained"
+  day: Int!
+}
+
+"Instance of a ghoul attacking a Smol"
+type Attack @entity {
+  id: ID!
+
+  "User who initiated the attack"
+  user: Bytes!
+
+  "Token that is performing the attack"
+  attacker: Token!
+
+  "Token that is the target of the attack"
+  target: Token!
+
+  "Day this attack is being performed"
+  day: Int!
+}
+
+"Instance of a sidekick copying a trait"
+type Mission @entity {
+  id: ID!
+
+  "user who initiated the copy"
+  user: Bytes!
+
+  "Sidekick that is performing the copy"
+  sidekick: Sidekick!
+
+  "Token that is the target of the copy"
+  target: Token!
+
+  "Trait that is being copied"
+  trait: Int!
+
+  "Day this copy is being performed"
+  day: Int!
 }
