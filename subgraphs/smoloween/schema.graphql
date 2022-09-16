@@ -24,6 +24,7 @@ type Token @entity {
   "True if token has been converted to a ghoul"
   isGhoul: Boolean!
 
+  "List of sidekicks owned by this token"
   sidekicks: [Sidekick!]! @derivedFrom(field: "owner")
 }
 
