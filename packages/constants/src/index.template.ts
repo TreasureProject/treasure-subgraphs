@@ -44,6 +44,12 @@ export const SMOL_FARM_ADDRESS = Address.fromString("{{ smol_farm_address }}");
 export const SMOL_TREASURES_ADDRESS = Address.fromString(
   "{{ smol_treasures_address }}"
 );
+export const SMOL_RACING_ADDRESS = Address.fromString(
+  "{{ smol_racing_address }}"
+);
+export const SMOL_RACING_TROPHIES_ADDRESS = Address.fromString(
+  "{{ smol_racing_trophies_address }}"
+);
 export const MARKETPLACE_ADDRESS = Address.fromString(
   "{{ treasure_marketplace_address }}"
 );
