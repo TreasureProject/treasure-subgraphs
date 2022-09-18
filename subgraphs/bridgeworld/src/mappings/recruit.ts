@@ -9,7 +9,12 @@ import {
   RecruitXPChanged,
 } from "../../generated/Recruit Level/RecruitLevel";
 import { Token } from "../../generated/schema";
-import { RECRUIT_CLASS, getLegionMetadata } from "../helpers/legion";
+import { LEGION_IPFS, LEGION_PFP_IPFS } from "../helpers";
+import {
+  RECRUIT_CLASS,
+  getCadetImage,
+  getLegionMetadata,
+} from "../helpers/legion";
 import {
   getOrCreateRecruitConfig,
   getOrCreateRecruitLevelConfig,
@@ -46,11 +51,16 @@ export function handleRecruitTypeChanged(event: RecruitTypeChanged): void {
     return;
   }
 
-  token.name = "Cadet";
+  token.name = "Recruit";
+  token.image = getCadetImage(LEGION_IPFS, RECRUIT_CLASS[params.recruitType]);
+  token.imageAlt = getCadetImage(
+    LEGION_PFP_IPFS,
+    RECRUIT_CLASS[params.recruitType]
+  );
   token.save();
 
   const metadata = getLegionMetadata(tokenId);
-  metadata.role = RECRUIT_CLASS[params.recruitType];
+  metadata.role = `${RECRUIT_CLASS[params.recruitType]} Cadet`;
   metadata.save();
 }
 
