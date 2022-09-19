@@ -43,10 +43,12 @@ dataSources:
         - name: Smoloween
           file: {{{ abis }}}/Smoloween.json
       eventHandlers:
-        - event: Converted(uint256)
+        - event: Converted(uint256,uint256)
           handler: handleConverted
         - event: GotSidekick(uint256,uint256,uint256)
           handler: handleGotSidekick
+        - event: Midnight(uint256,uint256)
+          handler: handleMidnight
         - event: SentToAttack(indexed address,uint256,uint256)
           handler: handleSentToAttack
         - event: SentToCopy(indexed address,uint256,uint256,uint256)

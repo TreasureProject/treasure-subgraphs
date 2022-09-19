@@ -3,5 +3,10 @@
 
   "abis": "../../node_modules/@treasure/subgraph-abis/src",
   "burner_address": "0x0000000000000000000000000000000000000000",
-  "explorer": "goerli-rollup-explorer.arbitrum.io"
+  "explorer": "goerli-rollup-explorer.arbitrum.io",
+
+  "randomizer_address": "0x9b58fc8c7B224Ae8479DA7E6eD37CA4Ac58099a9",
+
+  "smoloween_address": "0x7342fA72Aa8F5B38F9A6c24a2231358E3c66Ce35",
+  "smoloween_start_block": 325784
 }

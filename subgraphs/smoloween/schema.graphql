@@ -1,3 +1,12 @@
+"Global config"
+type Config @entity {
+  "Singleton with ID `only`"
+  id: ID!
+
+  "Current day of event"
+  currentDay: Int!
+}
+
 "Tracks related Randomizer requests"
 type Random @entity {
   id: ID!

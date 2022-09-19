@@ -3,10 +3,22 @@ import { BigInt, log } from "@graphprotocol/graph-ts";
 import {
   Converted,
   GotSidekick,
+  Midnight,
   Staked,
   Unstaked,
 } from "../../generated/Smoloween/Smoloween";
-import { Sidekick, Token } from "../../generated/schema";
+import { Config, Sidekick, Token } from "../../generated/schema";
+
+const getOrCreateConfig = (): Config => {
+  let config = Config.load("only");
+  if (!config) {
+    config = new Config("only");
+    config.currentDay = 0;
+    config.save();
+  }
+
+  return config;
+};
 
 const getOrCreateToken = (tokenId: BigInt): Token => {
   const id = tokenId.toString();
@@ -39,6 +51,12 @@ export function handleUnstaked(event: Unstaked): void {
 
   token.isStaked = false;
   token.save();
+}
+
+export function handleMidnight(event: Midnight): void {
+  const config = getOrCreateConfig();
+  config.currentDay = event.params.newDay.toI32();
+  config.save();
 }
 
 export function handleConverted(event: Converted): void {
