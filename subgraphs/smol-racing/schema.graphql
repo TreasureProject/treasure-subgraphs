@@ -47,6 +47,9 @@ type Token @entity {
 
   "True if token is staked in Smol Racing contract"
   isStaked: Boolean!
+
+  "User that initiated the stake, if applicable"
+  stakingUser: Bytes
 }
 
 "NFTs that participate as drivers in Smol Racing"
