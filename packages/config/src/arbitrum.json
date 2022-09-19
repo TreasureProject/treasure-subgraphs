@@ -75,6 +75,9 @@
   "swolercycles_start_block": 11653410,
   "wrapped_smols_address": "0x1f245E83fB88A1e85b4A1c3e4B3c16660d54319a",
   "wrapped_smols_start_block": 13643136,
+  "smol_racing_address": "0xEc895f620D1c103d5Bbc85CcE3b623C958Ce35cC",
+  "smol_racing_start_block": 24817191,
+  "smol_racing_trophies_address": "0xD5e7c7128A4b348E2b9b2d8539BC53130B7F5789",
 
   "randomizer_seed_of_life_start_block": 10014588,
   "seed_of_life_address": "0x3956C81A51FeAed98d7A678d53F44b9166c8ed66",

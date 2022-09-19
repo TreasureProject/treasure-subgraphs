@@ -69,6 +69,7 @@ export function handleSmolStaked(event: SmolStaked): void {
   const params = event.params;
   const token = getOrCreateToken(params._smolAddress, params._tokenId);
   token.isStaked = true;
+  token.stakingUser = params._owner;
   token.save();
 }
 
@@ -83,6 +84,7 @@ export function handleSmolUnstaked(event: SmolUnstaked): void {
   }
 
   token.isStaked = false;
+  token.stakingUser = null;
   token.save();
 }
 
