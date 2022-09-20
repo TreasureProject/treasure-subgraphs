@@ -22,6 +22,9 @@ type Stat @entity {
 "Tracks related Randomizer requests"
 type Random @entity {
   id: ID!
+
+  "Token associted with random request"
+  token: Token
 }
 
 "Tracks related Randomizer commits"
@@ -48,19 +51,20 @@ type Token @entity {
   "True if token has been converted to a ghoul"
   isGhoul: Boolean!
 
-  "List of sidekicks owned by this token"
-  sidekicks: [Sidekick!]! @derivedFrom(field: "owner")
-}
+  "Trait value for face"
+  faceTrait: Int
 
-"Sidekicks that can be dispatched by NFTs"
-type Sidekick @entity {
-  id: ID!
+  "Trait value for smile"
+  smileTrait: Int
 
-  "Token that owns this sidekick"
-  owner: Token!
+  "Trait value for hat"
+  hatTrait: Int
 
-  "Day this sidekick was obtained"
-  day: Int!
+  "Trait value for item"
+  itemTrait: Int
+
+  "Trait value for background"
+  backgroundTrait: Int
 }
 
 "Instance of a ghoul attacking a Smol"
@@ -88,7 +92,7 @@ type Mission @entity {
   user: Bytes!
 
   "Sidekick that is performing the copy"
-  sidekick: Sidekick!
+  sidekickId: BigInt!
 
   "Token that is the target of the copy"
   target: Token!

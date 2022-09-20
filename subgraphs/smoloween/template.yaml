@@ -19,6 +19,8 @@ dataSources:
       abis:
         - name: Randomizer
           file: {{{ abis }}}/Randomizer.json
+        - name: Smoloween
+          file: {{{ abis }}}/Smoloween.json
       eventHandlers:
         - event: RandomRequest(indexed uint256,indexed uint256)
           handler: handleRandomRequest
@@ -43,18 +45,20 @@ dataSources:
         - name: Smoloween
           file: {{{ abis }}}/Smoloween.json
       eventHandlers:
+        # - event: AttackResolved(uint256,bool,uint256,uint256)
+        #   handler: handleAttackResolved
         - event: Converted(uint256,uint256)
           handler: handleConverted
-        - event: GotSidekick(uint256,uint256,uint256)
-          handler: handleGotSidekick
+        # - event: CopyResolved(uint256,uint256,uint256,bool)
+        #   handler: handleCopyResolved
         - event: Midnight(uint256,uint256)
           handler: handleMidnight
-        - event: SentToAttack(indexed address,uint256,uint256)
+        - event: SentToAttack(address,uint256,uint256,uint256)
           handler: handleSentToAttack
-        - event: SentToCopy(indexed address,uint256,uint256,uint256)
+        - event: SentToCopy(address,uint256,uint256,uint256,uint256,uint256)
           handler: handleSentToCopy
-        - event: Staked(indexed address,indexed uint256,uint256)
+        - event: Staked(address,uint256,uint256,uint256)
           handler: handleStaked
-        - event: Unstaked(indexed address,indexed uint256)
+        - event: Unstaked(address,uint256,uint256)
           handler: handleUnstaked
       file: ./src/mappings/smoloween.ts

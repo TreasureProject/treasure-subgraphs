@@ -2,12 +2,20 @@ import { log } from "@graphprotocol/graph-ts";
 
 import {
   Converted,
-  GotSidekick,
   Midnight,
+  SentToAttack,
+  SentToCopy,
   Staked,
   Unstaked,
 } from "../../generated/Smoloween/Smoloween";
-import { Config, Sidekick, Stat, Token } from "../../generated/schema";
+import {
+  Attack,
+  Config,
+  Mission,
+  Random,
+  Stat,
+  Token,
+} from "../../generated/schema";
 
 const getOrCreateConfig = (): Config => {
   let config = Config.load("only");
@@ -35,6 +43,13 @@ const getOrCreateStat = (): Stat => {
 export function handleStaked(event: Staked): void {
   const params = event.params;
 
+  const randomId = params.requestId.toString();
+  const random = Random.load(randomId);
+  if (!random) {
+    log.error("[smoloween] Random not found for request: {}", [randomId]);
+    return;
+  }
+
   const id = params.gameId.toString();
   let token = Token.load(id);
   if (!token) {
@@ -46,6 +61,9 @@ export function handleStaked(event: Staked): void {
   token.stakingUser = params.owner;
   token.save();
 
+  random.token = token.id;
+  random.save();
+
   const stat = getOrCreateStat();
   stat.totalStaked += 1;
   stat.save();
@@ -54,7 +72,7 @@ export function handleStaked(event: Staked): void {
 export function handleUnstaked(event: Unstaked): void {
   const params = event.params;
 
-  const id = params.id.toString();
+  const id = params.gameId.toString();
   const token = Token.load(id);
   if (!token) {
     log.error("[smoloween] Unstaking unknown Token: {}", [id]);
@@ -97,18 +115,33 @@ export function handleConverted(event: Converted): void {
   stat.save();
 }
 
-export function handleGotSidekick(event: GotSidekick): void {
+export function handleSentToAttack(event: SentToAttack): void {
   const params = event.params;
+  const attackerId = params.gameId.toString();
+  const targetId = params.targetId.toString();
+  const day = params.day.toI32();
 
-  const ownerId = params.smol.toString();
-  const owner = Token.load(ownerId);
-  if (!owner) {
-    log.error("[smoloween] Adding sidekick to unknown Token: {}", [ownerId]);
-    return;
-  }
+  const id = `${attackerId}-${targetId}-${day.toString()}`;
+  const attack = new Attack(id);
+  attack.user = params.sender;
+  attack.attacker = attackerId;
+  attack.target = targetId;
+  attack.day = day;
+  attack.save();
+}
 
-  const sidekick = new Sidekick(params.sidekick.toString());
-  sidekick.owner = owner.id;
-  sidekick.day = params.day.toI32();
-  sidekick.save();
+export function handleSentToCopy(event: SentToCopy): void {
+  const params = event.params;
+  const sidekickId = params.sidekickId.toString();
+  const targetId = params.targetId.toString();
+  const day = params.day.toI32();
+
+  const id = `${sidekickId}-${targetId}-${day.toString()}`;
+  const mission = new Mission(id);
+  mission.user = params.sender;
+  mission.sidekickId = params.sidekickId;
+  mission.target = targetId;
+  mission.trait = params.trait.toI32();
+  mission.day = day;
+  mission.save();
 }
