@@ -7,6 +7,18 @@ type Config @entity {
   currentDay: Int!
 }
 
+"Global stats"
+type Stat @entity {
+  "Singleton with ID `only`"
+  id: ID!
+
+  "Number of tokens currently staked"
+  totalStaked: Int!
+
+  "Number of tokens converted to ghouls"
+  totalGhouls: Int!
+}
+
 "Tracks related Randomizer requests"
 type Random @entity {
   id: ID!
@@ -29,6 +41,9 @@ type Token @entity {
 
   "True if token is staked in Smoloween contract"
   isStaked: Boolean!
+
+  "User that initiated the stake, if applicable"
+  stakingUser: Bytes
 
   "True if token has been converted to a ghoul"
   isGhoul: Boolean!

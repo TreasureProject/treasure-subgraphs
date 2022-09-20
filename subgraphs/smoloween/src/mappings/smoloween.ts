@@ -1,4 +1,4 @@
-import { BigInt, log } from "@graphprotocol/graph-ts";
+import { log } from "@graphprotocol/graph-ts";
 
 import {
   Converted,
@@ -7,7 +7,7 @@ import {
   Staked,
   Unstaked,
 } from "../../generated/Smoloween/Smoloween";
-import { Config, Sidekick, Token } from "../../generated/schema";
+import { Config, Sidekick, Stat, Token } from "../../generated/schema";
 
 const getOrCreateConfig = (): Config => {
   let config = Config.load("only");
@@ -20,23 +20,35 @@ const getOrCreateConfig = (): Config => {
   return config;
 };
 
-const getOrCreateToken = (tokenId: BigInt): Token => {
-  const id = tokenId.toString();
-  let token = Token.load(id);
-  if (!token) {
-    token = new Token(id);
-    token.tokenId = tokenId;
-    token.save();
+const getOrCreateStat = (): Stat => {
+  let stat = Stat.load("only");
+  if (!stat) {
+    stat = new Stat("only");
+    stat.totalStaked = 0;
+    stat.totalGhouls = 0;
+    stat.save();
   }
 
-  return token;
+  return stat;
 };
 
 export function handleStaked(event: Staked): void {
   const params = event.params;
-  const token = getOrCreateToken(params.smolId);
+
+  const id = params.gameId.toString();
+  let token = Token.load(id);
+  if (!token) {
+    token = new Token(id);
+    token.tokenId = params.smolId;
+  }
+
   token.isStaked = true;
+  token.stakingUser = params.owner;
   token.save();
+
+  const stat = getOrCreateStat();
+  stat.totalStaked += 1;
+  stat.save();
 }
 
 export function handleUnstaked(event: Unstaked): void {
@@ -50,7 +62,15 @@ export function handleUnstaked(event: Unstaked): void {
   }
 
   token.isStaked = false;
+  token.stakingUser = null;
   token.save();
+
+  const stat = getOrCreateStat();
+  stat.totalStaked -= 1;
+  if (token.isGhoul) {
+    stat.totalGhouls -= 1;
+  }
+  stat.save();
 }
 
 export function handleMidnight(event: Midnight): void {
@@ -71,6 +91,10 @@ export function handleConverted(event: Converted): void {
 
   token.isGhoul = true;
   token.save();
+
+  const stat = getOrCreateStat();
+  stat.totalGhouls += 1;
+  stat.save();
 }
 
 export function handleGotSidekick(event: GotSidekick): void {
