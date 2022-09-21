@@ -10,6 +10,7 @@ import {
 
 import {
   NoRewardEarned,
+  RestartRacing,
   RewardClaimed,
   SmolStaked,
   SmolUnstaked,
@@ -88,26 +89,30 @@ export function handleSmolUnstaked(event: SmolUnstaked): void {
   token.save();
 }
 
-export function handleStartRacing(event: StartRacing): void {
-  const params = event.params;
-  const requestId = params._requestId;
-  const vehicleContract = params._vehicleAddress;
-  const driverIds = params._driverIds;
-
+const startRace = (
+  id: string,
+  vehicleContract: Address,
+  tokenId: BigInt,
+  user: Address,
+  startTime: BigInt,
+  numRaces: i32,
+  driverIds: BigInt[],
+  requestId: BigInt
+): void => {
   const random = Random.load(requestId.toString());
   if (!random) {
     log.error("[smol-racing]: Unknown Random: {}", [requestId.toString()]);
     return;
   }
 
-  const vehicle = getOrCreateToken(vehicleContract, params._tokenId);
+  const vehicle = getOrCreateToken(vehicleContract, tokenId);
   vehicle.isStaked = true;
   vehicle.save();
 
-  const race = new Race(getRaceId(event));
-  race.user = params._owner;
-  race.startTime = params._stakeTime;
-  race.numRaces = params._totalRaces;
+  const race = new Race(id);
+  race.user = user;
+  race.startTime = startTime;
+  race.numRaces = numRaces;
   race.status = "Started";
   race.vehicle = vehicle.id;
   race.save();
@@ -136,13 +141,9 @@ export function handleStartRacing(event: StartRacing): void {
 
   vehicleRace.race = race.id;
   vehicleRace.save();
-}
+};
 
-export function handleStopRacing(event: StopRacing): void {
-  const params = event.params;
-  const unstakeTime = params._stakeTime;
-
-  const vehicleId = getTokenId(params._vehicleAddress, params._tokenId);
+const endRace = (vehicleId: string, endTime: BigInt): void => {
   const vehicle = Token.load(vehicleId);
   if (!vehicle) {
     log.error("[smol-racing] Stopping unknown Vehicle: {}", [vehicleId]);
@@ -168,12 +169,56 @@ export function handleStopRacing(event: StopRacing): void {
   vehicle.isStaked = false;
   vehicle.save();
 
-  race.endTime = unstakeTime;
+  race.endTime = endTime;
   race.status = "Stopped";
   race.save();
 
   vehicleRace.race = null;
   vehicleRace.save();
+};
+
+export function handleStartRacing(event: StartRacing): void {
+  const params = event.params;
+
+  startRace(
+    getRaceId(event),
+    params._vehicleAddress,
+    params._tokenId,
+    params._owner,
+    params._stakeTime,
+    params._totalRaces,
+    params._driverIds,
+    params._requestId
+  );
+}
+
+export function handleStopRacing(event: StopRacing): void {
+  const params = event.params;
+
+  endRace(
+    getTokenId(params._vehicleAddress, params._tokenId),
+    params._stakeTime
+  );
+}
+
+export function handleRestartRacing(event: RestartRacing): void {
+  const params = event.params;
+
+  endRace(
+    getTokenId(params._vehicleAddress, params._tokenId),
+    params._stakeTime
+  );
+
+  startRace(
+    getRaceId(event),
+    params._vehicleAddress,
+    params._tokenId,
+    params._owner,
+    params._stakeTime,
+    params._totalRaces,
+    params._driverIds,
+    params._requestId
+  );
 }
 
 export function handleRewardClaimed(event: RewardClaimed): void {
