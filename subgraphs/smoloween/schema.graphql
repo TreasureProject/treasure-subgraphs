@@ -5,6 +5,9 @@ type Config @entity {
 
   "Current day of event"
   currentDay: Int!
+
+  "Current witch traits"
+  witchCostume: Costume
 }
 
 "Global stats"
@@ -23,8 +26,11 @@ type Stat @entity {
 type Random @entity {
   id: ID!
 
-  "Token associted with random request"
+  "Token associted with random request, if applicable"
   token: Token
+
+  "Day for witch costume associated with random request, if applicable"
+  witchDay: Int
 }
 
 "Tracks related Randomizer commits"
@@ -33,6 +39,26 @@ type Seeded @entity {
 
   "Random requests related to this commit"
   randoms: [Random!]!
+}
+
+"Collection of traits"
+type Costume @entity {
+  id: ID!
+
+  "Trait value for face"
+  face: Int
+
+  "Trait value for smile"
+  smile: Int
+
+  "Trait value for hat"
+  hat: Int
+
+  "Trait value for item"
+  item: Int
+
+  "Trait value for background"
+  background: Int
 }
 
 "NFTs that participate in Smoloween"
@@ -51,20 +77,8 @@ type Token @entity {
   "True if token has been converted to a ghoul"
   isGhoul: Boolean!
 
-  "Trait value for face"
-  faceTrait: Int
-
-  "Trait value for smile"
-  smileTrait: Int
-
-  "Trait value for hat"
-  hatTrait: Int
-
-  "Trait value for item"
-  itemTrait: Int
-
-  "Trait value for background"
-  backgroundTrait: Int
+  "Token's traits, if applicable"
+  costume: Costume
 }
 
 "Instance of a ghoul attacking a Smol"

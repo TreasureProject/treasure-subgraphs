@@ -3,30 +3,14 @@ import { log } from "@graphprotocol/graph-ts";
 import {
   Converted,
   Midnight,
+  RandomnessRequested,
   SentToAttack,
   SentToCopy,
   Staked,
   Unstaked,
 } from "../../generated/Smoloween/Smoloween";
-import {
-  Attack,
-  Config,
-  Mission,
-  Random,
-  Stat,
-  Token,
-} from "../../generated/schema";
-
-const getOrCreateConfig = (): Config => {
-  let config = Config.load("only");
-  if (!config) {
-    config = new Config("only");
-    config.currentDay = 0;
-    config.save();
-  }
-
-  return config;
-};
+import { Attack, Mission, Random, Stat, Token } from "../../generated/schema";
+import { getOrCreateConfig } from "../helpers/config";
 
 const getOrCreateStat = (): Stat => {
   let stat = Stat.load("only");
@@ -89,6 +73,25 @@ export function handleUnstaked(event: Unstaked): void {
     stat.totalGhouls -= 1;
   }
   stat.save();
+}
+
+export function handleRandomnessRequested(event: RandomnessRequested): void {
+  const params = event.params;
+
+  const randomId = params.requestId.toString();
+  const random = Random.load(randomId);
+  if (!random) {
+    log.error("[smoloween] Random not found for request: {}", [randomId]);
+    return;
+  }
+
+  const day = params.day.toI32();
+  random.witchDay = day;
+  random.save();
+
+  const config = getOrCreateConfig();
+  config.currentDay = day;
+  config.save();
 }
 
 export function handleMidnight(event: Midnight): void {

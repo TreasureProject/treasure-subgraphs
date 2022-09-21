@@ -7,7 +7,8 @@ import {
   RandomSeeded,
 } from "../../generated/Randomizer/Randomizer";
 import { Smoloween } from "../../generated/Smoloween/Smoloween";
-import { Random, Seeded, Token } from "../../generated/schema";
+import { Costume, Random, Seeded, Token } from "../../generated/schema";
+import { getOrCreateConfig } from "../helpers/config";
 
 export function handleRandomRequest(event: RandomRequest): void {
   const params = event.params;
@@ -62,30 +63,60 @@ export function handleRandomSeeded(event: RandomSeeded): void {
     const tokenId = random.token;
     if (tokenId) {
       const token = Token.load(tokenId as string);
-      if (token) {
-        const smoloween = Smoloween.bind(SMOLOWEEN_ADDRESS);
-        const result = smoloween.try_getSmolCostume(
-          BigInt.fromString(token.id)
-        );
-        if (result.reverted) {
-          log.error("[randomizer] Error calling getSmolCostume for token: {}", [
-            token.id,
-          ]);
-          continue;
-        }
-
-        token.faceTrait = result.value[0];
-        token.smileTrait = result.value[1];
-        token.hatTrait = result.value[2];
-        token.itemTrait = result.value[3];
-        token.backgroundTrait = result.value[4];
-        token.save();
-
-        store.remove("Random", randomId);
-      } else {
+      if (!token) {
         log.error("[randomizer] Unknown Token: {}", [tokenId as string]);
+        continue;
       }
 
+      const smoloween = Smoloween.bind(SMOLOWEEN_ADDRESS);
+      const result = smoloween.try_getSmolCostume(BigInt.fromString(token.id));
+      if (result.reverted) {
+        log.error("[randomizer] Error calling getSmolCostume for token: {}", [
+          token.id,
+        ]);
+        continue;
+      }
+
+      const costume = new Costume(token.id);
+      costume.face = result.value[0];
+      costume.smile = result.value[1];
+      costume.hat = result.value[2];
+      costume.item = result.value[3];
+      costume.background = result.value[4];
+      costume.save();
+
+      token.costume = costume.id;
+      token.save();
+
+      store.remove("Random", randomId);
+      continue;
+    }
+
+    const witchDay = random.witchDay;
+    if (witchDay) {
+      const smoloween = Smoloween.bind(SMOLOWEEN_ADDRESS);
+      const result = smoloween.try_getWitchCostume(BigInt.fromI32(witchDay));
+      if (result.reverted) {
+        log.error("[randomizer] Error calling getWitchCostume", []);
+        continue;
+      }
+
+      let costume = Costume.load("witch");
+      if (!costume) {
+        costume = new Costume("witch");
+      }
+      costume.face = result.value[0];
+      costume.smile = result.value[1];
+      costume.hat = result.value[2];
+      costume.item = result.value[3];
+      costume.background = result.value[4];
+      costume.save();
+
+      const config = getOrCreateConfig();
+      config.witchCostume = costume.id;
+      config.save();
+
+      store.remove("Random", randomId);
       continue;
     }
 

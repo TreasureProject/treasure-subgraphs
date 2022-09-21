@@ -53,6 +53,8 @@ dataSources:
         #   handler: handleCopyResolved
         - event: Midnight(uint256,uint256)
           handler: handleMidnight
+        - event: RandomnessRequested(uint256,uint256)
+          handler: handleRandomnessRequested
         - event: SentToAttack(address,uint256,uint256,uint256)
           handler: handleSentToAttack
         - event: SentToCopy(address,uint256,uint256,uint256,uint256,uint256)
