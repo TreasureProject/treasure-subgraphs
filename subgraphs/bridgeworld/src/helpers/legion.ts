@@ -375,7 +375,7 @@ export const getLegionImage = (
 ): string => {
   let image = ipfsPrefix;
   if (type == "Recruit") {
-    image += `/Recruit/${convertTokenIdToVariant(tokenId)}.webp`;
+    image += `/Recruit/Recruit.webp`;
   } else {
     let className = role;
     image += `/${type}/${rarity}`;
