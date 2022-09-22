@@ -413,13 +413,13 @@ test("legion metadata is correct for recruit", () => {
     TOKEN_ENTITY_TYPE,
     id,
     "image",
-    `${LEGION_IPFS}/Recruit/3D.webp`
+    `${LEGION_IPFS}/Recruit/Recruit.webp`
   );
   assert.fieldEquals(
     TOKEN_ENTITY_TYPE,
     id,
     "imageAlt",
-    `${LEGION_PFP_IPFS}/Recruit/3D.webp`
+    `${LEGION_PFP_IPFS}/Recruit/Recruit.webp`
   );
   assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "name", "Recruit");
   assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "generation", "2");
