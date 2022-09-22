@@ -34,6 +34,7 @@ export const SWOLERCYCLES_BASE_URI =
 export const LOCATION_FARM = "Farm";
 export const LOCATION_GYM = "Gym";
 export const LOCATION_SCHOOL = "School";
+export const LOCATION_RACING = "Racing";
 
 // TokenStandards
 export const TOKEN_STANDARD_ERC721 = "ERC721";

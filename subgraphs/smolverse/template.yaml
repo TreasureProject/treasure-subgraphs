@@ -284,3 +284,29 @@ dataSources:
         - event: Transfer(indexed address,indexed address,indexed uint256)
           handler: handleTransfer
       file: ./src/mappings/wrapped-smols.ts
+  - name: Smol Racing
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ smol_racing_address }}"
+      abi: SmolRacing
+      startBlock: {{ smol_racing_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - StakedToken
+      abis:
+        - name: SmolRacing
+          file: {{{ abis }}}/SmolRacing.json
+      eventHandlers:
+        - event: SmolStaked(indexed address,indexed address,indexed uint256,uint64)
+          handler: handleSmolStaked
+        - event: SmolUnstaked(indexed address,indexed address,indexed uint256)
+          handler: handleSmolUnstaked
+        - event: StartRacing(indexed address,indexed address,indexed uint256,uint64,uint8,uint64[4],uint256)
+          handler: handleStartRacing
+        - event: StopRacing(indexed address,indexed address,indexed uint256,uint64,uint8)
+          handler: handleStopRacing
+      file: ./src/mappings/smol-racing.ts

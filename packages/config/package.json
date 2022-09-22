@@ -6,22 +6,5 @@
   "private": true,
   "files": [
     "src"
-  ],
-  "scripts": {
-    "build:arbitrum-testnet": "true",
-    "build:arbitrum": "true",
-    "build:mainnet": "true",
-    "codegen:arbitrum-testnet": "true",
-    "codegen:arbitrum": "true",
-    "codegen:mainnet": "true",
-    "deploy:arbitrum-testnet": "true",
-    "deploy:arbitrum": "true",
-    "deploy:mainnet": "true",
-    "prepare:arbitrum-testnet": "true",
-    "prepare:arbitrum": "true",
-    "prepare:mainnet": "true",
-    "test:arbitrum-testnet": "true",
-    "test:arbitrum": "true",
-    "test:mainnet": "true"
-  }
+  ]
 }

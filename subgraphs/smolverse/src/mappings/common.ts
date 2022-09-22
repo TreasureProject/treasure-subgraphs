@@ -53,7 +53,7 @@ export function handleStake(
   tokenId: BigInt,
   location: string,
   stakeTime: BigInt | null = null
-): void {
+): StakedToken {
   const owner = getOrCreateUser(from.toHexString());
   const collection = getOrCreateCollection(address);
   const token = getOrCreateToken(collection, tokenId);
@@ -72,6 +72,8 @@ export function handleStake(
 
   collection.stakedTokensCount += 1;
   collection.save();
+
+  return stakedToken;
 }
 
 export function handleUnstake(

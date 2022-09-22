@@ -12,14 +12,11 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       bridgeworld: ${{ steps.filter.outputs.bridgeworld }}
-      bridgeworld_stats: ${{ steps.filter.outputs.bridgeworld_stats }}
       magic_stats: ${{ steps.filter.outputs.magic_stats }}
       magicswap_exchange: ${{ steps.filter.outputs.magicswap_exchange }}
       migration: ${{ steps.filter.outputs.migration }}
-      seed_of_life: ${{ steps.filter.outputs.seed_of_life }}
-      seed_of_life_stats: ${{ steps.filter.outputs.seed_of_life_stats }}
       smolverse: ${{ steps.filter.outputs.smolverse }}
-      snapshot: ${{ steps.filter.outputs.snapshot }}
+      smol_racing: ${{ steps.filter.outputs.smol_racing }}
     steps:
     - name: Check out code
       uses: actions/checkout@v2
@@ -30,9 +27,6 @@ jobs:
           bridgeworld:
             - "packages/**"
             - "subgraphs/bridgeworld/**"
-          bridgeworld_stats:
-            - "packages/**"
-            - "subgraphs/bridgeworld-stats/**"
           magic_stats:
             - "packages/**"
             - "subgraphs/magic-stats/**"
@@ -42,18 +36,12 @@ jobs:
           migration:
             - "packages/**"
             - "subgraphs/migration/**"
-          seed_of_life:
-            - "packages/**"
-            - "subgraphs/seed-of-life/**"
-          seed_of_life_stats:
-            - "packages/**"
-            - "subgraphs/seed-of-life-stats/**"
           smolverse:
             - "packages/**"
             - "subgraphs/smolverse/**"
-          snapshot:
+          smol_racing:
             - "packages/**"
-            - "subgraphs/snapshot/**"
+            - "subgraphs/smol-racing/**"
 
   bridgeworld:
     name: Bridgeworld Subgraph
@@ -63,44 +51,6 @@ jobs:
     defaults:
       run:
         working-directory: ./subgraphs/bridgeworld
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v2
-      - name: Install Node
-        uses: actions/setup-node@v1
-        with:
-          node-version: 14
-      - name: Install dependencies
-        run: yarn --frozen-lockfile
-      - name: Prepare for DEV
-        if: github.event_name == 'pull_request' && github.event.pull_request.draft == false
-        run: yarn prepare:dev
-      - name: Prepare for PROD
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-        run: yarn prepare:prod
-      - name: Generate code
-        run: yarn codegen
-      - name: Test
-        run: yarn test
-      - name: Authenticate
-        env:
-          GRAPH_ACCESS_TOKEN: ${{ secrets.GRAPH_ACCESS_TOKEN }}
-        run: yarn graph auth --product hosted-service "$GRAPH_ACCESS_TOKEN"
-      - name: Deploy to DEV
-        if: github.event_name == 'pull_request' && github.event.pull_request.draft == false
-        run: yarn deploy:dev
-      - name: Deploy to PROD
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-        run: yarn deploy:prod
-
-  bridgeworld_stats:
-    name: Bridgeworld Stats Subgraph
-    if: ${{ needs.changes.outputs.bridgeworld_stats == 'true' }}
-    needs: changes
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./subgraphs/bridgeworld-stats
     steps:
       - name: Check out code
         uses: actions/checkout@v2
@@ -235,82 +185,6 @@ jobs:
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         run: yarn deploy:prod
 
-  seed_of_life:
-    name: Seed of Life Subgraph
-    if: ${{ needs.changes.outputs.seed_of_life == 'true' }}
-    needs: changes
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./subgraphs/seed-of-life
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v2
-      - name: Install Node
-        uses: actions/setup-node@v1
-        with:
-          node-version: 14
-      - name: Install dependencies
-        run: yarn --frozen-lockfile
-      - name: Prepare for DEV
-        if: github.event_name == 'pull_request' && github.event.pull_request.draft == false
-        run: yarn prepare:dev
-      - name: Prepare for PROD
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-        run: yarn prepare:prod
-      - name: Generate code
-        run: yarn codegen
-      - name: Test
-        run: yarn test
-      - name: Authenticate
-        env:
-          GRAPH_ACCESS_TOKEN: ${{ secrets.GRAPH_ACCESS_TOKEN }}
-        run: yarn graph auth --product hosted-service "$GRAPH_ACCESS_TOKEN"
-      - name: Deploy to DEV
-        if: github.event_name == 'pull_request' && github.event.pull_request.draft == false
-        run: yarn deploy:dev
-      - name: Deploy to PROD
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-        run: yarn deploy:prod
-
-  seed_of_life_stats:
-    name: Seed of Life Stats Subgraph
-    if: ${{ needs.changes.outputs.seed_of_life_stats == 'true' }}
-    needs: changes
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./subgraphs/seed-of-life-stats
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v2
-      - name: Install Node
-        uses: actions/setup-node@v1
-        with:
-          node-version: 14
-      - name: Install dependencies
-        run: yarn --frozen-lockfile
-      - name: Prepare for DEV
-        if: github.event_name == 'pull_request' && github.event.pull_request.draft == false
-        run: yarn prepare:dev
-      - name: Prepare for PROD
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-        run: yarn prepare:prod
-      - name: Generate code
-        run: yarn codegen
-      - name: Test
-        run: yarn test
-      - name: Authenticate
-        env:
-          GRAPH_ACCESS_TOKEN: ${{ secrets.GRAPH_ACCESS_TOKEN }}
-        run: yarn graph auth --product hosted-service "$GRAPH_ACCESS_TOKEN"
-      - name: Deploy to DEV
-        if: github.event_name == 'pull_request' && github.event.pull_request.draft == false
-        run: yarn deploy:dev
-      - name: Deploy to PROD
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-        run: yarn deploy:prod
-
   smolverse:
     name: Smolverse Subgraph
     if: ${{ needs.changes.outputs.smolverse == 'true' }}
@@ -349,14 +223,14 @@ jobs:
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         run: yarn deploy:prod
 
-  snapshot:
-    name: Snapshot Subgraph
-    if: ${{ needs.changes.outputs.snapshot == 'true' }}
+  smol_racing:
+    name: Smol Racing Subgraph
+    if: ${{ needs.changes.outputs.smol_racing == 'true' }}
     needs: changes
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./subgraphs/snapshot
+        working-directory: ./subgraphs/smol-racing
     steps:
       - name: Check out code
         uses: actions/checkout@v2
@@ -366,15 +240,23 @@ jobs:
           node-version: 14
       - name: Install dependencies
         run: yarn --frozen-lockfile
+      - name: Prepare for DEV
+        if: github.event_name == 'pull_request' && github.event.pull_request.draft == false
+        run: yarn prepare:dev
       - name: Prepare for PROD
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         run: yarn prepare:prod
       - name: Generate code
         run: yarn codegen
+      - name: Test
+        run: yarn test
       - name: Authenticate
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         env:
           GRAPH_ACCESS_TOKEN: ${{ secrets.GRAPH_ACCESS_TOKEN }}
         run: yarn graph auth --product hosted-service "$GRAPH_ACCESS_TOKEN"
+      - name: Deploy to DEV
+        if: github.event_name == 'pull_request' && github.event.pull_request.draft == false
+        run: yarn deploy:dev
       - name: Deploy to PROD
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         run: yarn deploy:prod
