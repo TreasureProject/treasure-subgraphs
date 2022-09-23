@@ -26,6 +26,7 @@ export function handleRandomRequest(event: RandomRequest): void {
   }
 
   const random = new Random(randomId);
+  random.witchDay = 0;
   random.save();
 
   const seededId = params._commitId.toString();
