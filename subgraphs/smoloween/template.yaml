@@ -59,7 +59,7 @@ dataSources:
           handler: handleSentToAttack
         - event: SentToCopy(address,uint256,uint256,uint256,uint256,uint256)
           handler: handleSentToCopy
-        - event: Staked(address,uint256,uint256,uint256)
+        - event: Staked(address,uint256,uint256)
           handler: handleStaked
         - event: Unstaked(address,uint256,uint256)
           handler: handleUnstaked

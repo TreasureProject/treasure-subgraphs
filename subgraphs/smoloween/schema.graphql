@@ -65,9 +65,6 @@ type Costume @entity {
 type Token @entity {
   id: ID!
 
-  "Token ID"
-  tokenId: BigInt!
-
   "True if token is staked in Smoloween contract"
   isStaked: Boolean!
 

@@ -38,7 +38,6 @@ export function handleStaked(event: Staked): void {
   let token = Token.load(id);
   if (!token) {
     token = new Token(id);
-    token.tokenId = params.smolId;
   }
 
   token.isStaked = true;
@@ -86,7 +85,7 @@ export function handleRandomnessRequested(event: RandomnessRequested): void {
   }
 
   const day = params.day.toI32();
-  random.witchDay = day;
+  random.witchDay = day + 1;
   random.save();
 
   const config = getOrCreateConfig();

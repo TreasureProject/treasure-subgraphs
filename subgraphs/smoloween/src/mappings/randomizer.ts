@@ -98,7 +98,9 @@ export function handleRandomSeeded(event: RandomSeeded): void {
       const smoloween = Smoloween.bind(SMOLOWEEN_ADDRESS);
       const result = smoloween.try_getWitchCostume(BigInt.fromI32(witchDay));
       if (result.reverted) {
-        log.error("[randomizer] Error calling getWitchCostume", []);
+        log.error("[randomizer] Error calling getWitchCostume: {}", [
+          result.reverted.toString(),
+        ]);
         continue;
       }
 
