@@ -211,12 +211,28 @@ test("that recruit type is changed", () => {
     "role",
     "Parabolics Cadet"
   );
-  handleRecruitTypeChanged(createRecruitTypeChangedEvent(tokenId, 3));
 
+  handleRecruitTypeChanged(createRecruitTypeChangedEvent(tokenId, 3));
   assert.fieldEquals(
     LEGION_INFO_ENTITY_TYPE,
     metadata,
     "role",
     "Lethality Cadet"
+  );
+
+  handleRecruitTypeChanged(createRecruitTypeChangedEvent(tokenId, 4));
+  assert.fieldEquals(
+    LEGION_INFO_ENTITY_TYPE,
+    metadata,
+    "role",
+    "Siege Apprentice"
+  );
+
+  handleRecruitTypeChanged(createRecruitTypeChangedEvent(tokenId, 6));
+  assert.fieldEquals(
+    LEGION_INFO_ENTITY_TYPE,
+    metadata,
+    "role",
+    "Assassin Apprentice"
   );
 });
