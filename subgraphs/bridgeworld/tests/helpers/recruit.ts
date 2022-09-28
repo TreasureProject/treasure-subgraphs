@@ -11,20 +11,35 @@ import {
 } from "../../generated/Recruit Level/RecruitLevel";
 
 export const createAscensionInfoSetEvent = (
-  minimumLevel: i32 = 3,
-  numEoS: i32 = 6,
-  numPrismShards: i32 = 6
+  minimumLevelCadet: i32 = 3,
+  numEoSCadet: i32 = 6,
+  numPrismShardsCadet: i32 = 6,
+  minimumLevelApprentice: i32 = 7,
+  numEoSApprentice: i32 = 12,
+  numPrismShardsApprentice: i32 = 12
 ): AscensionInfoSet => {
   const event = changetype<AscensionInfoSet>(newMockEvent());
   event.parameters = [
     new ethereum.EventParam(
-      "minimumLevel",
-      ethereum.Value.fromI32(minimumLevel)
+      "minimumLevelCadet",
+      ethereum.Value.fromI32(minimumLevelCadet)
     ),
-    new ethereum.EventParam("numEoS", ethereum.Value.fromI32(numEoS)),
+    new ethereum.EventParam("numEoSCadet", ethereum.Value.fromI32(numEoSCadet)),
     new ethereum.EventParam(
-      "numPrismShards",
-      ethereum.Value.fromI32(numPrismShards)
+      "numPrismShardsCadet",
+      ethereum.Value.fromI32(numPrismShardsCadet)
+    ),
+    new ethereum.EventParam(
+      "minimumLevelApprentice",
+      ethereum.Value.fromI32(minimumLevelApprentice)
+    ),
+    new ethereum.EventParam(
+      "numEoSApprentice",
+      ethereum.Value.fromI32(numEoSApprentice)
+    ),
+    new ethereum.EventParam(
+      "numPrismShardsApprentice",
+      ethereum.Value.fromI32(numPrismShardsApprentice)
     ),
   ];
   return event;

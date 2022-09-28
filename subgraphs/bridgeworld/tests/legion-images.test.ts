@@ -4,10 +4,10 @@ import { BigInt } from "@graphprotocol/graph-ts";
 
 import { LEGION_IPFS } from "../src/helpers/constants";
 import {
-  getCadetImage,
   getLegacyGenesisLegionImage,
   getLegacyLegionImage,
   getLegionImage,
+  getRecruitImage,
 } from "../src/helpers/legion";
 
 test("legion images are correct", () => {
@@ -993,25 +993,25 @@ test("legacy genesis legion images are correct", () => {
   }
 });
 
-test("Cadet images are correct", () => {
-  const recruitImage = getCadetImage(LEGION_IPFS, "None");
+test("Recruit images are correct", () => {
+  const recruitImage = getRecruitImage(LEGION_IPFS, "None");
   assert.stringEquals(`${LEGION_IPFS}/Recruit/Recruit.webp`, recruitImage);
 
-  const cognitionImage = getCadetImage(LEGION_IPFS, "Cognition");
-  assert.stringEquals(
-    `${LEGION_IPFS}/Recruit/Cadet/Cognition.webp`,
-    cognitionImage
-  );
+  const cognitionImage = getRecruitImage(LEGION_IPFS, "Cognition");
+  assert.stringEquals(`${LEGION_IPFS}/Recruit/Cognition.webp`, cognitionImage);
 
-  const parabolicsImage = getCadetImage(LEGION_IPFS, "Parabolics");
+  const parabolicsImage = getRecruitImage(LEGION_IPFS, "Parabolics");
   assert.stringEquals(
-    `${LEGION_IPFS}/Recruit/Cadet/Parabolics.webp`,
+    `${LEGION_IPFS}/Recruit/Parabolics.webp`,
     parabolicsImage
   );
 
-  const lethalityImage = getCadetImage(LEGION_IPFS, "Lethality");
-  assert.stringEquals(
-    `${LEGION_IPFS}/Recruit/Cadet/Lethality.webp`,
-    lethalityImage
-  );
+  const lethalityImage = getRecruitImage(LEGION_IPFS, "Lethality");
+  assert.stringEquals(`${LEGION_IPFS}/Recruit/Lethality.webp`, lethalityImage);
+
+  const assassinImage = getRecruitImage(LEGION_IPFS, "Assassin");
+  assert.stringEquals(`${LEGION_IPFS}/Recruit/Assassin.webp`, assassinImage);
+
+  const rangerImage = getRecruitImage(LEGION_IPFS, "Ranger");
+  assert.stringEquals(`${LEGION_IPFS}/Recruit/Ranger.webp`, rangerImage);
 });

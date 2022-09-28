@@ -11,9 +11,10 @@ import {
 import { Token } from "../../generated/schema";
 import { LEGION_IPFS, LEGION_PFP_IPFS } from "../helpers";
 import {
-  RECRUIT_CLASS,
-  getCadetImage,
+  RECRUIT_TYPE,
   getLegionMetadata,
+  getRecruitImage,
+  mapRecruitAscensionType,
 } from "../helpers/legion";
 import {
   getOrCreateRecruitConfig,
@@ -23,9 +24,12 @@ import {
 export function handleAscensionInfoSet(event: AscensionInfoSet): void {
   const params = event.params;
   const config = getOrCreateRecruitConfig();
-  config.ascensionMinLevel = params.minimumLevel;
-  config.ascensionCostEssenceOfStarlight = params.numEoS;
-  config.ascensionCostPrismShards = params.numPrismShards;
+  config.cadetAscensionMinLevel = params.minimumLevelCadet;
+  config.cadetAscensionCostEssenceOfStarlight = params.numEoSCadet;
+  config.cadetAscensionCostPrismShards = params.numPrismShardsCadet;
+  config.apprenticeAscensionMinLevel = params.minimumLevelApprentice;
+  config.apprenticeAscensionCostEssenceOfStarlight = params.numEoSApprentice;
+  config.apprenticeAscensionCostPrismShards = params.numPrismShardsApprentice;
   config.save();
 }
 
@@ -51,16 +55,18 @@ export function handleRecruitTypeChanged(event: RecruitTypeChanged): void {
     return;
   }
 
+  const recruitType = RECRUIT_TYPE[params.recruitType];
+  const ascensionType = mapRecruitAscensionType(recruitType);
+
   token.name = "Recruit";
-  token.image = getCadetImage(LEGION_IPFS, RECRUIT_CLASS[params.recruitType]);
-  token.imageAlt = getCadetImage(
-    LEGION_PFP_IPFS,
-    RECRUIT_CLASS[params.recruitType]
-  );
+  token.image = getRecruitImage(LEGION_IPFS, recruitType);
+  token.imageAlt = getRecruitImage(LEGION_PFP_IPFS, recruitType);
   token.save();
 
   const metadata = getLegionMetadata(tokenId);
-  metadata.role = `${RECRUIT_CLASS[params.recruitType]} Cadet`;
+  metadata.role = `${recruitType} ${ascensionType}`;
+  metadata.recruitType = recruitType;
+  metadata.recruitAscensionType = ascensionType;
   metadata.save();
 }
 

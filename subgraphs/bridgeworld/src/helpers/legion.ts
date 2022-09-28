@@ -38,7 +38,37 @@ export const RARE_CLASS = [
   "Shadowguard",
 ];
 
-export const RECRUIT_CLASS = ["None", "Cognition", "Parabolics", "Lethality"];
+export const RECRUIT_TYPE = [
+  "None",
+  "Cognition",
+  "Parabolics",
+  "Lethality",
+  "Siege",
+  "Fighter",
+  "Assassin",
+  "Ranged",
+  "Spellcaster",
+];
+
+export const mapRecruitAscensionType = (recruitType: string): string => {
+  if (
+    recruitType === "Cognition" ||
+    recruitType === "Parabolics" ||
+    recruitType === "Lethality"
+  ) {
+    return "Cadet";
+  } else if (
+    recruitType === "Siege" ||
+    recruitType === "Fighter" ||
+    recruitType === "Assassin" ||
+    recruitType === "Ranged" ||
+    recruitType === "Spellcaster"
+  ) {
+    return "Apprentice";
+  }
+
+  return "Recruit";
+};
 
 export const mapGenesisRareClass = (tokenId: BigInt): i32 => {
   const id = tokenId.toI32();
@@ -402,14 +432,14 @@ export const getLegionImage = (
   return image;
 };
 
-export const getCadetImage = (
+export const getRecruitImage = (
   ipfsPrefix: string,
-  recruitClass: string
+  recruitType: string
 ): string => {
-  if (recruitClass == "None") {
+  if (recruitType === "None") {
     return `${ipfsPrefix}/Recruit/Recruit.webp`;
   } else {
-    return `${ipfsPrefix}/Recruit/Cadet/${recruitClass}.webp`;
+    return `${ipfsPrefix}/Recruit/${recruitType}.webp`;
   }
 };
 

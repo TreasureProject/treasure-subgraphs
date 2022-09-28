@@ -311,6 +311,8 @@ export function handleLegionCreated(event: LegionCreated): void {
 
     token.name = "Recruit";
     token.rarity = "None";
+    metadata.recruitType = "None";
+    metadata.recruitAscensionType = "Recruit";
   }
 
   token.save();

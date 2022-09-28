@@ -37,49 +37,85 @@ test("that recruit config has default values and can be updated", () => {
 
   // Create default config and assert default values
   getOrCreateRecruitConfig();
-  assert.fieldEquals(RECRUIT_CONFIG_ENTITY_TYPE, "only", "maxLevel", "7");
+  assert.fieldEquals(RECRUIT_CONFIG_ENTITY_TYPE, "only", "maxLevel", "8");
   assert.fieldEquals(
     RECRUIT_CONFIG_ENTITY_TYPE,
     "only",
-    "ascensionMinLevel",
+    "cadetAscensionMinLevel",
     "3"
   );
   assert.fieldEquals(
     RECRUIT_CONFIG_ENTITY_TYPE,
     "only",
-    "ascensionCostEssenceOfStarlight",
+    "cadetAscensionCostEssenceOfStarlight",
     "6"
   );
   assert.fieldEquals(
     RECRUIT_CONFIG_ENTITY_TYPE,
     "only",
-    "ascensionCostPrismShards",
+    "cadetAscensionCostPrismShards",
     "6"
+  );
+  assert.fieldEquals(
+    RECRUIT_CONFIG_ENTITY_TYPE,
+    "only",
+    "apprenticeAscensionMinLevel",
+    "7"
+  );
+  assert.fieldEquals(
+    RECRUIT_CONFIG_ENTITY_TYPE,
+    "only",
+    "apprenticeAscensionCostEssenceOfStarlight",
+    "12"
+  );
+  assert.fieldEquals(
+    RECRUIT_CONFIG_ENTITY_TYPE,
+    "only",
+    "apprenticeAscensionCostPrismShards",
+    "12"
   );
 
   // Update max level and assert value was updated
-  handleMaxLevelSet(createMaxLevelSetEvent(8));
-  assert.fieldEquals(RECRUIT_CONFIG_ENTITY_TYPE, "only", "maxLevel", "8");
+  handleMaxLevelSet(createMaxLevelSetEvent(9));
+  assert.fieldEquals(RECRUIT_CONFIG_ENTITY_TYPE, "only", "maxLevel", "9");
 
   // Update ascension info and assert values were updated
-  handleAscensionInfoSet(createAscensionInfoSetEvent(4, 10, 10));
+  handleAscensionInfoSet(createAscensionInfoSetEvent(4, 10, 10, 6, 20, 20));
   assert.fieldEquals(
     RECRUIT_CONFIG_ENTITY_TYPE,
     "only",
-    "ascensionMinLevel",
+    "cadetAscensionMinLevel",
     "4"
   );
   assert.fieldEquals(
     RECRUIT_CONFIG_ENTITY_TYPE,
     "only",
-    "ascensionCostEssenceOfStarlight",
+    "cadetAscensionCostEssenceOfStarlight",
     "10"
   );
   assert.fieldEquals(
     RECRUIT_CONFIG_ENTITY_TYPE,
     "only",
-    "ascensionCostPrismShards",
+    "cadetAscensionCostPrismShards",
     "10"
+  );
+  assert.fieldEquals(
+    RECRUIT_CONFIG_ENTITY_TYPE,
+    "only",
+    "apprenticeAscensionMinLevel",
+    "6"
+  );
+  assert.fieldEquals(
+    RECRUIT_CONFIG_ENTITY_TYPE,
+    "only",
+    "apprenticeAscensionCostEssenceOfStarlight",
+    "20"
+  );
+  assert.fieldEquals(
+    RECRUIT_CONFIG_ENTITY_TYPE,
+    "only",
+    "apprenticeAscensionCostPrismShards",
+    "20"
   );
 });
 

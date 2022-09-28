@@ -50,6 +50,24 @@ enum TreasureCategory {
   Smithing
 }
 
+enum RecruitAscensionType {
+  Recruit
+  Cadet
+  Apprentice
+}
+
+enum RecruitType {
+  None
+  Cognition
+  Parabolics
+  Lethality
+  Siege
+  Fighter
+  Assassin
+  Ranged
+  Spellcaster
+}
+
 interface Metadata {
   id: ID!
 }
@@ -129,6 +147,12 @@ type LegionInfo implements Metadata @entity {
 
   "Recruit XP, if applicable"
   recruitXp: Int
+
+  "Recruit level of ascension, if applicable"
+  recruitAscensionType: RecruitAscensionType
+
+  "Recruit type, if applicable"
+  recruitType: RecruitType
 
   "Class (Fighter, Ranger, etc.)"
   role: String!
@@ -645,14 +669,23 @@ type RecruitConfig @entity {
   "Maximum level that Recruits can reach"
   maxLevel: Int!
 
-  "Minimum level Recruit must achieve before ascending"
-  ascensionMinLevel: Int!
+  "Minimum level Recruit must achieve before ascending to a Cadet"
+  cadetAscensionMinLevel: Int!
 
-  "Number of Essence of Starlight required to ascend Recruit"
-  ascensionCostEssenceOfStarlight: Int!
+  "Number of Essence of Starlight required to ascend Recruit to Cadet"
+  cadetAscensionCostEssenceOfStarlight: Int!
 
-  "Number of Prism Shards required to ascend Recruit"
-  ascensionCostPrismShards: Int!
+  "Number of Prism Shards required to ascend Recruit to Cadet"
+  cadetAscensionCostPrismShards: Int!
+
+  "Minimum level Recruit must achieve before ascending to a Apprentice"
+  apprenticeAscensionMinLevel: Int!
+
+  "Number of Essence of Starlight required to ascend Recruit to Apprentice"
+  apprenticeAscensionCostEssenceOfStarlight: Int!
+
+  "Number of Prism Shards required to ascend Recruit to Apprentice"
+  apprenticeAscensionCostPrismShards: Int!
 
   "List of level-specific Recruit configs"
   levelConfigs: [RecruitLevelConfig!]! @derivedFrom(field: "recruitConfig")

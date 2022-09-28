@@ -7,10 +7,13 @@ export const getOrCreateRecruitConfig = (): RecruitConfig => {
   if (!config) {
     config = new RecruitConfig("only");
     // Set hard-coded default values
-    config.maxLevel = 7;
-    config.ascensionMinLevel = 3;
-    config.ascensionCostEssenceOfStarlight = 6;
-    config.ascensionCostPrismShards = 6;
+    config.maxLevel = 8;
+    config.cadetAscensionMinLevel = 3;
+    config.cadetAscensionCostEssenceOfStarlight = 6;
+    config.cadetAscensionCostPrismShards = 6;
+    config.apprenticeAscensionMinLevel = 7;
+    config.apprenticeAscensionCostEssenceOfStarlight = 12;
+    config.apprenticeAscensionCostPrismShards = 12;
     config.save();
   }
 
