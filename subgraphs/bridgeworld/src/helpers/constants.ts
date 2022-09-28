@@ -4,9 +4,9 @@ export const DIFFICULTY = ["Easy", "Medium", "Hard"];
 export const CONSUMABLE_IPFS =
   "ipfs://Qma82rv8QoVuBkWUcovNcDbxHFaCEGrNHr5XtmdvKE4W98/Consumables";
 export const LEGION_IPFS =
-  "ipfs://QmXykAmz55RWi42i1NBKP2GJy9vYMoWdmteD4MFdxqoThD";
+  "ipfs://QmUAkX9dKHzyUqvxfjqBb8zrGxkU3XdqXBFyrs17qbpFZo";
 export const LEGION_PFP_IPFS =
-  "ipfs://QmWhzS1DvKvZLqWegBpvLJXK54ek1qk9aycB1KMm8YwYee";
+  "ipfs://QmScXFZ6ZzqifY4g9iy3tpCzko5PUGL99NPoic5waKmiNj";
 export const TREASURE_FRAGMENT_IPFS =
   "ipfs://QmUv5UT7X9qahf8bqcqZjX7TKqrJeMyRX3kxjVowz2WkRm";
 export const SUMMONING_SUCCESS_SENSITIVITY: f32 = 1;
