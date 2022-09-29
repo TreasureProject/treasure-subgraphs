@@ -3,7 +3,6 @@ import { BigInt, log } from "@graphprotocol/graph-ts";
 import { LEGION_ADDRESS } from "@treasure/constants";
 
 import { LegionInfo } from "../../generated/schema";
-import { LEGION_PFP_IPFS } from "./constants";
 import { getName, getRole } from "./token-id";
 import { getAddressId } from "./utils";
 
@@ -38,6 +37,38 @@ export const RARE_CLASS = [
   "Reaper",
   "Shadowguard",
 ];
+
+export const RECRUIT_TYPE = [
+  "None",
+  "Cognition",
+  "Parabolics",
+  "Lethality",
+  "Siege",
+  "Fighter",
+  "Assassin",
+  "Ranger",
+  "Spellcaster",
+];
+
+export const mapRecruitAscensionType = (recruitType: string): string => {
+  if (
+    recruitType === "Cognition" ||
+    recruitType === "Parabolics" ||
+    recruitType === "Lethality"
+  ) {
+    return "Cadet";
+  } else if (
+    recruitType === "Siege" ||
+    recruitType === "Fighter" ||
+    recruitType === "Assassin" ||
+    recruitType === "Ranger" ||
+    recruitType === "Spellcaster"
+  ) {
+    return "Apprentice";
+  }
+
+  return "Recruit";
+};
 
 export const mapGenesisRareClass = (tokenId: BigInt): i32 => {
   const id = tokenId.toI32();
@@ -374,16 +405,14 @@ export const getLegionImage = (
 ): string => {
   let image = ipfsPrefix;
   if (type == "Recruit") {
-    image += `/Recruit/${convertTokenIdToVariant(tokenId)}.jpg`;
+    image += `/Recruit/Recruit.webp`;
   } else {
     let className = role;
     image += `/${type}/${rarity}`;
     if (type == "Genesis" && rarity != "Common" && legacyTokenId) {
       const tokenName = getName(legacyTokenId);
       if (rarity == "Legendary") {
-        image += `/${tokenName}.${
-          ipfsPrefix == LEGION_PFP_IPFS ? "jpg" : "png"
-        }`;
+        image += `/${tokenName}.webp`;
       } else {
         const variantDigit1 = mapGenesisVariant(legacyTokenId);
         if (rarity == "Rare") {
@@ -393,14 +422,25 @@ export const getLegionImage = (
         image += `/${className}/${convertTokenIdToVariant(
           tokenId,
           variantDigit1.toString()
-        )}.jpg`;
+        )}.webp`;
       }
     } else {
-      image += `/${className}/${convertTokenIdToVariant(tokenId)}.jpg`;
+      image += `/${className}/${convertTokenIdToVariant(tokenId)}.webp`;
     }
   }
 
   return image;
+};
+
+export const getRecruitImage = (
+  ipfsPrefix: string,
+  recruitType: string
+): string => {
+  if (recruitType === "None") {
+    return `${ipfsPrefix}/Recruit/Recruit.webp`;
+  } else {
+    return `${ipfsPrefix}/Recruit/${recruitType}.webp`;
+  }
 };
 
 export const getLegacyLegionImage = (
@@ -409,7 +449,7 @@ export const getLegacyLegionImage = (
 ): string => {
   return `${ipfsPrefix}/Auxiliary/Unpilgrimaged/${convertTokenIdToVariant(
     legacyTokenId
-  )}.jpg`;
+  )}.webp`;
 };
 
 export const getLegacyGenesisLegionImage = (

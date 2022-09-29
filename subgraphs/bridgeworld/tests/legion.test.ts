@@ -84,13 +84,13 @@ test("legion metadata is correct for pilgrimaged riverman", () => {
     TOKEN_ENTITY_TYPE,
     id,
     "image",
-    `${LEGION_IPFS}/Genesis/Special/Riverman/4D.jpg`
+    `${LEGION_IPFS}/Genesis/Special/Riverman/4D.webp`
   );
   assert.fieldEquals(
     TOKEN_ENTITY_TYPE,
     id,
     "imageAlt",
-    `${LEGION_PFP_IPFS}/Genesis/Special/Riverman/4D.jpg`
+    `${LEGION_PFP_IPFS}/Genesis/Special/Riverman/4D.webp`
   );
   assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "name", "Genesis Special");
   assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "generation", "0");
@@ -104,6 +104,8 @@ test("legion metadata is correct for pilgrimaged riverman", () => {
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "summons", "0");
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "crafting", "1");
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "craftingXp", "0");
+  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "recruitLevel", "0");
+  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "recruitXp", "0");
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "rarity", "Special");
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "role", "Riverman");
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "boost", "0.75");
@@ -151,13 +153,13 @@ test("legion metadata is correct for pilgrimaged common legion", () => {
     TOKEN_ENTITY_TYPE,
     id,
     "image",
-    `${LEGION_IPFS}/Auxiliary/Common/Siege/1A.jpg`
+    `${LEGION_IPFS}/Auxiliary/Common/Siege/1A.webp`
   );
   assert.fieldEquals(
     TOKEN_ENTITY_TYPE,
     id,
     "imageAlt",
-    `${LEGION_PFP_IPFS}/Auxiliary/Common/Siege/1A.jpg`
+    `${LEGION_PFP_IPFS}/Auxiliary/Common/Siege/1A.webp`
   );
   assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "name", "Auxiliary Common");
   assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "rarity", "Common");
@@ -217,13 +219,13 @@ test("legion metadata is correct for pilgrimaged common 5", () => {
     TOKEN_ENTITY_TYPE,
     id,
     "image",
-    `${LEGION_IPFS}/Genesis/Common/Siege/1A.jpg`
+    `${LEGION_IPFS}/Genesis/Common/Siege/1A.webp`
   );
   assert.fieldEquals(
     TOKEN_ENTITY_TYPE,
     id,
     "imageAlt",
-    `${LEGION_PFP_IPFS}/Genesis/Common/Siege/1A.jpg`
+    `${LEGION_PFP_IPFS}/Genesis/Common/Siege/1A.webp`
   );
   assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "name", "Genesis Common");
   assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "rarity", "Common");
@@ -297,13 +299,13 @@ test("legion metadata is correct for pilgrimaged clocksnatcher", () => {
     TOKEN_ENTITY_TYPE,
     id,
     "image",
-    `${LEGION_IPFS}/Genesis/Legendary/Clocksnatcher.png`
+    `${LEGION_IPFS}/Genesis/Legendary/Clocksnatcher.webp`
   );
   assert.fieldEquals(
     TOKEN_ENTITY_TYPE,
     id,
     "imageAlt",
-    `${LEGION_PFP_IPFS}/Genesis/Legendary/Clocksnatcher.jpg`
+    `${LEGION_PFP_IPFS}/Genesis/Legendary/Clocksnatcher.webp`
   );
   assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "name", "Clocksnatcher");
   assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "rarity", "Legendary");
@@ -370,13 +372,13 @@ test("legion metadata is correct for pilgrimaged all-class 1", () => {
     TOKEN_ENTITY_TYPE,
     id,
     "image",
-    `${LEGION_IPFS}/Genesis/Rare/Executioner/3D.jpg`
+    `${LEGION_IPFS}/Genesis/Rare/Executioner/3D.webp`
   );
   assert.fieldEquals(
     TOKEN_ENTITY_TYPE,
     id,
     "imageAlt",
-    `${LEGION_PFP_IPFS}/Genesis/Rare/Executioner/3D.jpg`
+    `${LEGION_PFP_IPFS}/Genesis/Rare/Executioner/3D.webp`
   );
   assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "name", "Genesis Rare");
   assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "generation", "0");
@@ -411,13 +413,13 @@ test("legion metadata is correct for recruit", () => {
     TOKEN_ENTITY_TYPE,
     id,
     "image",
-    `${LEGION_IPFS}/Recruit/3D.jpg`
+    `${LEGION_IPFS}/Recruit/Recruit.webp`
   );
   assert.fieldEquals(
     TOKEN_ENTITY_TYPE,
     id,
     "imageAlt",
-    `${LEGION_PFP_IPFS}/Recruit/3D.jpg`
+    `${LEGION_PFP_IPFS}/Recruit/Recruit.webp`
   );
   assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "name", "Recruit");
   assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "generation", "2");
@@ -431,8 +433,10 @@ test("legion metadata is correct for recruit", () => {
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "summons", "0");
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "crafting", "1");
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "craftingXp", "0");
-  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "rarity", "Recruit");
-  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "role", "Recruit");
+  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "recruitLevel", "1");
+  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "recruitXp", "0");
+  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "rarity", "None");
+  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "role", "Base Recruit");
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "boost", "0.0");
 });
 

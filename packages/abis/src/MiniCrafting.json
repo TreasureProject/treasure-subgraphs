@@ -73,6 +73,49 @@
       "inputs": [
         {
           "indexed": false,
+          "internalType": "uint8",
+          "name": "tier",
+          "type": "uint8"
+        },
+        {
+          "indexed": false,
+          "internalType": "bool",
+          "name": "canRecruitCraft",
+          "type": "bool"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint16",
+          "name": "prismShardsRequired",
+          "type": "uint16"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint32",
+          "name": "expGained",
+          "type": "uint32"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint16",
+          "name": "minRecruitLevel",
+          "type": "uint16"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint8",
+          "name": "fragmentsRequired",
+          "type": "uint8"
+        }
+      ],
+      "name": "RecruitTierInfoSet",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
           "internalType": "address",
           "name": "account",
           "type": "address"
@@ -295,6 +338,19 @@
       "type": "function"
     },
     {
+      "inputs": [],
+      "name": "recruitLevel",
+      "outputs": [
+        {
+          "internalType": "contract IRecruitLevel",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
       "inputs": [
         {
           "internalType": "address",
@@ -373,6 +429,11 @@
           "internalType": "address",
           "name": "_treasuryAddress",
           "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_recruitLevelAddress",
+          "type": "address"
         }
       ],
       "name": "setContracts",
@@ -391,6 +452,88 @@
       "name": "setPause",
       "outputs": [],
       "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint8",
+          "name": "_tier",
+          "type": "uint8"
+        },
+        {
+          "internalType": "bool",
+          "name": "_canRecruitCraft",
+          "type": "bool"
+        },
+        {
+          "internalType": "uint16",
+          "name": "_prismShardsRequired",
+          "type": "uint16"
+        },
+        {
+          "internalType": "uint32",
+          "name": "_expGained",
+          "type": "uint32"
+        },
+        {
+          "internalType": "uint16",
+          "name": "_minRecruitLevel",
+          "type": "uint16"
+        },
+        {
+          "internalType": "uint8",
+          "name": "_fragmentsRequired",
+          "type": "uint8"
+        }
+      ],
+      "name": "setRecruitTierInfo",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint8",
+          "name": "",
+          "type": "uint8"
+        }
+      ],
+      "name": "tierToRecruitTierInfo",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "canRecruitCraft",
+          "type": "bool"
+        },
+        {
+          "internalType": "uint16",
+          "name": "prismShardsRequired",
+          "type": "uint16"
+        },
+        {
+          "internalType": "uint32",
+          "name": "expGained",
+          "type": "uint32"
+        },
+        {
+          "internalType": "uint16",
+          "name": "minRecruitLevel",
+          "type": "uint16"
+        },
+        {
+          "internalType": "uint8",
+          "name": "fragmentsRequired",
+          "type": "uint8"
+        },
+        {
+          "internalType": "uint176",
+          "name": "emptySpace",
+          "type": "uint176"
+        }
+      ],
+      "stateMutability": "view",
       "type": "function"
     },
     {
@@ -506,6 +649,32 @@
         }
       ],
       "name": "updateCraftingLevelRequirements",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint8[5]",
+          "name": "_xpAmts",
+          "type": "uint8[5]"
+        }
+      ],
+      "name": "updateCraftingXpGain",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint128[5]",
+          "name": "_magicCosts",
+          "type": "uint128[5]"
+        }
+      ],
+      "name": "updateMagicCosts",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
