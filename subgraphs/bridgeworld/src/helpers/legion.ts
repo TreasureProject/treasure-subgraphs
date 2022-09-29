@@ -46,7 +46,7 @@ export const RECRUIT_TYPE = [
   "Siege",
   "Fighter",
   "Assassin",
-  "Ranged",
+  "Ranger",
   "Spellcaster",
 ];
 
@@ -61,7 +61,7 @@ export const mapRecruitAscensionType = (recruitType: string): string => {
     recruitType === "Siege" ||
     recruitType === "Fighter" ||
     recruitType === "Assassin" ||
-    recruitType === "Ranged" ||
+    recruitType === "Ranger" ||
     recruitType === "Spellcaster"
   ) {
     return "Apprentice";
