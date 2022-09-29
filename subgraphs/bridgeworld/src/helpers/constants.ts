@@ -4,7 +4,7 @@ export const DIFFICULTY = ["Easy", "Medium", "Hard"];
 export const CONSUMABLE_IPFS =
   "ipfs://Qma82rv8QoVuBkWUcovNcDbxHFaCEGrNHr5XtmdvKE4W98/Consumables";
 export const LEGION_IPFS =
-  "ipfs://QmUAkX9dKHzyUqvxfjqBb8zrGxkU3XdqXBFyrs17qbpFZo";
+  "ipfs://QmcGBi7aeTtg7nn2L3L25nmoXjVp9R19fzLwm4SNh6vPBM";
 export const LEGION_PFP_IPFS =
   "ipfs://QmScXFZ6ZzqifY4g9iy3tpCzko5PUGL99NPoic5waKmiNj";
 export const TREASURE_FRAGMENT_IPFS =
