@@ -18,6 +18,7 @@ import { ApprovalForAll, Transfer } from "../../generated/Legion/ERC721";
 import {
   Approval,
   Constellation,
+  LegionClass,
   LegionInfo,
   Token,
   User,
@@ -25,6 +26,7 @@ import {
 } from "../../generated/schema";
 import {
   LEGION_IPFS,
+  LEGION_NO_BACKGROUND_IPFS,
   LEGION_PFP_IPFS,
   ZERO_BI,
   getAddressId,
@@ -316,6 +318,37 @@ export function handleLegionCreated(event: LegionCreated): void {
   }
 
   token.save();
+
+  const legionClassId = `LegionClass-${metadata.type}-${metadata.rarity}-${metadata.role}`;
+  const existingLegionClass = LegionClass.load(legionClassId);
+  if (!existingLegionClass) {
+    const legionClass = new LegionClass(legionClassId);
+    legionClass.type = metadata.type;
+    legionClass.role = metadata.role;
+    legionClass.rarity = metadata.rarity;
+    legionClass.image = getLegionImage(
+      LEGION_IPFS,
+      metadata.type,
+      metadata.rarity,
+      metadata.role,
+      tokenId
+    );
+    legionClass.imageAlt = getLegionImage(
+      LEGION_PFP_IPFS,
+      metadata.type,
+      metadata.rarity,
+      metadata.role,
+      tokenId
+    );
+    legionClass.imageNoBackground = getLegionImage(
+      LEGION_NO_BACKGROUND_IPFS,
+      metadata.type,
+      metadata.rarity,
+      metadata.role,
+      tokenId
+    );
+    legionClass.save();
+  }
 }
 
 export function handleLegionQuestLevelUp(event: LegionQuestLevelUp): void {

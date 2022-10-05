@@ -19,6 +19,7 @@ export const BROKEN_ENTITY_TYPE = "Broken";
 export const CRAFT_ENTITY_TYPE = "Craft";
 export const DEPOSIT_ENTITY_TYPE = "Deposit";
 export const LEGION_INFO_ENTITY_TYPE = "LegionInfo";
+export const LEGION_CLASS_ENTITY_TYPE = "LegionClass";
 export const MINI_CRAFT_ENTITY_TYPE = "MiniCraft";
 export const OUTCOME_ENTITY_TYPE = "Outcome";
 export const QUEST_ENTITY_TYPE = "Quest";

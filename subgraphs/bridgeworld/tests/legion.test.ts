@@ -19,6 +19,7 @@ import {
 } from "../src/mappings/pilgrimage";
 import {
   LEGACY_LEGION_GENESIS_ADDRESS,
+  LEGION_CLASS_ENTITY_TYPE,
   LEGION_INFO_ENTITY_TYPE,
   TOKEN_ENTITY_TYPE,
   USER_ADDRESS,
@@ -468,4 +469,65 @@ test("XP doesn't increase after upgrade block", () => {
 
   // Legion should NOT have the new Questing Level
   assert.fieldEquals("LegionInfo", metadataId, "questing", "3");
+});
+
+test("legion class is created for legion", () => {
+  clearStore();
+
+  handleTransferSingle(
+    createLegacyLegionGenesisTransferEvent(
+      Address.zero().toHexString(),
+      USER_ADDRESS,
+      134
+    )
+  );
+
+  const pilgrimagesStartedEvent = createPilgrimagesStartedEvent(
+    USER_ADDRESS,
+    LEGACY_LEGION_GENESIS_ADDRESS,
+    1643659676,
+    [134],
+    [1],
+    [7]
+  );
+
+  handlePilgrimagesStarted(pilgrimagesStartedEvent);
+
+  const mintEvent = createLegionTransferEvent(
+    Address.zero().toHexString(),
+    USER_ADDRESS,
+    7
+  );
+
+  handleTransfer(mintEvent);
+
+  const legionCreatedEvent = createLegionCreatedEvent(USER_ADDRESS, 7, 0, 6, 2);
+
+  handleLegionCreated(legionCreatedEvent);
+
+  const pilgrimagesFinishedEvent = createPilgrimagesFinishedEvent(
+    USER_ADDRESS,
+    [7],
+    [7]
+  );
+
+  handlePilgrimagesFinished(pilgrimagesFinishedEvent);
+
+  const id = "LegionClass-Genesis-Special-Riverman";
+
+  assert.fieldEquals(LEGION_CLASS_ENTITY_TYPE, id, "type", "Genesis");
+  assert.fieldEquals(LEGION_CLASS_ENTITY_TYPE, id, "rarity", "Special");
+  assert.fieldEquals(LEGION_CLASS_ENTITY_TYPE, id, "role", "Riverman");
+  assert.fieldEquals(
+    LEGION_CLASS_ENTITY_TYPE,
+    id,
+    "image",
+    `${LEGION_IPFS}/Genesis/Special/Riverman/1D.webp`
+  );
+  assert.fieldEquals(
+    LEGION_CLASS_ENTITY_TYPE,
+    id,
+    "imageAlt",
+    `${LEGION_PFP_IPFS}/Genesis/Special/Riverman/1D.webp`
+  );
 });

@@ -5,6 +5,8 @@ export const CONSUMABLE_IPFS =
   "ipfs://Qma82rv8QoVuBkWUcovNcDbxHFaCEGrNHr5XtmdvKE4W98/Consumables";
 export const LEGION_IPFS =
   "ipfs://QmUAkX9dKHzyUqvxfjqBb8zrGxkU3XdqXBFyrs17qbpFZo";
+export const LEGION_NO_BACKGROUND_IPFS =
+  "ipfs://QmUAkX9dKHzyUqvxfjqBb8zrGxkU3XdqXBFyrs17qbpFZo";
 export const LEGION_PFP_IPFS =
   "ipfs://QmdJAn4pHVyUFGcPPTVtcNQgkoWcD9YX9BfJgrSjMMAeN5";
 export const TREASURE_FRAGMENT_IPFS =
