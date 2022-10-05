@@ -6,7 +6,7 @@ export const CONSUMABLE_IPFS =
 export const LEGION_IPFS =
   "ipfs://QmUAkX9dKHzyUqvxfjqBb8zrGxkU3XdqXBFyrs17qbpFZo";
 export const LEGION_NO_BACKGROUND_IPFS =
-  "ipfs://QmUAkX9dKHzyUqvxfjqBb8zrGxkU3XdqXBFyrs17qbpFZo";
+  "ipfs://QmZgB2nv7ZwqWQboYeeip83vT3RJf41YH24UjTacR9v7zF";
 export const LEGION_PFP_IPFS =
   "ipfs://QmdJAn4pHVyUFGcPPTVtcNQgkoWcD9YX9BfJgrSjMMAeN5";
 export const TREASURE_FRAGMENT_IPFS =
