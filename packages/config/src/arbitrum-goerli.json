@@ -49,7 +49,7 @@
 
   "smol_brains_address": "0x2542421ACA04A98f5Cf04DA97a36DAD8F1FaC3f4",
   "smol_brains_start_block": 502313,
-  "smol_brains_land_address": "0x0000000000000000000000000000000000000000",
+  "smol_brains_land_address": "0x0000000000000000000000000000000000000001",
   "smol_brains_land_start_block": 502313,
   "smol_brains_pets_address": "0xfeC202A557A2419b09a52fD5C497839ec15167Ef",
   "smol_brains_pets_start_block": 502324,
