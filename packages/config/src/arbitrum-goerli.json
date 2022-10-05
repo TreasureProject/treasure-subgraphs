@@ -49,20 +49,20 @@
 
   "smol_brains_address": "0x2542421ACA04A98f5Cf04DA97a36DAD8F1FaC3f4",
   "smol_brains_start_block": 502313,
-  "smol_brains_land_address": "0x0000000000000000000000000000000000000001",
-  "smol_brains_land_start_block": 502313,
+  "smol_brains_land_address": "0x2De47e310C5413EA957104bA3C0bEf12F2506660",
+  "smol_brains_land_start_block": 529388,
   "smol_brains_pets_address": "0xfeC202A557A2419b09a52fD5C497839ec15167Ef",
   "smol_brains_pets_start_block": 502324,
-  "smol_brains_school_address": "0x0000000000000000000000000000000000000000",
-  "smol_brains_school_start_block": 502313,
+  "smol_brains_school_address": "0xfFd2C963aB2525Fb402c74FeB95D9a631d399142",
+  "smol_brains_school_start_block": 529399,
   "smol_cars_address": "0x4B52e4fD04E48b6B68C3B538A44b6404a37Da9D1",
   "smol_cars_start_block": 502330,
   "smol_farm_address": "0x0000000000000000000000000000000000000000",
   "smol_farm_start_block": 502313,
   "smol_bodies_address": "0xF8e004f5447a3D9ae0841fAc98523Fa89c1Ea63d",
   "smol_bodies_start_block": 502317,
-  "smol_bodies_gym_address": "0x0000000000000000000000000000000000000000",
-  "smol_bodies_gym_start_block": 502317,
+  "smol_bodies_gym_address": "0xF4178C3Cbe7E771B28fB3E78EE45cb27A9F465FE",
+  "smol_bodies_gym_start_block": 529401,
   "smol_bodies_pets_address": "0x1B4528c69Ee591C59dA056F43C139F4009D34F76",
   "smol_bodies_pets_start_block": 502326,
   "smol_rocket_address": "0x0000000000000000000000000000000000000000",
@@ -79,6 +79,7 @@
 
   "hourly_stat_interval_start_block": 309123,
 
-  "magicswap_factory_address": "0x0000000000000000000000000000000000000000",
-  "magicswap_factory_start_block": 309123
+  "magicswap_factory_address": "0x6Cd71961e531aBB505256ffa945D59ab9a2156ec",
+  "magicswap_factory_start_block": 529452,
+  "magicswap_native_token_address": "0x511b71c2deabc27156524131eef179DfeEE60898"
 }

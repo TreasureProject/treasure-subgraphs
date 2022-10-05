@@ -65,7 +65,9 @@ export const USDT =
 export const DAI =
   "{{dai_address}}{{^dai_address}}{{burner_address}}{{/dai_address}}";
 
-export const NATIVE = MAGIC_ADDRESS;
+export const NATIVE = Address.fromString(
+  "{{magicswap_native_token_address}}{{^magicswap_native_token_address}}{{magic_address}}{{^magic_address}}{{burner_address}}{{/magic_address}}{{/magicswap_native_token_address}}"
+);
 
 export const USDC_WETH_PAIR =
   "{{usdc_weth_pair_address}}{{^usdc_weth_pair_address}}{{burner_address}}{{/usdc_weth_pair_address}}";
@@ -76,7 +78,7 @@ export const DAI_WETH_PAIR =
 export const USDT_WETH_PAIR =
   "{{usdt_weth_pair}}{{^usdt_weth_pair}}{{burner_address}}{{/usdt_weth_pair}}";
 
-export const MAGICSWAP_TOKEN_WHITELIST = [MAGIC_ADDRESS.toHexString()];
+export const MAGICSWAP_TOKEN_WHITELIST = [NATIVE.toHexString()];
 
 // Smolverse
 export const SMOL_BODIES_ADDRESS = Address.fromString(
