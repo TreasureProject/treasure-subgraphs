@@ -342,7 +342,7 @@ export function handleTransfer(event: Transfer): void {
 
   // There was an issue in testing that needs us to manually setup metadata for now.
   if (
-    dataSource.network() == "arbitrum-rinkeby" &&
+    dataSource.network() == "arbitrum-goerli" &&
     isMint(params.from) &&
     params.tokenId.toI32() < 4
   ) {
