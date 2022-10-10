@@ -8,6 +8,7 @@ import {
 
 import * as craftingLegacy from "../../generated/Crafting Legacy/Crafting";
 import {
+  CPGained,
   CraftingFinished,
   CraftingRevealed,
   CraftingStarted,
@@ -26,6 +27,11 @@ import {
   getXpPerLevel,
   removeCrafterFromCircle,
 } from "../helpers";
+import {
+  isCraftingXpGainedEnabled,
+  setCraftingXpGainedBlockNumberIfEmpty,
+} from "../helpers/config";
+import { getLegionMetadata } from "../helpers/legion";
 
 function isXpPaused(event: ethereum.Event): boolean {
   return (
@@ -142,12 +148,15 @@ export function handleCraftingRevealed(event: CraftingRevealed): void {
 
   outcome.save();
 
-  // Increase Xp if successfull
-  if (outcome.success == true && !isXpPaused(event)) {
-    let metadata = LegionInfo.load(`${craft.token}-metadata`);
-
-    if (metadata && metadata.crafting != 6) {
-      metadata.craftingXp += getXpPerLevel(metadata.crafting);
+  // Prefer the CPGained event if it's available at this block
+  if (
+    outcome.success &&
+    !isXpPaused(event) &&
+    !isCraftingXpGainedEnabled(event.block.number)
+  ) {
+    const metadata = getLegionMetadata(tokenId);
+    if (metadata.crafting != 6) {
+      metadata.craftingXp += getXpPerLevel(metadata.questing);
       metadata.save();
     }
   }
@@ -189,4 +198,14 @@ export function handleCraftingFinished(event: CraftingFinished): void {
 
   // Remove old craft
   store.remove("Craft", id);
+}
+
+export function handleCraftingXpGained(event: CPGained): void {
+  const params = event.params;
+  const metadata = getLegionMetadata(params._tokenId);
+  metadata.crafting = params._craftLevel;
+  metadata.craftingXp = params._cpFinal.toI32();
+  metadata.save();
+
+  setCraftingXpGainedBlockNumberIfEmpty(event.block.number);
 }
