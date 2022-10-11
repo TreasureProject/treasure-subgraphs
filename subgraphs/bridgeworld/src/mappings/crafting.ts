@@ -156,7 +156,7 @@ export function handleCraftingRevealed(event: CraftingRevealed): void {
   ) {
     const metadata = getLegionMetadata(tokenId);
     if (metadata.crafting != 6) {
-      metadata.craftingXp += getXpPerLevel(metadata.questing);
+      metadata.craftingXp += getXpPerLevel(metadata.crafting);
       metadata.save();
     }
   }
