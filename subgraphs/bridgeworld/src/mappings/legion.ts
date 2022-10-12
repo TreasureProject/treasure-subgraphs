@@ -33,7 +33,10 @@ import {
   getImageHash,
   isMint,
 } from "../helpers";
-import { isQuestingXpGainedEnabled } from "../helpers/config";
+import {
+  isCraftingXpGainedEnabled,
+  isQuestingXpGainedEnabled,
+} from "../helpers/config";
 import {
   CLASS,
   RARITY,
@@ -245,12 +248,14 @@ export function handleLegionConstellationRankUp(
 }
 
 export function handleLegionCraftLevelUp(event: LegionCraftLevelUp): void {
-  let params = event.params;
-  let metadata = getLegionMetadata(params._tokenId);
-
-  metadata.crafting = params._craftLevel;
-  metadata.craftingXp = 0;
-  metadata.save();
+  // Prefer the CPGained event if it's available at this block
+  if (!isCraftingXpGainedEnabled(event.block.number)) {
+    const params = event.params;
+    const metadata = getLegionMetadata(params._tokenId);
+    metadata.crafting = params._craftLevel;
+    metadata.craftingXp = 0;
+    metadata.save();
+  }
 }
 
 export function handleLegionCreated(event: LegionCreated): void {

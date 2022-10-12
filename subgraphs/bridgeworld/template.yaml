@@ -109,6 +109,8 @@ dataSources:
           handler: handleCraftingRevealed
         - event: CraftingFinished(indexed address,indexed uint256)
           handler: handleCraftingFinished
+        - event: CPGained(uint256,uint8,uint256)
+          handler: handleCraftingXpGained
       file: ./src/mappings/crafting.ts
   - name: Crafting Legacy
     kind: ethereum/contract
