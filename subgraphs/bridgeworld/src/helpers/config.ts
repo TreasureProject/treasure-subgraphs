@@ -30,3 +30,22 @@ export const isQuestingXpGainedEnabled = (blockNumber: BigInt): boolean => {
 
   return blockNumber.ge(blockConfig.questingXpGainedBlockNumber as BigInt);
 };
+
+export const setCraftingXpGainedBlockNumberIfEmpty = (
+  blockNumber: BigInt
+): void => {
+  const blockConfig = getOrCreateBlockConfig();
+  if (!blockConfig.craftingXpGainedBlockNumber) {
+    blockConfig.craftingXpGainedBlockNumber = blockNumber;
+    blockConfig.save();
+  }
+};
+
+export const isCraftingXpGainedEnabled = (blockNumber: BigInt): boolean => {
+  const blockConfig = getOrCreateBlockConfig();
+  if (!blockConfig.craftingXpGainedBlockNumber) {
+    return false;
+  }
+
+  return blockNumber.ge(blockConfig.craftingXpGainedBlockNumber as BigInt);
+};
