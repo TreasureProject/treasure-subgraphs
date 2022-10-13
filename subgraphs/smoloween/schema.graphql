@@ -45,20 +45,20 @@ type Seeded @entity {
 type Costume @entity {
   id: ID!
 
-  "Trait value for face"
-  face: Int
+  "Trait value for mask"
+  mask: Int
 
-  "Trait value for smile"
-  smile: Int
+  "Trait value for shirt"
+  shirt: Int
 
   "Trait value for hat"
   hat: Int
 
-  "Trait value for item"
-  item: Int
+  "Trait value for trinket"
+  trinket: Int
 
-  "Trait value for background"
-  background: Int
+  "Trait value for backdrop"
+  backdrop: Int
 }
 
 "NFTs that participate in Smoloween"
@@ -93,6 +93,9 @@ type Attack @entity {
 
   "Day this attack is being performed"
   day: Int!
+
+  "time this attack is being performed"
+  timestamp: BigInt!
 }
 
 "Instance of a sidekick copying a trait"
@@ -113,4 +116,7 @@ type Mission @entity {
 
   "Day this copy is being performed"
   day: Int!
+
+  "time this copy is being performed"
+  timestamp: BigInt!
 }

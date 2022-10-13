@@ -129,6 +129,7 @@ export function handleSentToAttack(event: SentToAttack): void {
   attack.attacker = attackerId;
   attack.target = targetId;
   attack.day = day;
+  attack.timestamp = event.block.timestamp;
   attack.save();
 }
 
@@ -145,5 +146,6 @@ export function handleSentToCopy(event: SentToCopy): void {
   mission.target = targetId;
   mission.trait = params.trait.toI32();
   mission.day = day;
+  mission.timestamp = event.block.timestamp;
   mission.save();
 }

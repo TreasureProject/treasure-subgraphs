@@ -79,11 +79,11 @@ export function handleRandomSeeded(event: RandomSeeded): void {
       }
 
       const costume = new Costume(token.id);
-      costume.face = result.value[0];
-      costume.smile = result.value[1];
+      costume.mask = result.value[0];
+      costume.shirt = result.value[1];
       costume.hat = result.value[2];
-      costume.item = result.value[3];
-      costume.background = result.value[4];
+      costume.trinket = result.value[3];
+      costume.backdrop = result.value[4];
       costume.save();
 
       token.costume = costume.id;
@@ -108,11 +108,11 @@ export function handleRandomSeeded(event: RandomSeeded): void {
       if (!costume) {
         costume = new Costume("witch");
       }
-      costume.face = result.value[0];
-      costume.smile = result.value[1];
+      costume.mask = result.value[0];
+      costume.shirt = result.value[1];
       costume.hat = result.value[2];
-      costume.item = result.value[3];
-      costume.background = result.value[4];
+      costume.trinket = result.value[3];
+      costume.backdrop = result.value[4];
       costume.save();
 
       const config = getOrCreateConfig();
