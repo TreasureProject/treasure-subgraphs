@@ -129,6 +129,8 @@ dataSources:
         - name: ERC721WithBaseUri
           file: ./abis/ERC721WithBaseUri.json
       eventHandlers:
+        - event: BaseURIChanged(string,string)
+          handler: handleBaseUriChanged
         - event: Transfer(indexed address,indexed address,indexed uint256)
           handler: handleTransfer
       file: ./src/mappings/smol-brains.ts
