@@ -1,6 +1,7 @@
 import { log } from "@graphprotocol/graph-ts";
 
 import {
+  AttackResolved,
   Converted,
   Midnight,
   RandomnessRequested,
@@ -38,6 +39,9 @@ export function handleStaked(event: Staked): void {
   let token = Token.load(id);
   if (!token) {
     token = new Token(id);
+    token.isGhoul = false;
+    token.attackers = [];
+    token.numSuccessfulAttacks = 0;
   }
 
   token.isStaked = true;
@@ -123,6 +127,15 @@ export function handleSentToAttack(event: SentToAttack): void {
   const targetId = params.targetId.toString();
   const day = params.day.toI32();
 
+  const target = Token.load(targetId);
+  if (!target) {
+    log.error("[smoloween] Attack is targeting unknown Token: {}", [targetId]);
+    return;
+  }
+
+  target.attackers = target.attackers.concat([attackerId]);
+  target.save();
+
   const id = `${attackerId}-${targetId}-${day.toString()}`;
   const attack = new Attack(id);
   attack.user = params.sender;
@@ -148,4 +161,39 @@ export function handleSentToCopy(event: SentToCopy): void {
   mission.day = day;
   mission.timestamp = event.block.timestamp;
   mission.save();
+}
+
+export function handleAttackResolved(event: AttackResolved): void {
+  const params = event.params;
+  const targetId = params.targetId.toString();
+
+  const target = Token.load(targetId);
+  if (!target) {
+    log.error("[smoloween] Resolving attack for unknown target Token: {}", [
+      targetId,
+    ]);
+    return;
+  }
+
+  // Only increment counts if attack was successful
+  if (params.success) {
+    const numAttackers = target.attackers.length;
+    for (let i = 0; i < numAttackers; i++) {
+      const attacker = Token.load(target.attackers[i]);
+      if (!attacker) {
+        log.error(
+          "[smoloween] Resolving attack for unknown attacker Token: {}",
+          [targetId]
+        );
+        continue;
+      }
+
+      attacker.numSuccessfulAttacks += 1;
+      attacker.save();
+    }
+  }
+
+  // Clear queue of attackers for the next round
+  target.attackers = [];
+  target.save();
 }

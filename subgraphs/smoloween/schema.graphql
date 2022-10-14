@@ -76,6 +76,12 @@ type Token @entity {
 
   "Token's traits, if applicable"
   costume: Costume
+
+  "Tokens that are currently targeting this token in an attack, if applicable"
+  attackers: [Token!]!
+
+  "Number of successful attacks made by this ghoul, if applicable"
+  numSuccessfulAttacks: Int!
 }
 
 "Instance of a ghoul attacking a Smol"

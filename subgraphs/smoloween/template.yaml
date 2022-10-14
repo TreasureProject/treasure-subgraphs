@@ -45,8 +45,8 @@ dataSources:
         - name: Smoloween
           file: {{{ abis }}}/Smoloween.json
       eventHandlers:
-        # - event: AttackResolved(uint256,bool,uint256,uint256)
-        #   handler: handleAttackResolved
+        - event: AttackResolved(uint256,bool,uint256,uint256)
+          handler: handleAttackResolved
         - event: Converted(uint256,uint256)
           handler: handleConverted
         # - event: CopyResolved(uint256,uint256,uint256,uint256,bool)
