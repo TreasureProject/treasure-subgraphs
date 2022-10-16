@@ -73,10 +73,12 @@ export function handleUnstaked(event: Unstaked): void {
   token.save();
 
   const stat = getOrCreateStat();
+
   for (let i = 0; i < stat.aliveSmols.length; i++) {
-    if (stat.aliveSmols[i] == token.id) {
-      const newAliveSmols = stat.aliveSmols.slice(i, 1);
-      stat.aliveSmols = newAliveSmols;
+    if (stat.aliveSmols[i] === token.id) {
+      const firstArr = stat.aliveSmols.slice(0, i);
+      const secondArr = stat.aliveSmols.slice(i + 1);
+      stat.aliveSmols = firstArr.concat(secondArr);
       break;
     }
   }
@@ -139,9 +141,10 @@ export function handleConverted(event: Converted): void {
   const stat = getOrCreateStat();
 
   for (let i = 0; i < stat.aliveSmols.length; i++) {
-    if (stat.aliveSmols[i] == token.id) {
-      const newAliveSmols = stat.aliveSmols.slice(i, 1);
-      stat.aliveSmols = newAliveSmols;
+    if (stat.aliveSmols[i] === token.id) {
+      const firstArr = stat.aliveSmols.slice(0, i);
+      const secondArr = stat.aliveSmols.slice(i + 1);
+      stat.aliveSmols = firstArr.concat(secondArr);
       break;
     }
   }
