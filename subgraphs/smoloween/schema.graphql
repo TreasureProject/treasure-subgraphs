@@ -20,6 +20,9 @@ type Stat @entity {
 
   "Number of tokens converted to ghouls"
   totalGhouls: Int!
+
+  "List of alive Smols"
+  aliveSmols: [Token!]!
 }
 
 "Tracks related Randomizer requests"
@@ -80,8 +83,8 @@ type Token @entity {
   "Tokens that are currently targeting this token in an attack, if applicable"
   attackers: [Token!]!
 
-  "Number of successful attacks made by this ghoul, if applicable"
-  numSuccessfulAttacks: Int!
+  "global points for smols and ghouls. Smols accumulate points for each day alive, ghouls accumulate points if they convert a smol"
+  points: Int!
 }
 
 "Instance of a ghoul attacking a Smol"
