@@ -304,6 +304,13 @@ export function handleLegionCreated(event: LegionCreated): void {
     metadata.role,
     tokenId
   );
+  token.imageNoBackground = getLegionImage(
+    LEGION_NO_BACKGROUND_IPFS,
+    metadata.type,
+    metadata.rarity,
+    metadata.role,
+    tokenId
+  );
   token.name = `${metadata.type} ${metadata.rarity}`;
   token.metadata = metadata.id;
   token.generation = generation;
