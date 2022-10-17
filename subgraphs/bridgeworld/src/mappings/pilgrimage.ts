@@ -8,7 +8,12 @@ import {
   PilgrimagesStarted,
 } from "../../generated/Pilgrimage/Pilgrimage";
 import { LegionInfo, Pilgrimage, Token } from "../../generated/schema";
-import { LEGION_IPFS, LEGION_PFP_IPFS, getAddressId } from "../helpers";
+import {
+  LEGION_IPFS,
+  LEGION_NO_BACKGROUND_IPFS,
+  LEGION_PFP_IPFS,
+  getAddressId,
+} from "../helpers";
 import {
   RARE_CLASS,
   getLegionImage,
@@ -65,6 +70,14 @@ export function handlePilgrimagesFinished(event: PilgrimagesFinished): void {
         );
         legion.imageAlt = getLegionImage(
           LEGION_PFP_IPFS,
+          metadata.type,
+          metadata.rarity,
+          metadata.role,
+          tokenId,
+          legacyToken.tokenId
+        );
+        legion.imageNoBackground = getLegionImage(
+          LEGION_NO_BACKGROUND_IPFS,
           metadata.type,
           metadata.rarity,
           metadata.role,
