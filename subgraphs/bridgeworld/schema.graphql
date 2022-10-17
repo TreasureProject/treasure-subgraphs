@@ -480,6 +480,7 @@ type Token @entity {
   generation: Int
   image: String!
   imageAlt: String
+  imageNoBackground: String
   metadata: Metadata
   name: String!
   description: String
