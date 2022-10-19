@@ -124,6 +124,7 @@ export function handleSummoningFinished(event: SummoningFinished): void {
     if (!fatigue) {
       fatigue = new _SummonFatigue("all");
 
+      fatigue.data = new Array<string>();
       // The first check will happen 5 minutes after the first cooldown.
       fatigue.timestamp = cooldown.plus(BigInt.fromI32(300_000));
     }

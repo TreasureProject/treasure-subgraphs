@@ -1,3 +1,5 @@
+import { BigInt } from "@graphprotocol/graph-ts";
+
 import { Approval as ApprovalEvent } from "../../generated/Magic/ERC20";
 import { Approval, User, UserApproval } from "../../generated/schema";
 
@@ -9,6 +11,7 @@ export function handleApproval(event: ApprovalEvent): void {
 
   if (!user) {
     user = new User(userId);
+    user.deposited = BigInt.zero();
     user.save();
   }
 

@@ -13,6 +13,9 @@ function getSummoningCircle(): SummoningCircle {
 
   if (!circle) {
     circle = new SummoningCircle("only");
+
+    circle.crafters = 0;
+    circle.summoners = 0;
   }
 
   return circle;
