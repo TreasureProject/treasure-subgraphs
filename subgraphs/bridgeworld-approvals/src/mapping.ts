@@ -3,30 +3,42 @@ import { Address, BigInt, store } from "@graphprotocol/graph-ts";
 import { ApprovalForAll as ApprovalForAllERC721 } from "../generated/Legion/ERC721";
 import { Approval as ApprovalERC20 } from "../generated/Magic/ERC20";
 import { ApprovalForAll as ApprovalForAllERC1155 } from "../generated/Treasure/ERC1155";
-import { Approval } from "../generated/schema";
+import { Approval, User } from "../generated/schema";
+
+const ensureUser = (id: Address): User => {
+  let user = User.load(id);
+
+  if (!user) {
+    user = new User(id);
+    user.save();
+  }
+
+  return user;
+};
 
 const handleApproval = (
-  user: Address,
+  userAddress: Address,
   contract: Address,
   operator: Address,
   approved: boolean,
   amount: BigInt | null = null
 ): void => {
-  const id = `${contract.toHexString()}-${operator.toHexString()}-${user.toHexString()}`;
-  if (approved) {
-    let approval = Approval.load(id);
-    if (!approval) {
-      approval = new Approval(id);
-      approval.user = user;
-      approval.contract = contract;
-      approval.operator = operator;
-    }
+  const user = ensureUser(userAddress);
+  const id = contract.concat(operator).concat(user.id);
 
-    approval.approved = true;
+  if (store.get("Approval", id.toHexString())) {
+    store.remove("Approval", id.toHexString());
+  }
+
+  if (approved) {
+    const approval = new Approval(id);
+
+    approval.user = user.id;
+    approval.contract = contract;
+    approval.operator = operator;
     approval.amount = amount;
+
     approval.save();
-  } else {
-    store.remove("Approval", id);
   }
 };
 

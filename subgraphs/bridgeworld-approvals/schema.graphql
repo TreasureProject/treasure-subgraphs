@@ -1,10 +1,15 @@
-type Approval @entity {
-  id: ID!
+type Approval @entity(immutable: true) {
+  id: Bytes!
 
-  user: Bytes!
   contract: Bytes!
   operator: Bytes!
+  user: User!
 
-  approved: Boolean!
   amount: BigInt
+}
+
+type User @entity(immutable: true) {
+  id: Bytes!
+
+  approvals: [Approval!]! @derivedFrom(field: "user")
 }
