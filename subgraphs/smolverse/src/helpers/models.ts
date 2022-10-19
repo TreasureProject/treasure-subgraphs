@@ -83,8 +83,11 @@ export function getOrCreateCollection(
     collection.standard = TOKEN_STANDARD_ERC721;
     collection._attributeIds = [];
     collection._includeNameInTokenName = includeNameInTokenName;
+    collection._missingMetadataLastUpdated = BigInt.zero();
     collection._missingMetadataTokens = [];
     collection._tokenIds = [];
+    collection.stakedTokensCount = 0;
+    collection.tokensCount = 0;
     collection.save();
   }
 
