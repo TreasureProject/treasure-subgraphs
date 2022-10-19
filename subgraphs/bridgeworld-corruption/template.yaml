@@ -1,0 +1,77 @@
+specVersion: 0.0.4
+schema:
+  file: ./schema.graphql
+dataSources:
+  - name: Corruption
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ consumable_address }}"
+      abi: Corruption
+      startBlock: {{ consumable_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - CorruptionBuilding
+      abis:
+        - name: Corruption
+          file: {{{ abis }}}/Corruption.json
+      eventHandlers:
+        - event: CorruptionStreamModified(address,uint128,uint256)
+          handler: handleCorruptionStreamModified
+      file: ./src/corruption.ts
+  - name: CorruptionRemoval
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ consumable_address }}"
+      abi: CorruptionRemoval
+      startBlock: {{ consumable_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - CorruptionBuilding
+        - CorruptionRemovalRecipe
+        - CorruptionRemoval
+      abis:
+        - name: CorruptionRemoval
+          file: {{{ abis }}}/CorruptionRemoval.json
+      eventHandlers:
+        - event: CorruptionRemovalRecipeCreated(uint256,uint256,(address,uint8,uint8,uint32,uint64,uint128,address,bytes)[],(uint128,uint32,uint32)[])
+          handler: handleCorruptionRemovalRecipeCreated
+        - event: CorruptionRemovalRecipeAdded(address,uint256)
+          handler: handleCorruptionRemovalRecipeAdded
+        - event: CorruptionRemovalRecipeRemoved(address,uint256)
+          handler: handleCorruptionRemovalRecipeRemoved
+        - event: CorruptionRemovalStarted(address,address,uint256,uint256)
+          handler: handleCorruptionRemovalStarted
+        - event: CorruptionRemovalEnded(address,address,uint256,uint256,uint256,bool[])
+          handler: handleCorruptionRemovalEnded
+      file: ./src/corruption.ts
+  - name: Randomizer
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ randomizer_address }}"
+      abi: Randomizer
+      startBlock: {{ smol_racing_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Random
+        - Seeded
+      abis:
+        - name: Randomizer
+          file: {{{ abis }}}/Randomizer.json
+      eventHandlers:
+        - event: RandomRequest(indexed uint256,indexed uint256)
+          handler: handleRandomRequest
+        - event: RandomSeeded(indexed uint256)
+          handler: handleRandomSeeded
+      file: ./src/randomizer.ts

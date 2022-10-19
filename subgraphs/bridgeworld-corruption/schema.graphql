@@ -1,0 +1,39 @@
+enum Status {
+  Started
+  Ready
+  Finished
+}
+
+type CorruptionBuilding @entity {
+  id: ID!
+
+  address: Bytes!
+  ratePerSecond: BigInt!
+  generatedCorruptionCap: BigInt!
+  recipes: [CorruptionRemovalRecipe!]!
+}
+
+type CorruptionRemovalRecipe @entity {
+  id: ID!
+
+  corruptionRemoved: BigInt!
+}
+
+type CorruptionRemoval @entity {
+  id: ID!
+
+  user: Bytes!
+  building: CorruptionBuilding!
+  recipe: CorruptionRemovalRecipe!
+  status: Status!
+  corruptionRemoved: BigInt!
+  prismMinted: BigInt
+}
+
+"Tracks related Randomizer commits"
+type Seeded @entity {
+  id: ID!
+
+  "Requests related to this commit"
+  requests: [CorruptionRemoval!]!
+}
