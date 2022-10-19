@@ -33,11 +33,9 @@ export function getTimeIntervalMagicStats(block: ethereum.Block): MagicStat[] {
   if (!block.number.lt(HOURLY_STAT_INTERVAL_START_BLOCK)) {
     // Hourly
     const hourlyId = getHourlyId(timestamp);
-    let hourlyStat = MagicStat.load(hourlyId);
+    const hourlyStat = getOrCreateMagicStat(hourlyId);
 
-    if (!hourlyStat) {
-      hourlyStat = new MagicStat(hourlyId);
-
+    if (hourlyStat.interval == "") {
       const startOfHour = getStartOfHour(timestamp);
 
       hourlyStat.interval = "Hourly";
@@ -53,11 +51,9 @@ export function getTimeIntervalMagicStats(block: ethereum.Block): MagicStat[] {
 
   // Daily
   const dailyId = getDailyId(timestamp);
-  let dailyStat = MagicStat.load(dailyId);
+  const dailyStat = getOrCreateMagicStat(dailyId);
 
-  if (!dailyStat) {
-    dailyStat = new MagicStat(dailyId);
-
+  if (dailyStat.interval == "") {
     const startOfDay = getStartOfDay(timestamp);
 
     dailyStat.interval = "Daily";
@@ -70,11 +66,9 @@ export function getTimeIntervalMagicStats(block: ethereum.Block): MagicStat[] {
 
   // Weekly
   const weeklyId = getWeeklyId(timestamp);
-  let weeklyStat = MagicStat.load(weeklyId);
+  const weeklyStat = getOrCreateMagicStat(weeklyId);
 
-  if (!weeklyStat) {
-    weeklyStat = new MagicStat(weeklyId);
-
+  if (weeklyStat.interval == "") {
     const startOfWeek = getStartOfWeek(timestamp);
 
     weeklyStat.interval = "Weekly";
@@ -89,11 +83,9 @@ export function getTimeIntervalMagicStats(block: ethereum.Block): MagicStat[] {
 
   // Monthly
   const monthlyId = getMonthlyId(timestamp);
-  let monthlyStat = MagicStat.load(monthlyId);
+  const monthlyStat = getOrCreateMagicStat(monthlyId);
 
-  if (!monthlyStat) {
-    monthlyStat = new MagicStat(monthlyId);
-
+  if (monthlyStat.interval == "") {
     const startOfMonth = getStartOfMonth(timestamp);
 
     monthlyStat.interval = "Monthly";
@@ -108,12 +100,9 @@ export function getTimeIntervalMagicStats(block: ethereum.Block): MagicStat[] {
 
   // Yearly
   const yearlyId = getYearlyId(timestamp);
+  const yearlyStat = getOrCreateMagicStat(yearlyId);
 
-  let yearlyStat = MagicStat.load(yearlyId);
-
-  if (!yearlyStat) {
-    yearlyStat = new MagicStat(yearlyId);
-
+  if (yearlyStat.interval == "") {
     const startOfYear = getStartOfYear(timestamp);
 
     yearlyStat.interval = "Yearly";
@@ -128,11 +117,9 @@ export function getTimeIntervalMagicStats(block: ethereum.Block): MagicStat[] {
 
   // All-time
   const allTimeId = getAllTimeId();
-  let allTimeStat = MagicStat.load(allTimeId);
+  const allTimeStat = getOrCreateMagicStat(allTimeId);
 
-  if (!allTimeStat) {
-    allTimeStat = new MagicStat(allTimeId);
-
+  if (allTimeStat.interval == "") {
     allTimeStat.interval = "AllTime";
     allTimeStat.save();
   }
@@ -140,6 +127,21 @@ export function getTimeIntervalMagicStats(block: ethereum.Block): MagicStat[] {
   stats.push(allTimeStat);
 
   return stats;
+}
+
+function getOrCreateMagicStat(statId: string): MagicStat {
+  let stat = MagicStat.load(statId);
+
+  if (!stat) {
+    stat = new MagicStat(statId);
+
+    stat.allAddressesCount = 0;
+    stat.interval = "";
+    stat.magicTransferred = BigInt.zero();
+    stat.magicTransferredCount = 0;
+  }
+
+  return stat;
 }
 
 export function getOrCreateUserStat(
@@ -158,6 +160,10 @@ export function getOrCreateUserStat(
     stat.startTimestamp = startTimestamp;
     stat.endTimestamp = endTimestamp;
     stat.interval = (interval || "AllTime") as string;
+    stat.magicReceivedCount = 0;
+    stat.magicSentCount = 0;
+    stat.magicReceived = BigInt.zero();
+    stat.magicSent = BigInt.zero();
     stat.save();
   }
 
