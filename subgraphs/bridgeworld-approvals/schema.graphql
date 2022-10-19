@@ -1,0 +1,10 @@
+type Approval @entity {
+  id: ID!
+
+  user: Bytes!
+  contract: Bytes!
+  operator: Bytes!
+
+  approved: Boolean!
+  amount: BigInt
+}
