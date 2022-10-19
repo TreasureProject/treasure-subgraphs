@@ -28,7 +28,7 @@ jobs:
           bridgeworld:
             - "packages/**"
             - "subgraphs/bridgeworld/**"
-          bridgeworld-approvals:
+          bridgeworld_approvals:
             - "packages/**"
             - "subgraphs/bridgeworld-approvals/**"
           magic_stats:
