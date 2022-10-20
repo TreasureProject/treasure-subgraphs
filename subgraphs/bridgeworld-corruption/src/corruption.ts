@@ -12,6 +12,7 @@ import { CorruptionBuilding, CorruptionRemoval } from "../generated/schema";
 import {
   getOrCreateCorruptionBuilding,
   getOrCreateCorruptionRemovalRecipe,
+  getOrCreateUser,
 } from "./helpers";
 
 export function handleCorruptionStreamModified(
@@ -83,7 +84,7 @@ export function handleCorruptionRemovalStarted(
 ): void {
   const params = event.params;
   const removal = new CorruptionRemoval(params._requestId.toString());
-  removal.user = params._user;
+  removal.user = getOrCreateUser(params._user).id;
   removal.building = params._buildingAddress.toHexString();
   removal.recipe = params._recipeId.toString();
   removal.status = "Started";

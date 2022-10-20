@@ -3,7 +3,19 @@ import { Address, BigInt } from "@graphprotocol/graph-ts";
 import {
   CorruptionBuilding,
   CorruptionRemovalRecipe,
+  User,
 } from "../generated/schema";
+
+export const getOrCreateUser = (address: Address): User => {
+  const id = address.toHexString();
+  let user = User.load(id);
+  if (!user) {
+    user = new User(id);
+    user.save();
+  }
+
+  return user;
+};
 
 export const getOrCreateCorruptionBuilding = (
   address: Address

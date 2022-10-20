@@ -22,7 +22,7 @@ type CorruptionRemovalRecipe @entity {
 type CorruptionRemoval @entity {
   id: ID!
 
-  user: Bytes!
+  user: User!
   building: CorruptionBuilding!
   recipe: CorruptionRemovalRecipe!
   status: Status!
@@ -36,4 +36,10 @@ type Seeded @entity {
 
   "Requests related to this commit"
   requests: [CorruptionRemoval!]!
+}
+
+type User @entity {
+  id: ID!
+
+  corruptionRemovals: [CorruptionRemoval!]! @derivedFrom(field: "user")
 }
