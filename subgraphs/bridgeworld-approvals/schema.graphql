@@ -3,13 +3,12 @@ type Approval @entity(immutable: true) {
 
   contract: Bytes!
   operator: Bytes!
-  user: User!
 
   amount: BigInt
 }
 
-type User @entity(immutable: true) {
+type User @entity {
   id: Bytes!
 
-  approvals: [Approval!]! @derivedFrom(field: "user")
+  approvals: [Approval!]!
 }
