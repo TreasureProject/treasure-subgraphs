@@ -49,7 +49,7 @@ dataSources:
           handler: handleCorruptionRemovalRecipeRemoved
         - event: CorruptionRemovalStarted(address,address,uint256,uint256)
           handler: handleCorruptionRemovalStarted
-        - event: CorruptionRemovalEnded(address,address,uint256,uint256,uint256,bool[])
+        - event: CorruptionRemovalEnded(address,address,uint256,uint256,uint256,uint256,bool[])
           handler: handleCorruptionRemovalEnded
       file: ./src/corruption.ts
   - name: Randomizer

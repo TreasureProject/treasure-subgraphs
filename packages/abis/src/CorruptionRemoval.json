@@ -17,6 +17,12 @@
         {
           "indexed": false,
           "internalType": "uint256",
+          "name": "_requestId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
           "name": "_recipeId",
           "type": "uint256"
         },

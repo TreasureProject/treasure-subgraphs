@@ -95,9 +95,11 @@ export function handleCorruptionRemovalEnded(
   event: CorruptionRemovalEnded
 ): void {
   const params = event.params;
-  const removal = CorruptionRemoval.load("");
+  const removal = CorruptionRemoval.load(params._requestId.toString());
   if (!removal) {
-    log.error("Ending unknown Corruption removal: {}", [""]);
+    log.error("Ending unknown Corruption removal: {}", [
+      params._requestId.toString(),
+    ]);
     return;
   }
 
