@@ -364,6 +364,7 @@ const convertTokenIdToVariant = (
 
   let variant = "";
   if (!hasBackground) {
+    // Legion images without a background always have the 1 variant
     variant += "1";
   } else if (mappedDigit1) {
     variant += mappedDigit1;
