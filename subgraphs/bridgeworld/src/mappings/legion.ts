@@ -309,7 +309,9 @@ export function handleLegionCreated(event: LegionCreated): void {
     metadata.type,
     metadata.rarity,
     metadata.role,
-    tokenId
+    tokenId,
+    null,
+    false
   );
   token.name = `${metadata.type} ${metadata.rarity}`;
   token.metadata = metadata.id;
@@ -357,7 +359,9 @@ export function handleLegionCreated(event: LegionCreated): void {
       metadata.type,
       metadata.rarity,
       metadata.role,
-      tokenId
+      tokenId,
+      null,
+      false
     );
     legionClass.save();
   }
