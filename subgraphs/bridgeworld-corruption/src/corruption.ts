@@ -8,8 +8,14 @@ import {
   CorruptionRemovalRecipeRemoved,
   CorruptionRemovalStarted,
 } from "../generated/CorruptionRemoval/CorruptionRemoval";
-import { CorruptionBuilding, CorruptionRemoval } from "../generated/schema";
 import {
+  CorruptionBuilding,
+  CorruptionRemoval,
+  CorruptionRemovalRecipeItem,
+} from "../generated/schema";
+import {
+  ITEM_EFFECTS,
+  ITEM_TYPES,
   getOrCreateCorruptionBuilding,
   getOrCreateCorruptionRemovalRecipe,
   getOrCreateUser,
@@ -32,6 +38,23 @@ export function handleCorruptionRemovalRecipeCreated(
   const recipe = getOrCreateCorruptionRemovalRecipe(params._recipeId);
   recipe.corruptionRemoved = params._corruptionRemoved;
   recipe.save();
+
+  for (let i = 0; i < params._items.length; i++) {
+    const item = params._items[i];
+    const recipeItem = new CorruptionRemovalRecipeItem(
+      `${item.itemAddress.toHexString()}-${item.itemId.toString()}`
+    );
+    recipeItem.recipe = recipe.id;
+    recipeItem.address = item.itemAddress;
+    recipeItem.type = ITEM_TYPES[item.itemType];
+    recipeItem.effect = ITEM_EFFECTS[item.itemEffect];
+    recipeItem.effectChance = item.effectChance;
+    recipeItem.itemId = item.itemId;
+    recipeItem.amount = item.amount;
+    recipeItem.customHandler = item.customHandler;
+    recipeItem.customRequirementData = item.customRequirementData;
+    recipeItem.save();
+  }
 }
 
 export function handleCorruptionRemovalRecipeAdded(

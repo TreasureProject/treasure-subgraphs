@@ -4,6 +4,17 @@ enum Status {
   Finished
 }
 
+enum ItemType {
+  ERC20
+  ERC1155
+}
+
+enum ItemEffect {
+  Burn
+  MoveToTreasury
+  Custom
+}
+
 type CorruptionBuilding @entity {
   id: ID!
 
@@ -17,6 +28,22 @@ type CorruptionRemovalRecipe @entity {
   id: ID!
 
   corruptionRemoved: BigInt!
+  items: [CorruptionRemovalRecipeItem!]! @derivedFrom(field: "recipe")
+}
+
+type CorruptionRemovalRecipeItem @entity {
+  id: ID!
+
+  recipe: CorruptionRemovalRecipe!
+
+  address: Bytes!
+  type: ItemType!
+  effect: ItemEffect!
+  effectChance: BigInt!
+  itemId: BigInt!
+  amount: BigInt!
+  customHandler: Bytes
+  customRequirementData: Bytes
 }
 
 type CorruptionRemoval @entity {

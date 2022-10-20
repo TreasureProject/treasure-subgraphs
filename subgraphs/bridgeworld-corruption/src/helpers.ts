@@ -6,6 +6,10 @@ import {
   User,
 } from "../generated/schema";
 
+export const ITEM_TYPES = ["ERC20", "ERC1155"];
+
+export const ITEM_EFFECTS = ["Burn", "MoveToTreasury", "Custom"];
+
 export const getOrCreateUser = (address: Address): User => {
   const id = address.toHexString();
   let user = User.load(id);
