@@ -3,7 +3,7 @@ enum Contract {
   TreasureFraction
 }
 
-type Asset @entity {
+type Asset @entity(immutable: true) {
   id: ID!
 }
 
@@ -16,7 +16,7 @@ type Transfer @entity {
   user: User!
 }
 
-type User @entity {
+type User @entity(immutable: true) {
   id: ID!
 
   assets: [UserAsset!]! @derivedFrom(field: "user")

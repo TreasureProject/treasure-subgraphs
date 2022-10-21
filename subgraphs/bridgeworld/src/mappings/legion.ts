@@ -279,8 +279,12 @@ export function handleLegionCreated(event: LegionCreated): void {
   metadata.constellation = token.id;
   metadata.crafting = 1;
   metadata.craftingXp = 0;
+  metadata.majorCraftsCompleted = 0;
+  metadata.miniCraftsCompleted = 0;
   metadata.questing = 1;
   metadata.questingXp = 0;
+  metadata.questsCompleted = 0;
+  metadata.questsDistanceTravelled = 0;
   metadata.recruitLevel = isRecruit ? 1 : 0;
   metadata.recruitXp = 0;
   metadata.rarity = isRecruit ? "None" : RARITY[rarity];
