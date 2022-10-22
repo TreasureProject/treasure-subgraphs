@@ -1,9 +1,30 @@
-import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
+import { Address, BigInt, Bytes, log } from "@graphprotocol/graph-ts";
 
 import { ApprovalForAll as ApprovalForAllERC721 } from "../generated/Legion/ERC721";
 import { Approval as ApprovalERC20 } from "../generated/Magic/ERC20";
 import { ApprovalForAll as ApprovalForAllERC1155 } from "../generated/Treasure/ERC1155";
 import { Approval, User } from "../generated/schema";
+import {
+  BALANCER_CRYSTAL_ADDRESS,
+  CONSUMABLE_ADDRESS,
+  LEGACY_LEGION_ADDRESS,
+  LEGACY_LEGION_GENESIS_ADDRESS,
+  LEGION_ADDRESS,
+  MAGIC_ADDRESS,
+  TREASURE_ADDRESS,
+  TREASURE_FRAGMENT_ADDRESS,
+} from "@treasure/constants";
+
+const SUPPORTED_OPERATORS = [
+  CONSUMABLE_ADDRESS.toHexString(),
+  BALANCER_CRYSTAL_ADDRESS.toHexString(),
+  LEGION_ADDRESS.toHexString(),
+  LEGACY_LEGION_ADDRESS.toHexString(),
+  LEGACY_LEGION_GENESIS_ADDRESS.toHexString(),
+  MAGIC_ADDRESS.toHexString(),
+  TREASURE_ADDRESS.toHexString(),
+  TREASURE_FRAGMENT_ADDRESS.toHexString(),
+];
 
 const ensureUser = (id: Address): User => {
   let user = User.load(id);
@@ -24,6 +45,13 @@ const handleApproval = (
   block: BigInt,
   amount: BigInt | null = null
 ): void => {
+  if (!SUPPORTED_OPERATORS.includes(operator.toHexString())) {
+    log.debug("[approvals] Ignoring unsupported operator: {}", [
+      operator.toHexString(),
+    ]);
+    return;
+  }
+
   const user = ensureUser(userAddress);
   const base = contract.concat(operator);
   const id = base.concat(user.id).concatI32(block.toI32());
