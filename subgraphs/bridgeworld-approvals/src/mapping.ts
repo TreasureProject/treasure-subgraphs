@@ -40,7 +40,7 @@ const handleApproval = (
 
   if (approved) {
     const approval = new Approval(id);
-    approval.user = userAddress;
+    approval.user = user.id;
     approval.contract = contract;
     approval.operator = operator;
     approval.amount = amount;
