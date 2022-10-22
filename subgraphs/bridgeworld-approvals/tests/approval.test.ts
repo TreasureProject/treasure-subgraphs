@@ -46,19 +46,6 @@ describe("handleApprovalERC1155", () => {
 
     assert.fieldEquals(USER_ENTITY, USER, "approvals", "[]");
   });
-
-  test("unsupported operator is ignored", () => {
-    handleApprovalERC1155(
-      createApprovalAllERC1155Event(
-        ADDRESS,
-        USER,
-        Address.zero().toHexString(),
-        true
-      )
-    );
-
-    assert.notInStore(APPROVAL_ENTITY, ID);
-  });
 });
 
 describe("handleApprovalERC721", () => {
@@ -78,19 +65,6 @@ describe("handleApprovalERC721", () => {
 
     assert.fieldEquals(USER_ENTITY, USER, "approvals", "[]");
   });
-
-  test("unsupported operator is ignored", () => {
-    handleApprovalERC721(
-      createApprovalAllERC721Event(
-        ADDRESS,
-        USER,
-        Address.zero().toHexString(),
-        true
-      )
-    );
-
-    assert.notInStore(APPROVAL_ENTITY, ID);
-  });
 });
 
 describe("handleApprovalERC20", () => {
@@ -106,13 +80,5 @@ describe("handleApprovalERC20", () => {
     handleApprovalERC20(createApprovalERC20Event(ADDRESS, USER, OPERATOR, 0));
 
     assert.fieldEquals(USER_ENTITY, USER, "approvals", "[]");
-  });
-
-  test("unsupported operator is ignored", () => {
-    handleApprovalERC20(
-      createApprovalERC20Event(ADDRESS, USER, Address.zero().toHexString(), 100)
-    );
-
-    assert.notInStore(APPROVAL_ENTITY, ID);
   });
 });
