@@ -1,4 +1,4 @@
-import { Address, BigInt, Bytes, store } from "@graphprotocol/graph-ts";
+import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
 
 import { ApprovalForAll as ApprovalForAllERC721 } from "../generated/Legion/ERC721";
 import { Approval as ApprovalERC20 } from "../generated/Magic/ERC20";
@@ -29,14 +29,12 @@ const handleApproval = (
   const id = base.concat(user.id).concatI32(block.toI32());
 
   for (let index = 0; index < user.approvals.length; index++) {
-    const approvalId = user.approvals[index].toHexString();
-    if (approvalId.startsWith(base.toHexString())) {
+    const approval = user.approvals[index].toHexString();
+    if (approval.startsWith(base.toHexString())) {
       user.approvals = user.approvals
         .slice(0, index)
         .concat(user.approvals.slice(index + 1));
       user.save();
-
-      store.remove("Approval", approvalId);
     }
   }
 
