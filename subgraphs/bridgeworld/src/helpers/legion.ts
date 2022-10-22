@@ -354,7 +354,8 @@ const mapGenesisVariant = (tokenId: BigInt): i32 => {
 
 const convertTokenIdToVariant = (
   tokenId: BigInt,
-  mappedDigit1: string | null = null
+  mappedDigit1: string | null = null,
+  hasBackground: boolean = true
 ): string => {
   let digits = tokenId.toString().slice(-2);
   if (digits.length == 1) {
@@ -362,7 +363,9 @@ const convertTokenIdToVariant = (
   }
 
   let variant = "";
-  if (mappedDigit1) {
+  if (!hasBackground) {
+    variant += "1";
+  } else if (mappedDigit1) {
     variant += mappedDigit1;
   } else {
     const digit1 = parseInt(digits.charAt(0));
@@ -401,7 +404,8 @@ export const getLegionImage = (
   rarity: string,
   role: string,
   tokenId: BigInt,
-  legacyTokenId: BigInt | null = null
+  legacyTokenId: BigInt | null = null,
+  hasBackground: boolean = true
 ): string => {
   let image = ipfsPrefix;
   if (type == "Recruit") {
@@ -421,11 +425,16 @@ export const getLegionImage = (
 
         image += `/${className}/${convertTokenIdToVariant(
           tokenId,
-          variantDigit1.toString()
+          variantDigit1.toString(),
+          hasBackground
         )}.webp`;
       }
     } else {
-      image += `/${className}/${convertTokenIdToVariant(tokenId)}.webp`;
+      image += `/${className}/${convertTokenIdToVariant(
+        tokenId,
+        null,
+        hasBackground
+      )}.webp`;
     }
   }
 

@@ -1,4 +1,6 @@
-import { assert, test } from "matchstick-as";
+import { assert, beforeEach, clearStore, describe, test } from "matchstick-as";
+
+import { Address, Bytes } from "@graphprotocol/graph-ts";
 
 import {
   handleApprovalERC20,
@@ -10,57 +12,73 @@ import {
   createApprovalAllERC1155Event,
   createApprovalERC20Event,
 } from "./helpers/approval";
+import { CONSUMABLE_ADDRESS } from "@treasure/constants";
 
 const ADDRESS = "0x88f9efb3a7f728fdb2b8872fe994c84b1d148f65";
 const USER = "0xb013abd83f0bd173e9f14ce7d6e420ad711483b4";
-const OPERATOR = "0x2830eb1183c6e03489a3a72621e1f3fe2b9158c3";
-const ID = `${ADDRESS}-${OPERATOR}-${USER}`;
-const ENTITY = "Approval";
+const OPERATOR = CONSUMABLE_ADDRESS.toHexString();
+const ID = Address.fromString(ADDRESS)
+  .concat(Address.fromString(OPERATOR))
+  .concat(Address.fromString(USER))
+  .concat(Bytes.fromI32(1))
+  .toHexString();
+const APPROVAL_ENTITY = "Approval";
+const USER_ENTITY = "User";
 
-test("erc1155 approval is handled", () => {
-  handleApprovalERC1155(
-    createApprovalAllERC1155Event(ADDRESS, USER, OPERATOR, true)
-  );
-
-  assert.fieldEquals(ENTITY, ID, "user", USER);
-  assert.fieldEquals(ENTITY, ID, "contract", ADDRESS);
-  assert.fieldEquals(ENTITY, ID, "operator", OPERATOR);
-  assert.fieldEquals(ENTITY, ID, "approved", "true");
-
-  handleApprovalERC1155(
-    createApprovalAllERC1155Event(ADDRESS, USER, OPERATOR, false)
-  );
-
-  assert.notInStore(ENTITY, ID);
+beforeEach(() => {
+  clearStore();
 });
 
-test("erc721 approval is handled", () => {
-  handleApprovalERC721(
-    createApprovalAllERC721Event(ADDRESS, USER, OPERATOR, true)
-  );
+describe("handleApprovalERC1155", () => {
+  test("approval and unapproval are handled", () => {
+    handleApprovalERC1155(
+      createApprovalAllERC1155Event(ADDRESS, USER, OPERATOR, true)
+    );
 
-  assert.fieldEquals(ENTITY, ID, "user", USER);
-  assert.fieldEquals(ENTITY, ID, "contract", ADDRESS);
-  assert.fieldEquals(ENTITY, ID, "operator", OPERATOR);
-  assert.fieldEquals(ENTITY, ID, "approved", "true");
+    assert.fieldEquals(APPROVAL_ENTITY, ID, "user", USER);
+    assert.fieldEquals(APPROVAL_ENTITY, ID, "contract", ADDRESS);
+    assert.fieldEquals(APPROVAL_ENTITY, ID, "operator", OPERATOR);
+    assert.fieldEquals(USER_ENTITY, USER, "approvals", `[${ID}]`);
 
-  handleApprovalERC721(
-    createApprovalAllERC721Event(ADDRESS, USER, OPERATOR, false)
-  );
+    handleApprovalERC1155(
+      createApprovalAllERC1155Event(ADDRESS, USER, OPERATOR, false)
+    );
 
-  assert.notInStore(ENTITY, ID);
+    assert.fieldEquals(USER_ENTITY, USER, "approvals", "[]");
+  });
 });
 
-test("erc20 approval is handled", () => {
-  handleApprovalERC20(createApprovalERC20Event(ADDRESS, USER, OPERATOR, 100));
+describe("handleApprovalERC721", () => {
+  test("approval and unapproval are handled", () => {
+    handleApprovalERC721(
+      createApprovalAllERC721Event(ADDRESS, USER, OPERATOR, true)
+    );
 
-  assert.fieldEquals(ENTITY, ID, "user", USER);
-  assert.fieldEquals(ENTITY, ID, "contract", ADDRESS);
-  assert.fieldEquals(ENTITY, ID, "operator", OPERATOR);
-  assert.fieldEquals(ENTITY, ID, "approved", "true");
-  assert.fieldEquals(ENTITY, ID, "amount", "100");
+    assert.fieldEquals(APPROVAL_ENTITY, ID, "user", USER);
+    assert.fieldEquals(APPROVAL_ENTITY, ID, "contract", ADDRESS);
+    assert.fieldEquals(APPROVAL_ENTITY, ID, "operator", OPERATOR);
+    assert.fieldEquals(USER_ENTITY, USER, "approvals", `[${ID}]`);
 
-  handleApprovalERC20(createApprovalERC20Event(ADDRESS, USER, OPERATOR, 0));
+    handleApprovalERC721(
+      createApprovalAllERC721Event(ADDRESS, USER, OPERATOR, false)
+    );
 
-  assert.notInStore(ENTITY, ID);
+    assert.fieldEquals(USER_ENTITY, USER, "approvals", "[]");
+  });
+});
+
+describe("handleApprovalERC20", () => {
+  test("approval and unapproval are handled", () => {
+    handleApprovalERC20(createApprovalERC20Event(ADDRESS, USER, OPERATOR, 100));
+
+    assert.fieldEquals(APPROVAL_ENTITY, ID, "user", USER);
+    assert.fieldEquals(APPROVAL_ENTITY, ID, "contract", ADDRESS);
+    assert.fieldEquals(APPROVAL_ENTITY, ID, "operator", OPERATOR);
+    assert.fieldEquals(APPROVAL_ENTITY, ID, "amount", "100");
+    assert.fieldEquals(USER_ENTITY, USER, "approvals", `[${ID}]`);
+
+    handleApprovalERC20(createApprovalERC20Event(ADDRESS, USER, OPERATOR, 0));
+
+    assert.fieldEquals(USER_ENTITY, USER, "approvals", "[]");
+  });
 });

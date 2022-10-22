@@ -26,6 +26,7 @@ function addAssetToUser(asset: Asset, user: User): void {
     userAsset = new UserAsset(id);
 
     userAsset.asset = asset.id;
+    userAsset.quantity = 0;
     userAsset.user = user.id;
   }
 
@@ -88,6 +89,7 @@ function getTransfer(
     transfer = new Transfer(id);
 
     transfer.contract = contract;
+    transfer.quantity = 0;
     transfer.tokenId = tokenId;
     transfer.user = getUser(user).id;
   }

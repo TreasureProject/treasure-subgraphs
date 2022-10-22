@@ -38,6 +38,9 @@ function getUser(id: string): User {
     user = new User(id);
 
     user.boost = "0";
+    user.boosts = 0;
+    user.deposited = BigInt.zero();
+    user.finishedAdvancedQuestCount = 0;
     user.save();
   }
 
@@ -76,6 +79,7 @@ export function handleTransfer(
     toUserToken = new UserToken(id);
 
     toUserToken.token = token.id;
+    toUserToken.quantity = BigInt.zero();
     toUserToken.user = user.id;
   }
 
