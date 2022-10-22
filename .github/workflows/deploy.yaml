@@ -13,6 +13,7 @@ jobs:
     outputs:
       bridgeworld: ${{ steps.filter.outputs.bridgeworld }}
       bridgeworld_approvals: ${{ steps.filter.outputs.bridgeworld_approvals }}
+      bridgeworld_corruption: ${{ steps.filter.outputs.bridgeworld_curroption }}
       magic_stats: ${{ steps.filter.outputs.magic_stats }}
       magicswap_exchange: ${{ steps.filter.outputs.magicswap_exchange }}
       migration: ${{ steps.filter.outputs.migration }}
@@ -31,6 +32,9 @@ jobs:
           bridgeworld_approvals:
             - "packages/**"
             - "subgraphs/bridgeworld-approvals/**"
+          bridgeworld_corruption:
+            - "packages/**"
+            - "subgraphs/bridgeworld-corruption/**"
           magic_stats:
             - "packages/**"
             - "subgraphs/magic-stats/**"
@@ -93,6 +97,44 @@ jobs:
     defaults:
       run:
         working-directory: ./subgraphs/bridgeworld-approvals
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: Install Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14
+      - name: Install dependencies
+        run: yarn --frozen-lockfile
+      - name: Prepare for DEV
+        if: github.event_name == 'pull_request' && github.event.pull_request.draft == false
+        run: yarn prepare:dev
+      - name: Prepare for PROD
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        run: yarn prepare:prod
+      - name: Generate code
+        run: yarn codegen
+      - name: Test
+        run: yarn test
+      - name: Authenticate
+        env:
+          GRAPH_ACCESS_TOKEN: ${{ secrets.GRAPH_ACCESS_TOKEN }}
+        run: yarn graph auth --product hosted-service "$GRAPH_ACCESS_TOKEN"
+      - name: Deploy to DEV
+        if: github.event_name == 'pull_request' && github.event.pull_request.draft == false
+        run: yarn deploy:dev
+      - name: Deploy to PROD
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        run: yarn deploy:prod
+
+  bridgeworld_corruption:
+    name: Bridgeworld Corruption Subgraph
+    if: ${{ needs.changes.outputs.bridgeworld_corruption == 'true' }}
+    needs: changes
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./subgraphs/bridgeworld-corruption
     steps:
       - name: Check out code
         uses: actions/checkout@v2
