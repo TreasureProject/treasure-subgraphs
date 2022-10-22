@@ -45,7 +45,6 @@ describe("handleApprovalERC1155", () => {
     );
 
     assert.fieldEquals(USER_ENTITY, USER, "approvals", "[]");
-    assert.notInStore(APPROVAL_ENTITY, ID);
   });
 });
 
@@ -65,7 +64,6 @@ describe("handleApprovalERC721", () => {
     );
 
     assert.fieldEquals(USER_ENTITY, USER, "approvals", "[]");
-    assert.notInStore(APPROVAL_ENTITY, ID);
   });
 });
 
@@ -82,6 +80,5 @@ describe("handleApprovalERC20", () => {
     handleApprovalERC20(createApprovalERC20Event(ADDRESS, USER, OPERATOR, 0));
 
     assert.fieldEquals(USER_ENTITY, USER, "approvals", "[]");
-    assert.notInStore(APPROVAL_ENTITY, ID);
   });
 });
