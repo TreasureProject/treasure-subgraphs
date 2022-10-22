@@ -46,6 +46,10 @@
   "harvester_factory_start_block": 498648,
   "recruit_level_address": "0xb475b45fFE5FE80901363B2906786E9859E796B7",
   "recruit_level_start_block": 498621,
+  "corruption_address": "0x9F39C19A85131bd64DACFF2005508C880793Ee38",
+  "corruption_start_block": 804034,
+  "corruption_removal_address": "0x25166d2Dce9E400E456F3d25C2B0a26901600aec",
+  "corruption_removal_start_block": 804036,
 
   "smol_brains_address": "0x2542421ACA04A98f5Cf04DA97a36DAD8F1FaC3f4",
   "smol_brains_start_block": 502313,

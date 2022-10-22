@@ -6,9 +6,9 @@ dataSources:
     kind: ethereum/contract
     network: {{ network }}
     source:
-      address: "{{ consumable_address }}"
+      address: "{{ corruption_address }}"
       abi: Corruption
-      startBlock: {{ consumable_start_block }}
+      startBlock: {{ corruption_start_block }}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -26,9 +26,9 @@ dataSources:
     kind: ethereum/contract
     network: {{ network }}
     source:
-      address: "{{ consumable_address }}"
+      address: "{{ corruption_removal_address }}"
       abi: CorruptionRemoval
-      startBlock: {{ consumable_start_block }}
+      startBlock: {{ corruption_removal_start_block }}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -58,7 +58,7 @@ dataSources:
     source:
       address: "{{ randomizer_address }}"
       abi: Randomizer
-      startBlock: {{ smol_racing_start_block }}
+      startBlock: {{ corruption_removal_start_block }}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
