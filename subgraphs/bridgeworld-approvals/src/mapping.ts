@@ -7,7 +7,6 @@ import { Approval, User } from "../generated/schema";
 
 const ensureUser = (id: Address): User => {
   let user = User.load(id);
-
   if (!user) {
     user = new User(id);
     user.approvals = new Array<Bytes>();
@@ -27,11 +26,10 @@ const handleApproval = (
 ): void => {
   const user = ensureUser(userAddress);
   const base = contract.concat(operator);
-  const id = base.concat(user.id).concat(Bytes.fromI32(block.toI32()));
+  const id = base.concat(user.id).concatI32(block.toI32());
 
   for (let index = 0; index < user.approvals.length; index++) {
     const approval = user.approvals[index].toHexString();
-
     if (approval.startsWith(base.toHexString())) {
       user.approvals = user.approvals
         .slice(0, index)
@@ -42,11 +40,10 @@ const handleApproval = (
 
   if (approved) {
     const approval = new Approval(id);
-
+    approval.user = user.id;
     approval.contract = contract;
     approval.operator = operator;
     approval.amount = amount;
-
     approval.save();
 
     user.approvals = user.approvals.concat([id]);
