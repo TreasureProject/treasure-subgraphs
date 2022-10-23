@@ -1,4 +1,9 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts";
+import {
+  ADVANCED_QUESTING_ADDRESS,
+  CRAFTING_ADDRESS,
+  SUMMONING_ADDRESS,
+} from "@treasure/constants";
 
 import { CorruptionBuilding, User } from "../generated/schema";
 
@@ -16,12 +21,32 @@ export const getOrCreateUser = (address: Address): User => {
   return user;
 };
 
+export const getBuildingType = (address: Address): string => {
+  if (address.equals(CRAFTING_ADDRESS)) {
+    return "TheForge";
+  }
+
+  if (address.equals(ADVANCED_QUESTING_ADDRESS)) {
+    return "IvoryTower";
+  }
+
+  if (address.equals(SUMMONING_ADDRESS)) {
+    return "SummoningCircle";
+  }
+
+  // TODO: Check if address is a Harvester
+  // return "Harvesters";
+
+  return "Other";
+};
+
 export const getOrCreateCorruptionBuilding = (
   address: Address
 ): CorruptionBuilding => {
   let building = CorruptionBuilding.load(address);
   if (!building) {
     building = new CorruptionBuilding(address);
+    building.building = getBuildingType(address);
     building.address = address;
     building.ratePerSecond = BigInt.zero();
     building.generatedCorruptionCap = BigInt.zero();

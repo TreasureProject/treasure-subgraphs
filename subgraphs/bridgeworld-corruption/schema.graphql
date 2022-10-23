@@ -15,9 +15,18 @@ enum ItemEffect {
   Custom
 }
 
+enum Building {
+  TheForge
+  IvoryTower
+  SummoningCircle
+  Harvesters
+  Other
+}
+
 type CorruptionBuilding @entity {
   id: Bytes!
 
+  building: Building!
   address: Bytes!
   ratePerSecond: BigInt!
   generatedCorruptionCap: BigInt!
