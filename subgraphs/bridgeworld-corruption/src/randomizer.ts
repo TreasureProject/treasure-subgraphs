@@ -1,4 +1,5 @@
 import { Address, Bytes, log, store } from "@graphprotocol/graph-ts";
+import { CORRUPTION_REMOVAL_ADDRESS } from "@treasure/constants";
 
 import {
   RandomRequest,
@@ -12,7 +13,7 @@ export function handleRandomRequest(event: RandomRequest): void {
 
   if (
     !event.transaction.to ||
-    (event.transaction.to as Address).notEqual(Address.zero())
+    (event.transaction.to as Address).notEqual(CORRUPTION_REMOVAL_ADDRESS)
   ) {
     log.debug("[randomizer] Skipping request from unrelated contract: {}", [
       requestId.toString(),
