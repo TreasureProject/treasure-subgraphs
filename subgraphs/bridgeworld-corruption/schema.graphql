@@ -16,7 +16,7 @@ enum ItemEffect {
 }
 
 type CorruptionBuilding @entity {
-  id: ID!
+  id: Bytes!
 
   address: Bytes!
   ratePerSecond: BigInt!
@@ -24,30 +24,30 @@ type CorruptionBuilding @entity {
   recipes: [CorruptionRemovalRecipe!]!
 }
 
-type CorruptionRemovalRecipe @entity {
-  id: ID!
+type CorruptionRemovalRecipe @entity(immutable: true) {
+  id: Bytes!
 
   corruptionRemoved: BigInt!
   items: [CorruptionRemovalRecipeItem!]! @derivedFrom(field: "recipe")
 }
 
-type CorruptionRemovalRecipeItem @entity {
-  id: ID!
+type CorruptionRemovalRecipeItem @entity(immutable: true) {
+  id: Bytes!
 
   recipe: CorruptionRemovalRecipe!
 
-  address: Bytes!
+  address: Bytes
   type: ItemType!
   effect: ItemEffect!
   effectChance: BigInt!
-  itemId: BigInt!
-  amount: BigInt!
+  itemId: BigInt
+  amount: BigInt
   customHandler: Bytes
   customRequirementData: Bytes
 }
 
 type CorruptionRemoval @entity {
-  id: ID!
+  id: Bytes!
 
   user: User!
   building: CorruptionBuilding!
@@ -59,14 +59,14 @@ type CorruptionRemoval @entity {
 
 "Tracks related Randomizer commits"
 type Seeded @entity {
-  id: ID!
+  id: Bytes!
 
   "Requests related to this commit"
   requests: [CorruptionRemoval!]!
 }
 
-type User @entity {
-  id: ID!
+type User @entity(immutable: true) {
+  id: Bytes!
 
   corruptionRemovals: [CorruptionRemoval!]! @derivedFrom(field: "user")
 }
