@@ -46,7 +46,7 @@ export const getOrCreateCorruptionBuilding = (
   let building = CorruptionBuilding.load(address);
   if (!building) {
     building = new CorruptionBuilding(address);
-    building.building = getBuildingType(address);
+    building.type = getBuildingType(address);
     building.address = address;
     building.ratePerSecond = BigInt.zero();
     building.generatedCorruptionCap = BigInt.zero();
