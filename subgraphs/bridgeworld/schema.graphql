@@ -32,13 +32,16 @@ enum Generation {
 }
 
 enum Rarity {
+  None
   Common
   Epic
   Legendary
   Rare
   Special
   Uncommon
-  None
+  Recruit
+  Cadet
+  Apprentice
 }
 
 enum TreasureCategory {
@@ -418,7 +421,7 @@ type StakedToken @entity {
   expirationTime: BigInt
 
   "Flag is true if `expirationTime` has already been processed by the subgraph"
-  expirationProcessed: Boolean!
+  expirationProcessed: Boolean
 }
 
 type Summon @entity {

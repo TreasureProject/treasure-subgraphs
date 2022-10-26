@@ -56,6 +56,10 @@ export function handleAdvancedQuestStarted(event: AdvancedQuestStarted): void {
   quest.status = "Idle";
   quest.zoneName = params._startQuestParams.zoneName;
   quest.part = params._startQuestParams.advanceToPart;
+  quest.endTimestamp = BigInt.zero();
+  quest.stasisHitCount = 0;
+  quest.hadStasisPart2 = false;
+  quest.hadStasisPart3 = false;
 
   const treasures: string[] = [];
 

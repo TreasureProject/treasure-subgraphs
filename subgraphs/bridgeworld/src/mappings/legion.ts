@@ -144,8 +144,15 @@ function setMetadata(contract: Address, tokenId: BigInt): void {
   metadata.constellation = token.id;
   metadata.crafting = 1;
   metadata.craftingXp = 0;
+  metadata.majorCraftsCompleted = 0;
+  metadata.miniCraftsCompleted = 0;
   metadata.questing = 1;
   metadata.questingXp = 0;
+  metadata.questsCompleted = 0;
+  metadata.questsDistanceTravelled = 0;
+  metadata.recruitLevel = 0;
+  metadata.recruitXp = 0;
+  metadata.recruitCanAscendToAux = false;
   metadata.rarity = "Legendary";
   metadata.role = "Origin";
   metadata.type = "Genesis";
