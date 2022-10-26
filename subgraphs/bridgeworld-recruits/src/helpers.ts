@@ -1,7 +1,7 @@
 import { BigInt, Bytes } from "@graphprotocol/graph-ts";
 import { Config, LevelConfig } from "../generated/schema";
 
-const CONFIG_ID = Bytes.fromI32(1);
+export const CONFIG_ID = Bytes.fromI32(1);
 
 export const getOrCreateConfig = (): Config => {
   let config = Config.load(CONFIG_ID);
