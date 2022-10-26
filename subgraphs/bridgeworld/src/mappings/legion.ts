@@ -144,8 +144,15 @@ function setMetadata(contract: Address, tokenId: BigInt): void {
   metadata.constellation = token.id;
   metadata.crafting = 1;
   metadata.craftingXp = 0;
+  metadata.majorCraftsCompleted = 0;
+  metadata.miniCraftsCompleted = 0;
   metadata.questing = 1;
   metadata.questingXp = 0;
+  metadata.questsCompleted = 0;
+  metadata.questsDistanceTravelled = 0;
+  metadata.recruitLevel = 0;
+  metadata.recruitXp = 0;
+  metadata.recruitCanAscendToAux = false;
   metadata.rarity = "Legendary";
   metadata.role = "Origin";
   metadata.type = "Genesis";
@@ -287,7 +294,8 @@ export function handleLegionCreated(event: LegionCreated): void {
   metadata.questsDistanceTravelled = 0;
   metadata.recruitLevel = isRecruit ? 1 : 0;
   metadata.recruitXp = 0;
-  metadata.rarity = isRecruit ? "None" : RARITY[rarity];
+  metadata.recruitCanAscendToAux = false;
+  metadata.rarity = isRecruit ? "Recruit" : RARITY[rarity];
   metadata.role = isRecruit ? "Base Recruit" : CLASS[params._class];
   metadata.type = type;
   metadata.summons = BigInt.zero();
@@ -317,10 +325,6 @@ export function handleLegionCreated(event: LegionCreated): void {
     null,
     false
   );
-  token.name = `${metadata.type} ${metadata.rarity}`;
-  token.metadata = metadata.id;
-  token.generation = generation;
-  token.rarity = metadata.rarity;
 
   if (isRecruit) {
     const user = User.load(params._owner.toHexString());
@@ -329,12 +333,15 @@ export function handleLegionCreated(event: LegionCreated): void {
       user.save();
     }
 
-    token.name = "Recruit";
-    token.rarity = "None";
-    metadata.recruitType = "None";
-    metadata.recruitAscensionType = "Recruit";
+    token.name = metadata.role;
+    token.rarity = metadata.rarity;
+  } else {
+    token.name = `${metadata.type} ${metadata.rarity}`;
+    token.rarity = metadata.rarity;
   }
 
+  token.metadata = metadata.id;
+  token.generation = generation;
   token.save();
 
   const legionClassId = `LegionClass-${metadata.type}-${metadata.rarity}-${metadata.role}`;

@@ -58,6 +58,24 @@ export function handleHarvesterDeployed(event: HarvesterDeployed): void {
   const harvesterAddress = params.harvester;
   const harvester = new Harvester(harvesterAddress.toHexString());
   harvester.deployedBlockNumber = event.block.number;
+  harvester.maxMagicDeposited = BigInt.zero();
+  harvester.maxPartsStaked = 0;
+  harvester.maxPartsStakedPerUser = 0;
+  harvester.maxExtractorsStaked = 0;
+  harvester.maxLegionsStaked = 0;
+  harvester.maxLegionsWeightPerUser = BigInt.zero();
+  harvester.maxTreasuresStakedPerUser = 0;
+  harvester.magicDepositAllocationPerPart = BigInt.zero();
+  harvester.magicDeposited = BigInt.zero();
+  harvester.partsStaked = 0;
+  harvester.extractorsStaked = 0;
+  harvester.extractorsLifetime = BigInt.zero();
+  harvester.legionsStaked = 0;
+  harvester.partsBoostFactor = BigInt.zero();
+  harvester.partsBoost = BigInt.zero();
+  harvester.extractorsBoost = BigInt.zero();
+  harvester.legionsTotalRank = BigInt.zero();
+  harvester.legionsBoost = BigInt.zero();
   harvester.save();
 
   // Start listening for Harvester events at this address

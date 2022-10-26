@@ -10,6 +10,7 @@ import {
   handleAscensionInfoSet,
   handleLevelUpInfoSet,
   handleMaxLevelSet,
+  handleRecruitCanAscendToAuxChanged,
   handleRecruitTypeChanged,
   handleRecruitXpChanged,
 } from "../src/mappings/recruit";
@@ -28,6 +29,7 @@ import {
   createAscensionInfoSetEvent,
   createLevelUpInfoSetEvent,
   createMaxLevelSetEvent,
+  createRecruitCanAscendToAuxChangedEvent,
   createRecruitTypeChangedEvent,
   createRecruitXpChangedEvent,
 } from "./helpers/recruit";
@@ -185,54 +187,84 @@ test("that recruit type is changed", () => {
 
   // Assert initial metadata values
   const id = `${LEGION_ADDRESS.toHexString()}-0x1105`;
-  assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "name", "Recruit");
+  assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "name", "Base Recruit");
   assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "generation", "2");
-  assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "rarity", "None");
+  assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "rarity", "Recruit");
 
   const metadata = `${id}-metadata`;
-  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "rarity", "None");
+  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "rarity", "Recruit");
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "role", "Base Recruit");
 
   // Update and assert types
   handleRecruitTypeChanged(createRecruitTypeChangedEvent(tokenId, 1));
-  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "rarity", "None");
-  assert.fieldEquals(
-    LEGION_INFO_ENTITY_TYPE,
-    metadata,
-    "role",
-    "Cognition Cadet"
-  );
-  assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "name", "Recruit");
+  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "rarity", "Cadet");
+  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "role", "Cognition");
+  assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "name", "Cognition Cadet");
 
   handleRecruitTypeChanged(createRecruitTypeChangedEvent(tokenId, 2));
-  assert.fieldEquals(
-    LEGION_INFO_ENTITY_TYPE,
-    metadata,
-    "role",
-    "Parabolics Cadet"
-  );
+  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "rarity", "Cadet");
+  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "role", "Parabolics");
+  assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "name", "Parabolics Cadet");
 
   handleRecruitTypeChanged(createRecruitTypeChangedEvent(tokenId, 3));
-  assert.fieldEquals(
-    LEGION_INFO_ENTITY_TYPE,
-    metadata,
-    "role",
-    "Lethality Cadet"
-  );
+  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "rarity", "Cadet");
+  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "role", "Lethality");
+  assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "name", "Lethality Cadet");
 
   handleRecruitTypeChanged(createRecruitTypeChangedEvent(tokenId, 4));
-  assert.fieldEquals(
-    LEGION_INFO_ENTITY_TYPE,
-    metadata,
-    "role",
-    "Siege Apprentice"
-  );
+  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "rarity", "Apprentice");
+  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "role", "Siege");
+  assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "name", "Siege Apprentice");
 
   handleRecruitTypeChanged(createRecruitTypeChangedEvent(tokenId, 6));
+  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "rarity", "Apprentice");
+  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "role", "Assassin");
+  assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "name", "Assassin Apprentice");
+});
+
+test("that recruit ascend to aux status is changed", () => {
+  clearStore();
+
+  // Create Recruit
+  const tokenId = 4357;
+  handleTransfer(
+    createLegionTransferEvent(
+      Address.zero().toHexString(),
+      USER_ADDRESS,
+      tokenId
+    )
+  );
+  handleLegionCreated(createLegionCreatedEvent(USER_ADDRESS, tokenId, 2, 0, 5));
+
+  // Assert initial metadata values
+  const id = `${LEGION_ADDRESS.toHexString()}-0x1105`;
+  const metadata = `${id}-metadata`;
   assert.fieldEquals(
     LEGION_INFO_ENTITY_TYPE,
     metadata,
-    "role",
-    "Assassin Apprentice"
+    "recruitCanAscendToAux",
+    "false"
+  );
+
+  // Update status and assert new values
+  handleRecruitCanAscendToAuxChanged(
+    createRecruitCanAscendToAuxChangedEvent(tokenId, true)
+  );
+  assert.fieldEquals(
+    LEGION_INFO_ENTITY_TYPE,
+    metadata,
+    "recruitCanAscendToAux",
+    "true"
+  );
+
+  // Update status and assert new values
+  handleRecruitCanAscendToAuxChanged(
+    createRecruitCanAscendToAuxChangedEvent(tokenId, false)
+  );
+  assert.fieldEquals(
+    LEGION_INFO_ENTITY_TYPE,
+    metadata,
+    "recruitCanAscendToAux",
+    "false"
   );
 });

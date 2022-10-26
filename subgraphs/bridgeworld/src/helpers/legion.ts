@@ -57,7 +57,9 @@ export const mapRecruitAscensionType = (recruitType: string): string => {
     recruitType === "Lethality"
   ) {
     return "Cadet";
-  } else if (
+  }
+
+  if (
     recruitType === "Siege" ||
     recruitType === "Fighter" ||
     recruitType === "Assassin" ||
