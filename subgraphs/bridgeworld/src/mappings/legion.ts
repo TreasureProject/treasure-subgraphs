@@ -287,7 +287,8 @@ export function handleLegionCreated(event: LegionCreated): void {
   metadata.questsDistanceTravelled = 0;
   metadata.recruitLevel = isRecruit ? 1 : 0;
   metadata.recruitXp = 0;
-  metadata.rarity = isRecruit ? "None" : RARITY[rarity];
+  metadata.recruitCanAscendToAux = false;
+  metadata.rarity = isRecruit ? "Recruit" : RARITY[rarity];
   metadata.role = isRecruit ? "Base Recruit" : CLASS[params._class];
   metadata.type = type;
   metadata.summons = BigInt.zero();
@@ -317,10 +318,6 @@ export function handleLegionCreated(event: LegionCreated): void {
     null,
     false
   );
-  token.name = `${metadata.type} ${metadata.rarity}`;
-  token.metadata = metadata.id;
-  token.generation = generation;
-  token.rarity = metadata.rarity;
 
   if (isRecruit) {
     const user = User.load(params._owner.toHexString());
@@ -329,12 +326,15 @@ export function handleLegionCreated(event: LegionCreated): void {
       user.save();
     }
 
-    token.name = "Recruit";
-    token.rarity = "None";
-    metadata.recruitType = "None";
-    metadata.recruitAscensionType = "Recruit";
+    token.name = metadata.role;
+    token.rarity = metadata.rarity;
+  } else {
+    token.name = `${metadata.type} ${metadata.rarity}`;
+    token.rarity = metadata.rarity;
   }
 
+  token.metadata = metadata.id;
+  token.generation = generation;
   token.save();
 
   const legionClassId = `LegionClass-${metadata.type}-${metadata.rarity}-${metadata.role}`;

@@ -50,24 +50,6 @@ enum TreasureCategory {
   Smithing
 }
 
-enum RecruitAscensionType {
-  Recruit
-  Cadet
-  Apprentice
-}
-
-enum RecruitType {
-  None
-  Cognition
-  Parabolics
-  Lethality
-  Siege
-  Fighter
-  Assassin
-  Ranged
-  Spellcaster
-}
-
 interface Metadata {
   id: ID!
 }
@@ -173,11 +155,8 @@ type LegionInfo implements Metadata @entity {
   "Recruit XP, if applicable"
   recruitXp: Int
 
-  "Recruit level of ascension, if applicable"
-  recruitAscensionType: RecruitAscensionType
-
-  "Recruit type, if applicable"
-  recruitType: RecruitType
+  "True if Recruit can be converted to Auxiliary Legion"
+  recruitCanAscendToAux: Boolean!
 
   "Class (Fighter, Ranger, etc.)"
   role: String!
