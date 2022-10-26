@@ -1,4 +1,5 @@
 import { Bytes, log } from "@graphprotocol/graph-ts";
+
 import {
   AscensionInfoSet,
   LevelUpInfoSet,

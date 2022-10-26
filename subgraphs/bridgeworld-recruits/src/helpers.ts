@@ -1,4 +1,5 @@
 import { BigInt, Bytes } from "@graphprotocol/graph-ts";
+
 import { Config, LevelConfig } from "../generated/schema";
 
 export const CONFIG_ID = Bytes.fromI32(1);

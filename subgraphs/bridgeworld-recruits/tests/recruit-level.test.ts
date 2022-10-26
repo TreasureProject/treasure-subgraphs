@@ -1,5 +1,6 @@
 import { assert, beforeEach, clearStore, test } from "matchstick-as";
 
+import { CONFIG_ID, getOrCreateConfig } from "../src/helpers";
 import {
   handleAscensionInfoSet,
   handleLevelUpInfoSet,
@@ -10,7 +11,6 @@ import {
   createLevelUpInfoSetEvent,
   createMaxLevelSetEvent,
 } from "./helpers/recruit";
-import { CONFIG_ID, getOrCreateConfig } from "../src/helpers";
 
 const CONFIG_ENTITY_TYPE = "Config";
 const LEVEL_CONFIG_ENTITY_TYPE = "LevelConfig";

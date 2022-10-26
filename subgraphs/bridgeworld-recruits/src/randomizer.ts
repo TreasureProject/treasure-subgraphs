@@ -1,4 +1,5 @@
 import { Address, Bytes, log, store } from "@graphprotocol/graph-ts";
+
 import { RECRUIT_LEVEL_ADDRESS } from "@treasure/constants";
 
 import {
