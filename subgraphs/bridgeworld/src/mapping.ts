@@ -1,7 +1,8 @@
 import { Address, BigInt, store } from "@graphprotocol/graph-ts";
 
-import { Token, User, UserToken } from "../generated/schema";
+import { Token, UserToken } from "../generated/schema";
 import { getAddressId, getImageHash, getName, getRarity } from "./helpers";
+import { getUser } from "./helpers/user";
 
 class Transfer {
   constructor(
@@ -29,22 +30,6 @@ function getToken(data: Transfer): Token {
   }
 
   return token;
-}
-
-function getUser(id: string): User {
-  let user = User.load(id);
-
-  if (!user) {
-    user = new User(id);
-
-    user.boost = "0";
-    user.boosts = 0;
-    user.deposited = BigInt.zero();
-    user.finishedAdvancedQuestCount = 0;
-    user.save();
-  }
-
-  return user;
 }
 
 /**
