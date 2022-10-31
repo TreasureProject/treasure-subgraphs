@@ -1,4 +1,5 @@
 import { Address, Bytes, log, store } from "@graphprotocol/graph-ts";
+
 import { CORRUPTION_REMOVAL_ADDRESS } from "@treasure/constants";
 
 import {
@@ -16,7 +17,7 @@ export function handleRandomRequest(event: RandomRequest): void {
     (event.transaction.to as Address).notEqual(CORRUPTION_REMOVAL_ADDRESS)
   ) {
     log.debug("[randomizer] Skipping request from unrelated contract: {}", [
-      requestId.toString(),
+      requestId.toHexString(),
     ]);
     return;
   }
@@ -40,7 +41,7 @@ export function handleRandomSeeded(event: RandomSeeded): void {
   const seeded = Seeded.load(commitId);
   if (!seeded) {
     log.debug("[randomizer] Skipping random seeded for unknown commit ID: {}", [
-      commitId.toString(),
+      commitId.toHexString(),
     ]);
     return;
   }
@@ -50,7 +51,7 @@ export function handleRandomSeeded(event: RandomSeeded): void {
     const request = CorruptionRemoval.load(requestId);
     if (!request) {
       log.error("[randomizer] Committing unknown request: {}", [
-        requestId.toString(),
+        requestId.toHexString(),
       ]);
       continue;
     }
