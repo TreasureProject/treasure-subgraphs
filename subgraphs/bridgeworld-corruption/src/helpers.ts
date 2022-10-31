@@ -1,4 +1,5 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts";
+
 import {
   ADVANCED_QUESTING_ADDRESS,
   CRAFTING_ADDRESS,
