@@ -16,11 +16,11 @@ enum ItemEffect {
 }
 
 enum BuildingType {
-  TheForge
-  IvoryTower
-  SummoningCircle
-  Harvesters
-  Other
+  theforge
+  ivorytower
+  summoningcircle
+  harvesters
+  other
 }
 
 type CorruptionBuilding @entity {

@@ -1,4 +1,5 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts";
+
 import {
   ADVANCED_QUESTING_ADDRESS,
   CRAFTING_ADDRESS,
@@ -23,21 +24,21 @@ export const getOrCreateUser = (address: Address): User => {
 
 export const getBuildingType = (address: Address): string => {
   if (address.equals(CRAFTING_ADDRESS)) {
-    return "TheForge";
+    return "theforge";
   }
 
   if (address.equals(ADVANCED_QUESTING_ADDRESS)) {
-    return "IvoryTower";
+    return "ivorytower";
   }
 
   if (address.equals(SUMMONING_ADDRESS)) {
-    return "SummoningCircle";
+    return "summoningcircle";
   }
 
   // TODO: Check if address is a Harvester
   // return "Harvesters";
 
-  return "Other";
+  return "other";
 };
 
 export const getOrCreateCorruptionBuilding = (
