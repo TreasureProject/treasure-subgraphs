@@ -2,6 +2,8 @@ import { assert, beforeEach, clearStore, describe, test } from "matchstick-as";
 
 import { Address, Bytes } from "@graphprotocol/graph-ts";
 
+import { CONSUMABLE_ADDRESS } from "@treasure/constants";
+
 import {
   handleApprovalERC20,
   handleApprovalERC721,
@@ -12,7 +14,6 @@ import {
   createApprovalAllERC1155Event,
   createApprovalERC20Event,
 } from "./helpers/approval";
-import { CONSUMABLE_ADDRESS } from "@treasure/constants";
 
 const ADDRESS = "0x88f9efb3a7f728fdb2b8872fe994c84b1d148f65";
 const USER = "0xb013abd83f0bd173e9f14ce7d6e420ad711483b4";

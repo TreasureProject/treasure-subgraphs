@@ -1,6 +1,6 @@
 type Approval @entity(immutable: true) {
   id: Bytes!
-  
+
   user: Bytes!
   contract: Bytes!
   operator: Bytes!

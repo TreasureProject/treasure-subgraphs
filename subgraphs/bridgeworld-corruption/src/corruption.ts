@@ -82,14 +82,7 @@ export function handleCorruptionRemovalRecipeAdded(
   event: CorruptionRemovalRecipeAdded
 ): void {
   const params = event.params;
-  const building = CorruptionBuilding.load(params._buildingAddress);
-  if (!building) {
-    log.error("Adding recipe to unknown building: {}", [
-      params._buildingAddress.toHexString(),
-    ]);
-    return;
-  }
-
+  const building = getOrCreateCorruptionBuilding(params._buildingAddress);
   building.recipes = building.recipes.concat([
     Bytes.fromI32(params._recipeId.toI32()),
   ]);
@@ -145,7 +138,7 @@ export function handleCorruptionRemovalEnded(
   );
   if (!removal) {
     log.error("Ending unknown Corruption removal: {}", [
-      params._requestId.toString(),
+      params._requestId.toHexString(),
     ]);
     return;
   }
