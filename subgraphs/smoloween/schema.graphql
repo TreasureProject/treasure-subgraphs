@@ -8,6 +8,9 @@ type Config @entity {
 
   "Current witch traits"
   witchCostume: Costume
+
+  "If contract is paused"
+  paused: Boolean!
 }
 
 "Global stats"
@@ -96,6 +99,9 @@ type Attack @entity {
 
   "Token that is performing the attack"
   attacker: Token!
+
+  "Smol ID that is performing the attack"
+  attackingToken: String!
 
   "Token that is the target of the attack"
   target: Token!

@@ -75,7 +75,7 @@ export function handleUnstaked(event: Unstaked): void {
   const stat = getOrCreateStat();
 
   for (let i = 0; i < stat.aliveSmols.length; i++) {
-    if (stat.aliveSmols[i] === token.id) {
+    if (stat.aliveSmols[i] == token.id) {
       const firstArr = stat.aliveSmols.slice(0, i);
       const secondArr = stat.aliveSmols.slice(i + 1);
       stat.aliveSmols = firstArr.concat(secondArr);
@@ -106,6 +106,7 @@ export function handleRandomnessRequested(event: RandomnessRequested): void {
 
   const config = getOrCreateConfig();
   config.currentDay = day;
+  config.paused = true;
   config.save();
 }
 
@@ -122,6 +123,7 @@ export function handleMidnight(event: Midnight): void {
       token.save();
     }
   }
+  config.paused = false;
   config.save();
 }
 
@@ -141,7 +143,7 @@ export function handleConverted(event: Converted): void {
   const stat = getOrCreateStat();
 
   for (let i = 0; i < stat.aliveSmols.length; i++) {
-    if (stat.aliveSmols[i] === token.id) {
+    if (stat.aliveSmols[i] == token.id) {
       const firstArr = stat.aliveSmols.slice(0, i);
       const secondArr = stat.aliveSmols.slice(i + 1);
       stat.aliveSmols = firstArr.concat(secondArr);
@@ -171,6 +173,7 @@ export function handleSentToAttack(event: SentToAttack): void {
   const id = `${attackerId}-${targetId}-${day.toString()}`;
   const attack = new Attack(id);
   attack.user = params.sender;
+  attack.attackingToken = attackerId;
   attack.attacker = attackerId;
   attack.target = targetId;
   attack.day = day;

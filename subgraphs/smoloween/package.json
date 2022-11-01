@@ -5,6 +5,7 @@
   "license": "MIT",
   "scripts": {
     "codegen": "graph codegen",
+    "a": "graph auth --product hosted-service 97152f6345aa4e0b9e864649f2fe7031",
     "deploy:dev": "graph deploy --product hosted-service treasureproject/smoloween-dev",
     "deploy:prod": "graph deploy --product hosted-service treasureproject/smoloween",
     "prepare:dev": "yarn --cwd ../../packages/constants prepare:arbitrum-goerli && mustache ../../node_modules/@treasure/subgraph-config/src/arbitrum-goerli.json template.yaml > subgraph.yaml",
