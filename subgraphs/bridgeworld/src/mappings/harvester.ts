@@ -129,7 +129,9 @@ export function handleNftStaked(event: Staked): void {
     stakedToken = new StakedToken(stakedTokenId);
     stakedToken.user = userAddress.toHexString();
     stakedToken.token = getAddressId(nftAddress, tokenId);
+    stakedToken.quantity = BigInt.zero();
     stakedToken.harvester = harvester.id;
+    stakedToken.expirationProcessed = false;
   }
 
   stakedToken.quantity = stakedToken.quantity.plus(params.amount);
@@ -248,6 +250,7 @@ export function handleExtractorStaked(event: ExtractorStaked): void {
     stakedToken.token = extractorId;
     stakedToken.quantity = ONE_BI;
     stakedToken.expirationTime = expirationTime;
+    stakedToken.expirationProcessed = false;
     stakedToken.save();
   }
 
@@ -414,6 +417,7 @@ export function handleMagicWithdrawn(event: WithdrawEvent): void {
     withdraw.deposit = deposit.id;
     withdraw.harvester = harvester.id;
     withdraw.user = userAddress.toHexString();
+    withdraw.amount = BigInt.zero();
   }
   withdraw.amount = withdraw.amount.plus(params.amount);
   withdraw.save();
