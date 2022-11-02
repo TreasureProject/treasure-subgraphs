@@ -23,27 +23,27 @@ enum BuildingType {
   other
 }
 
-type CorruptionBuilding @entity {
+type Building @entity {
   id: Bytes!
 
   type: BuildingType!
   address: Bytes!
   ratePerSecond: BigInt!
   generatedCorruptionCap: BigInt!
-  recipes: [CorruptionRemovalRecipe!]!
+  recipes: [Recipe!]!
 }
 
-type CorruptionRemovalRecipe @entity(immutable: true) {
+type Recipe @entity(immutable: true) {
   id: Bytes!
 
   corruptionRemoved: BigInt!
-  items: [CorruptionRemovalRecipeItem!]! @derivedFrom(field: "recipe")
+  items: [RecipeItem!]! @derivedFrom(field: "recipe")
 }
 
-type CorruptionRemovalRecipeItem @entity(immutable: true) {
+type RecipeItem @entity(immutable: true) {
   id: Bytes!
 
-  recipe: CorruptionRemovalRecipe!
+  recipe: Recipe!
 
   address: Bytes
   type: ItemType!
@@ -55,12 +55,12 @@ type CorruptionRemovalRecipeItem @entity(immutable: true) {
   customRequirementData: Bytes
 }
 
-type CorruptionRemoval @entity {
+type Removal @entity {
   id: Bytes!
 
   user: User!
-  building: CorruptionBuilding!
-  recipe: CorruptionRemovalRecipe!
+  building: Building!
+  recipe: Recipe!
   status: Status!
   corruptionRemoved: BigInt!
   prismMinted: BigInt
@@ -71,11 +71,11 @@ type Seeded @entity {
   id: Bytes!
 
   "Requests related to this commit"
-  requests: [CorruptionRemoval!]!
+  requests: [Removal!]!
 }
 
 type User @entity(immutable: true) {
   id: Bytes!
 
-  corruptionRemovals: [CorruptionRemoval!]! @derivedFrom(field: "user")
+  removals: [Removal!]! @derivedFrom(field: "user")
 }

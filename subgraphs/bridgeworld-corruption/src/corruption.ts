@@ -8,16 +8,11 @@ import {
   CorruptionRemovalRecipeRemoved,
   CorruptionRemovalStarted,
 } from "../generated/CorruptionRemoval/CorruptionRemoval";
-import {
-  CorruptionBuilding,
-  CorruptionRemoval,
-  CorruptionRemovalRecipe,
-  CorruptionRemovalRecipeItem,
-} from "../generated/schema";
+import { Building, Recipe, RecipeItem, Removal } from "../generated/schema";
 import {
   ITEM_EFFECTS,
   ITEM_TYPES,
-  getOrCreateCorruptionBuilding,
+  getOrCreateBuilding,
   getOrCreateUser,
 } from "./helpers";
 
@@ -25,7 +20,7 @@ export function handleCorruptionStreamModified(
   event: CorruptionStreamModified
 ): void {
   const params = event.params;
-  const building = getOrCreateCorruptionBuilding(params._account);
+  const building = getOrCreateBuilding(params._account);
   building.ratePerSecond = params._ratePerSecond;
   building.generatedCorruptionCap = params._generatedCorruptionCap;
   building.save();
@@ -35,9 +30,7 @@ export function handleCorruptionRemovalRecipeCreated(
   event: CorruptionRemovalRecipeCreated
 ): void {
   const params = event.params;
-  const recipe = new CorruptionRemovalRecipe(
-    Bytes.fromI32(params._recipeId.toI32())
-  );
+  const recipe = new Recipe(Bytes.fromI32(params._recipeId.toI32()));
   recipe.corruptionRemoved = params._corruptionRemoved;
   recipe.save();
 
@@ -60,7 +53,7 @@ export function handleCorruptionRemovalRecipeCreated(
 
     const addressId = (address || customHandler) as Address;
     const baseId = itemId ? addressId.concatI32(itemId.toI32()) : addressId;
-    const recipeItem = new CorruptionRemovalRecipeItem(
+    const recipeItem = new RecipeItem(
       baseId.concatI32(event.block.number.toI32())
     );
     recipeItem.recipe = recipe.id;
@@ -82,7 +75,7 @@ export function handleCorruptionRemovalRecipeAdded(
   event: CorruptionRemovalRecipeAdded
 ): void {
   const params = event.params;
-  const building = getOrCreateCorruptionBuilding(params._buildingAddress);
+  const building = getOrCreateBuilding(params._buildingAddress);
   building.recipes = building.recipes.concat([
     Bytes.fromI32(params._recipeId.toI32()),
   ]);
@@ -93,7 +86,7 @@ export function handleCorruptionRemovalRecipeRemoved(
   event: CorruptionRemovalRecipeRemoved
 ): void {
   const params = event.params;
-  const building = CorruptionBuilding.load(params._buildingAddress);
+  const building = Building.load(params._buildingAddress);
   if (!building) {
     log.error("Removing recipe from unknown building: {}", [
       params._buildingAddress.toHexString(),
@@ -118,9 +111,7 @@ export function handleCorruptionRemovalStarted(
   event: CorruptionRemovalStarted
 ): void {
   const params = event.params;
-  const removal = new CorruptionRemoval(
-    Bytes.fromI32(params._requestId.toI32())
-  );
+  const removal = new Removal(Bytes.fromI32(params._requestId.toI32()));
   removal.user = getOrCreateUser(params._user).id;
   removal.building = params._buildingAddress;
   removal.recipe = Bytes.fromI32(params._recipeId.toI32());
@@ -133,9 +124,7 @@ export function handleCorruptionRemovalEnded(
   event: CorruptionRemovalEnded
 ): void {
   const params = event.params;
-  const removal = CorruptionRemoval.load(
-    Bytes.fromI32(params._requestId.toI32())
-  );
+  const removal = Removal.load(Bytes.fromI32(params._requestId.toI32()));
   if (!removal) {
     log.error("Ending unknown Corruption removal: {}", [
       params._requestId.toHexString(),

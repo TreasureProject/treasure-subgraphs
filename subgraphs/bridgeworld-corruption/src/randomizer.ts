@@ -6,7 +6,7 @@ import {
   RandomRequest,
   RandomSeeded,
 } from "../generated/Randomizer/Randomizer";
-import { CorruptionRemoval, Seeded } from "../generated/schema";
+import { Removal, Seeded } from "../generated/schema";
 
 export function handleRandomRequest(event: RandomRequest): void {
   const params = event.params;
@@ -48,7 +48,7 @@ export function handleRandomSeeded(event: RandomSeeded): void {
 
   for (let i = 0; i < seeded.requests.length; i++) {
     const requestId = seeded.requests[i];
-    const request = CorruptionRemoval.load(requestId);
+    const request = Removal.load(requestId);
     if (!request) {
       log.error("[randomizer] Committing unknown request: {}", [
         requestId.toHexString(),

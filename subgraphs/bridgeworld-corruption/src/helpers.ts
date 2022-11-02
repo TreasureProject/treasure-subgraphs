@@ -6,7 +6,7 @@ import {
   SUMMONING_ADDRESS,
 } from "@treasure/constants";
 
-import { CorruptionBuilding, User } from "../generated/schema";
+import { Building, User } from "../generated/schema";
 
 export const ITEM_TYPES = ["ERC20", "ERC1155"];
 
@@ -41,12 +41,10 @@ export const getBuildingType = (address: Address): string => {
   return "other";
 };
 
-export const getOrCreateCorruptionBuilding = (
-  address: Address
-): CorruptionBuilding => {
-  let building = CorruptionBuilding.load(address);
+export const getOrCreateBuilding = (address: Address): Building => {
+  let building = Building.load(address);
   if (!building) {
-    building = new CorruptionBuilding(address);
+    building = new Building(address);
     building.type = getBuildingType(address);
     building.address = address;
     building.ratePerSecond = BigInt.zero();

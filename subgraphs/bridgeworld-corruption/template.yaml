@@ -14,7 +14,7 @@ dataSources:
       apiVersion: 0.0.6
       language: wasm/assemblyscript
       entities:
-        - CorruptionBuilding
+        - Building
       abis:
         - name: Corruption
           file: {{{ abis }}}/Corruption.json
@@ -34,9 +34,9 @@ dataSources:
       apiVersion: 0.0.6
       language: wasm/assemblyscript
       entities:
-        - CorruptionBuilding
-        - CorruptionRemovalRecipe
-        - CorruptionRemoval
+        - Building
+        - Recipe
+        - Removal
       abis:
         - name: CorruptionRemoval
           file: {{{ abis }}}/CorruptionRemoval.json
