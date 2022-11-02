@@ -73,6 +73,7 @@ export function handleStaked(event: Staked): void {
     stakedToken.quantity = BigInt.zero();
     stakedToken.token = addressId;
     stakedToken.user = userId;
+    stakedToken.expirationProcessed = false;
   }
 
   stakedToken.quantity = stakedToken.quantity.plus(quantity);
