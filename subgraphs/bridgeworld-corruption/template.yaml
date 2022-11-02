@@ -52,6 +52,26 @@ dataSources:
         - event: CorruptionRemovalEnded(address,address,uint256,uint256,uint256,uint256,bool[])
           handler: handleCorruptionRemovalEnded
       file: ./src/corruption.ts
+  - name: TreasureCorruptionHandler
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ treasure_corruption_handler_address }}"
+      abi: TreasureCorruptionHandler
+      startBlock: {{ treasure_corruption_handler_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Removal
+      abis:
+        - name: TreasureCorruptionHandler
+          file: {{{ abis }}}/TreasureCorruptionHandler.json
+      eventHandlers:
+        - event: TreasureUnstaked(address,uint256,uint256[],uint256[])
+          handler: handleTreasureUnstaked
+      file: ./src/corruption.ts
   - name: Randomizer
     kind: ethereum/contract
     network: {{ network }}

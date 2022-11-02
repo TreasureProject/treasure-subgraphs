@@ -1,5 +1,7 @@
 import { Address, BigInt, Bytes, log } from "@graphprotocol/graph-ts";
 
+import { TREASURE_CORRUPTION_HANDLER_ADDRESS } from "@treasure/constants";
+
 import { CorruptionStreamModified } from "../generated/Corruption/Corruption";
 import {
   CorruptionRemovalEnded,
@@ -8,10 +10,19 @@ import {
   CorruptionRemovalRecipeRemoved,
   CorruptionRemovalStarted,
 } from "../generated/CorruptionRemoval/CorruptionRemoval";
-import { Building, Recipe, RecipeItem, Removal } from "../generated/schema";
+import { TreasureUnstaked } from "../generated/TreasureCorruptionHandler/TreasureCorruptionHandler";
+import {
+  Building,
+  Recipe,
+  RecipeItem,
+  RecipeItemTreasureRequirement,
+  Removal,
+} from "../generated/schema";
 import {
   ITEM_EFFECTS,
   ITEM_TYPES,
+  TREASURE_CATEGORIES,
+  decodeBigIntArray,
   getOrCreateBuilding,
   getOrCreateUser,
 } from "./helpers";
@@ -66,7 +77,27 @@ export function handleCorruptionRemovalRecipeCreated(
       ? item.amount
       : null;
     recipeItem.customHandler = customHandler;
-    recipeItem.customRequirementData = item.customRequirementData;
+    if (customHandler) {
+      const requirementData = decodeBigIntArray(item.customRequirementData);
+      recipeItem.customRequirementData = requirementData;
+      if (
+        customHandler.equals(TREASURE_CORRUPTION_HANDLER_ADDRESS) &&
+        requirementData.length == 4
+      ) {
+        const treasureRequirement = new RecipeItemTreasureRequirement(
+          recipeItem.id
+        );
+        treasureRequirement.item = recipeItem.id;
+        treasureRequirement.tier = requirementData[0].toI32();
+        treasureRequirement.category1 =
+          TREASURE_CATEGORIES[requirementData[1].toI32()];
+        treasureRequirement.category2 =
+          TREASURE_CATEGORIES[requirementData[2].toI32()];
+        treasureRequirement.amount = requirementData[3].toI32();
+        treasureRequirement.save();
+      }
+    }
+
     recipeItem.save();
   }
 }
@@ -117,6 +148,8 @@ export function handleCorruptionRemovalStarted(
   removal.recipe = Bytes.fromI32(params._recipeId.toI32());
   removal.status = "Started";
   removal.corruptionRemoved = BigInt.zero();
+  removal.brokenTreasureIds = [];
+  removal.brokenTreasureAmounts = [];
   removal.save();
 }
 
@@ -138,5 +171,20 @@ export function handleCorruptionRemovalEnded(
     removal.prismMinted = params._prismMinted;
   }
 
+  removal.save();
+}
+
+export function handleTreasureUnstaked(event: TreasureUnstaked): void {
+  const params = event.params;
+  const removal = Removal.load(Bytes.fromI32(params._requestId.toI32()));
+  if (!removal) {
+    log.error("Unstaking Treasures from unknown Corruption removal: {}", [
+      params._requestId.toHexString(),
+    ]);
+    return;
+  }
+
+  removal.brokenTreasureIds = params.brokenTreasureIds;
+  removal.brokenTreasureAmounts = params.brokenTreasureAmounts;
   removal.save();
 }

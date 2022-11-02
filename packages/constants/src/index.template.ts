@@ -47,6 +47,9 @@ export const SUMMONING_ADDRESS = Address.fromString(
 export const TREASURE_ADDRESS = Address.fromString(
   "{{treasure_address}}{{^treasure_address}}{{burner_address}}{{/treasure_address}}"
 );
+export const TREASURE_CORRUPTION_HANDLER_ADDRESS = Address.fromString(
+  "{{treasure_corruption_handler_address}}{{^treasure_corruption_handler_address}}{{burner_address}}{{/treasure_corruption_handler_address}}"
+);
 export const TREASURE_FRAGMENT_ADDRESS = Address.fromString(
   "{{treasure_fragment_address}}{{^treasure_fragment_address}}{{burner_address}}{{/treasure_fragment_address}}"
 );

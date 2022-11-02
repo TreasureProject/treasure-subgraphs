@@ -23,6 +23,15 @@ enum BuildingType {
   other
 }
 
+enum TreasureCategory {
+  Alchemy
+  Arcana
+  Brewing
+  Enchanting
+  Leatherworking
+  Smithing
+}
+
 type Building @entity {
   id: Bytes!
 
@@ -52,7 +61,19 @@ type RecipeItem @entity(immutable: true) {
   itemId: BigInt
   amount: BigInt
   customHandler: Bytes
-  customRequirementData: Bytes
+  customRequirementData: [BigInt!]
+  treasureRequirement: RecipeItemTreasureRequirement @derivedFrom(field: "item")
+}
+
+type RecipeItemTreasureRequirement @entity(immutable: true) {
+  id: Bytes!
+
+  item: RecipeItem!
+
+  tier: Int!
+  category1: TreasureCategory!
+  category2: TreasureCategory!
+  amount: Int!
 }
 
 type Removal @entity {
@@ -64,6 +85,8 @@ type Removal @entity {
   status: Status!
   corruptionRemoved: BigInt!
   prismMinted: BigInt
+  brokenTreasureIds: [BigInt!]!
+  brokenTreasureAmounts: [BigInt!]!
 }
 
 "Tracks related Randomizer commits"
