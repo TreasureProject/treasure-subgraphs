@@ -275,30 +275,37 @@ export function handleLegionCreated(event: LegionCreated): void {
     return;
   }
 
+  // handleLegionCreated will also be called if a Recruit is promoted to Aux
+  // Only reset some of the new Legion's metadata
   const generation = params._generation;
   const rarity = params._rarity;
   const type = TYPE[generation];
   const isRecruit = type == "Recruit";
-  const metadata = new LegionInfo(`${token.id}-metadata`);
+  const metadataId = `${token.id}-metadata`;
+  let metadata = LegionInfo.load(metadataId);
+  if (!metadata) {
+    metadata = new LegionInfo(metadataId);
+    metadata.constellation = token.id;
+    metadata.crafting = 1;
+    metadata.craftingXp = 0;
+    metadata.majorCraftsCompleted = 0;
+    metadata.miniCraftsCompleted = 0;
+    metadata.questing = 1;
+    metadata.questingXp = 0;
+    metadata.questsCompleted = 0;
+    metadata.questsDistanceTravelled = 0;
+    metadata.summons = BigInt.zero();
+  }
+
   metadata.boost = `${BOOST_MATRIX[generation][rarity] / 1e18}`;
   metadata.harvestersRank = HARVESTERS_RANK_MATRIX[generation][rarity];
   metadata.harvestersWeight = HARVESTERS_WEIGHT_MATRIX[generation][rarity];
-  metadata.constellation = token.id;
-  metadata.crafting = 1;
-  metadata.craftingXp = 0;
-  metadata.majorCraftsCompleted = 0;
-  metadata.miniCraftsCompleted = 0;
-  metadata.questing = 1;
-  metadata.questingXp = 0;
-  metadata.questsCompleted = 0;
-  metadata.questsDistanceTravelled = 0;
   metadata.recruitLevel = isRecruit ? 1 : 0;
   metadata.recruitXp = 0;
   metadata.recruitCanAscendToAux = false;
   metadata.rarity = isRecruit ? "Recruit" : RARITY[rarity];
   metadata.role = isRecruit ? "Base Recruit" : CLASS[params._class];
   metadata.type = type;
-  metadata.summons = BigInt.zero();
   metadata.save();
 
   token.category = "Legion";
