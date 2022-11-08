@@ -112,6 +112,9 @@ export const SMOL_RACING_ADDRESS = Address.fromString(
 export const SMOL_RACING_TROPHIES_ADDRESS = Address.fromString(
   "{{smol_racing_trophies_address}}{{^smol_racing_trophies_address}}{{burner_address}}{{/smol_racing_trophies_address}}"
 );
+export const SMOLOWEEN_ADDRESS = Address.fromString(
+  "{{smoloween_address}}{{^smoloween_address}}{{burner_address}}{{/smoloween_address}}"
+);
 export const SWOLERCYCLES_ADDRESS = Address.fromString(
   "{{swolercycles_address}}{{^swolercycles_address}}{{burner_address}}{{/swolercycles_address}}"
 );

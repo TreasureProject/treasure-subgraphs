@@ -152,5 +152,8 @@
   "hourly_stat_interval_start_block": 6470000,
 
   "magicswap_factory_address": "0x015e379Ce0Ff195228b3A9eBDFA13F9afC155Dd7",
-  "magicswap_factory_start_block": 20547275
+  "magicswap_factory_start_block": 20547275,
+
+  "smoloween_address": "0x919c574D12dF2b534467f224c16Bd8475846B25c",
+  "smoloween_start_block": 31361568
 }

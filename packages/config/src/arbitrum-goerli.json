@@ -76,6 +76,8 @@
   "smol_racing_address": "0xa7be8F1A317E74C771D0E97bB683b2e7f9Cf0747",
   "smol_racing_start_block": 502337,
   "smol_racing_trophies_address": "0xb4D266E93942c4F9C4B6D4a7FCE5934bF9eeeeE1",
+  "smoloween_address": "0xE3619DE3f33DEcCc91D90A1da84A42d269d8A674",
+  "smoloween_start_block": 735916,
 
   "hourly_stat_interval_start_block": 309123,
 
