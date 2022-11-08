@@ -19,6 +19,7 @@ const getOrCreateStat = (): Stat => {
     stat = new Stat("only");
     stat.totalStaked = 0;
     stat.totalGhouls = 0;
+    stat.aliveSmols = [];
     stat.save();
   }
 
@@ -41,7 +42,7 @@ export function handleStaked(event: Staked): void {
     token = new Token(id);
     token.isGhoul = false;
     token.attackers = [];
-    token.numSuccessfulAttacks = 0;
+    token.points = 0;
   }
 
   token.isStaked = true;
@@ -53,6 +54,7 @@ export function handleStaked(event: Staked): void {
 
   const stat = getOrCreateStat();
   stat.totalStaked += 1;
+  stat.aliveSmols = stat.aliveSmols.concat([token.id]);
   stat.save();
 }
 
@@ -71,6 +73,16 @@ export function handleUnstaked(event: Unstaked): void {
   token.save();
 
   const stat = getOrCreateStat();
+
+  for (let i = 0; i < stat.aliveSmols.length; i++) {
+    if (stat.aliveSmols[i] == token.id) {
+      const firstArr = stat.aliveSmols.slice(0, i);
+      const secondArr = stat.aliveSmols.slice(i + 1);
+      stat.aliveSmols = firstArr.concat(secondArr);
+      break;
+    }
+  }
+
   stat.totalStaked -= 1;
   if (token.isGhoul) {
     stat.totalGhouls -= 1;
@@ -94,12 +106,24 @@ export function handleRandomnessRequested(event: RandomnessRequested): void {
 
   const config = getOrCreateConfig();
   config.currentDay = day;
+  config.paused = true;
   config.save();
 }
 
 export function handleMidnight(event: Midnight): void {
   const config = getOrCreateConfig();
   config.currentDay = event.params.newDay.toI32();
+
+  const stat = getOrCreateStat();
+  for (let i = 0; i < stat.aliveSmols.length; i++) {
+    const token = Token.load(stat.aliveSmols[i]);
+
+    if (token) {
+      token.points += 1;
+      token.save();
+    }
+  }
+  config.paused = false;
   config.save();
 }
 
@@ -117,6 +141,16 @@ export function handleConverted(event: Converted): void {
   token.save();
 
   const stat = getOrCreateStat();
+
+  for (let i = 0; i < stat.aliveSmols.length; i++) {
+    if (stat.aliveSmols[i] == token.id) {
+      const firstArr = stat.aliveSmols.slice(0, i);
+      const secondArr = stat.aliveSmols.slice(i + 1);
+      stat.aliveSmols = firstArr.concat(secondArr);
+      break;
+    }
+  }
+
   stat.totalGhouls += 1;
   stat.save();
 }
@@ -139,6 +173,7 @@ export function handleSentToAttack(event: SentToAttack): void {
   const id = `${attackerId}-${targetId}-${day.toString()}`;
   const attack = new Attack(id);
   attack.user = params.sender;
+  attack.attackingToken = attackerId;
   attack.attacker = attackerId;
   attack.target = targetId;
   attack.day = day;
@@ -188,7 +223,7 @@ export function handleAttackResolved(event: AttackResolved): void {
         continue;
       }
 
-      attacker.numSuccessfulAttacks += 1;
+      attacker.points += 1;
       attacker.save();
     }
   }

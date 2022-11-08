@@ -8,6 +8,9 @@ type Config @entity {
 
   "Current witch traits"
   witchCostume: Costume
+
+  "If contract is paused"
+  paused: Boolean!
 }
 
 "Global stats"
@@ -20,6 +23,9 @@ type Stat @entity {
 
   "Number of tokens converted to ghouls"
   totalGhouls: Int!
+
+  "List of alive Smols"
+  aliveSmols: [Token!]!
 }
 
 "Tracks related Randomizer requests"
@@ -80,8 +86,8 @@ type Token @entity {
   "Tokens that are currently targeting this token in an attack, if applicable"
   attackers: [Token!]!
 
-  "Number of successful attacks made by this ghoul, if applicable"
-  numSuccessfulAttacks: Int!
+  "global points for smols and ghouls. Smols accumulate points for each day alive, ghouls accumulate points if they convert a smol"
+  points: Int!
 }
 
 "Instance of a ghoul attacking a Smol"
@@ -93,6 +99,9 @@ type Attack @entity {
 
   "Token that is performing the attack"
   attacker: Token!
+
+  "Smol ID that is performing the attack"
+  attackingToken: String!
 
   "Token that is the target of the attack"
   target: Token!
