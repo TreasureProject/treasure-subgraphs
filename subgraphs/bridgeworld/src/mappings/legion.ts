@@ -18,6 +18,7 @@ import { ApprovalForAll, Transfer } from "../../generated/Legion/ERC721";
 import {
   Approval,
   Constellation,
+  LegionClass,
   LegionInfo,
   Token,
   User,
@@ -25,13 +26,17 @@ import {
 } from "../../generated/schema";
 import {
   LEGION_IPFS,
+  LEGION_NO_BACKGROUND_IPFS,
   LEGION_PFP_IPFS,
   ZERO_BI,
   getAddressId,
   getImageHash,
   isMint,
 } from "../helpers";
-import { isQuestingXpGainedEnabled } from "../helpers/config";
+import {
+  isCraftingXpGainedEnabled,
+  isQuestingXpGainedEnabled,
+} from "../helpers/config";
 import {
   CLASS,
   RARITY,
@@ -139,8 +144,15 @@ function setMetadata(contract: Address, tokenId: BigInt): void {
   metadata.constellation = token.id;
   metadata.crafting = 1;
   metadata.craftingXp = 0;
+  metadata.majorCraftsCompleted = 0;
+  metadata.miniCraftsCompleted = 0;
   metadata.questing = 1;
   metadata.questingXp = 0;
+  metadata.questsCompleted = 0;
+  metadata.questsDistanceTravelled = 0;
+  metadata.recruitLevel = 0;
+  metadata.recruitXp = 0;
+  metadata.recruitCanAscendToAux = false;
   metadata.rarity = "Legendary";
   metadata.role = "Origin";
   metadata.type = "Genesis";
@@ -243,12 +255,14 @@ export function handleLegionConstellationRankUp(
 }
 
 export function handleLegionCraftLevelUp(event: LegionCraftLevelUp): void {
-  let params = event.params;
-  let metadata = getLegionMetadata(params._tokenId);
-
-  metadata.crafting = params._craftLevel;
-  metadata.craftingXp = 0;
-  metadata.save();
+  // Prefer the CPGained event if it's available at this block
+  if (!isCraftingXpGainedEnabled(event.block.number)) {
+    const params = event.params;
+    const metadata = getLegionMetadata(params._tokenId);
+    metadata.crafting = params._craftLevel;
+    metadata.craftingXp = 0;
+    metadata.save();
+  }
 }
 
 export function handleLegionCreated(event: LegionCreated): void {
@@ -263,6 +277,8 @@ export function handleLegionCreated(event: LegionCreated): void {
 
   const generation = params._generation;
   const rarity = params._rarity;
+  const type = TYPE[generation];
+  const isRecruit = type == "Recruit";
   const metadata = new LegionInfo(`${token.id}-metadata`);
   metadata.boost = `${BOOST_MATRIX[generation][rarity] / 1e18}`;
   metadata.harvestersRank = HARVESTERS_RANK_MATRIX[generation][rarity];
@@ -270,11 +286,18 @@ export function handleLegionCreated(event: LegionCreated): void {
   metadata.constellation = token.id;
   metadata.crafting = 1;
   metadata.craftingXp = 0;
+  metadata.majorCraftsCompleted = 0;
+  metadata.miniCraftsCompleted = 0;
   metadata.questing = 1;
   metadata.questingXp = 0;
-  metadata.rarity = RARITY[rarity];
-  metadata.role = CLASS[params._class];
-  metadata.type = TYPE[generation];
+  metadata.questsCompleted = 0;
+  metadata.questsDistanceTravelled = 0;
+  metadata.recruitLevel = isRecruit ? 1 : 0;
+  metadata.recruitXp = 0;
+  metadata.recruitCanAscendToAux = false;
+  metadata.rarity = isRecruit ? "Recruit" : RARITY[rarity];
+  metadata.role = isRecruit ? "Base Recruit" : CLASS[params._class];
+  metadata.type = type;
   metadata.summons = BigInt.zero();
   metadata.save();
 
@@ -293,23 +316,66 @@ export function handleLegionCreated(event: LegionCreated): void {
     metadata.role,
     tokenId
   );
-  token.name = `${metadata.type} ${metadata.rarity}`;
-  token.metadata = metadata.id;
-  token.generation = generation;
-  token.rarity = metadata.rarity;
+  token.imageNoBackground = getLegionImage(
+    LEGION_NO_BACKGROUND_IPFS,
+    metadata.type,
+    metadata.rarity,
+    metadata.role,
+    tokenId,
+    null,
+    false
+  );
 
-  if (metadata.type == "Recruit") {
+  if (isRecruit) {
     const user = User.load(params._owner.toHexString());
     if (user) {
       user.recruit = token.id;
       user.save();
     }
 
-    token.name = "Recruit";
-    token.rarity = "None";
+    token.name = metadata.role;
+    token.rarity = metadata.rarity;
+  } else {
+    token.name = `${metadata.type} ${metadata.rarity}`;
+    token.rarity = metadata.rarity;
   }
 
+  token.metadata = metadata.id;
+  token.generation = generation;
   token.save();
+
+  const legionClassId = `LegionClass-${metadata.type}-${metadata.rarity}-${metadata.role}`;
+  const existingLegionClass = LegionClass.load(legionClassId);
+  if (!existingLegionClass) {
+    const legionClass = new LegionClass(legionClassId);
+    legionClass.type = metadata.type;
+    legionClass.role = metadata.role;
+    legionClass.rarity = metadata.rarity;
+    legionClass.image = getLegionImage(
+      LEGION_IPFS,
+      metadata.type,
+      metadata.rarity,
+      metadata.role,
+      tokenId
+    );
+    legionClass.imageAlt = getLegionImage(
+      LEGION_PFP_IPFS,
+      metadata.type,
+      metadata.rarity,
+      metadata.role,
+      tokenId
+    );
+    legionClass.imageNoBackground = getLegionImage(
+      LEGION_NO_BACKGROUND_IPFS,
+      metadata.type,
+      metadata.rarity,
+      metadata.role,
+      tokenId,
+      null,
+      false
+    );
+    legionClass.save();
+  }
 }
 
 export function handleLegionQuestLevelUp(event: LegionQuestLevelUp): void {
@@ -336,7 +402,7 @@ export function handleTransfer(event: Transfer): void {
 
   // There was an issue in testing that needs us to manually setup metadata for now.
   if (
-    dataSource.network() == "arbitrum-rinkeby" &&
+    dataSource.network() == "arbitrum-goerli" &&
     isMint(params.from) &&
     params.tokenId.toI32() < 4
   ) {

@@ -70,8 +70,10 @@ export function handleStaked(event: Staked): void {
   if (!stakedToken) {
     stakedToken = new StakedToken(stakedTokenId);
     stakedToken.mine = event.address.toHexString();
+    stakedToken.quantity = BigInt.zero();
     stakedToken.token = addressId;
     stakedToken.user = userId;
+    stakedToken.expirationProcessed = false;
   }
 
   stakedToken.quantity = stakedToken.quantity.plus(quantity);
@@ -131,6 +133,7 @@ export function handleWithdraw(event: WithdrawEvent): void {
   if (!withdraw) {
     withdraw = new Withdraw(id);
 
+    withdraw.amount = BigInt.zero();
     withdraw.deposit = id;
     withdraw.mine = mine;
     withdraw.user = userId.toHexString();

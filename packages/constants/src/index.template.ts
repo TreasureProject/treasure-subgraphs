@@ -38,6 +38,9 @@ export const LEGION_ADDRESS = Address.fromString(
 export const QUESTING_ADDRESS = Address.fromString(
   "{{questing_address}}{{^questing_address}}{{burner_address}}{{/questing_address}}"
 );
+export const RECRUIT_LEVEL_ADDRESS = Address.fromString(
+  "{{recruit_level_address}}{{^recruit_level_address}}{{burner_address}}{{/recruit_level_address}}"
+);
 export const SUMMONING_ADDRESS = Address.fromString(
   "{{summoning_address}}{{^summoning_address}}{{burner_address}}{{/summoning_address}}"
 );
@@ -76,7 +79,7 @@ export const DAI_WETH_PAIR =
 export const USDT_WETH_PAIR =
   "{{usdt_weth_pair}}{{^usdt_weth_pair}}{{burner_address}}{{/usdt_weth_pair}}";
 
-export const MAGICSWAP_TOKEN_WHITELIST = [MAGIC_ADDRESS.toHexString()];
+export const MAGICSWAP_TOKEN_WHITELIST = [NATIVE.toHexString()];
 
 // Smolverse
 export const SMOL_BODIES_ADDRESS = Address.fromString(

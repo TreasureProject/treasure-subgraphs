@@ -1,17 +1,11 @@
 import { Approval as ApprovalEvent } from "../../generated/Magic/ERC20";
-import { Approval, User, UserApproval } from "../../generated/schema";
+import { Approval, UserApproval } from "../../generated/schema";
+import { getUser } from "../helpers/user";
 
 export function handleApproval(event: ApprovalEvent): void {
   let params = event.params;
 
-  let userId = params.owner.toHexString();
-  let user = User.load(userId);
-
-  if (!user) {
-    user = new User(userId);
-    user.save();
-  }
-
+  let user = getUser(params.owner.toHexString());
   let contract = event.address;
   let spender = params.spender;
 

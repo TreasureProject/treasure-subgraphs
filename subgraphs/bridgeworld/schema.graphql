@@ -32,13 +32,16 @@ enum Generation {
 }
 
 enum Rarity {
+  None
   Common
   Epic
   Legendary
   Rare
   Special
   Uncommon
-  None
+  Recruit
+  Cadet
+  Apprentice
 }
 
 enum TreasureCategory {
@@ -59,6 +62,9 @@ type _BlockConfig @entity {
 
   "Block number at which the new Questing XP gained events were made available"
   questingXpGainedBlockNumber: BigInt
+
+  "Block number at which the new Crafting XP gained events were made available"
+  craftingXpGainedBlockNumber: BigInt
 }
 
 type Constellation @entity {
@@ -77,6 +83,28 @@ type ConsumableInfo implements Metadata @entity {
 
   type: String!
   size: Size
+}
+
+type LegionClass @entity {
+  id: ID!
+
+  "Class (Fighter, Ranger, etc)"
+  role: String!
+
+  "Generation (Genesis, Auxiliary, Recruit)"
+  type: String!
+
+  "Rarity (Common, Rare, etc.)"
+  rarity: String!
+
+  "Full body image"
+  image: String!
+
+  "Full body image without background"
+  imageNoBackground: String!
+
+  "PFP image"
+  imageAlt: String!
 }
 
 type LegionInfo implements Metadata @entity {
@@ -123,6 +151,15 @@ type LegionInfo implements Metadata @entity {
 
   "Rarity (Common, Rare, etc.)"
   rarity: String!
+
+  "Recruit Level, if applicable"
+  recruitLevel: Int
+
+  "Recruit XP, if applicable"
+  recruitXp: Int
+
+  "True if Recruit can be converted to Auxiliary Legion"
+  recruitCanAscendToAux: Boolean!
 
   "Class (Fighter, Ranger, etc.)"
   role: String!
@@ -384,7 +421,7 @@ type StakedToken @entity {
   expirationTime: BigInt
 
   "Flag is true if `expirationTime` has already been processed by the subgraph"
-  expirationProcessed: Boolean!
+  expirationProcessed: Boolean
 }
 
 type Summon @entity {
@@ -425,6 +462,7 @@ type Token @entity {
   generation: Int
   image: String!
   imageAlt: String
+  imageNoBackground: String
   metadata: Metadata
   name: String!
   description: String
@@ -486,6 +524,7 @@ type UserToken @entity {
 type TokenQuantity @entity {
   id: ID!
 
+  "The amount of tokens"
   quantity: Int!
   token: Token!
 }
@@ -630,4 +669,46 @@ type HarvesterTimelock @entity {
 
   "Duration, in seconds, of the vesting period for this timelock"
   vestingDuration: BigInt!
+}
+
+type RecruitConfig @entity {
+  "Singleton with ID `only`"
+  id: ID!
+
+  "Maximum level that Recruits can reach"
+  maxLevel: Int!
+
+  "Minimum level Recruit must achieve before ascending to a Cadet"
+  cadetAscensionMinLevel: Int!
+
+  "Number of Essence of Starlight required to ascend Recruit to Cadet"
+  cadetAscensionCostEssenceOfStarlight: Int!
+
+  "Number of Prism Shards required to ascend Recruit to Cadet"
+  cadetAscensionCostPrismShards: Int!
+
+  "Minimum level Recruit must achieve before ascending to a Apprentice"
+  apprenticeAscensionMinLevel: Int!
+
+  "Number of Essence of Starlight required to ascend Recruit to Apprentice"
+  apprenticeAscensionCostEssenceOfStarlight: Int!
+
+  "Number of Prism Shards required to ascend Recruit to Apprentice"
+  apprenticeAscensionCostPrismShards: Int!
+
+  "List of level-specific Recruit configs"
+  levelConfigs: [RecruitLevelConfig!]! @derivedFrom(field: "recruitConfig")
+}
+
+type RecruitLevelConfig @entity {
+  id: ID!
+
+  "Reference to the main Recruit config singleton"
+  recruitConfig: RecruitConfig!
+
+  "Recruit level for this configuration"
+  level: Int!
+
+  "Recruit XP required to gain before leveling up from this level"
+  xpToNextLevel: BigInt!
 }

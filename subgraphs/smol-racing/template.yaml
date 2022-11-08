@@ -56,6 +56,8 @@ dataSources:
           handler: handleStartRacing
         - event: StopRacing(indexed address,indexed address,indexed uint256,uint64,uint8)
           handler: handleStopRacing
+        - event: RestartRacing(indexed address,indexed address,indexed uint256,uint64,uint8,uint64[4],uint256)
+          handler: handleRestartRacing
         - event: RewardClaimed(indexed address,indexed address,indexed uint256,uint256,uint256)
           handler: handleRewardClaimed
         - event: NoRewardEarned(indexed address,indexed address,indexed uint256)

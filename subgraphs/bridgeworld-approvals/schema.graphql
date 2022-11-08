@@ -1,0 +1,14 @@
+type Approval @entity(immutable: true) {
+  id: Bytes!
+
+  user: Bytes!
+  contract: Bytes!
+  operator: Bytes!
+  amount: BigInt
+}
+
+type User @entity {
+  id: Bytes!
+
+  approvals: [Approval!]!
+}

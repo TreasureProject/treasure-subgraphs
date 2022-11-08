@@ -109,6 +109,8 @@ dataSources:
           handler: handleCraftingRevealed
         - event: CraftingFinished(indexed address,indexed uint256)
           handler: handleCraftingFinished
+        - event: CPGained(uint256,uint8,uint256)
+          handler: handleCraftingXpGained
       file: ./src/mappings/crafting.ts
   - name: Crafting Legacy
     kind: ethereum/contract
@@ -537,6 +539,36 @@ dataSources:
         - event: HarvesterDeployed(address,address)
           handler: handleHarvesterDeployed
       file: ./src/mappings/harvester.ts
+  - name: Recruit Level
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ recruit_level_address }}"
+      abi: RecruitLevel
+      startBlock: {{ recruit_level_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Token
+      abis:
+        - name: RecruitLevel
+          file: {{{ abis }}}/RecruitLevel.json
+      eventHandlers:
+        - event: RecruitTypeChanged(indexed uint256,uint8)
+          handler: handleRecruitTypeChanged
+        - event: RecruitXPChanged(indexed uint256,uint16,uint32)
+          handler: handleRecruitXpChanged
+        - event: RecruitCanAscendToAuxChanged(indexed uint256,bool)
+          handler: handleRecruitCanAscendToAuxChanged
+        - event: AscensionInfoSet(uint16,uint16,uint16,uint16,uint16,uint16)
+          handler: handleAscensionInfoSet
+        - event: LevelUpInfoSet(uint16,uint32)
+          handler: handleLevelUpInfoSet
+        - event: MaxLevelSet(uint16)
+          handler: handleMaxLevelSet
+      file: ./src/mappings/recruit.ts
 templates:
   - name: Harvester
     kind: ethereum/contract
