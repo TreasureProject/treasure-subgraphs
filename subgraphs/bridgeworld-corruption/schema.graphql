@@ -45,6 +45,7 @@ type Building @entity {
 type Recipe @entity(immutable: true) {
   id: Bytes!
 
+  recipeId: BigInt!
   corruptionRemoved: BigInt!
   items: [RecipeItem!]! @derivedFrom(field: "recipe")
 }

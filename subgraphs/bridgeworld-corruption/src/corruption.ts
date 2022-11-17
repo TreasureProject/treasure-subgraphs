@@ -42,6 +42,7 @@ export function handleCorruptionRemovalRecipeCreated(
 ): void {
   const params = event.params;
   const recipe = new Recipe(Bytes.fromI32(params._recipeId.toI32()));
+  recipe.recipeId = params._recipeId;
   recipe.corruptionRemoved = params._corruptionRemoved;
   recipe.save();
 
