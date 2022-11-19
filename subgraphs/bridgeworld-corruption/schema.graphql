@@ -80,6 +80,8 @@ type RecipeItemTreasureRequirement @entity(immutable: true) {
 type Removal @entity {
   id: Bytes!
 
+  requestId: BigInt!
+  startTimestamp: BigInt!
   user: User!
   building: Building!
   recipe: Recipe!

@@ -144,6 +144,8 @@ export function handleCorruptionRemovalStarted(
 ): void {
   const params = event.params;
   const removal = new Removal(Bytes.fromI32(params._requestId.toI32()));
+  removal.requestId = params._requestId;
+  removal.startTimestamp = event.block.timestamp;
   removal.user = getOrCreateUser(params._user).id;
   removal.building = params._buildingAddress;
   removal.recipe = Bytes.fromI32(params._recipeId.toI32());
