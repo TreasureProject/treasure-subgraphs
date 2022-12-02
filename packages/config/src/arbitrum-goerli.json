@@ -82,5 +82,7 @@
   "hourly_stat_interval_start_block": 309123,
 
   "magicswap_factory_address": "0x6Cd71961e531aBB505256ffa945D59ab9a2156ec",
-  "magicswap_factory_start_block": 529452
+  "magicswap_factory_start_block": 529452,
+
+  "battlefly_smolverse_flywheel_vault_address": "0xFFb425a9520D4BD4C512eCD8A4c3cfD240F9158f"
 }
