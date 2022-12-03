@@ -1,12 +1,16 @@
 import { Address, Bytes, log, store } from "@graphprotocol/graph-ts";
 
-import { CORRUPTION_REMOVAL_ADDRESS } from "@treasure/constants";
+import {
+  CORRUPTION_CRYPTS_ADDRESS,
+  CORRUPTION_REMOVAL_ADDRESS,
+} from "@treasure/constants";
 
 import {
   RandomRequest,
   RandomSeeded,
 } from "../generated/Randomizer/Randomizer";
 import { Removal, Seeded } from "../generated/schema";
+import { getOrCreateConfig } from "./helpers";
 
 export function handleRandomRequest(event: RandomRequest): void {
   const params = event.params;
@@ -14,7 +18,8 @@ export function handleRandomRequest(event: RandomRequest): void {
 
   if (
     !event.transaction.to ||
-    (event.transaction.to as Address).notEqual(CORRUPTION_REMOVAL_ADDRESS)
+    ((event.transaction.to as Address).notEqual(CORRUPTION_REMOVAL_ADDRESS) &&
+      (event.transaction.to as Address).notEqual(CORRUPTION_CRYPTS_ADDRESS))
   ) {
     log.debug("[randomizer] Skipping request from unrelated contract: {}", [
       requestId.toHexString(),
@@ -48,16 +53,26 @@ export function handleRandomSeeded(event: RandomSeeded): void {
 
   for (let i = 0; i < seeded.requests.length; i++) {
     const requestId = seeded.requests[i];
-    const request = Removal.load(requestId);
-    if (!request) {
+    const config = getOrCreateConfig();
+    if (
+      config &&
+      config.cryptsRequestId &&
+      (config.cryptsRequestId as Bytes).equals(requestId)
+    ) {
+      // FETCH RANDOM CRYPTS DATA
+      continue;
+    }
+
+    const removal = Removal.load(requestId);
+    if (!removal) {
       log.error("[randomizer] Committing unknown request: {}", [
         requestId.toHexString(),
       ]);
       continue;
     }
 
-    request.status = "Ready";
-    request.save();
+    removal.status = "Ready";
+    removal.save();
   }
 
   store.remove("Seeded", commitId.toHexString());

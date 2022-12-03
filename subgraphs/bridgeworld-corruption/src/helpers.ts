@@ -6,7 +6,13 @@ import {
   SUMMONING_ADDRESS,
 } from "@treasure/constants";
 
-import { Building, User } from "../generated/schema";
+import {
+  Building,
+  Config,
+  CryptsUserEpoch,
+  CryptsUserMapTile,
+  User,
+} from "../generated/schema";
 
 export const ITEM_TYPES = ["ERC20", "ERC1155"];
 
@@ -20,6 +26,18 @@ export const TREASURE_CATEGORIES = [
   "Leatherworking",
   "Smithing",
 ];
+
+export const CONFIG_ID = Bytes.fromI32(1);
+
+export const getOrCreateConfig = (): Config => {
+  let config = Config.load(CONFIG_ID);
+  if (!config) {
+    config = new Config(CONFIG_ID);
+    config.save();
+  }
+
+  return config;
+};
 
 export const getOrCreateUser = (address: Address): User => {
   let user = User.load(address);
@@ -65,8 +83,46 @@ export const getOrCreateBuilding = (address: Address): Building => {
   return building;
 };
 
+export const getOrCreateUserEpoch = (
+  user: Address,
+  epoch: i32
+): CryptsUserEpoch => {
+  const id = user.concatI32(epoch);
+  let userEpoch = CryptsUserEpoch.load(id);
+  if (!userEpoch) {
+    userEpoch = new CryptsUserEpoch(id);
+    userEpoch.user = user;
+    userEpoch.epoch = epoch;
+    userEpoch.mapTiles = [];
+    userEpoch.save();
+  }
+
+  return userEpoch;
+};
+
+export const getOrCreateUserMapTile = (
+  user: Address,
+  mapTile: Bytes
+): CryptsUserMapTile => {
+  const id = user.concat(mapTile);
+  let userMapTile = CryptsUserMapTile.load(id);
+  if (!userMapTile) {
+    userMapTile = new CryptsUserMapTile(id);
+    userMapTile.user = user;
+    userMapTile.mapTile = mapTile;
+    userMapTile.positionX = -1;
+    userMapTile.positionY = -1;
+    userMapTile.save();
+  }
+
+  return userMapTile;
+};
+
 export const decodeBigIntArray = (data: Bytes): BigInt[] => {
   const dataString = data.toHexString().replace("0x", "");
   const decoded = ethereum.decode(`uint256[${dataString.length / 64}]`, data);
   return decoded ? decoded.toBigIntArray() : [];
 };
+
+export const bigNumberToBytes = (bigInt: BigInt): Bytes =>
+  Bytes.fromI32(bigInt.toI32());

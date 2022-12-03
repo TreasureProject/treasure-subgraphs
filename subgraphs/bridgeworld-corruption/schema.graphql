@@ -32,6 +32,12 @@ enum TreasureCategory {
   Smithing
 }
 
+type Config @entity {
+  id: Bytes!
+
+  cryptsRequestId: Bytes
+}
+
 type Building @entity {
   id: Bytes!
 
@@ -97,11 +103,51 @@ type Seeded @entity {
   id: Bytes!
 
   "Requests related to this commit"
-  requests: [Removal!]!
+  requests: [Bytes!]!
 }
 
 type User @entity(immutable: true) {
   id: Bytes!
 
   removals: [Removal!]! @derivedFrom(field: "user")
+  squads: [CryptsSquad!]! @derivedFrom(field: "user")
+}
+
+type CryptsMapTile @entity(immutable: true) {
+  id: Bytes!
+
+  mapTileId: BigInt!
+  moves: Int!
+  north: Boolean!
+  east: Boolean!
+  south: Boolean!
+  west: Boolean!
+}
+
+type CryptsSquad @entity {
+  id: Bytes!
+
+  squadId: BigInt!
+  user: User!
+  legionTokenIds: [Int!]!
+  positionX: Int!
+  positionY: Int!
+  inTemple: Int!
+}
+
+type CryptsUserMapTile @entity {
+  id: Bytes!
+
+  user: User!
+  mapTile: CryptsMapTile!
+  positionX: Int!
+  positionY: Int!
+}
+
+type CryptsUserEpoch @entity {
+  id: Bytes!
+
+  user: User!
+  epoch: Int!
+  mapTiles: [CryptsUserMapTile!]!
 }

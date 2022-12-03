@@ -52,6 +52,8 @@
   "corruption_removal_start_block": 804036,
   "treasure_corruption_handler_address": "0x614CE6FCf657510B30f77ecdb8a7f6979f02B72e",
   "treasure_corruption_handler_start_block": 804038,
+  "corruption_crypts_address": "0x0000000000000000000000000000000000000000",
+  "corruption_crypts_start_block": 0,
 
   "smol_brains_address": "0x2542421ACA04A98f5Cf04DA97a36DAD8F1FaC3f4",
   "smol_brains_start_block": 502313,
