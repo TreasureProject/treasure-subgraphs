@@ -84,7 +84,7 @@ export const getOrCreateBuilding = (address: Address): Building => {
 };
 
 export const getOrCreateUserEpoch = (
-  user: Address,
+  user: Bytes,
   epoch: i32
 ): CryptsUserEpoch => {
   const id = user.concatI32(epoch);
@@ -101,7 +101,7 @@ export const getOrCreateUserEpoch = (
 };
 
 export const getOrCreateUserMapTile = (
-  user: Address,
+  user: Bytes,
   mapTile: Bytes
 ): CryptsUserMapTile => {
   const id = user.concat(mapTile);
