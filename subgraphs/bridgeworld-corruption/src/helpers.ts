@@ -9,8 +9,8 @@ import {
 import {
   Building,
   Config,
-  CryptsUserEpoch,
   CryptsUserMapTile,
+  CryptsUserRound,
   User,
 } from "../generated/schema";
 
@@ -33,6 +33,9 @@ export const getOrCreateConfig = (): Config => {
   let config = Config.load(CONFIG_ID);
   if (!config) {
     config = new Config(CONFIG_ID);
+    config.cryptsRound = -1;
+    config.maxCryptsSquadsPerUser = 3;
+    config.maxLegionsPerCryptsSquad = 20;
     config.save();
   }
 
@@ -83,21 +86,21 @@ export const getOrCreateBuilding = (address: Address): Building => {
   return building;
 };
 
-export const getOrCreateUserEpoch = (
+export const getOrCreateUserRound = (
   user: Bytes,
-  epoch: i32
-): CryptsUserEpoch => {
-  const id = user.concatI32(epoch);
-  let userEpoch = CryptsUserEpoch.load(id);
-  if (!userEpoch) {
-    userEpoch = new CryptsUserEpoch(id);
-    userEpoch.user = user;
-    userEpoch.epoch = epoch;
-    userEpoch.mapTiles = [];
-    userEpoch.save();
+  round: i32
+): CryptsUserRound => {
+  const id = user.concatI32(round);
+  let userRound = CryptsUserRound.load(id);
+  if (!userRound) {
+    userRound = new CryptsUserRound(id);
+    userRound.user = user;
+    userRound.round = round;
+    userRound.mapTiles = [];
+    userRound.save();
   }
 
-  return userEpoch;
+  return userRound;
 };
 
 export const getOrCreateUserMapTile = (

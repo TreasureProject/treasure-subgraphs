@@ -15,8 +15,8 @@ import {
   bigNumberToBytes,
   getOrCreateConfig,
   getOrCreateUser,
-  getOrCreateUserEpoch,
   getOrCreateUserMapTile,
+  getOrCreateUserRound,
 } from "./helpers";
 
 export function handleGlobalRandomnessRequested(
@@ -33,6 +33,7 @@ export function handleLegionSquadAdded(event: LegionSquadAdded): void {
   squad.squadId = params._legionSquadId;
   squad.user = getOrCreateUser(params._user).id;
   squad.legionTokenIds = params._legionIds;
+  squad.stakedTimestamp = event.block.timestamp;
   squad.positionX = -1;
   squad.positionY = -1;
   squad.inTemple = -1;
@@ -92,10 +93,10 @@ export function handleMapTilesClaimed(event: MapTilesClaimed): void {
     );
   }
 
-  const epoch = 1;
-  const userEpoch = getOrCreateUserEpoch(user.id, epoch);
-  userEpoch.mapTiles = userEpoch.mapTiles.concat(userMapTiles);
-  userEpoch.save();
+  const round = 1;
+  const userRound = getOrCreateUserRound(user.id, round);
+  userRound.mapTiles = userRound.mapTiles.concat(userMapTiles);
+  userRound.save();
 }
 
 export function handleTempleEntered(event: TempleEntered): void {

@@ -36,6 +36,9 @@ type Config @entity {
   id: Bytes!
 
   cryptsRequestId: Bytes
+  cryptsRound: Int!
+  maxCryptsSquadsPerUser: Int!
+  maxLegionsPerCryptsSquad: Int!
 }
 
 type Building @entity {
@@ -111,6 +114,7 @@ type User @entity(immutable: true) {
 
   removals: [Removal!]! @derivedFrom(field: "user")
   squads: [CryptsSquad!]! @derivedFrom(field: "user")
+  rounds: [CryptsUserRound!]! @derivedFrom(field: "user")
 }
 
 type CryptsMapTile @entity(immutable: true) {
@@ -130,6 +134,7 @@ type CryptsSquad @entity {
   squadId: BigInt!
   user: User!
   legionTokenIds: [Int!]!
+  stakedTimestamp: BigInt!
   positionX: Int!
   positionY: Int!
   inTemple: Int!
@@ -138,16 +143,17 @@ type CryptsSquad @entity {
 type CryptsUserMapTile @entity {
   id: Bytes!
 
+  userMapTileId: BigInt!
   user: User!
   mapTile: CryptsMapTile!
   positionX: Int!
   positionY: Int!
 }
 
-type CryptsUserEpoch @entity {
+type CryptsUserRound @entity {
   id: Bytes!
 
   user: User!
-  epoch: Int!
+  round: Int!
   mapTiles: [CryptsUserMapTile!]!
 }
