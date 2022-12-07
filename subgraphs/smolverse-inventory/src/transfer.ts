@@ -43,7 +43,7 @@ const handleTransferCommon = (
   }
 
   if (!token) {
-    log.error("Transferring unknown token: {}, {}", [
+    log.error("[transfer] Transferring unknown token: {}, {}", [
       address.toHexString(),
       tokenId.toString(),
     ]);
@@ -81,7 +81,7 @@ const handleTransferCommon = (
   userToken.save();
 
   const fromUserToken = getOrCreateUserToken(token, from);
-  const nextQuantity = (fromUserToken.quantity = quantity);
+  const nextQuantity = fromUserToken.quantity - quantity;
   if (nextQuantity > 0) {
     fromUserToken.quantity = nextQuantity;
     fromUserToken.save();
