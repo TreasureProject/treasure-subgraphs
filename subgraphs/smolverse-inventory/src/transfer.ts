@@ -86,7 +86,7 @@ const handleTransferCommon = (
     fromUserToken.quantity = nextQuantity;
     fromUserToken.save();
   } else {
-    store.remove("UserToken", fromUserToken.id.toString());
+    store.remove("UserToken", fromUserToken.id.toHexString());
   }
 };
 
