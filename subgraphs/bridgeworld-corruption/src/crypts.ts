@@ -8,10 +8,15 @@ import {
   LegionSquadRemoved,
   MapTilePlaced,
   MapTilesClaimed,
+  MapTilesInitialized,
   TempleEntered,
   TreasureClaimed,
 } from "../generated/CorruptionCrypts/CorruptionCrypts";
-import { CryptsSquad, CryptsUserMapTile } from "../generated/schema";
+import {
+  CryptsMapTile,
+  CryptsSquad,
+  CryptsUserMapTile,
+} from "../generated/schema";
 import {
   bigNumberToBytes,
   getOrCreateConfig,
@@ -48,9 +53,10 @@ export function handleLegionSquadAdded(event: LegionSquadAdded): void {
   squad.user = getOrCreateUser(params._user).id;
   squad.legionTokenIds = params._legionIds;
   squad.stakedTimestamp = event.block.timestamp;
+  squad.targetTemple = params._targetTemple;
   squad.positionX = -1;
   squad.positionY = -1;
-  squad.inTemple = -1;
+  squad.inTemple = false;
   squad.save();
 }
 
@@ -76,15 +82,33 @@ export function handleLegionSquadRemoved(event: LegionSquadRemoved): void {
   );
 }
 
+export function handleMapTilesInitialized(event: MapTilesInitialized): void {
+  const mapTiles = event.params._mapTiles;
+  for (let i = 0; i < mapTiles.length; i += 1) {
+    const id = Bytes.fromI32(mapTiles[i].mapTileType);
+    let mapTile = CryptsMapTile.load(id);
+    if (!mapTile) {
+      mapTile = new CryptsMapTile(id);
+      mapTile.mapTileType = mapTiles[i].mapTileType;
+      mapTile.moves = mapTiles[i].moves;
+      mapTile.north = mapTiles[i].north;
+      mapTile.east = mapTiles[i].east;
+      mapTile.south = mapTiles[i].south;
+      mapTile.west = mapTiles[i].west;
+      mapTile.save();
+    }
+  }
+}
+
 export function handleMapTilePlaced(event: MapTilePlaced): void {
   const params = event.params;
   const userMapTile = CryptsUserMapTile.load(
-    params._user.concat(bigNumberToBytes(params._maptile.mapTileId))
+    params._user.concat(Bytes.fromI32(params._maptile.mapTileType))
   );
   if (!userMapTile) {
     log.error("[crypts] Received placement for unknown map tile: {}, {}", [
       params._user.toHexString(),
-      params._maptile.mapTileId.toString(),
+      params._maptile.mapTileType.toString(),
     ]);
     return;
   }
@@ -102,13 +126,12 @@ export function handleMapTilesClaimed(event: MapTilesClaimed): void {
     userMapTiles.push(
       getOrCreateUserMapTile(
         user.id,
-        bigNumberToBytes(params._maptiles[i].mapTileId)
+        Bytes.fromI32(params._maptiles[i].mapTileType)
       ).id
     );
   }
 
-  const round = 1;
-  const userRound = getOrCreateUserRound(user.id, round);
+  const userRound = getOrCreateUserRound(user.id, params._roundId.toI32());
   userRound.mapTiles = userRound.mapTiles.concat(userMapTiles);
   userRound.save();
 }
@@ -124,7 +147,7 @@ export function handleTempleEntered(event: TempleEntered): void {
     return;
   }
 
-  squad.inTemple = params._targetTemple;
+  squad.inTemple = true;
   squad.save();
 }
 

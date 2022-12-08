@@ -123,7 +123,7 @@ type User @entity(immutable: true) {
 type CryptsMapTile @entity(immutable: true) {
   id: Bytes!
 
-  mapTileId: BigInt!
+  mapTileType: Int!
   moves: Int!
   north: Boolean!
   east: Boolean!
@@ -138,9 +138,10 @@ type CryptsSquad @entity {
   user: User!
   legionTokenIds: [Int!]!
   stakedTimestamp: BigInt!
+  targetTemple: Int!
   positionX: Int!
   positionY: Int!
-  inTemple: Int!
+  inTemple: Boolean!
 }
 
 type CryptsUserMapTile @entity {
