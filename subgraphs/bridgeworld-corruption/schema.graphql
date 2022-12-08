@@ -37,8 +37,11 @@ type Config @entity {
 
   cryptsRequestId: Bytes
   cryptsRound: Int!
+  cryptsLegionsUnstakeCooldown: BigInt!
   maxCryptsSquadsPerUser: Int!
   maxLegionsPerCryptsSquad: Int!
+  maxCryptsMapTilesInHand: Int!
+  maxCryptsMapTilesOnBoard: Int!
 }
 
 type Building @entity {

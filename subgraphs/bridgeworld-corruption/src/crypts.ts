@@ -1,6 +1,7 @@
 import { Bytes, log, store } from "@graphprotocol/graph-ts";
 
 import {
+  ConfigUpdated,
   GlobalRandomnessRequested,
   LegionSquadAdded,
   LegionSquadMoved,
@@ -19,11 +20,24 @@ import {
   getOrCreateUserRound,
 } from "./helpers";
 
+export function handleConfigUpdated(event: ConfigUpdated): void {
+  const params = event.params._newConfig;
+  const config = getOrCreateConfig();
+  config.cryptsLegionsUnstakeCooldown = params.legionUnstakeCooldown;
+  config.maxCryptsSquadsPerUser = params.maximumLegionSquadsOnBoard.toI32();
+  config.maxLegionsPerCryptsSquad = params.maximumLegionsInSquad.toI32();
+  config.maxCryptsMapTilesInHand = params.maxMapTilesInHand.toI32();
+  config.maxCryptsMapTilesOnBoard = params.maxMapTilesOnBoard.toI32();
+  config.save();
+}
+
 export function handleGlobalRandomnessRequested(
   event: GlobalRandomnessRequested
 ): void {
+  const params = event.params;
   const config = getOrCreateConfig();
-  config.cryptsRequestId = bigNumberToBytes(event.params._globalRequestId);
+  config.cryptsRequestId = bigNumberToBytes(params._globalRequestId);
+  config.cryptsRound = params._roundId.toI32();
   config.save();
 }
 

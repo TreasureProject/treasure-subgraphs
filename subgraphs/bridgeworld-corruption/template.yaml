@@ -89,21 +89,25 @@ dataSources:
         - name: CorruptionCrypts
           file: {{{ abis }}}/CorruptionCrypts.json
       eventHandlers:
-        - event: GlobalRandomnessRequested(uint256)
+        - event: ConfigUpdated((uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256))
+          handler: handleConfigUpdated
+        - event: GlobalRandomnessRequested(uint256,uint256)
           handler: handleGlobalRandomnessRequested
-        - event: LegionSquadAdded(address,uint64,uint16[])
+        - event: LegionSquadAdded(address,uint64,uint16[],uint256,uint8)
           handler: handleLegionSquadAdded
-        - event: LegionSquadMoved(address,uint64,(uint8,uint8))
+        - event: LegionSquadMoved(address,uint64,(uint8,uint8),uint256)
           handler: handleLegionSquadMoved
-        - event: LegionSquadRemoved(address,uint64)
+        - event: LegionSquadRemoved(address,uint64,uint256)
           handler: handleLegionSquadRemoved
-        - event: MapTilePlaced(address,(uint32,uint8,bool,bool,bool,bool),(uint8,uint8))
+        - event: MapTilePlaced(address,(uint32,uint8,uint8,bool,bool,bool,bool),(uint8,uint8),uint256)
           handler: handleMapTilePlaced
-        - event: MapTilesClaimed(address,(uint32,uint8,bool,bool,bool,bool)[])
+        - event: MapTilesClaimed(address,(uint32,uint8,uint8,bool,bool,bool,bool)[],uint256)
           handler: handleMapTilesClaimed
-        - event: TempleEntered(address,uint64,uint8)
+        - event: MapTilesInitialized((uint32,uint8,uint8,bool,bool,bool,bool)[])
+          handler: handleMapTilesInitialized
+        - event: TempleEntered(address,uint64,uint8,uint256)
           handler: handleTempleEntered
-        - event: TreasureClaimed(address,uint64,((uint8,uint8),uint8,uint16,uint16))
+        - event: TreasureClaimed(address,uint64,((uint8,uint8),uint8,uint8,uint8,uint16,uint16),uint256)
           handler: handleTreasureClaimed
       file: ./src/crypts.ts
   - name: Randomizer
