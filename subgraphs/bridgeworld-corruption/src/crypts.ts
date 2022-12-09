@@ -1,4 +1,4 @@
-import { Bytes, log, store } from "@graphprotocol/graph-ts";
+import { BigInt, Bytes, log, store } from "@graphprotocol/graph-ts";
 
 import {
   ConfigUpdated,
@@ -64,7 +64,7 @@ export function handleLegionStaked(event: LegionSquadStaked): void {
   const squad = new CryptsSquad(bytesFromBigInt(params._legionSquadId));
   squad.squadId = params._legionSquadId;
   squad.user = getOrCreateUser(params._user).id;
-  squad.legionTokenIds = params._legionIds.map((value) => value.toI32());
+  squad.legionTokenIds = params._legionIds.map<i32>((value) => value.toI32());
   squad.stakedTimestamp = event.block.timestamp;
   squad.targetTemple = temple.id;
   squad.positionX = -1;

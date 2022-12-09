@@ -13,7 +13,7 @@ jobs:
     outputs:
       bridgeworld: ${{ steps.filter.outputs.bridgeworld }}
       bridgeworld_approvals: ${{ steps.filter.outputs.bridgeworld_approvals }}
-      bridgeworld_corruption: ${{ steps.filter.outputs.bridgeworld_curroption }}
+      bridgeworld_corruption: ${{ steps.filter.outputs.bridgeworld_corruption }}
       bridgeworld_recruits: ${{ steps.filter.outputs.bridgeworld_recruits }}
       magic_stats: ${{ steps.filter.outputs.magic_stats }}
       magicswap_exchange: ${{ steps.filter.outputs.magicswap_exchange }}
