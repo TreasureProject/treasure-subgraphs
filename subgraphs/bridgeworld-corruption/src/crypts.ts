@@ -15,6 +15,7 @@ import {
 import {
   CryptsMapTile,
   CryptsSquad,
+  CryptsTemple,
   CryptsUserMapTile,
 } from "../generated/schema";
 import { bytesFromBigInt, getOrCreateConfig, getOrCreateUser } from "./helpers";
@@ -30,6 +31,14 @@ export function handleConfigUpdated(event: ConfigUpdated): void {
   config.minimumDistanceFromTempleForCryptsLegionSquad =
     params.minimumDistanceFromTempleForLegionSquad.toI32();
   config.save();
+
+  for (let i = 0; i < params.templeCount.toI32(); i += 1) {
+    const temple = new CryptsTemple(Bytes.fromI32(i));
+    temple.templeId = i;
+    temple.positionX = -1;
+    temple.positionY = -1;
+    temple.save();
+  }
 }
 
 export function handleGlobalRandomnessRequested(
@@ -44,12 +53,20 @@ export function handleGlobalRandomnessRequested(
 
 export function handleLegionStaked(event: LegionSquadStaked): void {
   const params = event.params;
+  const temple = CryptsTemple.load(Bytes.fromI32(params._targetTemple));
+  if (!temple) {
+    log.error("[crypts] Squad staked targeting unknown temple: {}", [
+      params._targetTemple.toString(),
+    ]);
+    return;
+  }
+
   const squad = new CryptsSquad(bytesFromBigInt(params._legionSquadId));
   squad.squadId = params._legionSquadId;
   squad.user = getOrCreateUser(params._user).id;
   squad.legionTokenIds = params._legionIds.map((value) => value.toI32());
   squad.stakedTimestamp = event.block.timestamp;
-  squad.targetTemple = params._targetTemple;
+  squad.targetTemple = temple.id;
   squad.positionX = -1;
   squad.positionY = -1;
   squad.inTemple = false;

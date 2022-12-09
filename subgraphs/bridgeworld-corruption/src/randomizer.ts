@@ -14,7 +14,7 @@ import {
   RandomRequest,
   RandomSeeded,
 } from "../generated/Randomizer/Randomizer";
-import { Removal, Seeded } from "../generated/schema";
+import { CryptsTemple, Removal, Seeded } from "../generated/schema";
 import { getOrCreateBoardTreasureFragment, getOrCreateConfig } from "./helpers";
 
 export function handleRandomRequest(event: RandomRequest): void {
@@ -105,7 +105,22 @@ export function handleRandomSeeded(event: RandomSeeded): void {
 
 const processTemplePositions = (
   params: CorruptionCrypts__generateTemplePositionsResultValue0Struct[]
-): void => {};
+): void => {
+  for (let i = 0; i < params.length; i += 1) {
+    const temple = CryptsTemple.load(Bytes.fromI32(params[i].templeId));
+    if (!temple) {
+      log.error("[randomizer] Processing position for unknown temple: {}", [
+        params[i].templeId.toString(),
+      ]);
+      continue;
+    }
+
+    temple.address = params[i].harvesterAddress;
+    temple.positionX = params[i].coordinate.x;
+    temple.positionY = params[i].coordinate.y;
+    temple.save();
+  }
+};
 
 const processBoardTreasure = (
   params: CorruptionCrypts__generateBoardTreasureResultValue0Struct

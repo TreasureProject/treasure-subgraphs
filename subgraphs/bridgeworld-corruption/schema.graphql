@@ -137,6 +137,22 @@ type User @entity(immutable: true) {
   mapTiles: [CryptsUserMapTile!]! @derivedFrom(field: "user")
 }
 
+type CryptsTemple @entity {
+  id: Bytes!
+
+  "Contract ID"
+  templeId: Int!
+
+  "Contract associated with temple, if any"
+  address: Bytes
+
+  "X coordinate on board"
+  positionX: Int!
+
+  "Y coordinate on board"
+  positionY: Int!
+}
+
 type CryptsBoardTreasureFragment @entity {
   "Singleton"
   id: Bytes!
@@ -188,8 +204,8 @@ type CryptsSquad @entity {
   "Time squad was staked, in seconds"
   stakedTimestamp: BigInt!
 
-  "Temple ID this squad is targeting"
-  targetTemple: Int!
+  "Temple this squad is targeting"
+  targetTemple: CryptsTemple!
 
   "X coordinate on board, -1 if not placed"
   positionX: Int!
