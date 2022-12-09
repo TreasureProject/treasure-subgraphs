@@ -21,7 +21,7 @@ jobs:
       smolverse: ${{ steps.filter.outputs.smolverse }}
       smolverse_inventory: ${{ steps.filter.outputs.smolverse_inventory }}
       smol_racing: ${{ steps.filter.outputs.smol_racing }}
-      smoloween: ${{ steps.filter.ouputs.smoloween }}
+      smoloween: ${{ steps.filter.outputs.smoloween }}
     steps:
     - name: Check out code
       uses: actions/checkout@v2
