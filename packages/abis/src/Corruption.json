@@ -35,6 +35,25 @@
         },
         {
           "indexed": false,
+          "internalType": "uint32",
+          "name": "_boost",
+          "type": "uint32"
+        }
+      ],
+      "name": "CorruptionStreamBoostModified",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "_account",
+          "type": "address"
+        },
+        {
+          "indexed": false,
           "internalType": "uint128",
           "name": "_ratePerSecond",
           "type": "uint128"
@@ -170,12 +189,27 @@
       "outputs": [
         {
           "internalType": "uint128",
+          "name": "timeLastMinted",
+          "type": "uint128"
+        },
+        {
+          "internalType": "uint32",
+          "name": "boost",
+          "type": "uint32"
+        },
+        {
+          "internalType": "uint96",
+          "name": "emptySpace1",
+          "type": "uint96"
+        },
+        {
+          "internalType": "uint128",
           "name": "ratePerSecond",
           "type": "uint128"
         },
         {
           "internalType": "uint128",
-          "name": "timeLastMinted",
+          "name": "emptySpace2",
           "type": "uint128"
         },
         {
@@ -464,6 +498,24 @@
     {
       "inputs": [],
       "name": "renounceOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_account",
+          "type": "address"
+        },
+        {
+          "internalType": "uint32",
+          "name": "_boost",
+          "type": "uint32"
+        }
+      ],
+      "name": "setCorruptionStreamBoost",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
