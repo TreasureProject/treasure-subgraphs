@@ -9,8 +9,8 @@ import {
 import {
   Building,
   Config,
+  CryptsBoardTreasureFragment,
   CryptsUserMapTile,
-  CryptsUserRound,
   User,
 } from "../generated/schema";
 
@@ -27,12 +27,12 @@ export const TREASURE_CATEGORIES = [
   "Smithing",
 ];
 
-export const CONFIG_ID = Bytes.fromI32(1);
+export const SINGLETON_ID = Bytes.fromI32(1);
 
 export const getOrCreateConfig = (): Config => {
-  let config = Config.load(CONFIG_ID);
+  let config = Config.load(SINGLETON_ID);
   if (!config) {
-    config = new Config(CONFIG_ID);
+    config = new Config(SINGLETON_ID);
     config.cryptsRound = -1;
     config.cryptsLegionsUnstakeCooldown = BigInt.zero();
     config.maxCryptsSquadsPerUser = 3;
@@ -44,6 +44,20 @@ export const getOrCreateConfig = (): Config => {
 
   return config;
 };
+
+export const getOrCreateBoardTreasureFragment =
+  (): CryptsBoardTreasureFragment => {
+    let boardTreasureFragment = CryptsBoardTreasureFragment.load(SINGLETON_ID);
+    if (!boardTreasureFragment) {
+      boardTreasureFragment = new CryptsBoardTreasureFragment(SINGLETON_ID);
+      boardTreasureFragment.tokenId = 0;
+      boardTreasureFragment.positionX = -1;
+      boardTreasureFragment.positionY = -1;
+      boardTreasureFragment.save();
+    }
+
+    return boardTreasureFragment;
+  };
 
 export const getOrCreateUser = (address: Address): User => {
   let user = User.load(address);
@@ -89,23 +103,6 @@ export const getOrCreateBuilding = (address: Address): Building => {
   return building;
 };
 
-export const getOrCreateUserRound = (
-  user: Bytes,
-  round: i32
-): CryptsUserRound => {
-  const id = user.concatI32(round);
-  let userRound = CryptsUserRound.load(id);
-  if (!userRound) {
-    userRound = new CryptsUserRound(id);
-    userRound.user = user;
-    userRound.round = round;
-    userRound.mapTiles = [];
-    userRound.save();
-  }
-
-  return userRound;
-};
-
 export const getOrCreateUserMapTile = (
   user: Bytes,
   mapTile: Bytes
@@ -130,5 +127,5 @@ export const decodeBigIntArray = (data: Bytes): BigInt[] => {
   return decoded ? decoded.toBigIntArray() : [];
 };
 
-export const bigNumberToBytes = (bigInt: BigInt): Bytes =>
+export const bytesFromBigInt = (bigInt: BigInt): Bytes =>
   Bytes.fromI32(bigInt.toI32());

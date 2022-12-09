@@ -14,12 +14,8 @@ import {
   RandomRequest,
   RandomSeeded,
 } from "../generated/Randomizer/Randomizer";
-import {
-  CryptsBoardTreasureFragment,
-  Removal,
-  Seeded,
-} from "../generated/schema";
-import { getOrCreateConfig } from "./helpers";
+import { Removal, Seeded } from "../generated/schema";
+import { getOrCreateBoardTreasureFragment, getOrCreateConfig } from "./helpers";
 
 export function handleRandomRequest(event: RandomRequest): void {
   const params = event.params;
@@ -114,11 +110,7 @@ const processTemplePositions = (
 const processBoardTreasure = (
   params: CorruptionCrypts__generateBoardTreasureResultValue0Struct
 ): void => {
-  const config = getOrCreateConfig();
-  const boardTreasureFragment = new CryptsBoardTreasureFragment(
-    Bytes.fromI32(config.cryptsRound)
-  );
-  boardTreasureFragment.roundId = config.cryptsRound;
+  const boardTreasureFragment = getOrCreateBoardTreasureFragment();
   boardTreasureFragment.tokenId = params.correspondingId;
   boardTreasureFragment.positionX = params.coordinate.x;
   boardTreasureFragment.positionY = params.coordinate.y;

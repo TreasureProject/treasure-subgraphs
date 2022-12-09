@@ -1,4 +1,4 @@
-import { Bytes, log, store } from "@graphprotocol/graph-ts";
+import { Bytes, log } from "@graphprotocol/graph-ts";
 
 import {
   ConfigUpdated,
@@ -10,20 +10,13 @@ import {
   MapTilesClaimed,
   MapTilesInitialized,
   TempleEntered,
-  TreasureClaimed,
 } from "../generated/CorruptionCrypts/CorruptionCrypts";
 import {
   CryptsMapTile,
   CryptsSquad,
   CryptsUserMapTile,
 } from "../generated/schema";
-import {
-  bigNumberToBytes,
-  getOrCreateConfig,
-  getOrCreateUser,
-  getOrCreateUserMapTile,
-  getOrCreateUserRound,
-} from "./helpers";
+import { bytesFromBigInt, getOrCreateConfig, getOrCreateUser } from "./helpers";
 
 export function handleConfigUpdated(event: ConfigUpdated): void {
   const params = event.params._newConfig;
@@ -33,6 +26,8 @@ export function handleConfigUpdated(event: ConfigUpdated): void {
   config.maxLegionsPerCryptsSquad = params.maximumLegionsInSquad.toI32();
   config.maxCryptsMapTilesInHand = params.maxMapTilesInHand.toI32();
   config.maxCryptsMapTilesOnBoard = params.maxMapTilesOnBoard.toI32();
+  config.minimumDistanceFromTempleForCryptsLegionSquad =
+    params.minimumDistanceFromTempleForLegionSquad.toI32();
   config.save();
 }
 
@@ -41,14 +36,14 @@ export function handleGlobalRandomnessRequested(
 ): void {
   const params = event.params;
   const config = getOrCreateConfig();
-  config.cryptsRequestId = bigNumberToBytes(params._globalRequestId);
+  config.cryptsRequestId = bytesFromBigInt(params._globalRequestId);
   config.cryptsRound = params._roundId.toI32();
   config.save();
 }
 
 export function handleLegionSquadAdded(event: LegionSquadAdded): void {
   const params = event.params;
-  const squad = new CryptsSquad(bigNumberToBytes(params._legionSquadId));
+  const squad = new CryptsSquad(bytesFromBigInt(params._legionSquadId));
   squad.squadId = params._legionSquadId;
   squad.user = getOrCreateUser(params._user).id;
   squad.legionTokenIds = params._legionIds;
@@ -62,7 +57,7 @@ export function handleLegionSquadAdded(event: LegionSquadAdded): void {
 
 export function handleLegionSquadMoved(event: LegionSquadMoved): void {
   const params = event.params;
-  const squad = CryptsSquad.load(bigNumberToBytes(params._legionSquadId));
+  const squad = CryptsSquad.load(bytesFromBigInt(params._legionSquadId));
   if (!squad) {
     log.error("[crypts] Received move for unknown Legion squad: {}", [
       params._legionSquadId.toString(),
@@ -76,11 +71,25 @@ export function handleLegionSquadMoved(event: LegionSquadMoved): void {
 }
 
 export function handleLegionSquadRemoved(event: LegionSquadRemoved): void {
-  store.remove(
-    "CryptsSquad",
-    bigNumberToBytes(event.params._legionSquadId).toString()
-  );
+  const squad = CryptsSquad.load(bytesFromBigInt(event.params._legionSquadId));
+  if (!squad) {
+    log.error("[crypts] Removing unknown Legion squad: {}", [
+      event.params._legionSquadId.toString(),
+    ]);
+    return;
+  }
+
+  squad.positionX = -1;
+  squad.positionY = -1;
+  squad.save();
 }
+
+// export function handleLegionSquadUnstaked(): void {
+//   store.remove(
+//     "CryptsSquad",
+//     bytesFromBigInt(event.params._legionSquadId).toString()
+//   );
+// }
 
 export function handleMapTilesInitialized(event: MapTilesInitialized): void {
   const mapTiles = event.params._mapTiles;
@@ -100,15 +109,40 @@ export function handleMapTilesInitialized(event: MapTilesInitialized): void {
   }
 }
 
+export function handleMapTilesClaimed(event: MapTilesClaimed): void {
+  const params = event.params;
+  const user = getOrCreateUser(params._user);
+  for (let i = 0; i < params._maptiles.length; i += 1) {
+    const mapTile = CryptsMapTile.load(
+      Bytes.fromI32(params._maptiles[i].mapTileType)
+    );
+    if (!mapTile) {
+      log.error("[crypts] Claiming unknown map tile: {}", [
+        params._maptiles[i].mapTileType.toString(),
+      ]);
+      continue;
+    }
+
+    const userMapTile = new CryptsUserMapTile(
+      bytesFromBigInt(params._maptiles[i].mapTileId)
+    );
+    userMapTile.userMapTileId = params._maptiles[i].mapTileId;
+    userMapTile.user = user.id;
+    userMapTile.mapTile = mapTile.id;
+    userMapTile.positionX = -1;
+    userMapTile.positionY = -1;
+    userMapTile.save();
+  }
+}
+
 export function handleMapTilePlaced(event: MapTilePlaced): void {
   const params = event.params;
   const userMapTile = CryptsUserMapTile.load(
-    params._user.concat(Bytes.fromI32(params._maptile.mapTileType))
+    bytesFromBigInt(params._maptile.mapTileId)
   );
   if (!userMapTile) {
-    log.error("[crypts] Received placement for unknown map tile: {}, {}", [
-      params._user.toHexString(),
-      params._maptile.mapTileType.toString(),
+    log.error("[crypts] Received placement for unknown map tile: {}", [
+      params._maptile.mapTileId.toString(),
     ]);
     return;
   }
@@ -118,31 +152,12 @@ export function handleMapTilePlaced(event: MapTilePlaced): void {
   userMapTile.save();
 }
 
-export function handleMapTilesClaimed(event: MapTilesClaimed): void {
-  const params = event.params;
-  const user = getOrCreateUser(params._user);
-  const userMapTiles: Bytes[] = [];
-  for (let i = 0; i < params._maptiles.length; i += 1) {
-    userMapTiles.push(
-      getOrCreateUserMapTile(
-        user.id,
-        Bytes.fromI32(params._maptiles[i].mapTileType)
-      ).id
-    );
-  }
-
-  const userRound = getOrCreateUserRound(user.id, params._roundId.toI32());
-  userRound.mapTiles = userRound.mapTiles.concat(userMapTiles);
-  userRound.save();
-}
-
 export function handleTempleEntered(event: TempleEntered): void {
   const params = event.params;
-  const squad = CryptsSquad.load(bigNumberToBytes(params._legionSquadId));
+  const squad = CryptsSquad.load(bytesFromBigInt(params._legionSquadId));
   if (!squad) {
-    log.error("[crypts] Unknown Legion squad entering temple: {}, {}", [
+    log.error("[crypts] Unknown Legion squad entering temple: {}", [
       params._legionSquadId.toString(),
-      params._targetTemple.toString(),
     ]);
     return;
   }
@@ -150,5 +165,3 @@ export function handleTempleEntered(event: TempleEntered): void {
   squad.inTemple = true;
   squad.save();
 }
-
-export function handleTreasureClaimed(event: TreasureClaimed): void {}

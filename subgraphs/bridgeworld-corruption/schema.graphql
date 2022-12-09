@@ -33,15 +33,32 @@ enum TreasureCategory {
 }
 
 type Config @entity {
+  "Singleton"
   id: Bytes!
 
+  "Latest global Randomizer request ID"
   cryptsRequestId: Bytes
+
+  "Current round in progress"
   cryptsRound: Int!
+
+  "Amount of time before a Legion squad can be unstaked, in seconds"
   cryptsLegionsUnstakeCooldown: BigInt!
+
+  "Maximum number of Legion squads per user"
   maxCryptsSquadsPerUser: Int!
+
+  "Maximum number of Legions on a single squad"
   maxLegionsPerCryptsSquad: Int!
+
+  "Maximum number of map tiles a user can have in their hand"
   maxCryptsMapTilesInHand: Int!
+
+  "Maximum number of map tiles a user can have on the board at once"
   maxCryptsMapTilesOnBoard: Int!
+
+  "Minimum number of tiles away from temple a Legion squad must be placed on board"
+  minimumDistanceFromTempleForCryptsLegionSquad: Int
 }
 
 type Building @entity {
@@ -117,56 +134,88 @@ type User @entity(immutable: true) {
 
   removals: [Removal!]! @derivedFrom(field: "user")
   squads: [CryptsSquad!]! @derivedFrom(field: "user")
-  rounds: [CryptsUserRound!]! @derivedFrom(field: "user")
+  mapTiles: [CryptsUserMapTile!]! @derivedFrom(field: "user")
 }
 
-type CryptsBoardTreasureFragment @entity(immutable: true) {
+type CryptsBoardTreasureFragment @entity {
+  "Singleton"
   id: Bytes!
 
-  roundId: Int!
+  "Treasure Fragment token ID"
   tokenId: Int!
+
+  "X coordinate on board"
   positionX: Int!
+
+  "Y coordinate on board"
   positionY: Int!
 }
 
 type CryptsMapTile @entity(immutable: true) {
   id: Bytes!
 
+  "Global map tile ID"
   mapTileType: Int!
+
+  "Number of moves the tile enables"
   moves: Int!
+
+  "True if tile has a move to the north"
   north: Boolean!
+
+  "True if tile has a move to the east"
   east: Boolean!
+
+  "True if tile has a move to the south"
   south: Boolean!
+
+  "True if tile has a move to the west"
   west: Boolean!
 }
 
 type CryptsSquad @entity {
   id: Bytes!
 
+  "Contract squad ID"
   squadId: BigInt!
+
+  "Creator of this squad"
   user: User!
+
+  "Legion token IDs within this squad"
   legionTokenIds: [Int!]!
+
+  "Time squad was staked, in seconds"
   stakedTimestamp: BigInt!
+
+  "Temple ID this squad is targeting"
   targetTemple: Int!
+
+  "X coordinate on board, -1 if not placed"
   positionX: Int!
+
+  "Y coordinate on board, -1 if not placed"
   positionY: Int!
+
+  "True if squad has entered the target temple"
   inTemple: Boolean!
 }
 
 type CryptsUserMapTile @entity {
   id: Bytes!
 
+  "Contract ID"
   userMapTileId: BigInt!
+
+  "Owner of the tile"
   user: User!
+
+  "Associated map tile details"
   mapTile: CryptsMapTile!
+
+  "X coordinate on board, -1 if not placed"
   positionX: Int!
+
+  "Y coordinate on board, -1 if not placed"
   positionY: Int!
-}
-
-type CryptsUserRound @entity {
-  id: Bytes!
-
-  user: User!
-  round: Int!
-  mapTiles: [CryptsUserMapTile!]!
 }
