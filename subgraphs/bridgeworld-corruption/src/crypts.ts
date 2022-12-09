@@ -1,11 +1,12 @@
-import { Bytes, log } from "@graphprotocol/graph-ts";
+import { Bytes, log, store } from "@graphprotocol/graph-ts";
 
 import {
   ConfigUpdated,
   GlobalRandomnessRequested,
-  LegionSquadAdded,
   LegionSquadMoved,
   LegionSquadRemoved,
+  LegionSquadStaked,
+  LegionSquadUnstaked,
   MapTilePlaced,
   MapTilesClaimed,
   MapTilesInitialized,
@@ -41,12 +42,12 @@ export function handleGlobalRandomnessRequested(
   config.save();
 }
 
-export function handleLegionSquadAdded(event: LegionSquadAdded): void {
+export function handleLegionStaked(event: LegionSquadStaked): void {
   const params = event.params;
   const squad = new CryptsSquad(bytesFromBigInt(params._legionSquadId));
   squad.squadId = params._legionSquadId;
   squad.user = getOrCreateUser(params._user).id;
-  squad.legionTokenIds = params._legionIds;
+  squad.legionTokenIds = params._legionIds.map((value) => value.toI32());
   squad.stakedTimestamp = event.block.timestamp;
   squad.targetTemple = params._targetTemple;
   squad.positionX = -1;
@@ -84,12 +85,12 @@ export function handleLegionSquadRemoved(event: LegionSquadRemoved): void {
   squad.save();
 }
 
-// export function handleLegionSquadUnstaked(): void {
-//   store.remove(
-//     "CryptsSquad",
-//     bytesFromBigInt(event.params._legionSquadId).toString()
-//   );
-// }
+export function handleLegionSquadUnstaked(event: LegionSquadUnstaked): void {
+  store.remove(
+    "CryptsSquad",
+    bytesFromBigInt(event.params._legionSquadId).toString()
+  );
+}
 
 export function handleMapTilesInitialized(event: MapTilesInitialized): void {
   const mapTiles = event.params._mapTiles;

@@ -45,9 +45,9 @@
               "type": "uint256"
             },
             {
-              "internalType": "uint256",
+              "internalType": "uint64",
               "name": "legionUnstakeCooldown",
-              "type": "uint256"
+              "type": "uint64"
             },
             {
               "internalType": "uint256",
@@ -112,43 +112,6 @@
           "type": "uint64"
         },
         {
-          "indexed": false,
-          "internalType": "uint16[]",
-          "name": "_legionIds",
-          "type": "uint16[]"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "_roundId",
-          "type": "uint256"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint8",
-          "name": "_targetTemple",
-          "type": "uint8"
-        }
-      ],
-      "name": "LegionSquadAdded",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": false,
-          "internalType": "address",
-          "name": "_user",
-          "type": "address"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint64",
-          "name": "_legionSquadId",
-          "type": "uint64"
-        },
-        {
           "components": [
             {
               "internalType": "uint8",
@@ -165,12 +128,6 @@
           "internalType": "struct Coordinate",
           "name": "_finalCoordinate",
           "type": "tuple"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "_roundId",
-          "type": "uint256"
         }
       ],
       "name": "LegionSquadMoved",
@@ -190,15 +147,59 @@
           "internalType": "uint64",
           "name": "_legionSquadId",
           "type": "uint64"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "_roundId",
-          "type": "uint256"
         }
       ],
       "name": "LegionSquadRemoved",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "_user",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint64",
+          "name": "_legionSquadId",
+          "type": "uint64"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint32[]",
+          "name": "_legionIds",
+          "type": "uint32[]"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint16",
+          "name": "_targetTemple",
+          "type": "uint16"
+        }
+      ],
+      "name": "LegionSquadStaked",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "_user",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint64",
+          "name": "_legionSquadId",
+          "type": "uint64"
+        }
+      ],
+      "name": "LegionSquadUnstaked",
       "type": "event"
     },
     {
@@ -418,6 +419,19 @@
         {
           "indexed": false,
           "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "Paused",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
           "name": "_user",
           "type": "address"
         },
@@ -429,9 +443,9 @@
         },
         {
           "indexed": false,
-          "internalType": "uint8",
+          "internalType": "uint16",
           "name": "_targetTemple",
-          "type": "uint8"
+          "type": "uint16"
         },
         {
           "indexed": false,
@@ -519,213 +533,42 @@
       "type": "event"
     },
     {
+      "anonymous": false,
       "inputs": [
         {
+          "indexed": false,
           "internalType": "address",
-          "name": "",
+          "name": "account",
           "type": "address"
-        },
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
         }
       ],
-      "name": "addressToCurrentBoard",
-      "outputs": [
-        {
-          "components": [
-            {
-              "internalType": "uint32",
-              "name": "mapTileId",
-              "type": "uint32"
-            },
-            {
-              "internalType": "uint8",
-              "name": "mapTileType",
-              "type": "uint8"
-            },
-            {
-              "internalType": "uint8",
-              "name": "moves",
-              "type": "uint8"
-            },
-            {
-              "internalType": "bool",
-              "name": "north",
-              "type": "bool"
-            },
-            {
-              "internalType": "bool",
-              "name": "east",
-              "type": "bool"
-            },
-            {
-              "internalType": "bool",
-              "name": "south",
-              "type": "bool"
-            },
-            {
-              "internalType": "bool",
-              "name": "west",
-              "type": "bool"
-            }
-          ],
-          "internalType": "struct MapTile",
-          "name": "mapTile",
-          "type": "tuple"
-        },
-        {
-          "internalType": "bool",
-          "name": "hasMapTile",
-          "type": "bool"
-        },
-        {
-          "internalType": "uint64",
-          "name": "legionSquadId",
-          "type": "uint64"
-        },
-        {
-          "internalType": "bool",
-          "name": "hasLegionSquad",
-          "type": "bool"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
+      "name": "Unpaused",
+      "type": "event"
     },
     {
       "inputs": [
         {
           "internalType": "address",
-          "name": "",
+          "name": "_address",
           "type": "address"
-        },
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
         }
       ],
-      "name": "addressToLegionSquads",
-      "outputs": [
-        {
-          "components": [
-            {
-              "internalType": "uint8",
-              "name": "x",
-              "type": "uint8"
-            },
-            {
-              "internalType": "uint8",
-              "name": "y",
-              "type": "uint8"
-            }
-          ],
-          "internalType": "struct Coordinate",
-          "name": "coordinate",
-          "type": "tuple"
-        },
-        {
-          "internalType": "uint64",
-          "name": "legionSquadId",
-          "type": "uint64"
-        },
-        {
-          "internalType": "uint8",
-          "name": "targetTemple",
-          "type": "uint8"
-        },
-        {
-          "internalType": "bool",
-          "name": "inTemple",
-          "type": "bool"
-        },
-        {
-          "internalType": "bool",
-          "name": "exists",
-          "type": "bool"
-        }
-      ],
-      "stateMutability": "view",
+      "name": "addAdmin",
+      "outputs": [],
+      "stateMutability": "nonpayable",
       "type": "function"
     },
     {
       "inputs": [
         {
-          "internalType": "address",
-          "name": "",
-          "type": "address"
-        },
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
+          "internalType": "address[]",
+          "name": "_addresses",
+          "type": "address[]"
         }
       ],
-      "name": "addressToMapTilesInHand",
-      "outputs": [
-        {
-          "internalType": "uint32",
-          "name": "mapTileId",
-          "type": "uint32"
-        },
-        {
-          "internalType": "uint8",
-          "name": "mapTileType",
-          "type": "uint8"
-        },
-        {
-          "internalType": "uint8",
-          "name": "moves",
-          "type": "uint8"
-        },
-        {
-          "internalType": "bool",
-          "name": "north",
-          "type": "bool"
-        },
-        {
-          "internalType": "bool",
-          "name": "east",
-          "type": "bool"
-        },
-        {
-          "internalType": "bool",
-          "name": "south",
-          "type": "bool"
-        },
-        {
-          "internalType": "bool",
-          "name": "west",
-          "type": "bool"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "name": "addressToRequestId",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
+      "name": "addAdmins",
+      "outputs": [],
+      "stateMutability": "nonpayable",
       "type": "function"
     },
     {
@@ -822,9 +665,14 @@
               "type": "tuple"
             },
             {
-              "internalType": "uint8",
+              "internalType": "address",
+              "name": "harvesterAddress",
+              "type": "address"
+            },
+            {
+              "internalType": "uint16",
               "name": "templeId",
-              "type": "uint8"
+              "type": "uint16"
             },
             {
               "internalType": "bool",
@@ -833,81 +681,6 @@
             }
           ],
           "internalType": "struct Temple[]",
-          "name": "",
-          "type": "tuple[]"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "uint64",
-          "name": "_legionSquadId",
-          "type": "uint64"
-        }
-      ],
-      "name": "getLegionIdsByLegionSquadId",
-      "outputs": [
-        {
-          "internalType": "uint16[]",
-          "name": "",
-          "type": "uint16[]"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "_user",
-          "type": "address"
-        }
-      ],
-      "name": "getPlayerMapTilesInHand",
-      "outputs": [
-        {
-          "components": [
-            {
-              "internalType": "uint32",
-              "name": "mapTileId",
-              "type": "uint32"
-            },
-            {
-              "internalType": "uint8",
-              "name": "mapTileType",
-              "type": "uint8"
-            },
-            {
-              "internalType": "uint8",
-              "name": "moves",
-              "type": "uint8"
-            },
-            {
-              "internalType": "bool",
-              "name": "north",
-              "type": "bool"
-            },
-            {
-              "internalType": "bool",
-              "name": "east",
-              "type": "bool"
-            },
-            {
-              "internalType": "bool",
-              "name": "south",
-              "type": "bool"
-            },
-            {
-              "internalType": "bool",
-              "name": "west",
-              "type": "bool"
-            }
-          ],
-          "internalType": "struct MapTile[]",
           "name": "",
           "type": "tuple[]"
         }
@@ -972,39 +745,11 @@
       "type": "function"
     },
     {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "_randomizerAddress",
-          "type": "address"
-        },
-        {
-          "internalType": "address",
-          "name": "_treasureFragmentAddress",
-          "type": "address"
-        },
-        {
-          "internalType": "address",
-          "name": "_legionContractAddress",
-          "type": "address"
-        },
-        {
-          "internalType": "address",
-          "name": "_legionMetadataStoreAddress",
-          "type": "address"
-        }
-      ],
-      "name": "initialize",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
       "inputs": [],
-      "name": "legionContract",
+      "name": "harvesterFactory",
       "outputs": [
         {
-          "internalType": "contract ILegion",
+          "internalType": "contract IHarvesterFactory",
           "name": "",
           "type": "address"
         }
@@ -1015,21 +760,29 @@
     {
       "inputs": [
         {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
+          "internalType": "address",
+          "name": "_address",
+          "type": "address"
         }
       ],
-      "name": "legionIdToStakingDetails",
+      "name": "isAdmin",
       "outputs": [
         {
           "internalType": "bool",
-          "name": "staked",
+          "name": "",
           "type": "bool"
-        },
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "legionContract",
+      "outputs": [
         {
-          "internalType": "address",
-          "name": "staker",
+          "internalType": "contract ILegion",
+          "name": "",
           "type": "address"
         }
       ],
@@ -1050,98 +803,6 @@
       "type": "function"
     },
     {
-      "inputs": [
-        {
-          "internalType": "uint64",
-          "name": "",
-          "type": "uint64"
-        }
-      ],
-      "name": "legionSquadIdToLocationData",
-      "outputs": [
-        {
-          "internalType": "address",
-          "name": "user",
-          "type": "address"
-        },
-        {
-          "internalType": "uint8",
-          "name": "index",
-          "type": "uint8"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "name": "legionSquadIdToMostRecentRoundTreasureClaimed",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "uint8",
-          "name": "",
-          "type": "uint8"
-        }
-      ],
-      "name": "mapTiles",
-      "outputs": [
-        {
-          "internalType": "uint32",
-          "name": "mapTileId",
-          "type": "uint32"
-        },
-        {
-          "internalType": "uint8",
-          "name": "mapTileType",
-          "type": "uint8"
-        },
-        {
-          "internalType": "uint8",
-          "name": "moves",
-          "type": "uint8"
-        },
-        {
-          "internalType": "bool",
-          "name": "north",
-          "type": "bool"
-        },
-        {
-          "internalType": "bool",
-          "name": "east",
-          "type": "bool"
-        },
-        {
-          "internalType": "bool",
-          "name": "south",
-          "type": "bool"
-        },
-        {
-          "internalType": "bool",
-          "name": "west",
-          "type": "bool"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
       "inputs": [],
       "name": "owner",
       "outputs": [
@@ -1149,6 +810,19 @@
           "internalType": "address",
           "name": "",
           "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "paused",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
         }
       ],
       "stateMutability": "view",
@@ -1168,6 +842,32 @@
       "type": "function"
     },
     {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_address",
+          "type": "address"
+        }
+      ],
+      "name": "removeAdmin",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address[]",
+          "name": "_addresses",
+          "type": "address[]"
+        }
+      ],
+      "name": "removeAdmins",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
       "inputs": [],
       "name": "renounceOwnership",
       "outputs": [],
@@ -1177,11 +877,18 @@
     {
       "inputs": [
         {
-          "internalType": "uint256",
-          "name": "_startingRequestId",
-          "type": "uint256"
+          "internalType": "bool",
+          "name": "_shouldPause",
+          "type": "bool"
         }
       ],
+      "name": "setPause",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
       "name": "startGame",
       "outputs": [],
       "stateMutability": "nonpayable",
@@ -1215,47 +922,6 @@
     {
       "inputs": [
         {
-          "internalType": "uint8",
-          "name": "",
-          "type": "uint8"
-        }
-      ],
-      "name": "templeIdToTemples",
-      "outputs": [
-        {
-          "components": [
-            {
-              "internalType": "uint8",
-              "name": "x",
-              "type": "uint8"
-            },
-            {
-              "internalType": "uint8",
-              "name": "y",
-              "type": "uint8"
-            }
-          ],
-          "internalType": "struct Coordinate",
-          "name": "coordinate",
-          "type": "tuple"
-        },
-        {
-          "internalType": "uint8",
-          "name": "templeId",
-          "type": "uint8"
-        },
-        {
-          "internalType": "bool",
-          "name": "exists",
-          "type": "bool"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
           "internalType": "address",
           "name": "newOwner",
           "type": "address"
@@ -1277,66 +943,6 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "components": [
-            {
-              "internalType": "uint256",
-              "name": "secondsInEpoch",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "numLegionsReachedTempleToAdvanceRound",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "maxMapTilesInHand",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "maxMapTilesOnBoard",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "maximumLegionSquadsOnBoard",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "maximumLegionsInSquad",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "templeCount",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "legionUnstakeCooldown",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "minimumDistanceFromTempleForLegionSquad",
-              "type": "uint256"
-            }
-          ],
-          "internalType": "struct GameConfig",
-          "name": "_gameConfig",
-          "type": "tuple"
-        }
-      ],
-      "name": "updateConfig",
-      "outputs": [],
-      "stateMutability": "nonpayable",
       "type": "function"
     }
   ]
