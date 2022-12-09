@@ -120,6 +120,15 @@ type User @entity(immutable: true) {
   rounds: [CryptsUserRound!]! @derivedFrom(field: "user")
 }
 
+type CryptsBoardTreasureFragment @entity(immutable: true) {
+  id: Bytes!
+
+  roundId: Int!
+  tokenId: Int!
+  positionX: Int!
+  positionY: Int!
+}
+
 type CryptsMapTile @entity(immutable: true) {
   id: Bytes!
 

@@ -34,8 +34,11 @@ export const getOrCreateConfig = (): Config => {
   if (!config) {
     config = new Config(CONFIG_ID);
     config.cryptsRound = -1;
+    config.cryptsLegionsUnstakeCooldown = BigInt.zero();
     config.maxCryptsSquadsPerUser = 3;
     config.maxLegionsPerCryptsSquad = 20;
+    config.maxCryptsMapTilesInHand = 60;
+    config.maxCryptsMapTilesOnBoard = 20;
     config.save();
   }
 

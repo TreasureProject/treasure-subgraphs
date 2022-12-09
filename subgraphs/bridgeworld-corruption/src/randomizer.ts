@@ -6,10 +6,19 @@ import {
 } from "@treasure/constants";
 
 import {
+  CorruptionCrypts,
+  CorruptionCrypts__generateBoardTreasureResultValue0Struct,
+  CorruptionCrypts__generateTemplePositionsResultValue0Struct,
+} from "../generated/Randomizer/CorruptionCrypts";
+import {
   RandomRequest,
   RandomSeeded,
 } from "../generated/Randomizer/Randomizer";
-import { Removal, Seeded } from "../generated/schema";
+import {
+  CryptsBoardTreasureFragment,
+  Removal,
+  Seeded,
+} from "../generated/schema";
 import { getOrCreateConfig } from "./helpers";
 
 export function handleRandomRequest(event: RandomRequest): void {
@@ -59,7 +68,27 @@ export function handleRandomSeeded(event: RandomSeeded): void {
       config.cryptsRequestId &&
       (config.cryptsRequestId as Bytes).equals(requestId)
     ) {
-      // FETCH RANDOM CRYPTS DATA
+      const contract = CorruptionCrypts.bind(CORRUPTION_CRYPTS_ADDRESS);
+      const templePositionsData = contract.try_generateTemplePositions();
+      if (templePositionsData.reverted) {
+        log.error("[randomizer] Error reading board temple positions: {}", [
+          requestId.toHexString(),
+        ]);
+        continue;
+      }
+
+      processTemplePositions(templePositionsData.value);
+
+      const boardTreasureData = contract.try_generateBoardTreasure();
+      if (boardTreasureData.reverted) {
+        log.error("[randomizer] Error reading board Treasure position: {}", [
+          requestId.toHexString(),
+        ]);
+        continue;
+      }
+
+      processBoardTreasure(boardTreasureData.value);
+
       continue;
     }
 
@@ -77,3 +106,21 @@ export function handleRandomSeeded(event: RandomSeeded): void {
 
   store.remove("Seeded", commitId.toHexString());
 }
+
+const processTemplePositions = (
+  params: CorruptionCrypts__generateTemplePositionsResultValue0Struct[]
+): void => {};
+
+const processBoardTreasure = (
+  params: CorruptionCrypts__generateBoardTreasureResultValue0Struct
+): void => {
+  const config = getOrCreateConfig();
+  const boardTreasureFragment = new CryptsBoardTreasureFragment(
+    Bytes.fromI32(config.cryptsRound)
+  );
+  boardTreasureFragment.roundId = config.cryptsRound;
+  boardTreasureFragment.tokenId = params.correspondingId;
+  boardTreasureFragment.positionX = params.coordinate.x;
+  boardTreasureFragment.positionY = params.coordinate.y;
+  boardTreasureFragment.save();
+};
