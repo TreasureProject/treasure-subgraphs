@@ -152,6 +152,7 @@ export const getOrCreateUserToken = (
     userToken = new UserToken(id);
     userToken.token = token.id;
     userToken.collection = token.collection;
+    userToken.tokenId = token.tokenId;
     userToken.owner = getOrCreateUser(owner).id;
     userToken.quantity = 0;
     userToken.save();

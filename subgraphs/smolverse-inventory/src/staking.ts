@@ -20,7 +20,9 @@ const handleStake = (
   const userToken = getOrCreateUserToken(token, user);
   const stakingContract = getStakingContract(address);
   if (!stakingContract) {
-    log.error("Unknown staking contract: {}", [address.toHexString()]);
+    log.error("[staking] Unknown staking contract: {}", [
+      address.toHexString(),
+    ]);
     return;
   }
 
@@ -41,7 +43,7 @@ export function handleJoinSchool(event: JoinSchool): void {
     getTokenId(SMOL_BRAINS_ADDRESS, event.params.tokenId)
   );
   if (!token) {
-    log.error("Unknown token joining School: {}", [
+    log.error("[staking] Unknown token joining School: {}", [
       event.params.tokenId.toString(),
     ]);
     return;
@@ -60,7 +62,7 @@ export function handleDropSchool(event: DropSchool): void {
     getTokenId(SMOL_BRAINS_ADDRESS, event.params.tokenId)
   );
   if (!token) {
-    log.error("Unknown token dropping School: {}", [
+    log.error("[staking] Unknown token dropping School: {}", [
       event.params.tokenId.toString(),
     ]);
     return;
@@ -74,7 +76,7 @@ export function handleJoinGym(event: JoinGym): void {
     getTokenId(SMOL_BODIES_ADDRESS, event.params.tokenId)
   );
   if (!token) {
-    log.error("Unknown token joining Gym: {}", [
+    log.error("[staking] Unknown token joining Gym: {}", [
       event.params.tokenId.toString(),
     ]);
     return;
@@ -93,7 +95,7 @@ export function handleDropGym(event: DropGym): void {
     getTokenId(SMOL_BODIES_ADDRESS, event.params.tokenId)
   );
   if (!token) {
-    log.error("Unknown token dropping Gym: {}", [
+    log.error("[staking] Unknown token dropping Gym: {}", [
       event.params.tokenId.toString(),
     ]);
     return;

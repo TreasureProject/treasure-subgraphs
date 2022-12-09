@@ -70,6 +70,9 @@ type UserToken @entity {
   "Token collection, exposed for querying purposes"
   collection: Collection!
 
+  "Token ID, exposed for querying purposes"
+  tokenId: Int!
+
   "User that owns this token"
   owner: User!
 
