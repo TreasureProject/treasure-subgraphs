@@ -44,6 +44,9 @@ export const LEGION_ADDRESS = Address.fromString(
 export const QUESTING_ADDRESS = Address.fromString(
   "{{questing_address}}{{^questing_address}}{{burner_address}}{{/questing_address}}"
 );
+export const RECRUIT_LEVEL_ADDRESS = Address.fromString(
+  "{{recruit_level_address}}{{^recruit_level_address}}{{burner_address}}{{/recruit_level_address}}"
+);
 export const SUMMONING_ADDRESS = Address.fromString(
   "{{summoning_address}}{{^summoning_address}}{{burner_address}}{{/summoning_address}}"
 );
@@ -91,6 +94,9 @@ export const MAGICSWAP_TOKEN_WHITELIST = [NATIVE.toHexString()];
 export const SMOL_BODIES_ADDRESS = Address.fromString(
   "{{smol_bodies_address}}{{^smol_bodies_address}}{{burner_address}}{{/smol_bodies_address}}"
 );
+export const SMOL_BODIES_GYM_ADDRESS = Address.fromString(
+  "{{smol_bodies_gym_address}}{{^smol_bodies_gym_address}}{{burner_address}}{{/smol_bodies_gym_address}}"
+);
 export const SMOL_BODIES_PETS_ADDRESS = Address.fromString(
   "{{smol_bodies_pets_address}}{{^smol_bodies_pets_address}}{{burner_address}}{{/smol_bodies_pets_address}}"
 );
@@ -102,6 +108,9 @@ export const SMOL_BRAINS_LAND_ADDRESS = Address.fromString(
 );
 export const SMOL_BRAINS_PETS_ADDRESS = Address.fromString(
   "{{smol_brains_pets_address}}{{^smol_brains_pets_address}}{{burner_address}}{{/smol_brains_pets_address}}"
+);
+export const SMOL_BRAINS_SCHOOL_ADDRESS = Address.fromString(
+  "{{smol_brains_school_address}}{{^smol_brains_school_address}}{{burner_address}}{{/smol_brains_school_address}}"
 );
 export const SMOL_CARS_ADDRESS = Address.fromString(
   "{{smol_cars_address}}{{^smol_cars_address}}{{burner_address}}{{/smol_cars_address}}"
@@ -118,11 +127,20 @@ export const SMOL_RACING_ADDRESS = Address.fromString(
 export const SMOL_RACING_TROPHIES_ADDRESS = Address.fromString(
   "{{smol_racing_trophies_address}}{{^smol_racing_trophies_address}}{{burner_address}}{{/smol_racing_trophies_address}}"
 );
+export const SMOL_ROCKET_ADDRESS = Address.fromString(
+  "{{smol_rocket_address}}{{^smol_rocket_address}}{{burner_address}}{{/smol_rocket_address}}"
+);
+export const SMOLOWEEN_ADDRESS = Address.fromString(
+  "{{smoloween_address}}{{^smoloween_address}}{{burner_address}}{{/smoloween_address}}"
+);
 export const SWOLERCYCLES_ADDRESS = Address.fromString(
   "{{swolercycles_address}}{{^swolercycles_address}}{{burner_address}}{{/swolercycles_address}}"
 );
 export const WRAPPED_SMOLS_ADDRESS = Address.fromString(
   "{{wrapped_smols_address}}{{^wrapped_smols_address}}{{burner_address}}{{/wrapped_smols_address}}"
+);
+export const BATTLEFLY_SMOLVERSE_FLYWHEEL_VAULT_ADDRESS = Address.fromString(
+  "{{battlefly_smolverse_flywheel_vault_address}}{{^battlefly_smolverse_flywheel_vault_address}}{{burner_address}}{{/battlefly_smolverse_flywheel_vault_address}}"
 );
 
 // Trove

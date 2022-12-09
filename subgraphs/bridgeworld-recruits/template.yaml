@@ -1,0 +1,61 @@
+specVersion: 0.0.4
+schema:
+  file: ./schema.graphql
+dataSources:
+  - name: Recruit Level
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ recruit_level_address }}"
+      abi: RecruitLevel
+      startBlock: {{ recruit_level_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Config
+        - LevelConfig
+        - Ascension
+        - AscensionRequest
+      abis:
+        - name: RecruitLevel
+          file: {{{ abis }}}/RecruitLevel.json
+      eventHandlers:
+        - event: AscensionInfoSet(uint16,uint16,uint16,uint16,uint16,uint16)
+          handler: handleAscensionInfoSet
+        - event: LevelUpInfoSet(uint16,uint32)
+          handler: handleLevelUpInfoSet
+        - event: MagicCostForAuxSet(uint256)
+          handler: handleMagicCostForAuxSet
+        - event: MaxLevelSet(uint16)
+          handler: handleMaxLevelSet
+        - event: RecruitAscendingToAuxBegan(indexed uint256,uint256)
+          handler: handleRecruitAscendingToAuxBegan
+        - event: RecruitAscendingToAuxEnded(indexed uint256,bool)
+          handler: handleRecruitAscendingToAuxEnded
+      file: ./src/recruit-level.ts
+  - name: Randomizer
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ randomizer_address }}"
+      abi: Randomizer
+      startBlock: {{ recruit_level_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Ascension
+        - AscensionRequest
+        - Seeded
+      abis:
+        - name: Randomizer
+          file: {{{ abis }}}/Randomizer.json
+      eventHandlers:
+        - event: RandomRequest(indexed uint256,indexed uint256)
+          handler: handleRandomRequest
+        - event: RandomSeeded(indexed uint256)
+          handler: handleRandomSeeded
+      file: ./src/randomizer.ts

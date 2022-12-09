@@ -422,9 +422,9 @@ test("legion metadata is correct for recruit", () => {
     "imageAlt",
     `${LEGION_PFP_IPFS}/Recruit/Recruit.webp`
   );
-  assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "name", "Recruit");
+  assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "name", "Base Recruit");
   assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "generation", "2");
-  assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "rarity", "None");
+  assert.fieldEquals(TOKEN_ENTITY_TYPE, id, "rarity", "Recruit");
 
   const metadata = `${id}-metadata`;
 
@@ -436,7 +436,7 @@ test("legion metadata is correct for recruit", () => {
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "craftingXp", "0");
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "recruitLevel", "1");
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "recruitXp", "0");
-  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "rarity", "None");
+  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "rarity", "Recruit");
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "role", "Base Recruit");
   assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "boost", "0.0");
 });

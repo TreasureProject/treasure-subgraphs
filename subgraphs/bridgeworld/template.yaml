@@ -560,6 +560,8 @@ dataSources:
           handler: handleRecruitTypeChanged
         - event: RecruitXPChanged(indexed uint256,uint16,uint32)
           handler: handleRecruitXpChanged
+        - event: RecruitCanAscendToAuxChanged(indexed uint256,bool)
+          handler: handleRecruitCanAscendToAuxChanged
         - event: AscensionInfoSet(uint16,uint16,uint16,uint16,uint16,uint16)
           handler: handleAscensionInfoSet
         - event: LevelUpInfoSet(uint16,uint32)

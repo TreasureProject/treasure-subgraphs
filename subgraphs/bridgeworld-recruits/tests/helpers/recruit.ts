@@ -6,7 +6,6 @@ import {
   AscensionInfoSet,
   LevelUpInfoSet,
   MaxLevelSet,
-  RecruitCanAscendToAuxChanged,
   RecruitTypeChanged,
   RecruitXPChanged,
 } from "../../generated/Recruit Level/RecruitLevel";
@@ -94,20 +93,5 @@ export const createRecruitXpChangedEvent = (
     new ethereum.EventParam("expCur", ethereum.Value.fromI32(xp)),
   ];
 
-  return event;
-};
-
-export const createRecruitCanAscendToAuxChangedEvent = (
-  tokenId: i32,
-  canAscendToAux: boolean
-): RecruitCanAscendToAuxChanged => {
-  const event = changetype<RecruitCanAscendToAuxChanged>(newMockEvent());
-  event.parameters = [
-    new ethereum.EventParam("tokenId", ethereum.Value.fromI32(tokenId)),
-    new ethereum.EventParam(
-      "canAscendToAux",
-      ethereum.Value.fromBoolean(canAscendToAux)
-    ),
-  ];
   return event;
 };

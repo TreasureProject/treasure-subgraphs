@@ -1,0 +1,75 @@
+enum Status {
+  Started
+  Ready
+  Finished
+  Failed
+}
+
+type Config @entity {
+  "Singleton with ID `only`"
+  id: Bytes!
+
+  "Maximum level that Recruits can reach"
+  maxLevel: Int!
+
+  "Cost, in MAGIC, to promote an Apprentice to an Auxiliary Legion"
+  magicCostForAux: BigInt!
+
+  "Minimum level Recruit must achieve before ascending to a Cadet"
+  cadetAscensionMinLevel: Int!
+
+  "Number of Essence of Starlight required to ascend Recruit to Cadet"
+  cadetAscensionCostEssenceOfStarlight: Int!
+
+  "Number of Prism Shards required to ascend Recruit to Cadet"
+  cadetAscensionCostPrismShards: Int!
+
+  "Minimum level Recruit must achieve before ascending to a Apprentice"
+  apprenticeAscensionMinLevel: Int!
+
+  "Number of Essence of Starlight required to ascend Recruit to Apprentice"
+  apprenticeAscensionCostEssenceOfStarlight: Int!
+
+  "Number of Prism Shards required to ascend Recruit to Apprentice"
+  apprenticeAscensionCostPrismShards: Int!
+
+  "List of level-specific Recruit configs"
+  levelConfigs: [LevelConfig!]! @derivedFrom(field: "config")
+}
+
+type LevelConfig @entity {
+  id: Bytes!
+
+  "Reference to the main config singleton"
+  config: Config!
+
+  "Recruit level for this configuration"
+  level: Int!
+
+  "Recruit XP required to gain before leveling up from this level"
+  xpToNextLevel: BigInt!
+}
+
+type Ascension @entity {
+  id: Bytes!
+
+  "Recruit token ID attempting ascension"
+  tokenId: BigInt!
+
+  "Ascension status"
+  status: Status!
+}
+
+type AscensionRequest @entity(immutable: true) {
+  id: Bytes!
+
+  "Ascension instance related to this Randomizer request"
+  ascension: Ascension!
+}
+
+type Seeded @entity {
+  id: Bytes!
+
+  "Requests related to this commit"
+  requests: [AscensionRequest!]!
+}

@@ -1,4 +1,4 @@
-import { log } from "@graphprotocol/graph-ts";
+import { BigInt, log } from "@graphprotocol/graph-ts";
 
 import { LEGION_ADDRESS, TREASURE_ADDRESS } from "@treasure/constants";
 
@@ -22,6 +22,7 @@ export function handleCraftingFinished(event: CraftingFinished): void {
 
   // Save outcome
   const outcome = new Outcome(miniCraftId);
+  outcome.magicReturned = BigInt.zero();
   outcome.rewardAmount = 1;
   outcome.reward = getAddressId(TREASURE_ADDRESS, params._treasureId);
   outcome.success = true;
