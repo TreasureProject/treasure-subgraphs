@@ -15,7 +15,7 @@ import {
   Withdraw,
 } from "../../generated/schema";
 import { LOCK_PERIOD_IN_SECONDS } from "../helpers";
-import { getUserOrMultisigAddress } from "../helpers/user";
+import { getUser, getUserOrMultisigAddress } from "../helpers/user";
 import { getAddressId } from "../helpers/utils";
 
 const ONE = BigDecimal.fromString((1e18).toString());
@@ -48,31 +48,24 @@ export function handleDeposit(event: DepositEvent): void {
 }
 
 export function handleStaked(event: Staked): void {
-  let params = event.params;
-  let nft = params.nft;
-  let tokenId = params.tokenId;
-  let quantity = params.amount;
-  let boost = params.currentBoost;
-  let addressId = getAddressId(nft, tokenId);
+  const params = event.params;
+  const quantity = params.amount;
+
   let userId = getUserOrMultisigAddress(event).toHexString();
-  let stakedTokenId = `${userId}-${addressId}`;
+  const user = getUser(userId);
+  user.boosts = user.boosts + quantity.toI32();
+  user.boost = params.currentBoost.divDecimal(ONE).toString();
+  user.save();
 
-  let user = User.load(userId);
-
-  if (user) {
-    user.boosts = user.boosts + quantity.toI32();
-    user.boost = boost.divDecimal(ONE).toString();
-    user.save();
-  }
-
+  const addressId = getAddressId(params.nft, params.tokenId);
+  const stakedTokenId = `${userId}-${addressId}`;
   let stakedToken = StakedToken.load(stakedTokenId);
-
   if (!stakedToken) {
     stakedToken = new StakedToken(stakedTokenId);
     stakedToken.mine = event.address.toHexString();
     stakedToken.quantity = BigInt.zero();
     stakedToken.token = addressId;
-    stakedToken.user = userId;
+    stakedToken.user = user.id;
     stakedToken.expirationProcessed = false;
   }
 
