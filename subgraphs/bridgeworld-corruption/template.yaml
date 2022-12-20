@@ -97,7 +97,7 @@ dataSources:
           handler: handleLegionSquadMoved
         - event: LegionSquadRemoved(address,uint64)
           handler: handleLegionSquadRemoved
-        - event: LegionSquadStaked(address,uint64,uint32[],uint16)
+        - event: LegionSquadStaked(address,uint64,uint32[],uint16,string)
           handler: handleLegionSquadStaked
         - event: LegionSquadUnstaked(address,uint64)
           handler: handleLegionSquadUnstaked

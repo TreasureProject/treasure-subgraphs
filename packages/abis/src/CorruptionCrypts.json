@@ -188,6 +188,12 @@
           "internalType": "uint16",
           "name": "_targetTemple",
           "type": "uint16"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "_legionSquadName",
+          "type": "string"
         }
       ],
       "name": "LegionSquadStaked",
@@ -671,166 +677,6 @@
     },
     {
       "inputs": [],
-      "name": "generateBoardTreasure",
-      "outputs": [
-        {
-          "components": [
-            {
-              "components": [
-                {
-                  "internalType": "uint8",
-                  "name": "x",
-                  "type": "uint8"
-                },
-                {
-                  "internalType": "uint8",
-                  "name": "y",
-                  "type": "uint8"
-                }
-              ],
-              "internalType": "struct Coordinate",
-              "name": "coordinate",
-              "type": "tuple"
-            },
-            {
-              "internalType": "uint8",
-              "name": "treasureTier",
-              "type": "uint8"
-            },
-            {
-              "internalType": "uint8",
-              "name": "affinity",
-              "type": "uint8"
-            },
-            {
-              "internalType": "uint8",
-              "name": "correspondingId",
-              "type": "uint8"
-            },
-            {
-              "internalType": "uint16",
-              "name": "numClaimed",
-              "type": "uint16"
-            },
-            {
-              "internalType": "uint16",
-              "name": "maxSupply",
-              "type": "uint16"
-            }
-          ],
-          "internalType": "struct BoardTreasure",
-          "name": "",
-          "type": "tuple"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "generateTemplePositions",
-      "outputs": [
-        {
-          "components": [
-            {
-              "components": [
-                {
-                  "internalType": "uint8",
-                  "name": "x",
-                  "type": "uint8"
-                },
-                {
-                  "internalType": "uint8",
-                  "name": "y",
-                  "type": "uint8"
-                }
-              ],
-              "internalType": "struct Coordinate",
-              "name": "coordinate",
-              "type": "tuple"
-            },
-            {
-              "internalType": "address",
-              "name": "harvesterAddress",
-              "type": "address"
-            },
-            {
-              "internalType": "uint32",
-              "name": "latestRoundIdEnterable",
-              "type": "uint32"
-            },
-            {
-              "internalType": "uint16",
-              "name": "templeId",
-              "type": "uint16"
-            }
-          ],
-          "internalType": "struct Temple[]",
-          "name": "",
-          "type": "tuple[]"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "_user",
-          "type": "address"
-        }
-      ],
-      "name": "getPlayerMapTilesPending",
-      "outputs": [
-        {
-          "components": [
-            {
-              "internalType": "uint32",
-              "name": "mapTileId",
-              "type": "uint32"
-            },
-            {
-              "internalType": "uint8",
-              "name": "mapTileType",
-              "type": "uint8"
-            },
-            {
-              "internalType": "uint8",
-              "name": "moves",
-              "type": "uint8"
-            },
-            {
-              "internalType": "bool",
-              "name": "north",
-              "type": "bool"
-            },
-            {
-              "internalType": "bool",
-              "name": "east",
-              "type": "bool"
-            },
-            {
-              "internalType": "bool",
-              "name": "south",
-              "type": "bool"
-            },
-            {
-              "internalType": "bool",
-              "name": "west",
-              "type": "bool"
-            }
-          ],
-          "internalType": "struct MapTile[]",
-          "name": "",
-          "type": "tuple[]"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
       "name": "harvesterFactory",
       "outputs": [
         {
@@ -968,13 +814,6 @@
         }
       ],
       "name": "setPause",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "startGame",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"

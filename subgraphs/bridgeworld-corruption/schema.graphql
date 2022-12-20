@@ -207,6 +207,9 @@ type CryptsSquad @entity {
   "Temple this squad is targeting"
   targetTemple: CryptsTemple!
 
+  "Custom name for squad"
+  name: String!
+
   "X coordinate on board, -1 if not placed"
   positionX: Int!
 

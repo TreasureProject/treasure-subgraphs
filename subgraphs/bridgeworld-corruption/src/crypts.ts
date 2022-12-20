@@ -70,6 +70,7 @@ export function handleLegionSquadStaked(event: LegionSquadStaked): void {
   squad.legionTokenIds = params._legionIds.map<i32>((value) => value.toI32());
   squad.stakedTimestamp = event.block.timestamp;
   squad.targetTemple = temple.id;
+  squad.name = params._legionSquadName;
   squad.positionX = -1;
   squad.positionY = -1;
   squad.inTemple = false;
