@@ -10,6 +10,7 @@ import {
   MapTilePlaced,
   MapTilesClaimed,
   MapTilesInitialized,
+  TempleCreated,
   TempleEntered,
 } from "../generated/CorruptionCrypts/CorruptionCrypts";
 import {
@@ -31,14 +32,16 @@ export function handleConfigUpdated(event: ConfigUpdated): void {
   config.minimumDistanceFromTempleForCryptsLegionSquad =
     params.minimumDistanceFromTempleForLegionSquad.toI32();
   config.save();
+}
 
-  for (let i = 1; i <= 3; i += 1) {
-    const temple = new CryptsTemple(Bytes.fromI32(i));
-    temple.templeId = i;
-    temple.positionX = -1;
-    temple.positionY = -1;
-    temple.save();
-  }
+export function handleTempleCreated(event: TempleCreated): void {
+  const params = event.params;
+  const temple = new CryptsTemple(Bytes.fromI32(params.thisTempleId));
+  temple.templeId = params.thisTempleId;
+  temple.address = params._thisHarvester;
+  temple.positionX = -1;
+  temple.positionY = -1;
+  temple.save();
 }
 
 export function handleGlobalRandomnessRequested(

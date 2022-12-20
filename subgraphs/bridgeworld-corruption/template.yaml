@@ -107,6 +107,8 @@ dataSources:
           handler: handleMapTilesClaimed
         - event: MapTilesInitialized((uint32,uint8,uint8,bool,bool,bool,bool)[])
           handler: handleMapTilesInitialized
+        - event: TempleCreated(uint16,address)
+          handler: handleTempleCreated
         - event: TempleEntered(address,uint64,uint16,uint256)
           handler: handleTempleEntered
       file: ./src/crypts.ts
