@@ -1,4 +1,4 @@
-import { BigInt, Bytes, log, store } from "@graphprotocol/graph-ts";
+import { Bytes, log, store } from "@graphprotocol/graph-ts";
 
 import {
   ConfigUpdated,
@@ -32,7 +32,7 @@ export function handleConfigUpdated(event: ConfigUpdated): void {
     params.minimumDistanceFromTempleForLegionSquad.toI32();
   config.save();
 
-  for (let i = 0; i < params.templeCount.toI32(); i += 1) {
+  for (let i = 1; i <= 3; i += 1) {
     const temple = new CryptsTemple(Bytes.fromI32(i));
     temple.templeId = i;
     temple.positionX = -1;
@@ -51,7 +51,7 @@ export function handleGlobalRandomnessRequested(
   config.save();
 }
 
-export function handleLegionStaked(event: LegionSquadStaked): void {
+export function handleLegionSquadStaked(event: LegionSquadStaked): void {
   const params = event.params;
   const temple = CryptsTemple.load(Bytes.fromI32(params._targetTemple));
   if (!temple) {
@@ -105,7 +105,7 @@ export function handleLegionSquadRemoved(event: LegionSquadRemoved): void {
 export function handleLegionSquadUnstaked(event: LegionSquadUnstaked): void {
   store.remove(
     "CryptsSquad",
-    bytesFromBigInt(event.params._legionSquadId).toString()
+    bytesFromBigInt(event.params._legionSquadId).toHexString()
   );
 }
 
@@ -130,21 +130,21 @@ export function handleMapTilesInitialized(event: MapTilesInitialized): void {
 export function handleMapTilesClaimed(event: MapTilesClaimed): void {
   const params = event.params;
   const user = getOrCreateUser(params._user);
-  for (let i = 0; i < params._maptiles.length; i += 1) {
+  for (let i = 0; i < params._mapTiles.length; i += 1) {
     const mapTile = CryptsMapTile.load(
-      Bytes.fromI32(params._maptiles[i].mapTileType)
+      Bytes.fromI32(params._mapTiles[i].mapTileType)
     );
     if (!mapTile) {
       log.error("[crypts] Claiming unknown map tile: {}", [
-        params._maptiles[i].mapTileType.toString(),
+        params._mapTiles[i].mapTileType.toString(),
       ]);
       continue;
     }
 
     const userMapTile = new CryptsUserMapTile(
-      bytesFromBigInt(params._maptiles[i].mapTileId)
+      bytesFromBigInt(params._mapTiles[i].mapTileId)
     );
-    userMapTile.userMapTileId = params._maptiles[i].mapTileId;
+    userMapTile.userMapTileId = params._mapTiles[i].mapTileId;
     userMapTile.user = user.id;
     userMapTile.mapTile = mapTile.id;
     userMapTile.positionX = -1;
@@ -156,11 +156,11 @@ export function handleMapTilesClaimed(event: MapTilesClaimed): void {
 export function handleMapTilePlaced(event: MapTilePlaced): void {
   const params = event.params;
   const userMapTile = CryptsUserMapTile.load(
-    bytesFromBigInt(params._maptile.mapTileId)
+    bytesFromBigInt(params._mapTile.mapTileId)
   );
   if (!userMapTile) {
     log.error("[crypts] Received placement for unknown map tile: {}", [
-      params._maptile.mapTileId.toString(),
+      params._mapTile.mapTileId.toString(),
     ]);
     return;
   }

@@ -89,7 +89,7 @@ dataSources:
         - name: CorruptionCrypts
           file: {{{ abis }}}/CorruptionCrypts.json
       eventHandlers:
-        - event: ConfigUpdated((uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint64,uint256))
+        - event: ConfigUpdated((uint256,uint256,uint256,uint256,uint256,uint256,uint64,uint256,uint256,uint256,uint256,uint256))
           handler: handleConfigUpdated
         - event: GlobalRandomnessRequested(uint256,uint256)
           handler: handleGlobalRandomnessRequested

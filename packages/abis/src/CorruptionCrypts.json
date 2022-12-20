@@ -1,10 +1,5 @@
 [
     {
-      "inputs": [],
-      "name": "Empty",
-      "type": "error"
-    },
-    {
       "anonymous": false,
       "inputs": [
         {
@@ -40,11 +35,6 @@
               "type": "uint256"
             },
             {
-              "internalType": "uint256",
-              "name": "templeCount",
-              "type": "uint256"
-            },
-            {
               "internalType": "uint64",
               "name": "legionUnstakeCooldown",
               "type": "uint64"
@@ -52,6 +42,26 @@
             {
               "internalType": "uint256",
               "name": "minimumDistanceFromTempleForLegionSquad",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "EOSID",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "EOSAmount",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "prismShardID",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "prismShardAmount",
               "type": "uint256"
             }
           ],
@@ -251,7 +261,7 @@
           ],
           "indexed": false,
           "internalType": "struct MapTile",
-          "name": "_maptile",
+          "name": "_mapTile",
           "type": "tuple"
         },
         {
@@ -280,6 +290,49 @@
         }
       ],
       "name": "MapTilePlaced",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "_user",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint32",
+          "name": "_mapTileId",
+          "type": "uint32"
+        },
+        {
+          "components": [
+            {
+              "internalType": "uint8",
+              "name": "x",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint8",
+              "name": "y",
+              "type": "uint8"
+            }
+          ],
+          "indexed": false,
+          "internalType": "struct Coordinate",
+          "name": "_coordinate",
+          "type": "tuple"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "_roundId",
+          "type": "uint256"
+        }
+      ],
+      "name": "MapTileRemoved",
       "type": "event"
     },
     {
@@ -331,7 +384,7 @@
           ],
           "indexed": false,
           "internalType": "struct MapTile[]",
-          "name": "_maptiles",
+          "name": "_mapTiles",
           "type": "tuple[]"
         },
         {
@@ -424,6 +477,25 @@
         }
       ],
       "name": "Paused",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint16",
+          "name": "thisTempleId",
+          "type": "uint16"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "_thisHarvester",
+          "type": "address"
+        }
+      ],
+      "name": "TempleCreated",
       "type": "event"
     },
     {
@@ -573,6 +645,19 @@
     },
     {
       "inputs": [],
+      "name": "consumable",
+      "outputs": [
+        {
+          "internalType": "contract IConsumable",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
       "name": "currentRoundId",
       "outputs": [
         {
@@ -670,14 +755,14 @@
               "type": "address"
             },
             {
+              "internalType": "uint32",
+              "name": "latestRoundIdEnterable",
+              "type": "uint32"
+            },
+            {
               "internalType": "uint16",
               "name": "templeId",
               "type": "uint16"
-            },
-            {
-              "internalType": "bool",
-              "name": "exists",
-              "type": "bool"
             }
           ],
           "internalType": "struct Temple[]",
