@@ -133,6 +133,9 @@ export const SMOL_ROCKET_ADDRESS = Address.fromString(
 export const SMOLOWEEN_ADDRESS = Address.fromString(
   "{{smoloween_address}}{{^smoloween_address}}{{burner_address}}{{/smoloween_address}}"
 );
+export const SMOLIDAYS_ADDRESS = Address.fromString(
+  "{{smolidays_address}}{{^smolidays_address}}{{burner_address}}{{/smolidays_address}}"
+);
 export const SWOLERCYCLES_ADDRESS = Address.fromString(
   "{{swolercycles_address}}{{^swolercycles_address}}{{burner_address}}{{/swolercycles_address}}"
 );
