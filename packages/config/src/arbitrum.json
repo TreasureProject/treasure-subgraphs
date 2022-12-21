@@ -156,5 +156,8 @@
   "magicswap_factory_start_block": 20547275,
 
   "smoloween_address": "0x919c574D12dF2b534467f224c16Bd8475846B25c",
-  "smoloween_start_block": 31361568
+  "smoloween_start_block": 31361568,
+
+  "smolidays_address": "0x346BA11c7e220e4E8700Bafa9eEdaf674be3E0f5",
+  "smolidays_start_block": 47422160
 }

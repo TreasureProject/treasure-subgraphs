@@ -1,12 +1,12 @@
 {
-  "name": "smoloween",
+  "name": "smolidays",
   "version": "1.0.0",
-  "description": "Subgraph that powers Smoloween",
+  "description": "Subgraph that powers Smolidays",
   "license": "MIT",
   "scripts": {
     "codegen": "graph codegen",
-    "deploy:dev": "graph deploy --product hosted-service treasureproject/smoloween-dev",
-    "deploy:prod": "graph deploy --product hosted-service treasureproject/smoloween",
+    "deploy:dev": "graph deploy --product hosted-service treasureproject/smolidays-dev",
+    "deploy:prod": "graph deploy --product hosted-service treasureproject/smolidays",
     "prepare:dev": "yarn --cwd ../../packages/constants prepare:arbitrum-goerli && mustache ../../node_modules/@treasure/subgraph-config/src/arbitrum-goerli.json template.yaml > subgraph.yaml",
     "prepare:prod": "yarn --cwd ../../packages/constants prepare:arbitrum && mustache ../../node_modules/@treasure/subgraph-config/src/arbitrum.json template.yaml > subgraph.yaml",
     "test": "graph test -v 0.5.0"
