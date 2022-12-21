@@ -49,8 +49,8 @@ dataSources:
           handler: handleAttackResolved
         - event: Converted(uint256,uint256)
           handler: handleConverted
-        # - event: CopyResolved(uint256,uint256,uint256,uint256,bool)
-        #   handler: handleCopyResolved
+        - event: CopyResolved(uint256,uint256,uint256,uint256,bool)
+          handler: handleCopyResolved
         - event: Midnight(uint256,uint256)
           handler: handleMidnight
         - event: RandomnessRequested(uint256,uint256)

@@ -3,6 +3,7 @@ import { log } from "@graphprotocol/graph-ts";
 import {
   AttackResolved,
   Converted,
+  CopyResolved,
   Midnight,
   RandomnessRequested,
   SentToAttack,
@@ -113,16 +114,6 @@ export function handleRandomnessRequested(event: RandomnessRequested): void {
 export function handleMidnight(event: Midnight): void {
   const config = getOrCreateConfig();
   config.currentDay = event.params.newDay.toI32();
-
-  const stat = getOrCreateStat();
-  for (let i = 0; i < stat.aliveSmols.length; i++) {
-    const token = Token.load(stat.aliveSmols[i]);
-
-    if (token) {
-      token.points += 1;
-      token.save();
-    }
-  }
   config.paused = false;
   config.save();
 }
@@ -223,7 +214,7 @@ export function handleAttackResolved(event: AttackResolved): void {
         continue;
       }
 
-      attacker.points += 1;
+      attacker.points += 3;
       attacker.save();
     }
   }
@@ -231,4 +222,21 @@ export function handleAttackResolved(event: AttackResolved): void {
   // Clear queue of attackers for the next round
   target.attackers = [];
   target.save();
+}
+
+export function handleCopyResolved(event: CopyResolved): void {
+  const params = event.params;
+  const id = params.gameId.toString();
+
+  const token = Token.load(id);
+  if (!token) {
+    log.error("[smoloween] Resolving copy for unknown target Token: {}", [id]);
+    return;
+  }
+
+  // Only increment points if copying succeeds
+  if (params.success) {
+    token.points += 1;
+    token.save();
+  }
 }
