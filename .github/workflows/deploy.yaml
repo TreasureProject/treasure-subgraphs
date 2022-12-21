@@ -20,8 +20,8 @@ jobs:
       smolverse: ${{ steps.filter.outputs.smolverse }}
       smolverse_inventory: ${{ steps.filter.outputs.smolverse_inventory }}
       smol_racing: ${{ steps.filter.outputs.smol_racing }}
-      smoloween: ${{ steps.filter.ouputs.smoloween }}
-      smolidays: ${{ steps.filter.ouputs.smolidays }}
+      smoloween: ${{ steps.filter.outputs.smoloween }}
+      smolidays: ${{ steps.filter.outputs.smolidays }}
     steps:
     - name: Check out code
       uses: actions/checkout@v2
