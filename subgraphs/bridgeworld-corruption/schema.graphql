@@ -42,6 +42,12 @@ type Config @entity {
   "Current round in progress"
   cryptsRound: Int!
 
+  "Current round start time"
+  cryptsRoundStartTime: BigInt!
+
+  "Number of seconds per epoch"
+  cryptsSecondsInEpoch: BigInt!
+
   "Amount of time before a Legion squad can be unstaked, in seconds"
   cryptsLegionsUnstakeCooldown: BigInt!
 

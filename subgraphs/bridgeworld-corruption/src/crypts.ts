@@ -24,6 +24,7 @@ import { bytesFromBigInt, getOrCreateConfig, getOrCreateUser } from "./helpers";
 export function handleConfigUpdated(event: ConfigUpdated): void {
   const params = event.params._newConfig;
   const config = getOrCreateConfig();
+  config.cryptsSecondsInEpoch = params.secondsInEpoch;
   config.cryptsLegionsUnstakeCooldown = params.legionUnstakeCooldown;
   config.maxCryptsSquadsPerUser = params.maximumLegionSquadsOnBoard.toI32();
   config.maxLegionsPerCryptsSquad = params.maximumLegionsInSquad.toI32();
@@ -51,6 +52,7 @@ export function handleGlobalRandomnessRequested(
   const config = getOrCreateConfig();
   config.cryptsRequestId = bytesFromBigInt(params._globalRequestId);
   config.cryptsRound = params._roundId.toI32();
+  config.cryptsRoundStartTime = event.block.timestamp;
   config.save();
 }
 

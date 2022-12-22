@@ -34,6 +34,8 @@ export const getOrCreateConfig = (): Config => {
   if (!config) {
     config = new Config(SINGLETON_ID);
     config.cryptsRound = -1;
+    config.cryptsRoundStartTime = BigInt.zero();
+    config.cryptsSecondsInEpoch = BigInt.zero();
     config.cryptsLegionsUnstakeCooldown = BigInt.zero();
     config.maxCryptsSquadsPerUser = 3;
     config.maxLegionsPerCryptsSquad = 20;
