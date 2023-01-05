@@ -24,7 +24,7 @@ function populateUpgradeFields(
   upgrade.merkleRoot = upgradeInfo.merkleRoot.toString();
 }
 
-export function handleNewUpgrade({ params }: UpgradeAddedToContract) {
+export function handleNewUpgrade({ params }: UpgradeAddedToContract): void {
   const upgrade = new Upgrade(params._upgradeId.toString());
 
   populateUpgradeFields(upgrade, params._upgradeInfo);
