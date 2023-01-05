@@ -34,7 +34,7 @@ type Upgrade @entity {
   validSkinId: BigInt!
 
   "Indicates the vehicles that support the upgrade"
-  upgradeType: Int!
+  validVehicleType: Int!
 
   "The name of the upgrade"
   name: String!
