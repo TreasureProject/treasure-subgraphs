@@ -1,0 +1,47 @@
+"Collection of upgrades"
+type Upgrade @entity {
+  "Singleton with ID `only`"
+  id: ID!
+
+  "Number of claims for the upgrade"
+  amountClaimed: BigInt!
+
+  "Limited offer for the upgrade"
+  limitedOfferId: BigInt!
+
+  "Max supply for the upgrade"
+  maxSupply: BigInt!
+
+  "Price to unlock the upgrade"
+  price: BigInt!
+
+  "Claim subgroup for the upgrade"
+  subgroupId: BigInt!
+
+  "Claim subgroup for the upgrade"
+  forSale: Boolean!
+
+  "Claim subgroup for the upgrade"
+  tradable: Boolean!
+
+  "Claim subgroup for the upgrade"
+  uncappedSupply: Boolean!
+
+  "Indicates the type of the upgrade"
+  upgradeType: Int!
+
+  "The skin id that can use the upgrade"
+  validSkinId: BigInt!
+
+  "Indicates the vehicles that support the upgrade"
+  upgradeType: Int!
+
+  "The name of the upgrade"
+  name: String!
+
+  "The URI of the upgrade"
+  uri: String!
+
+  "The merkle root for the upgrade"
+  merkleRoot: String!
+}

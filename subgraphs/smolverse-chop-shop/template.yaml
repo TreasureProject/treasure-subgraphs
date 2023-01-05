@@ -1,0 +1,24 @@
+specVersion: 0.0.4
+schema:
+  file: ./schema.graphql
+dataSources:
+  - name: SmolChopShop
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ smol_chop_shop_address }}"
+      abi: SmolChopShop
+      startBlock: {{ smol_chop_shop_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Upgrade
+      abis:
+        - name: SmolChopShop
+          file: {{{ abis }}}/SmolChopShop.json
+      eventHandlers:
+        - event: UpgradeAddedToContract(indexed uint256,(uint32,uint32,uint32,uint32,uint32,bool,bool,bool,uint8,uint32,uint8,string,string,bytes32))
+          handler: handleNewUpgrade
+      file: ./src/mappings/smolChopShop.ts
