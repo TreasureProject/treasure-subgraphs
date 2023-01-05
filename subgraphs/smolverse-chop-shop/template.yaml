@@ -21,4 +21,8 @@ dataSources:
       eventHandlers:
         - event: UpgradeAddedToContract(indexed uint256,(uint32,uint32,uint32,uint32,uint32,bool,bool,bool,uint8,uint32,uint8,string,string,bytes32))
           handler: handleNewUpgrade
+        - event: UpgradeInfoChanged(indexed uint256,(uint32,uint32,uint32,uint32,uint32,bool,bool,bool,uint8,uint32,uint8,string,string,bytes32))
+          handler: handleUpgradeUpdate
+        - event: UpgradeSaleStateChanged(indexed uint256,indexed bool)
+          handler: handleUpgradeSaleStateUpdate
       file: ./src/mappings/smolChopShop.ts

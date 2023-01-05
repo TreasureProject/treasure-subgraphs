@@ -1,7 +1,7 @@
 "Collection of upgrades"
 type Upgrade @entity {
-  "Singleton with ID `only`"
-  id: ID!
+  "Id of the upgrade"
+  id: Bytes!
 
   "Number of claims for the upgrade"
   amountClaimed: BigInt!
