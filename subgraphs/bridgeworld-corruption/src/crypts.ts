@@ -76,6 +76,7 @@ export function handleLegionSquadStaked(event: LegionSquadStaked): void {
   squad.positionX = -1;
   squad.positionY = -1;
   squad.inTemple = false;
+  squad.lastRoundInTemple = -1;
   squad.save();
 }
 
@@ -187,5 +188,6 @@ export function handleTempleEntered(event: TempleEntered): void {
   }
 
   squad.inTemple = true;
+  squad.lastRoundInTemple = params._roundId.toI32();
   squad.save();
 }

@@ -41,6 +41,10 @@ export const getOrCreateConfig = (): Config => {
     config.maxLegionsPerCryptsSquad = 20;
     config.maxCryptsMapTilesInHand = 60;
     config.maxCryptsMapTilesOnBoard = 20;
+    config.minimumDistanceFromTempleForCryptsLegionSquad = 6;
+    config.cryptsCraftRoundResetTimeAllowance = 1800;
+    config.cryptsCraftMalevolentPrismsRequired = 1;
+    config.cryptsCraftMinimumAuxLegionLevel = 3;
     config.save();
   }
 

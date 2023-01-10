@@ -64,7 +64,16 @@ type Config @entity {
   maxCryptsMapTilesOnBoard: Int!
 
   "Minimum number of tiles away from temple a Legion squad must be placed on board"
-  minimumDistanceFromTempleForCryptsLegionSquad: Int
+  minimumDistanceFromTempleForCryptsLegionSquad: Int!
+
+  "Amout of time, in seconds, a Legion has to craft Corruption after the Crypts round resets"
+  cryptsCraftRoundResetTimeAllowance: Int!
+
+  "Number of Malevolent Prisms required per Corruption craft"
+  cryptsCraftMalevolentPrismsRequired: Int!
+
+  "Minimum crafting level for an Auxiliary Legion to craft Corruption"
+  cryptsCraftMinimumAuxLegionLevel: Int!
 }
 
 type Building @entity {
@@ -224,6 +233,9 @@ type CryptsSquad @entity {
 
   "True if squad has entered the target temple"
   inTemple: Boolean!
+
+  "Last round ID where this squad entered the target temple"
+  lastRoundInTemple: Int!
 }
 
 type CryptsUserMapTile @entity {

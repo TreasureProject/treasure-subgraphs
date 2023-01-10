@@ -112,6 +112,30 @@ dataSources:
         - event: TempleEntered(address,uint64,uint16,uint256)
           handler: handleTempleEntered
       file: ./src/crypts.ts
+  - name: CorruptionCryptsRewards
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ corruption_crypts_rewards_address }}"
+      abi: CorruptionCryptsRewards
+      startBlock: {{ corruption_crypts_rewards_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Config
+      abis:
+        - name: CorruptionCryptsRewards
+          file: {{{ abis }}}/CorruptionCryptsRewards.json
+      eventHandlers:
+        - event: MalevolentPrismsPerCraftSet(uint256)
+          handler: handleMalevolentPrismsPerCraftSet
+        - event: MinimumCraftLevelForAuxCorruptionSet(uint256)
+          handler: handleMinimumCraftLevelForAuxCorruptionSet
+        - event: RoundResetTimeAllowanceSet(uint256)
+          handler: handleRoundResetTimeAllowanceSet
+      file: ./src/crypts-rewards.ts
   - name: Randomizer
     kind: ethereum/contract
     network: {{ network }}

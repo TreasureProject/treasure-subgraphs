@@ -53,6 +53,8 @@
   "treasure_corruption_handler_start_block": 804038,
   "corruption_crypts_address": "0x4c07763D046436DeDB4dB3A2ed12ff46bE6DDe3a",
   "corruption_crypts_start_block": 4202979,
+  "corruption_crypts_rewards_address": "0x58E67C89E332c6eFC8052Cc0dB503D7f23B126f8",
+  "corruption_crypts_rewards_start_block": 4202645,
 
   "smol_brains_address": "0x2542421ACA04A98f5Cf04DA97a36DAD8F1FaC3f4",
   "smol_brains_start_block": 502313,
