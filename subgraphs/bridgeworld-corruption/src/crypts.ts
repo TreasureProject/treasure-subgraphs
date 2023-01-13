@@ -8,6 +8,7 @@ import {
   LegionSquadStaked,
   LegionSquadUnstaked,
   MapTilePlaced,
+  MapTileRemovedFromBoard,
   MapTilesClaimed,
   MapTilesInitialized,
   TempleCreated,
@@ -175,6 +176,15 @@ export function handleMapTilePlaced(event: MapTilePlaced): void {
   userMapTile.positionX = params._coordinate.x;
   userMapTile.positionY = params._coordinate.y;
   userMapTile.save();
+}
+
+export function handleMapTileRemovedFromBoard(
+  event: MapTileRemovedFromBoard
+): void {
+  store.remove(
+    "CryptsUserMapTile",
+    bytesFromBigInt(event.params._mapTileId).toHexString()
+  );
 }
 
 export function handleTempleEntered(event: TempleEntered): void {
