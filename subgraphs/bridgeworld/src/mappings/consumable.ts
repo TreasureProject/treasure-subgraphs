@@ -46,6 +46,10 @@ function getName(tokenId: i32): string {
       return "Essence of Grin";
     case 14:
       return "Shrouded Tesseract";
+    case 15:
+      return "Malevolent Prism";
+    case 16:
+      return "Atlas Mine Staker Harvester Part";
     default:
       log.error("Unhandled consumable name: {}", [tokenId.toString()]);
 
@@ -57,6 +61,10 @@ const getDescription = (tokenId: i32): string | null => {
   switch (tokenId) {
     case 7:
       return "Please confirm that there are available Harvesters before buying a Harvester Part";
+    case 15:
+      return "Soulbound prism obtained by removing Corruption from Bridgeworld";
+    case 16:
+      return "Soulbound Harvester Parts awarded to original 12-month stakers in the Atlas Mine";
     default:
       return null;
   }
@@ -85,12 +93,14 @@ function getType(tokenId: i32): string {
     case 1:
     case 2:
     case 3:
+    case 15:
       return "Prism";
     case 4:
     case 5:
     case 6:
       return "Extractor";
     case 7:
+    case 16:
       return "Harvester Part";
     case 8:
     case 12:
@@ -125,6 +135,7 @@ function setMetadata(contract: Address, tokenId: BigInt): void {
     metadata.size = size;
   }
   metadata.type = getType(tokenIdNum);
+  metadata.isSoulbound = tokenIdNum == 15 || tokenIdNum == 16;
   metadata.save();
 
   token.category = "Consumable";
