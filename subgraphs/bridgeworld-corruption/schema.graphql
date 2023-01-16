@@ -51,6 +51,9 @@ type Config @entity {
   "Amount of time before a Legion squad can be unstaked, in seconds"
   cryptsLegionsUnstakeCooldown: BigInt!
 
+  "Maximum number of Legions to reach temple before the round advances"
+  maxLegionsInCryptsTemple: Int!
+
   "Maximum number of Legion squads per user"
   maxCryptsSquadsPerUser: Int!
 
@@ -180,6 +183,12 @@ type CryptsBoardTreasureFragment @entity {
 
   "Y coordinate on board"
   positionY: Int!
+
+  "Number of Fragments already claimed this round"
+  numClaimed: Int!
+
+  "Maximum number of Fragments that can be claimed this round"
+  maxSupply: Int!
 }
 
 type CryptsMapTile @entity(immutable: true) {

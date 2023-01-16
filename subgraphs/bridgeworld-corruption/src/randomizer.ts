@@ -129,5 +129,7 @@ const processBoardTreasure = (
   boardTreasureFragment.tokenId = params.correspondingId;
   boardTreasureFragment.positionX = params.coordinate.x;
   boardTreasureFragment.positionY = params.coordinate.y;
+  boardTreasureFragment.numClaimed = params.numClaimed;
+  boardTreasureFragment.maxSupply = params.maxSupply;
   boardTreasureFragment.save();
 };

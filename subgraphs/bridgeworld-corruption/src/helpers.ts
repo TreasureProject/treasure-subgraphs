@@ -37,6 +37,7 @@ export const getOrCreateConfig = (): Config => {
     config.cryptsRoundStartTime = BigInt.zero();
     config.cryptsSecondsInEpoch = BigInt.zero();
     config.cryptsLegionsUnstakeCooldown = BigInt.zero();
+    config.maxLegionsInCryptsTemple = 3;
     config.maxCryptsSquadsPerUser = 3;
     config.maxLegionsPerCryptsSquad = 20;
     config.maxCryptsMapTilesInHand = 60;
@@ -59,6 +60,8 @@ export const getOrCreateBoardTreasureFragment =
       boardTreasureFragment.tokenId = 0;
       boardTreasureFragment.positionX = -1;
       boardTreasureFragment.positionY = -1;
+      boardTreasureFragment.numClaimed = 0;
+      boardTreasureFragment.maxSupply = 0;
       boardTreasureFragment.save();
     }
 

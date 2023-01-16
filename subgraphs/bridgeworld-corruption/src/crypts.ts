@@ -20,13 +20,20 @@ import {
   CryptsTemple,
   CryptsUserMapTile,
 } from "../generated/schema";
-import { bytesFromBigInt, getOrCreateConfig, getOrCreateUser } from "./helpers";
+import {
+  bytesFromBigInt,
+  getOrCreateBoardTreasureFragment,
+  getOrCreateConfig,
+  getOrCreateUser,
+} from "./helpers";
 
 export function handleConfigUpdated(event: ConfigUpdated): void {
   const params = event.params._newConfig;
   const config = getOrCreateConfig();
   config.cryptsSecondsInEpoch = params.secondsInEpoch;
   config.cryptsLegionsUnstakeCooldown = params.legionUnstakeCooldown;
+  config.maxLegionsInCryptsTemple =
+    params.numLegionsReachedTempleToAdvanceRound.toI32();
   config.maxCryptsSquadsPerUser = params.maximumLegionSquadsOnBoard.toI32();
   config.maxLegionsPerCryptsSquad = params.maximumLegionsInSquad.toI32();
   config.maxCryptsMapTilesInHand = params.maxMapTilesInHand.toI32();
@@ -200,4 +207,10 @@ export function handleTempleEntered(event: TempleEntered): void {
   squad.inTemple = true;
   squad.lastRoundInTemple = params._roundId.toI32();
   squad.save();
+}
+
+export function handleTreasureClaimed(): void {
+  const boardTreasureFragment = getOrCreateBoardTreasureFragment();
+  boardTreasureFragment.numClaimed += 1;
+  boardTreasureFragment.save();
 }
