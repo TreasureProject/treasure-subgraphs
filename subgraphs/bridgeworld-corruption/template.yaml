@@ -101,14 +101,16 @@ dataSources:
           handler: handleLegionSquadStaked
         - event: LegionSquadUnstaked(address,uint64)
           handler: handleLegionSquadUnstaked
-        - event: MapTilePlaced(address,(uint32,uint8,uint8,bool,bool,bool,bool),(uint8,uint8),uint256)
-          handler: handleMapTilePlaced
-        - event: MapTileRemovedFromBoard(address,uint32,(uint8,uint8))
-          handler: handleMapTileRemovedFromBoard
         - event: MapTilesClaimed(address,(uint32,uint8,uint8,bool,bool,bool,bool)[],uint256)
           handler: handleMapTilesClaimed
         - event: MapTilesInitialized((uint32,uint8,uint8,bool,bool,bool,bool)[])
           handler: handleMapTilesInitialized
+        - event: MapTilePlaced(address,(uint32,uint8,uint8,bool,bool,bool,bool),(uint8,uint8),uint256)
+          handler: handleMapTilePlaced
+        - event: MapTileRemovedFromBoard(address,uint32,(uint8,uint8))
+          handler: handleMapTileRemovedFromBoard
+        - event: MapTileRemovedFromHand(address,uint32,bool)
+          handler: handleMapTileRemovedFromHand
         - event: TempleCreated(uint16,address)
           handler: handleTempleCreated
         - event: TempleEntered(address,uint64,uint16,uint256)

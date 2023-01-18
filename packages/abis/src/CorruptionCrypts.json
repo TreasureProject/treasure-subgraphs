@@ -348,6 +348,12 @@
         "internalType": "uint32",
         "name": "_mapTileId",
         "type": "uint32"
+      },
+      {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "_isBeingPlaced",
+        "type": "bool"
       }
     ],
     "name": "MapTileRemovedFromHand",

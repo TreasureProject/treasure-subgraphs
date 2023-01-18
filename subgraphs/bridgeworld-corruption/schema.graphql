@@ -51,6 +51,9 @@ type Config @entity {
   "Amount of time before a Legion squad can be unstaked, in seconds"
   cryptsLegionsUnstakeCooldown: BigInt!
 
+  "Number of Legions that have reached a temple in the current round"
+  cryptsLegionsReachedTemple: Int!
+
   "Maximum number of Legions to reach temple before the round advances"
   maxLegionsInCryptsTemple: Int!
 

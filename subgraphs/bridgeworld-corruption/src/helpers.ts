@@ -37,6 +37,7 @@ export const getOrCreateConfig = (): Config => {
     config.cryptsRoundStartTime = BigInt.zero();
     config.cryptsSecondsInEpoch = BigInt.zero();
     config.cryptsLegionsUnstakeCooldown = BigInt.zero();
+    config.cryptsLegionsReachedTemple = 0;
     config.maxLegionsInCryptsTemple = 3;
     config.maxCryptsSquadsPerUser = 3;
     config.maxLegionsPerCryptsSquad = 20;

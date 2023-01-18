@@ -9,6 +9,7 @@ import {
   LegionSquadUnstaked,
   MapTilePlaced,
   MapTileRemovedFromBoard,
+  MapTileRemovedFromHand,
   MapTilesClaimed,
   MapTilesInitialized,
   TempleCreated,
@@ -61,6 +62,7 @@ export function handleGlobalRandomnessRequested(
   config.cryptsRequestId = bytesFromBigInt(params._globalRequestId);
   config.cryptsRound = params._roundId.toI32();
   config.cryptsRoundStartTime = event.block.timestamp;
+  config.cryptsLegionsReachedTemple = 0;
   config.save();
 }
 
@@ -194,6 +196,18 @@ export function handleMapTileRemovedFromBoard(
   );
 }
 
+export function handleMapTileRemovedFromHand(
+  event: MapTileRemovedFromHand
+): void {
+  const params = event.params;
+  if (!params._isBeingPlaced) {
+    store.remove(
+      "CryptsUserMapTile",
+      bytesFromBigInt(params._mapTileId).toHexString()
+    );
+  }
+}
+
 export function handleTempleEntered(event: TempleEntered): void {
   const params = event.params;
   const squad = CryptsSquad.load(bytesFromBigInt(params._legionSquadId));
@@ -207,6 +221,10 @@ export function handleTempleEntered(event: TempleEntered): void {
   squad.inTemple = true;
   squad.lastRoundInTemple = params._roundId.toI32();
   squad.save();
+
+  const config = getOrCreateConfig();
+  config.cryptsLegionsReachedTemple += 1;
+  config.save();
 }
 
 export function handleTreasureClaimed(): void {
