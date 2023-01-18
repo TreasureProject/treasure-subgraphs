@@ -9,7 +9,11 @@ import {
 } from "../../generated/SmolChopShop/SmolChopShop";
 import { Upgrade } from "../../generated/schema";
 
-function populateUpgradeFields<T>(upgrade: Upgrade, upgradeInfo: T): void {
+function populateUpgradeFields<T>(
+  upgrade: Upgrade,
+  upgradeInfo: T,
+  upgradeId: string
+): void {
   if (
     upgradeInfo instanceof UpgradeAddedToContract_upgradeInfoStruct ||
     upgradeInfo instanceof UpgradeInfoChanged_upgradeInfoStruct
@@ -28,6 +32,7 @@ function populateUpgradeFields<T>(upgrade: Upgrade, upgradeInfo: T): void {
     upgrade.name = upgradeInfo.name;
     upgrade.uri = upgradeInfo.uri;
     upgrade.merkleRoot = upgradeInfo.merkleRoot.toString();
+    upgrade.upgradeId = upgradeId;
   }
 }
 
@@ -38,7 +43,8 @@ export function handleNewUpgrade(event: UpgradeAddedToContract): void {
 
   populateUpgradeFields<UpgradeAddedToContract_upgradeInfoStruct>(
     upgrade,
-    params._upgradeInfo
+    params._upgradeInfo,
+    params._upgradeId.toString()
   );
 
   upgrade.save();
@@ -58,7 +64,8 @@ export function handleUpgradeUpdate(event: UpgradeInfoChanged): void {
 
   populateUpgradeFields<UpgradeInfoChanged_upgradeInfoStruct>(
     upgrade,
-    params._upgradeInfo
+    params._upgradeInfo,
+    params._upgradeId.toString()
   );
 
   upgrade.save();
