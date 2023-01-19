@@ -58,6 +58,11 @@
   },
   {
     "inputs": [],
+    "name": "CoconutIdNotSet",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "ContractsAreNotSet",
     "type": "error"
   },
@@ -159,7 +164,7 @@
   },
   {
     "inputs": [],
-    "name": "MustEquipSkinToUpgradeVehicle",
+    "name": "MustOwnASkinToUnlockOtherUpgrades",
     "type": "error"
   },
   {
@@ -181,11 +186,6 @@
       }
     ],
     "name": "MustOwnRequiredSkinToUnlockUpgrade",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "ShopTrophyIdNotSet",
     "type": "error"
   },
   {
@@ -362,6 +362,11 @@
       }
     ],
     "name": "ValidSkinIdMustBeOfTypeSkin",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "VehicleCanOnlyOwnOneSkin",
     "type": "error"
   },
   {
@@ -721,11 +726,6 @@
         "components": [
           {
             "internalType": "uint32",
-            "name": "background",
-            "type": "uint32"
-          },
-          {
-            "internalType": "uint32",
             "name": "skin",
             "type": "uint32"
           },
@@ -814,13 +814,7 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "enum ISmolChopShop.UpgradeType",
-        "name": "",
-        "type": "uint8"
-      }
-    ],
+    "inputs": [],
     "name": "baseURI",
     "outputs": [
       {
@@ -909,27 +903,9 @@
   {
     "inputs": [
       {
-        "internalType": "enum ISmolChopShop.UpgradeType",
-        "name": "_upgradeType",
-        "type": "uint8"
-      },
-      {
         "internalType": "string",
         "name": "_newBaseURI",
         "type": "string"
-      }
-    ],
-    "name": "changeBaseURI",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "enum ISmolChopShop.UpgradeType",
-        "name": "_upgradeType",
-        "type": "uint8"
       },
       {
         "internalType": "string",
@@ -937,7 +913,7 @@
         "type": "string"
       }
     ],
-    "name": "changeSuffixURI",
+    "name": "changeURI",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -1018,6 +994,19 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "coconutId",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "address[]",
@@ -1031,11 +1020,6 @@
       },
       {
         "components": [
-          {
-            "internalType": "uint32",
-            "name": "background",
-            "type": "uint32"
-          },
           {
             "internalType": "uint32",
             "name": "skin",
@@ -1080,17 +1064,17 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "_trophyId",
-        "type": "uint256"
+        "internalType": "uint256[]",
+        "name": "_trophyIds",
+        "type": "uint256[]"
       },
       {
-        "internalType": "uint256",
-        "name": "_amountToBurn",
-        "type": "uint256"
+        "internalType": "uint256[]",
+        "name": "_amountsToBurn",
+        "type": "uint256[]"
       }
     ],
-    "name": "exchangeTrophies",
+    "name": "exchangeTrophiesBatch",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -1136,11 +1120,6 @@
     "outputs": [
       {
         "components": [
-          {
-            "internalType": "uint32",
-            "name": "background",
-            "type": "uint32"
-          },
           {
             "internalType": "uint32",
             "name": "skin",
@@ -1585,6 +1564,19 @@
   {
     "inputs": [
       {
+        "internalType": "uint256",
+        "name": "_coconutId",
+        "type": "uint256"
+      }
+    ],
+    "name": "setCoconutId",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "address",
         "name": "_smolCars",
         "type": "address"
@@ -1637,19 +1629,6 @@
       }
     ],
     "name": "setPause",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_trophyId",
-        "type": "uint256"
-      }
-    ],
-    "name": "setShopTrophyId",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -1725,13 +1704,24 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "shopTrophyId",
-    "outputs": [
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_vehicleAddress",
+        "type": "address"
+      },
       {
         "internalType": "uint256",
-        "name": "",
+        "name": "_vehicleId",
         "type": "uint256"
+      }
+    ],
+    "name": "skinOwnedByVehicle",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "skinOwned_",
+        "type": "bool"
       }
     ],
     "stateMutability": "view",
@@ -1792,13 +1782,7 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "enum ISmolChopShop.UpgradeType",
-        "name": "",
-        "type": "uint8"
-      }
-    ],
+    "inputs": [],
     "name": "suffixURI",
     "outputs": [
       {
