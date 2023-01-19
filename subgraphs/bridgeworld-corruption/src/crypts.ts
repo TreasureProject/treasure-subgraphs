@@ -14,6 +14,7 @@ import {
   MapTilesInitialized,
   TempleCreated,
   TempleEntered,
+  TreasureClaimed,
 } from "../generated/CorruptionCrypts/CorruptionCrypts";
 import {
   CryptsMapTile,
@@ -227,7 +228,7 @@ export function handleTempleEntered(event: TempleEntered): void {
   config.save();
 }
 
-export function handleTreasureClaimed(): void {
+export function handleTreasureClaimed(_: TreasureClaimed): void {
   const boardTreasureFragment = getOrCreateBoardTreasureFragment();
   boardTreasureFragment.numClaimed += 1;
   boardTreasureFragment.save();
