@@ -1,4 +1,4 @@
-import { Bytes, log, store } from "@graphprotocol/graph-ts";
+import { BigInt, Bytes, log, store } from "@graphprotocol/graph-ts";
 
 import {
   ConfigUpdated,
@@ -185,6 +185,8 @@ export function handleMapTilePlaced(event: MapTilePlaced): void {
 
   userMapTile.positionX = params._coordinate.x;
   userMapTile.positionY = params._coordinate.y;
+  userMapTile.placedBlockNumber = event.block.number;
+  userMapTile.placedIndex = event.transactionLogIndex.toI32();
   userMapTile.save();
 }
 

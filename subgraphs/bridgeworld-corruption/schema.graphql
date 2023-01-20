@@ -267,4 +267,10 @@ type CryptsUserMapTile @entity {
 
   "Y coordinate on board, -1 if not placed"
   positionY: Int!
+
+  "Block number for this tile's placement, if applicable"
+  placedBlockNumber: BigInt
+
+  "Log index for this tile's placement, if applicable"
+  placedIndex: Int
 }
