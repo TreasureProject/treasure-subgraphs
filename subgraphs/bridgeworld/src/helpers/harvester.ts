@@ -2,7 +2,6 @@ import { Address, BigInt, log } from "@graphprotocol/graph-ts";
 
 import { CONSUMABLE_ADDRESS } from "@treasure/constants";
 
-import { etherToWei } from "../../../bridgeworld-stats/src/helpers/number";
 import {
   Harvester,
   HarvesterNftHandler,
@@ -12,6 +11,7 @@ import {
   Token,
 } from "../../generated/schema";
 import { TWO_BI } from "./constants";
+import { etherToWei } from "./number";
 
 const getHarvesterById = (id: string): Harvester | null => {
   const harvester = Harvester.load(id);

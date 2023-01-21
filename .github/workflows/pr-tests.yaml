@@ -1,0 +1,20 @@
+name: PR Tests
+on: pull_request
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: Install Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 16
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+      - name: Prepare for DEV
+        run: yarn workspaces run prepare:dev
+      - name: Generate code
+        run: yarn workspaces run codegen
+      - name: Test
+        run: yarn workspaces run test

@@ -5,11 +5,8 @@
   "license": "MIT",
   "scripts": {
     "codegen": "graph codegen",
-    "deploy:dev": "graph deploy --product hosted-service treasureproject/bridgeworld-dev",
-    "deploy:staging": "graph deploy --product hosted-service treasureproject/bridgeworld-next",
-    "deploy:prod": "graph deploy --product hosted-service treasureproject/bridgeworld",
     "prepare:dev": "yarn --cwd ../../packages/constants prepare:arbitrum-goerli && mustache ../../node_modules/@treasure/subgraph-config/src/arbitrum-goerli.json template.yaml > subgraph.yaml",
     "prepare:prod": "yarn --cwd ../../packages/constants prepare:arbitrum && mustache ../../node_modules/@treasure/subgraph-config/src/arbitrum.json template.yaml > subgraph.yaml",
-    "test": "graph test -v 0.5.0"
+    "test": "graph test"
   }
 }

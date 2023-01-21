@@ -20,14 +20,19 @@ test("token is minted", () => {
   const attribute1 = new Attribute("test-attribute1");
   attribute1.name = "Location";
   attribute1.value = "Moon";
+  attribute1.collection = SMOL_BRAINS_LAND_ADDRESS.toHexString();
+  attribute1._tokenIds = [];
   attribute1.save();
 
   const attribute2 = new Attribute("test-attribute2");
   attribute2.name = "Discovery";
   attribute2.value = "Gym Opening";
+  attribute2.collection = SMOL_BRAINS_LAND_ADDRESS.toHexString();
+  attribute2._tokenIds = [];
   attribute2.save();
 
   const landMetadata = new _LandMetadata("all");
+  landMetadata.name = "Smol Brains Land";
   landMetadata.description = "Smol Brains Land";
   landMetadata.image =
     "https://treasure-marketplace.mypinata.cloud/ipfs/QmYAkzPbwL7F4S8QrabVgNQMCstfzdcpv1K2XNjBNvvko7/24";

@@ -1,8 +1,13 @@
 {
   "name": "@treasure/common",
   "version": "1.0.0",
-  "description": "Common functions for the subgraphs",
-  "license": "MIT",
   "private": true,
-  "main": "index.ts"
+  "license": "MIT",
+  "description": "Common functions for the subgraphs",
+  "main": "index.ts",
+  "scripts": {
+    "prepare:dev": "exit 0",
+    "codegen": "exit 0",
+    "test": "exit 0"
+  }
 }

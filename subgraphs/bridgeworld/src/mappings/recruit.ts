@@ -1,6 +1,7 @@
 import { log } from "@graphprotocol/graph-ts";
 
-import { getLegionId } from "../../../bridgeworld-stats/src/helpers/ids";
+import { LEGION_ADDRESS } from "@treasure/constants";
+
 import {
   AscensionInfoSet,
   LevelUpInfoSet,
@@ -50,7 +51,9 @@ export function handleMaxLevelSet(event: MaxLevelSet): void {
 export function handleRecruitTypeChanged(event: RecruitTypeChanged): void {
   const params = event.params;
   const tokenId = params.tokenId;
-  const token = Token.load(getLegionId(tokenId));
+  const token = Token.load(
+    `${LEGION_ADDRESS.toHexString()}-${tokenId.toHexString()}`
+  );
   if (!token) {
     log.error("Unknown Recruit token: {}", [tokenId.toString()]);
     return;
