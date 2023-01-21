@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "codegen": "graph codegen",
-    "prepare:dev": "exit 0",
+    "prepare:dev": "yarn --cwd ../../packages/constants prepare:mainnet && mustache ../../node_modules/@treasure/subgraph-config/src/mainnet.json template.yaml > subgraph.yaml",
     "prepare:prod": "yarn --cwd ../../packages/constants prepare:mainnet && mustache ../../node_modules/@treasure/subgraph-config/src/mainnet.json template.yaml > subgraph.yaml",
     "test": "exit 0"
   }
