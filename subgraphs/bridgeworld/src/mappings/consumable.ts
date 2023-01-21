@@ -141,7 +141,7 @@ function setMetadata(contract: Address, tokenId: BigInt): void {
   token.category = "Consumable";
   token.name = getName(tokenIdNum);
   token.description = getDescription(tokenIdNum);
-  token.image = `${CONSUMABLE_IPFS}/${tokenIdNum}.jpg`;
+  token.image = `${CONSUMABLE_IPFS}/${tokenIdNum}.webp`;
   token.metadata = metadata.id;
   token.rarity = "None";
   token.save();
