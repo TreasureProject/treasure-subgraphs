@@ -159,5 +159,8 @@
   "smoloween_start_block": 31361568,
 
   "smolidays_address": "0x346BA11c7e220e4E8700Bafa9eEdaf674be3E0f5",
-  "smolidays_start_block": 47422160
+  "smolidays_start_block": 47422160,
+
+  "smol_chop_shop_address": "0xA3d2C13426Bc856830C2DfF68821FaceA6B81835",
+  "smol_chop_shop_start_block": 54982945
 }
