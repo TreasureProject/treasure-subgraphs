@@ -226,7 +226,7 @@ export function handleTempleEntered(event: TempleEntered): void {
   squad.save();
 
   const config = getOrCreateConfig();
-  config.cryptsLegionsReachedTemple += 1;
+  config.cryptsLegionsReachedTemple += squad.legionTokenIds.length;
   config.save();
 }
 
