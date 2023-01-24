@@ -49,7 +49,7 @@ function getName(tokenId: i32): string {
     case 15:
       return "Malevolent Prism";
     case 16:
-      return "Harvester Part - Atlas Mine";
+      return "Atlas Mine Harvester Part";
     default:
       log.error("Unhandled consumable name: {}", [tokenId.toString()]);
 

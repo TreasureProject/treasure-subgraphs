@@ -2,7 +2,7 @@ import { BigDecimal, BigInt } from "@graphprotocol/graph-ts";
 
 export const DIFFICULTY = ["Easy", "Medium", "Hard"];
 export const CONSUMABLE_IPFS =
-  "ipfs://QmVKfuEUJbmdhnkANCwbbACUtSYpn9hTpsi2W28ZxYP1SN";
+  "ipfs://QmcaPZXaxeHuQBFM55HjxnWnGkmVr1Ax5pU52c1evw6h1Q";
 export const LEGION_IPFS =
   "ipfs://QmUAkX9dKHzyUqvxfjqBb8zrGxkU3XdqXBFyrs17qbpFZo";
 export const LEGION_NO_BACKGROUND_IPFS =
