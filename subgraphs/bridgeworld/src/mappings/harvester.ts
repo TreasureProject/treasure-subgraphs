@@ -1,4 +1,4 @@
-import { BigInt, log, store } from "@graphprotocol/graph-ts";
+import { BigInt, Bytes, log, store } from "@graphprotocol/graph-ts";
 
 import { CONSUMABLE_ADDRESS, LEGION_ADDRESS } from "@treasure/constants";
 
@@ -109,8 +109,10 @@ export function handleNftStaked(event: Staked): void {
   const params = event.params;
   const nftAddress = params.nft;
   const tokenId = params.tokenId;
-  const isConsumable = nftAddress.equals(CONSUMABLE_ADDRESS);
-  if (isConsumable && HARVESTER_EXTRACTOR_TOKEN_IDS.includes(tokenId)) {
+  if (
+    nftAddress.equals(CONSUMABLE_ADDRESS) &&
+    HARVESTER_EXTRACTOR_TOKEN_IDS.includes(tokenId)
+  ) {
     // Extractors will be handled separately because they require the spotId param
     return;
   }
@@ -137,7 +139,12 @@ export function handleNftStaked(event: Staked): void {
   stakedToken.quantity = stakedToken.quantity.plus(params.amount);
 
   const amount = params.amount.toI32();
-  if (isConsumable && tokenId.equals(HARVESTER_PART_TOKEN_ID)) {
+  const partsAddress = harvester.partsAddress || CONSUMABLE_ADDRESS;
+  const partsTokenId = harvester.partsTokenId || HARVESTER_PART_TOKEN_ID;
+  if (
+    nftAddress.equals(partsAddress as Bytes) &&
+    tokenId.equals(partsTokenId as BigInt)
+  ) {
     harvester.partsStaked += amount;
     harvester.partsBoost = calculateHarvesterPartsBoost(harvester);
   } else if (nftAddress.equals(LEGION_ADDRESS)) {
@@ -185,9 +192,11 @@ export function handleNftUnstaked(event: Unstaked): void {
   }
 
   const amount = params.amount.toI32();
+  const partsAddress = harvester.partsAddress || CONSUMABLE_ADDRESS;
+  const partsTokenId = harvester.partsTokenId || HARVESTER_PART_TOKEN_ID;
   if (
-    nftAddress.equals(CONSUMABLE_ADDRESS) &&
-    params.tokenId.equals(HARVESTER_PART_TOKEN_ID)
+    nftAddress.equals(partsAddress as Bytes) &&
+    params.tokenId.equals(partsTokenId as BigInt)
   ) {
     // Extractors cannot be unstaked
     harvester.partsStaked -= amount;
