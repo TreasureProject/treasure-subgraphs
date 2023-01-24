@@ -49,7 +49,7 @@ function getName(tokenId: i32): string {
     case 15:
       return "Malevolent Prism";
     case 16:
-      return "Atlas Mine Staker Harvester Part";
+      return "Atlas Mine Harvester Part";
     default:
       log.error("Unhandled consumable name: {}", [tokenId.toString()]);
 
@@ -141,7 +141,7 @@ function setMetadata(contract: Address, tokenId: BigInt): void {
   token.category = "Consumable";
   token.name = getName(tokenIdNum);
   token.description = getDescription(tokenIdNum);
-  token.image = `${CONSUMABLE_IPFS}/${tokenIdNum}.jpg`;
+  token.image = `${CONSUMABLE_IPFS}/${tokenIdNum}.webp`;
   token.metadata = metadata.id;
   token.rarity = "None";
   token.save();

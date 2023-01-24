@@ -1,0 +1,1992 @@
+[
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_vehicleAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_vehicleId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_limitedOfferId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_groupId",
+        "type": "uint256"
+      }
+    ],
+    "name": "AlreadyClaimedFromThisGlobalDrop",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_user",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_vehicleAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_vehicleId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_upgradeId",
+        "type": "uint256"
+      }
+    ],
+    "name": "AlreadyClaimedSpecialUpgradeFromThisGroup",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ArrayLengthMismatch",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "CoconutIdNotSet",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ContractsAreNotSet",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_balance",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_price",
+        "type": "uint256"
+      }
+    ],
+    "name": "InsufficientTrophies",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidLimitedOfferId",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidMerkleProof",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_value",
+        "type": "uint256"
+      }
+    ],
+    "name": "InvalidTrophyExchangeValue",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidUpgradeSupply",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_vehicleAddress",
+        "type": "address"
+      }
+    ],
+    "name": "InvalidVehicleAddress",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "MerkleRootNotSet",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "MustBeOwnerOfVehicle",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_upgradeId",
+        "type": "uint256"
+      }
+    ],
+    "name": "MustCallBuyExclusiveUpgrade",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_upgradeId",
+        "type": "uint256"
+      }
+    ],
+    "name": "MustCallGlobalClaim",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_upgradeId",
+        "type": "uint256"
+      }
+    ],
+    "name": "MustCallSpecialEventClaim",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "MustOwnASkinToUnlockOtherUpgrades",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_vehicleAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_vehicleId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_requiredUpgradeId",
+        "type": "uint256"
+      }
+    ],
+    "name": "MustOwnRequiredSkinToUnlockUpgrade",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "TrophyExchangeValueNotSet",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_vehicleAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_vehicleId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_upgradeId",
+        "type": "uint256"
+      }
+    ],
+    "name": "UpgradeAlreadyUnlockedForVehicle",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_upgradeId",
+        "type": "uint256"
+      }
+    ],
+    "name": "UpgradeIdDoesNotExist",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_upgradeId",
+        "type": "uint256"
+      }
+    ],
+    "name": "UpgradeIdSoldOut",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "UpgradeIsNotTradable",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint32",
+        "name": "_limitedOfferId",
+        "type": "uint32"
+      },
+      {
+        "internalType": "uint32",
+        "name": "subgroupId",
+        "type": "uint32"
+      }
+    ],
+    "name": "UpgradeNotAvailableForGlobalClaim",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_selectedSkinId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_validSkinId",
+        "type": "uint256"
+      }
+    ],
+    "name": "UpgradeNotCompatibleWithSelectedSkin",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "enum ISmolChopShop.VehicleType",
+        "name": "_vehicleType",
+        "type": "uint8"
+      },
+      {
+        "internalType": "enum ISmolChopShop.VehicleType",
+        "name": "_expectedVehicleType",
+        "type": "uint8"
+      }
+    ],
+    "name": "UpgradeNotCompatibleWithSelectedVehicle",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_upgradeId",
+        "type": "uint256"
+      }
+    ],
+    "name": "UpgradeNotCurrentlyForSale",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_upgradeId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "enum ISmolChopShop.UpgradeType",
+        "name": "_expectedUpgradeType",
+        "type": "uint8"
+      }
+    ],
+    "name": "UpgradeNotOfRequiredType",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint32",
+        "name": "_limitedOfferId",
+        "type": "uint32"
+      },
+      {
+        "internalType": "uint32",
+        "name": "subgroupId",
+        "type": "uint32"
+      }
+    ],
+    "name": "UpgradeNotPartOfSpecialEventClaim",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_vehicleAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_vehicleId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_upgradeId",
+        "type": "uint256"
+      }
+    ],
+    "name": "UpgradeNotUnlockedForVehicle",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_validSkinId",
+        "type": "uint256"
+      }
+    ],
+    "name": "ValidSkinIdMustBeOfTypeSkin",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "VehicleCanOnlyOwnOneSkin",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "WhitelistAllocationExceeded",
+    "type": "error"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "Paused",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "role",
+        "type": "bytes32"
+      },
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "previousAdminRole",
+        "type": "bytes32"
+      },
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "newAdminRole",
+        "type": "bytes32"
+      }
+    ],
+    "name": "RoleAdminChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "role",
+        "type": "bytes32"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "sender",
+        "type": "address"
+      }
+    ],
+    "name": "RoleGranted",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "role",
+        "type": "bytes32"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "sender",
+        "type": "address"
+      }
+    ],
+    "name": "RoleRevoked",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "Unpaused",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "_upgradeId",
+        "type": "uint256"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint32",
+            "name": "amountClaimed",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "limitedOfferId",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "maxSupply",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "price",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "subgroupId",
+            "type": "uint32"
+          },
+          {
+            "internalType": "bool",
+            "name": "forSale",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "tradable",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "uncappedSupply",
+            "type": "bool"
+          },
+          {
+            "internalType": "enum ISmolChopShop.UpgradeType",
+            "name": "upgradeType",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint32",
+            "name": "validSkinId",
+            "type": "uint32"
+          },
+          {
+            "internalType": "enum ISmolChopShop.VehicleType",
+            "name": "validVehicleType",
+            "type": "uint8"
+          },
+          {
+            "internalType": "string",
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "uri",
+            "type": "string"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "merkleRoot",
+            "type": "bytes32"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct ISmolChopShop.Upgrade",
+        "name": "_upgradeInfo",
+        "type": "tuple"
+      }
+    ],
+    "name": "UpgradeAddedToContract",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "_upgradeId",
+        "type": "uint256"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint32",
+            "name": "amountClaimed",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "limitedOfferId",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "maxSupply",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "price",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "subgroupId",
+            "type": "uint32"
+          },
+          {
+            "internalType": "bool",
+            "name": "forSale",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "tradable",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "uncappedSupply",
+            "type": "bool"
+          },
+          {
+            "internalType": "enum ISmolChopShop.UpgradeType",
+            "name": "upgradeType",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint32",
+            "name": "validSkinId",
+            "type": "uint32"
+          },
+          {
+            "internalType": "enum ISmolChopShop.VehicleType",
+            "name": "validVehicleType",
+            "type": "uint8"
+          },
+          {
+            "internalType": "string",
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "uri",
+            "type": "string"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "merkleRoot",
+            "type": "bytes32"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct ISmolChopShop.Upgrade",
+        "name": "_upgradeInfo",
+        "type": "tuple"
+      }
+    ],
+    "name": "UpgradeInfoChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "_upgradeId",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "bool",
+        "name": "_added",
+        "type": "bool"
+      }
+    ],
+    "name": "UpgradeSaleStateChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "_vehicleAddress",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "_vehicleId",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "_upgradeId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_userAddress",
+        "type": "address"
+      }
+    ],
+    "name": "UpgradeUnlocked",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "_vehicleAddress",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "_vehicleId",
+        "type": "uint256"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint32",
+            "name": "skin",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "color",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "topMod",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "frontMod",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "sideMod",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "backMod",
+            "type": "uint32"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct ISmolChopShop.Vehicle",
+        "name": "_equippedUpgrades",
+        "type": "tuple"
+      }
+    ],
+    "name": "UpgradesEquipped",
+    "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "DEFAULT_ADMIN_ROLE",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_limitedOfferId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_subgroupId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "_upgradeIds",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "addUpgradeIdsToLimitedOfferGroup",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "areContractsSet",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "baseURI",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32[]",
+        "name": "_proof",
+        "type": "bytes32[]"
+      },
+      {
+        "internalType": "address",
+        "name": "_vehicleAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_vehicleId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_upgradeId",
+        "type": "uint256"
+      }
+    ],
+    "name": "buyExclusiveUpgrade",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_vehicleAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_vehicleId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_upgradeId",
+        "type": "uint256"
+      }
+    ],
+    "name": "buyUpgrade",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address[]",
+        "name": "_vehicleAddress",
+        "type": "address[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "_vehicleId",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "_upgradeId",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "buyUpgradeBatch",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "_newBaseURI",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_newSuffixURI",
+        "type": "string"
+      }
+    ],
+    "name": "changeURI",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "_upgradeId",
+        "type": "uint256[]"
+      },
+      {
+        "components": [
+          {
+            "internalType": "string",
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "internalType": "uint32",
+            "name": "price",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "maxSupply",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "limitedOfferId",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "subgroupId",
+            "type": "uint32"
+          },
+          {
+            "internalType": "bool",
+            "name": "forSale",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "tradable",
+            "type": "bool"
+          },
+          {
+            "internalType": "enum ISmolChopShop.UpgradeType",
+            "name": "upgradeType",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint32",
+            "name": "validSkinId",
+            "type": "uint32"
+          },
+          {
+            "internalType": "enum ISmolChopShop.VehicleType",
+            "name": "validVehicleType",
+            "type": "uint8"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "merkleRoot",
+            "type": "bytes32"
+          }
+        ],
+        "internalType": "struct ISmolChopShop.CreateUpgradeArgs[]",
+        "name": "_newUpgradeInfo",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "changeUpgradeInfo",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "coconutId",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address[]",
+        "name": "_vehicleAddress",
+        "type": "address[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "_vehicleId",
+        "type": "uint256[]"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint32",
+            "name": "skin",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "color",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "topMod",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "frontMod",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "sideMod",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "backMod",
+            "type": "uint32"
+          }
+        ],
+        "internalType": "struct ISmolChopShop.Vehicle[]",
+        "name": "_upgradesToEquip",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "equipUpgrades",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "_trophyIds",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "_amountsToBurn",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "exchangeTrophiesBatch",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_vehicleAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_vehicleId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getAllUnlockedUpgrades",
+    "outputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "unlockedUpgrades_",
+        "type": "uint256[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_vehicleAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_vehicleId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getEquippedUpgrades",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint32",
+            "name": "skin",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "color",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "topMod",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "frontMod",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "sideMod",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "backMod",
+            "type": "uint32"
+          }
+        ],
+        "internalType": "struct ISmolChopShop.Vehicle",
+        "name": "equippedUpgrades_",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "role",
+        "type": "bytes32"
+      }
+    ],
+    "name": "getRoleAdmin",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "role",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "uint256",
+        "name": "index",
+        "type": "uint256"
+      }
+    ],
+    "name": "getRoleMember",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "role",
+        "type": "bytes32"
+      }
+    ],
+    "name": "getRoleMemberCount",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_limitedOfferId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_subgroupId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getSubgroupFromLimitedOfferId",
+    "outputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "subgroup_",
+        "type": "uint256[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_upgradeId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getUpgradeInfo",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint32",
+            "name": "amountClaimed",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "limitedOfferId",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "maxSupply",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "price",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "subgroupId",
+            "type": "uint32"
+          },
+          {
+            "internalType": "bool",
+            "name": "forSale",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "tradable",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "uncappedSupply",
+            "type": "bool"
+          },
+          {
+            "internalType": "enum ISmolChopShop.UpgradeType",
+            "name": "upgradeType",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint32",
+            "name": "validSkinId",
+            "type": "uint32"
+          },
+          {
+            "internalType": "enum ISmolChopShop.VehicleType",
+            "name": "validVehicleType",
+            "type": "uint8"
+          },
+          {
+            "internalType": "string",
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "uri",
+            "type": "string"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "merkleRoot",
+            "type": "bytes32"
+          }
+        ],
+        "internalType": "struct ISmolChopShop.Upgrade",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_vehicleAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_vehicleId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_upgradeId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getUpgradeOwnershipByVehicle",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "isOwnedByVehicle_",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "enum ISmolChopShop.UpgradeType",
+        "name": "_upgradeType",
+        "type": "uint8"
+      }
+    ],
+    "name": "getUpgradesForSale",
+    "outputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "upgradeTypeForSale_",
+        "type": "uint256[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_vehicleAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_vehicleId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_upgradeId",
+        "type": "uint256"
+      }
+    ],
+    "name": "globalClaim",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "_role",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "address",
+        "name": "_account",
+        "type": "address"
+      }
+    ],
+    "name": "grantRole",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "role",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "hasRole",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "incrementLimitedOfferId",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "initialize",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "latestLimitedOffer",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "paused",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "racingTrophies",
+    "outputs": [
+      {
+        "internalType": "contract ISmolRacingTrophies",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_limitedOfferId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_subgroupId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "_upgradeIds",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "removeUpgradeIdsFromLimitedOfferGroup",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "role",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "renounceRole",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "_role",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "address",
+        "name": "_account",
+        "type": "address"
+      }
+    ],
+    "name": "revokeRole",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_coconutId",
+        "type": "uint256"
+      }
+    ],
+    "name": "setCoconutId",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_smolCars",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_swolercycles",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_smolRacing",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_racingTrophies",
+        "type": "address"
+      }
+    ],
+    "name": "setContracts",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "_trophyId",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "_trophyExchangeValue",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "setExchangeRates",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bool",
+        "name": "_shouldPause",
+        "type": "bool"
+      }
+    ],
+    "name": "setPause",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "string",
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "internalType": "uint32",
+            "name": "price",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "maxSupply",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "limitedOfferId",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "subgroupId",
+            "type": "uint32"
+          },
+          {
+            "internalType": "bool",
+            "name": "forSale",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "tradable",
+            "type": "bool"
+          },
+          {
+            "internalType": "enum ISmolChopShop.UpgradeType",
+            "name": "upgradeType",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint32",
+            "name": "validSkinId",
+            "type": "uint32"
+          },
+          {
+            "internalType": "enum ISmolChopShop.VehicleType",
+            "name": "validVehicleType",
+            "type": "uint8"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "merkleRoot",
+            "type": "bytes32"
+          }
+        ],
+        "internalType": "struct ISmolChopShop.CreateUpgradeArgs[]",
+        "name": "_upgradeInfo",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "setUpgradeInfo",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_vehicleAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_vehicleId",
+        "type": "uint256"
+      }
+    ],
+    "name": "skinOwnedByVehicle",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "skinOwned_",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "smolCars",
+    "outputs": [
+      {
+        "internalType": "contract IERC721",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "smolRacing",
+    "outputs": [
+      {
+        "internalType": "contract SmolRacing",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32[]",
+        "name": "_proof",
+        "type": "bytes32[]"
+      },
+      {
+        "internalType": "address",
+        "name": "_vehicleAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_vehicleId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_upgradeId",
+        "type": "uint256"
+      }
+    ],
+    "name": "specialEventClaim",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "suffixURI",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes4",
+        "name": "interfaceId",
+        "type": "bytes4"
+      }
+    ],
+    "name": "supportsInterface",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "swolercycles",
+    "outputs": [
+      {
+        "internalType": "contract IERC721",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "trophyExchangeValue",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "enum ISmolChopShop.UpgradeType",
+        "name": "",
+        "type": "uint8"
+      }
+    ],
+    "name": "upgradeTypeToLastId",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_upgradeId",
+        "type": "uint256"
+      }
+    ],
+    "name": "upgradeURI",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "uri_",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "userAllocationClaimed",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "userLimitedOfferAllocationClaimed",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "userToTotalAmountSpent",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "vehicleLimitedOfferAllocationClaimed",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]

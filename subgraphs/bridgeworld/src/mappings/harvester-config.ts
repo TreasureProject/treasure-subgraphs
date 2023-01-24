@@ -1,4 +1,4 @@
-import { Address, BigInt, log } from "@graphprotocol/graph-ts";
+import { Address, BigInt, Bytes, log } from "@graphprotocol/graph-ts";
 
 import {
   CONSUMABLE_ADDRESS,
@@ -74,8 +74,10 @@ export function handleUpdatedPartsDepositCap(event: DepositCapPerWallet): void {
     return;
   }
 
-  harvester.magicDepositAllocationPerPart =
-    event.params.depositCapPerWallet.capPerPart;
+  const params = event.params.depositCapPerWallet;
+  harvester.partsAddress = params.parts;
+  harvester.partsTokenId = params.partsTokenId;
+  harvester.magicDepositAllocationPerPart = params.capPerPart;
   harvester.save();
 }
 
@@ -150,16 +152,21 @@ export function handleNftConfigSet(event: NftConfigSet): void {
 
   // Determine the type of StakingRule and start listening for events at this address
   // Pull initial rules from the contract because we weren't listening for init events
-  if (nftAddress.equals(CONSUMABLE_ADDRESS)) {
-    // Check Consumable token ID
-    if (tokenId.equals(HARVESTER_PART_TOKEN_ID)) {
-      PartsStakingRules.create(stakingRulesAddress);
-      processPartsStakingRules(stakingRulesAddress, harvester);
-    } else if (HARVESTER_EXTRACTOR_TOKEN_IDS.includes(tokenId)) {
-      ExtractorsStakingRulesConfig.create(stakingRulesAddress);
-      ExtractorsStakingRules.create(stakingRulesAddress);
-      processExtractorsStakingRules(stakingRulesAddress, harvester);
-    }
+  const partsAddress = harvester.partsAddress || CONSUMABLE_ADDRESS;
+  const partsTokenId = harvester.partsTokenId || HARVESTER_PART_TOKEN_ID;
+  if (
+    nftAddress.equals(partsAddress as Bytes) &&
+    tokenId.equals(partsTokenId as BigInt)
+  ) {
+    PartsStakingRules.create(stakingRulesAddress);
+    processPartsStakingRules(stakingRulesAddress, harvester);
+  } else if (
+    nftAddress.equals(CONSUMABLE_ADDRESS) &&
+    HARVESTER_EXTRACTOR_TOKEN_IDS.includes(tokenId)
+  ) {
+    ExtractorsStakingRulesConfig.create(stakingRulesAddress);
+    ExtractorsStakingRules.create(stakingRulesAddress);
+    processExtractorsStakingRules(stakingRulesAddress, harvester);
   } else if (nftAddress.equals(LEGION_ADDRESS)) {
     LegionsStakingRules.create(stakingRulesAddress);
     processLegionsStakingRules(stakingRulesAddress, harvester);
