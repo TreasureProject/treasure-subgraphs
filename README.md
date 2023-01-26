@@ -44,6 +44,10 @@ Gameplay data for [Smoloween](https://smoloween.smolverse.lol)
 
 General inventory, metadata, and legacy feature support for [Smolverse](https://smolverse.lol)
 
+### smolverse-chop-shop
+
+Gameplay data for [Smolverse Chop Shop](https://smolverse.lol)
+
 ### smolverse-inventory
 
 Ownership and staking status for [Smolverse](https://smolverse.lol) NFTs
