@@ -53,7 +53,7 @@ jobs:
         run: yarn test
       - name: Deploy to DEV
         if: inputs.environment == 'Development'
-        run: graph deploy ${{ inputs.subgraph }}-dev --version-label ${{ inputs.version }} --node https://app.satsuma.xyz/api/subgraphs/deploy --deploy-key ${{ secrets.SATSUMA_DEPLOY_KEY }}
+        run: yarn graph deploy ${{ inputs.subgraph }}-dev --version-label ${{ inputs.version }} --node https://app.satsuma.xyz/api/subgraphs/deploy --deploy-key ${{ secrets.SATSUMA_DEPLOY_KEY }}
       - name: Deploy to PROD
         if: inputs.environment == 'Production'
-        run: graph deploy ${{ inputs.subgraph }} --version-label ${{ inputs.version }} --node https://app.satsuma.xyz/api/subgraphs/deploy --deploy-key ${{ secrets.SATSUMA_DEPLOY_KEY }}
+        run: yarn graph deploy ${{ inputs.subgraph }} --version-label ${{ inputs.version }} --node https://app.satsuma.xyz/api/subgraphs/deploy --deploy-key ${{ secrets.SATSUMA_DEPLOY_KEY }}
