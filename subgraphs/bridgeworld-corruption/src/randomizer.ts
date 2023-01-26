@@ -85,6 +85,8 @@ export function handleRandomSeeded(event: RandomSeeded): void {
 
       processBoardTreasure(boardTreasureData.value);
 
+      config.cryptsRoundStarting = false;
+      config.save();
       continue;
     }
 

@@ -34,6 +34,7 @@ export const getOrCreateConfig = (): Config => {
   if (!config) {
     config = new Config(SINGLETON_ID);
     config.cryptsRound = -1;
+    config.cryptsRoundStarting = false;
     config.cryptsRoundStartTime = BigInt.zero();
     config.cryptsSecondsInEpoch = BigInt.zero();
     config.cryptsLegionsUnstakeCooldown = BigInt.zero();

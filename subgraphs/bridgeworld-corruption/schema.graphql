@@ -42,6 +42,9 @@ type Config @entity {
   "Current round in progress"
   cryptsRound: Int!
 
+  "True if round is still waiting for random seed to start"
+  cryptsRoundStarting: Boolean!
+
   "Current round start time"
   cryptsRoundStartTime: BigInt!
 

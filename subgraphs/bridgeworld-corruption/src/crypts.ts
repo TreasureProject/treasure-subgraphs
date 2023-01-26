@@ -1,4 +1,4 @@
-import { BigInt, Bytes, log, store } from "@graphprotocol/graph-ts";
+import { Bytes, log, store } from "@graphprotocol/graph-ts";
 
 import {
   ConfigUpdated,
@@ -62,6 +62,7 @@ export function handleGlobalRandomnessRequested(
   const config = getOrCreateConfig();
   config.cryptsRequestId = bytesFromBigInt(params._globalRequestId);
   config.cryptsRound = params._roundId.toI32();
+  config.cryptsRoundStarting = true;
   config.cryptsRoundStartTime = event.block.timestamp;
   config.cryptsLegionsReachedTemple = 0;
   config.save();
