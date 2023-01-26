@@ -20,6 +20,7 @@ on:
         - smolidays
         - smoloween
         - smolverse
+        - smolverse-chop-shop
         - smolverse-inventory
       version:
         description: Subgraph version
