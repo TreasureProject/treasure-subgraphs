@@ -105,6 +105,7 @@ export function getOrCreateToken(
     token = new Token(id);
     token.collection = collection.id;
     token.tokenId = tokenId;
+    token.name = "";
     token.attributes = [];
     token.save();
 
@@ -136,6 +137,7 @@ export function getOrCreateRewardToken(tokenId: BigInt): Token {
     token.image = `${SMOL_TREASURES_IMAGES_BASE_URI}${tokenId
       .minus(BigInt.fromI32(1))
       .toString()}.gif`;
+    token.attributes = [];
     token.save();
 
     collection.tokensCount += 1;
