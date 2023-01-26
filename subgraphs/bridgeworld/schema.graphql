@@ -83,6 +83,7 @@ type ConsumableInfo implements Metadata @entity {
 
   type: String!
   size: Size
+  isSoulbound: Boolean
 }
 
 type LegionClass @entity {
@@ -551,6 +552,12 @@ type Harvester @entity {
 
   "Maximum amount of MAGIC that can be staked"
   maxMagicDeposited: BigInt!
+
+  "Custom Harvester Parts collection addressed used for this Harvester, if applicable"
+  partsAddress: Bytes
+
+  "Custom Harvester Parts token ID used for this Harvester, if applicable"
+  partsTokenId: BigInt
 
   "Maximum number of Harvester Parts that can be staked"
   maxPartsStaked: Int!
