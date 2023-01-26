@@ -153,8 +153,11 @@ type Seeded @entity {
   requests: [Bytes!]!
 }
 
-type User @entity(immutable: true) {
+type User @entity {
   id: Bytes!
+
+  "Next time this user's Crypts cooldown expires, in seconds, if applicable"
+  cryptsCooldownExpirationTime: BigInt
 
   removals: [Removal!]! @derivedFrom(field: "user")
   squads: [CryptsSquad!]! @derivedFrom(field: "user")

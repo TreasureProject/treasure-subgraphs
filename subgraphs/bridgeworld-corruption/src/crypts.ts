@@ -122,6 +122,15 @@ export function handleLegionSquadRemoved(event: LegionSquadRemoved): void {
 }
 
 export function handleLegionSquadUnstaked(event: LegionSquadUnstaked): void {
+  const params = event.params;
+
+  const config = getOrCreateConfig();
+  const user = getOrCreateUser(params._user);
+  user.cryptsCooldownExpirationTime = event.block.timestamp.plus(
+    config.cryptsLegionsUnstakeCooldown
+  );
+  user.save();
+
   store.remove(
     "CryptsSquad",
     bytesFromBigInt(event.params._legionSquadId).toHexString()
