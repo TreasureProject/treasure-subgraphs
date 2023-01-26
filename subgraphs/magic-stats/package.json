@@ -7,6 +7,6 @@
     "codegen": "graph codegen",
     "prepare:dev": "yarn --cwd ../../packages/constants prepare:arbitrum-goerli && mustache ../../node_modules/@treasure/subgraph-config/src/arbitrum-goerli.json template.yaml > subgraph.yaml",
     "prepare:prod": "yarn --cwd ../../packages/constants prepare:arbitrum && mustache ../../node_modules/@treasure/subgraph-config/src/arbitrum.json template.yaml > subgraph.yaml",
-    "test": "graph test"
+    "test": "graph test -v 0.5.4"
   }
 }
