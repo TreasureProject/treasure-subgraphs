@@ -1,10 +1,15 @@
 {
   "name": "@treasure/subgraph-config",
   "version": "1.0.0",
-  "description": "Configuration data for the subgraphs",
-  "license": "MIT",
   "private": true,
+  "license": "MIT",
+  "description": "Configuration data for the subgraphs",
   "files": [
     "src"
-  ]
+  ],
+  "scripts": {
+    "prepare:dev": "exit 0",
+    "codegen": "exit 0",
+    "test": "exit 0"
+  }
 }

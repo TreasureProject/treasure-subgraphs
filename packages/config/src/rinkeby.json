@@ -1,7 +1,0 @@
-{
-  "network": "rinkeby",
-
-  "abis": "../../node_modules/@treasure/subgraph-abis/src",
-  "burner_address": "0x0000000000000000000000000000000000000000",
-  "explorer": "rinkeby.etherscan.io"
-}
