@@ -21,19 +21,15 @@ import { getAddressId } from "../helpers/utils";
 const ONE = BigDecimal.fromString((1e18).toString());
 
 export function handleDeposit(event: DepositEvent): void {
-  let mine = event.address.toHexString();
-  let params = event.params;
-  let userId = params.user;
-  let lock = params.lock;
+  const params = event.params;
 
-  let deposit = new Deposit(getAddressId(userId, params.index));
-  let user = User.load(userId.toHexString());
+  const userId = params.user;
+  const user = getUser(userId.toHexString());
+  user.deposited = user.deposited.plus(params.amount);
+  user.save();
 
-  if (user) {
-    user.deposited = user.deposited.plus(params.amount);
-    user.save();
-  }
-
+  const lock = params.lock;
+  const deposit = new Deposit(getAddressId(userId, params.index));
   deposit.transactionHash = event.transaction.hash;
   deposit.amount = params.amount;
   deposit.depositId = params.index;
@@ -42,8 +38,8 @@ export function handleDeposit(event: DepositEvent): void {
     .plus(BigInt.fromI32(LOCK_PERIOD_IN_SECONDS[lock]))
     .times(BigInt.fromI32(1000));
   deposit.lock = lock;
-  deposit.mine = mine;
-  deposit.user = userId.toHexString();
+  deposit.mine = event.address.toHexString();
+  deposit.user = user.id;
   deposit.save();
 }
 

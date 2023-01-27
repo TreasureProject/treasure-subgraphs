@@ -51,8 +51,6 @@ dataSources:
         - name: ERC1155
           file: {{{ abis }}}/1155.json
       eventHandlers:
-        - event: ApprovalForAll(indexed address,indexed address,bool)
-          handler: handleApprovalForAll
         - event: TransferBatch(indexed address,indexed address,indexed address,uint256[],uint256[])
           handler: handleTransferBatch
         - event: TransferSingle(indexed address,indexed address,indexed address,uint256,uint256)
@@ -77,8 +75,6 @@ dataSources:
         - name: ERC1155
           file: {{{ abis }}}/1155.json
       eventHandlers:
-        - event: ApprovalForAll(indexed address,indexed address,bool)
-          handler: handleApprovalForAll
         - event: TransferBatch(indexed address,indexed address,indexed address,uint256[],uint256[])
           handler: handleTransferBatch
         - event: TransferSingle(indexed address,indexed address,indexed address,uint256,uint256)
@@ -175,8 +171,6 @@ dataSources:
         - name: ERC721
           file: {{{ abis }}}/721.json
       eventHandlers:
-        - event: ApprovalForAll(indexed address,indexed address,bool)
-          handler: handleApprovalForAll
         - event: Transfer(indexed address,indexed address,indexed uint256)
           handler: handleTransfer
       file: ./src/mappings/legion.ts
@@ -227,8 +221,6 @@ dataSources:
         - name: ERC1155
           file: {{{ abis }}}/1155.json
       eventHandlers:
-        - event: ApprovalForAll(indexed address,indexed address,bool)
-          handler: handleApprovalForAll
         - event: TransferBatch(indexed address,indexed address,indexed address,uint256[],uint256[])
           handler: handleTransferBatch
         - event: TransferSingle(indexed address,indexed address,indexed address,uint256,uint256)
@@ -253,35 +245,11 @@ dataSources:
         - name: ERC1155
           file: {{{ abis }}}/1155.json
       eventHandlers:
-        - event: ApprovalForAll(indexed address,indexed address,bool)
-          handler: handleApprovalForAll
         - event: TransferBatch(indexed address,indexed address,indexed address,uint256[],uint256[])
           handler: handleTransferBatch
         - event: TransferSingle(indexed address,indexed address,indexed address,uint256,uint256)
           handler: handleTransferSingle
       file: ./src/mappings/legacy-legion-genesis.ts
-  - name: Magic
-    kind: ethereum/contract
-    network: {{ network }}
-    source:
-      address: "{{ magic_address }}"
-      abi: ERC20
-      startBlock: {{ magic_start_block }}
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.6
-      language: wasm/assemblyscript
-      entities:
-        - Approval
-        - User
-        - UserApproval
-      abis:
-        - name: ERC20
-          file: {{{ abis }}}/20.json
-      eventHandlers:
-        - event: Approval(indexed address,indexed address,uint256)
-          handler: handleApproval
-      file: ./src/mappings/magic.ts
   - name: Pilgrimage
     kind: ethereum/contract
     network: {{ network }}
@@ -433,8 +401,6 @@ dataSources:
         - name: ERC1155
           file: {{{ abis }}}/1155.json
       eventHandlers:
-        - event: ApprovalForAll(indexed address,indexed address,bool)
-          handler: handleApprovalForAll
         - event: TransferBatch(indexed address,indexed address,indexed address,uint256[],uint256[])
           handler: handleTransferBatch
         - event: TransferSingle(indexed address,indexed address,indexed address,uint256,uint256)
@@ -459,8 +425,6 @@ dataSources:
         - name: ERC1155
           file: {{{ abis }}}/1155.json
       eventHandlers:
-        - event: ApprovalForAll(indexed address,indexed address,bool)
-          handler: handleApprovalForAll
         - event: TransferBatch(indexed address,indexed address,indexed address,uint256[],uint256[])
           handler: handleTransferBatch
         - event: TransferSingle(indexed address,indexed address,indexed address,uint256,uint256)

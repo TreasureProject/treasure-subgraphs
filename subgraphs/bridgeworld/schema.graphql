@@ -187,14 +187,6 @@ type TreasureFragmentInfo implements Metadata @entity {
   tier: Int!
 }
 
-type Approval @entity {
-  id: ID!
-
-  contract: Bytes!
-  operator: Bytes!
-  users: [UserApproval!]! @derivedFrom(field: "approval")
-}
-
 type AtlasMine @entity {
   id: ID!
 
@@ -478,7 +470,6 @@ type Token @entity {
 type User @entity {
   id: ID!
 
-  approvals: [UserApproval!]! @derivedFrom(field: "user")
   crafts: [Craft!]! @derivedFrom(field: "user")
   miniCrafts: [MiniCraft!]! @derivedFrom(field: "user")
   deposits: [Deposit!]! @derivedFrom(field: "user")
@@ -504,13 +495,6 @@ type Pilgrimage @entity {
   pilgrimageId: BigInt!
   quantity: BigInt!
   token: Token!
-  user: User!
-}
-
-type UserApproval @entity {
-  id: ID!
-
-  approval: Approval!
   user: User!
 }
 
