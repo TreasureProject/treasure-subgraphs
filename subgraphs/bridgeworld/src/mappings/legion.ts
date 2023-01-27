@@ -42,6 +42,7 @@ import {
   getLegionImage,
   getLegionMetadata,
 } from "../helpers/legion";
+import { getUser } from "../helpers/user";
 import * as common from "../mapping";
 
 const BOOST_MATRIX = [
@@ -284,11 +285,9 @@ export function handleLegionCreated(event: LegionCreated): void {
   );
 
   if (isRecruit) {
-    const user = User.load(params._owner.toHexString());
-    if (user) {
-      user.recruit = token.id;
-      user.save();
-    }
+    const user = getUser(params._owner.toHexString());
+    user.recruit = token.id;
+    user.save();
 
     token.name = metadata.role;
     token.rarity = metadata.rarity;

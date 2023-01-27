@@ -30,6 +30,7 @@ import {
   isQuestingXpGainedEnabled,
   setQuestingXpGainedBlockNumberIfEmpty,
 } from "../helpers/config";
+import { getUser } from "../helpers/user";
 import { getAddressId } from "../helpers/utils";
 import { getXpPerLevel } from "../helpers/xp";
 
@@ -177,11 +178,9 @@ export function handleAdvancedQuestEnded(event: AdvancedQuestEnded): void {
   quest.status = "Finished";
   quest.endTimestamp = event.block.timestamp.times(BigInt.fromI32(1000));
 
-  const user = User.load(quest.user);
-  if (user) {
-    user.finishedAdvancedQuestCount += 1;
-    user.save();
-  }
+  const user = getUser(quest.user);
+  user.finishedAdvancedQuestCount += 1;
+  user.save();
 
   store.remove("AdvancedQuest", id);
 

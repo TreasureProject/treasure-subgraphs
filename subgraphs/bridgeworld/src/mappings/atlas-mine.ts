@@ -70,29 +70,21 @@ export function handleStaked(event: Staked): void {
 }
 
 export function handleUnstaked(event: Unstaked): void {
-  let params = event.params;
-  let nft = params.nft;
-  let tokenId = params.tokenId;
-  let quantity = params.amount;
-  let boost = params.currentBoost;
-  let addressId = getAddressId(nft, tokenId);
-  let userId = getUserOrMultisigAddress(event).toHexString();
-  let stakedTokenId = `${userId}-${addressId}`;
+  const params = event.params;
+  const quantity = params.amount;
 
-  let user = User.load(userId);
+  const userId = getUserOrMultisigAddress(event).toHexString();
+  const user = getUser(userId);
+  user.boosts = user.boosts - quantity.toI32();
+  user.boost = params.currentBoost.divDecimal(ONE).toString();
+  user.save();
 
-  if (user) {
-    user.boosts = user.boosts - quantity.toI32();
-    user.boost = boost.divDecimal(ONE).toString();
-    user.save();
-  }
-
-  let stakedToken = StakedToken.load(stakedTokenId);
-
+  const stakedToken = StakedToken.load(
+    `${userId}-${getAddressId(params.nft, params.tokenId)}`
+  );
   if (stakedToken) {
     stakedToken.quantity = stakedToken.quantity.minus(quantity);
     stakedToken.save();
-
     if (stakedToken.quantity.toI32() == 0) {
       store.remove("StakedToken", stakedToken.id);
     }
@@ -134,12 +126,9 @@ export function handleWithdraw(event: WithdrawEvent): void {
     return;
   }
 
-  let user = User.load(userId.toHexString());
-
-  if (user) {
-    user.deposited = user.deposited.minus(params.amount);
-    user.save();
-  }
+  const user = getUser(userId.toHexString());
+  user.deposited = user.deposited.minus(params.amount);
+  user.save();
 
   deposit.withdrawal = id;
   deposit.save();
