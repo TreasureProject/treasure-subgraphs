@@ -138,6 +138,7 @@ export function fetchTokenMetadata(collection: Collection, token: Token): void {
     // Cache Land metadata
     if (isLand && !landMetadata) {
       landMetadata = new _LandMetadata("all");
+      landMetadata.name = "Smol Land";
       landMetadata.description = token.description;
       landMetadata.image = token.image;
       landMetadata.video = token.video;
