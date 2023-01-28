@@ -20,13 +20,7 @@ import {
   Outcome,
   Random,
 } from "../../generated/schema";
-import {
-  DIFFICULTY,
-  addCrafterToCircle,
-  getAddressId,
-  getXpPerLevel,
-  removeCrafterFromCircle,
-} from "../helpers";
+import { DIFFICULTY, getAddressId, getXpPerLevel } from "../helpers";
 import {
   isCraftingXpGainedEnabled,
   setCraftingXpGainedBlockNumberIfEmpty,
@@ -56,8 +50,6 @@ function handleCraftingStarted(
 
     return;
   }
-
-  addCrafterToCircle();
 
   // TODO: Add treasures sent in for craft
   craft.difficulty = DIFFICULTY[difficulty];
@@ -193,8 +185,6 @@ export function handleCraftingFinished(event: CraftingFinished): void {
   craft.id = `${craft.id}-${craft.random}`;
   craft.status = "Finished";
   craft.save();
-
-  removeCrafterFromCircle();
 
   // Remove old craft
   store.remove("Craft", id);

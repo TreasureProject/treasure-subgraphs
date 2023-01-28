@@ -1,7 +1,6 @@
 import { BigInt, log } from "@graphprotocol/graph-ts";
 
 import { Harvester, _HarvesterConfig } from "../../generated/schema";
-import { checkSummonFatigue } from "./fatigue";
 import { removeExpiredExtractors } from "./harvester";
 
 export const runHarvestersScheduledJobs = (timestamp: BigInt): void => {
@@ -28,5 +27,4 @@ export const runHarvestersScheduledJobs = (timestamp: BigInt): void => {
 
 export const runScheduledJobs = (timestamp: BigInt): void => {
   runHarvestersScheduledJobs(timestamp);
-  checkSummonFatigue(timestamp.toI64() * 1000);
 };
