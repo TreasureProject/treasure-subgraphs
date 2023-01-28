@@ -32,8 +32,8 @@ test("token is minted", () => {
   attribute2.save();
 
   const landMetadata = new _LandMetadata("all");
-  landMetadata.name = "Smol Brains Land";
-  landMetadata.description = "Smol Brains Land";
+  landMetadata.name = "Smol Land";
+  landMetadata.description = "Smol Land";
   landMetadata.image =
     "https://treasure-marketplace.mypinata.cloud/ipfs/QmYAkzPbwL7F4S8QrabVgNQMCstfzdcpv1K2XNjBNvvko7/24";
   landMetadata.attributes = ["test-attribute1", "test-attribute2"];
