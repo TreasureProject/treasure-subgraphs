@@ -10,7 +10,6 @@ import {
   handleUnstaked,
   handleWithdraw,
 } from "../src/mappings/atlas-mine";
-import { handleApproval } from "../src/mappings/magic";
 import { handleTransferBatch } from "../src/mappings/treasure";
 import {
   createDepositEvent,
@@ -29,20 +28,10 @@ import {
   USER_ENTITY_TYPE,
   WITHDRAW_ENTITY_TYPE,
 } from "./helpers/constants";
-import { createApprovalEvent } from "./helpers/magic";
 import { createTreasureTransferEvent } from "./helpers/treasure";
 
 test("withdrawals will add to existing when depositId matches", () => {
   clearStore();
-
-  const approvalEvent = createApprovalEvent(
-    USER_ADDRESS,
-    Address.fromString(ATLAS_MINE_ADDRESS)
-  );
-
-  handleApproval(approvalEvent);
-
-  assert.fieldEquals(USER_ENTITY_TYPE, USER_ADDRESS, "deposited", "0");
 
   const depositEvent = createDepositEvent(USER_ADDRESS, 1, 3);
 

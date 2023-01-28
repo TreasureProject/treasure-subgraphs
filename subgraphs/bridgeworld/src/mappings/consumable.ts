@@ -1,17 +1,10 @@
 import { Address, BigInt, log, store } from "@graphprotocol/graph-ts";
 
 import {
-  ApprovalForAll,
   TransferBatch,
   TransferSingle,
 } from "../../generated/Consumable/ERC1155";
-import {
-  Approval,
-  ConsumableInfo,
-  Token,
-  User,
-  UserApproval,
-} from "../../generated/schema";
+import { ConsumableInfo, Token, User } from "../../generated/schema";
 import { CONSUMABLE_IPFS, getAddressId, isMint } from "../helpers";
 import * as common from "../mapping";
 
@@ -145,47 +138,6 @@ function setMetadata(contract: Address, tokenId: BigInt): void {
   token.metadata = metadata.id;
   token.rarity = "None";
   token.save();
-}
-
-export function handleApprovalForAll(event: ApprovalForAll): void {
-  let params = event.params;
-
-  let userId = params.account.toHexString();
-  let user = User.load(userId);
-
-  if (!user) {
-    log.error("Unknown user: {}", [userId]);
-
-    return;
-  }
-
-  let contract = event.address;
-  let operator = params.operator;
-
-  let approvalId = `${contract.toHexString()}-${operator.toHexString()}`;
-  let approval = Approval.load(approvalId);
-
-  if (!approval) {
-    approval = new Approval(approvalId);
-
-    approval.contract = contract;
-    approval.operator = operator;
-
-    approval.save();
-  }
-
-  let userApprovalId = `${user.id}-${approval.id}`;
-
-  if (params.approved) {
-    let userApproval = new UserApproval(userApprovalId);
-
-    userApproval.approval = approval.id;
-    userApproval.user = user.id;
-
-    userApproval.save();
-  } else {
-    store.remove("UserApproval", userApprovalId);
-  }
 }
 
 export function handleTransferBatch(event: TransferBatch): void {

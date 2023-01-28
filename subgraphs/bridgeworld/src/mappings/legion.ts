@@ -14,15 +14,13 @@ import {
   LegionCreated,
   LegionQuestLevelUp,
 } from "../../generated/Legion Metadata Store/LegionMetadataStore";
-import { ApprovalForAll, Transfer } from "../../generated/Legion/ERC721";
+import { Transfer } from "../../generated/Legion/ERC721";
 import {
-  Approval,
   Constellation,
   LegionClass,
   LegionInfo,
   Token,
   User,
-  UserApproval,
 } from "../../generated/schema";
 import {
   LEGION_IPFS,
@@ -44,6 +42,7 @@ import {
   getLegionImage,
   getLegionMetadata,
 } from "../helpers/legion";
+import { getUser } from "../helpers/user";
 import * as common from "../mapping";
 
 const BOOST_MATRIX = [
@@ -169,47 +168,6 @@ function setMetadata(contract: Address, tokenId: BigInt): void {
   token.save();
 }
 
-export function handleApprovalForAll(event: ApprovalForAll): void {
-  let params = event.params;
-
-  let userId = params.owner.toHexString();
-  let user = User.load(userId);
-
-  if (!user) {
-    log.error("Unknown user: {}", [userId]);
-
-    return;
-  }
-
-  let contract = event.address;
-  let operator = params.operator;
-
-  let approvalId = `${contract.toHexString()}-${operator.toHexString()}`;
-  let approval = Approval.load(approvalId);
-
-  if (!approval) {
-    approval = new Approval(approvalId);
-
-    approval.contract = contract;
-    approval.operator = operator;
-
-    approval.save();
-  }
-
-  let userApprovalId = `${user.id}-${approval.id}`;
-
-  if (params.approved) {
-    let userApproval = new UserApproval(userApprovalId);
-
-    userApproval.approval = approval.id;
-    userApproval.user = user.id;
-
-    userApproval.save();
-  } else {
-    store.remove("UserApproval", userApprovalId);
-  }
-}
-
 export function handleLegionConstellationRankUp(
   event: LegionConstellationRankUp
 ): void {
@@ -327,11 +285,9 @@ export function handleLegionCreated(event: LegionCreated): void {
   );
 
   if (isRecruit) {
-    const user = User.load(params._owner.toHexString());
-    if (user) {
-      user.recruit = token.id;
-      user.save();
-    }
+    const user = getUser(params._owner.toHexString());
+    user.recruit = token.id;
+    user.save();
 
     token.name = metadata.role;
     token.rarity = metadata.rarity;
