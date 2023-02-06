@@ -115,7 +115,7 @@ dataSources:
           handler: handleTempleCreated
         - event: TempleEntered(address,uint64,uint16,uint256)
           handler: handleTempleEntered
-        - event: TreasureClaimed(address,uint64,((uint8,uint8),uint8,uint8,uint8,uint16,uint16),uint256)
+        - event: TreasureClaimed(address,uint64,uint256,((uint8,uint8),uint8,uint8,uint8,uint16,uint16),uint256)
           handler: handleTreasureClaimed
       file: ./src/crypts.ts
   - name: CorruptionCryptsRewards

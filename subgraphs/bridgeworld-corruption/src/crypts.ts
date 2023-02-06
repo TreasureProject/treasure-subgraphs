@@ -238,8 +238,9 @@ export function handleTempleEntered(event: TempleEntered): void {
   config.save();
 }
 
-export function handleTreasureClaimed(_: TreasureClaimed): void {
+export function handleTreasureClaimed(event: TreasureClaimed): void {
   const boardTreasureFragment = getOrCreateBoardTreasureFragment();
-  boardTreasureFragment.numClaimed += 1;
+  boardTreasureFragment.numClaimed +=
+    event.params._treasureFragmentsEmitted.toI32();
   boardTreasureFragment.save();
 }
