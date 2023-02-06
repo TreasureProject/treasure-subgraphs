@@ -82,7 +82,7 @@ export function handleCorruptionRemovalRecipeCreated(
       recipeItem.customRequirementData = requirementData;
       if (
         customHandler.equals(TREASURE_CORRUPTION_HANDLER_ADDRESS) &&
-        requirementData.length == 4
+        requirementData.length >= 2
       ) {
         const treasureRequirement = new RecipeItemTreasureRequirement(
           recipeItem.id
