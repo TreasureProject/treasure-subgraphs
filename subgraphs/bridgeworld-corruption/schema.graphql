@@ -15,14 +15,6 @@ enum ItemEffect {
   Custom
 }
 
-enum BuildingType {
-  theforge
-  ivorytower
-  summoningcircle
-  harvesters
-  other
-}
-
 enum TreasureCategory {
   Alchemy
   Arcana
@@ -88,7 +80,6 @@ type Config @entity {
 type Building @entity {
   id: Bytes!
 
-  type: BuildingType!
   address: Bytes!
   ratePerSecond: BigInt!
   generatedCorruptionCap: BigInt!
@@ -125,8 +116,6 @@ type RecipeItemTreasureRequirement @entity(immutable: true) {
   item: RecipeItem!
 
   tier: Int!
-  category1: TreasureCategory!
-  category2: TreasureCategory!
   amount: Int!
 }
 
@@ -248,9 +237,6 @@ type CryptsSquad @entity {
 
   "Y coordinate on board, -1 if not placed"
   positionY: Int!
-
-  "True if squad has entered the target temple"
-  inTemple: Boolean!
 
   "Last round ID where this squad entered the target temple"
   lastRoundInTemple: Int!

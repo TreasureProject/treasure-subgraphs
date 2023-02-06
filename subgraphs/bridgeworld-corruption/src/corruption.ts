@@ -21,7 +21,6 @@ import {
 import {
   ITEM_EFFECTS,
   ITEM_TYPES,
-  TREASURE_CATEGORIES,
   decodeBigIntArray,
   getOrCreateBuilding,
   getOrCreateUser,
@@ -90,11 +89,7 @@ export function handleCorruptionRemovalRecipeCreated(
         );
         treasureRequirement.item = recipeItem.id;
         treasureRequirement.tier = requirementData[0].toI32();
-        treasureRequirement.category1 =
-          TREASURE_CATEGORIES[requirementData[1].toI32()];
-        treasureRequirement.category2 =
-          TREASURE_CATEGORIES[requirementData[2].toI32()];
-        treasureRequirement.amount = requirementData[3].toI32();
+        treasureRequirement.amount = requirementData[1].toI32();
         treasureRequirement.save();
       }
     }
