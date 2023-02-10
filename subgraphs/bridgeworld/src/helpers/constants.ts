@@ -1,6 +1,12 @@
 import { BigDecimal, BigInt } from "@graphprotocol/graph-ts";
 
-export const DIFFICULTY = ["Easy", "Medium", "Hard"];
+export const DIFFICULTY = [
+  "Easy",
+  "Medium",
+  "Hard",
+  "SmallToMediumPrismUpgrade",
+  "MediumToLargePrismUpgrade",
+];
 export const CONSUMABLE_IPFS =
   "ipfs://QmcaPZXaxeHuQBFM55HjxnWnGkmVr1Ax5pU52c1evw6h1Q";
 export const LEGION_IPFS =
