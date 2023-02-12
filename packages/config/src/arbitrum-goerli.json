@@ -3,6 +3,7 @@
   "abis": "../../node_modules/@treasure/subgraph-abis/src",
   "burner_address": "0x0000000000000000000000000000000000000000",
   "explorer": "goerli-rollup-explorer.arbitrum.io",
+
   "atlas_mine_address": "0x9D99d6C2b9173451C2055BE0825FA1410148F618",
   "atlas_mine_start_block": 498543,
   "balancer_crystal_address": "0x46b20a918903702Ed8C89320D49feE19B3d98657",
@@ -44,6 +45,17 @@
   "harvester_factory_start_block": 498648,
   "recruit_level_address": "0xb475b45fFE5FE80901363B2906786E9859E796B7",
   "recruit_level_start_block": 498621,
+  "corruption_address": "0xAA2998515801dfeDF79b9a2B17324c1EEe81b9d6",
+  "corruption_start_block": 4202629,
+  "corruption_removal_address": "0xac5401ff3f78c21ad55298531e5641a7456c7839",
+  "corruption_removal_start_block": 6924537,
+  "treasure_corruption_handler_address": "0x5d9ca1b2cc8307bd19b19415709587f21fbc72f5",
+  "treasure_corruption_handler_start_block": 6924543,
+  "corruption_crypts_address": "0xa12786378f4ca03269a53a012da606fdcf655eb0",
+  "corruption_crypts_start_block": 6924578,
+  "corruption_crypts_rewards_address": "0xf992e54b8de47056825e1f5cfa3d1817b40dc62f",
+  "corruption_crypts_rewards_start_block": 6924548,
+
   "smol_brains_address": "0x2542421ACA04A98f5Cf04DA97a36DAD8F1FaC3f4",
   "smol_brains_start_block": 502313,
   "smol_brains_land_address": "0x2De47e310C5413EA957104bA3C0bEf12F2506660",
@@ -79,8 +91,11 @@
   "smolidays_start_block": 2765235,
   "smol_chop_shop_address": "0x9D47a763B744BC181F58b353b7Ee597807C37607",
   "smol_chop_shop_start_block": 4936962,
+
   "hourly_stat_interval_start_block": 309123,
+
   "magicswap_factory_address": "0x6Cd71961e531aBB505256ffa945D59ab9a2156ec",
   "magicswap_factory_start_block": 529452,
+
   "battlefly_smolverse_flywheel_vault_address": "0xFFb425a9520D4BD4C512eCD8A4c3cfD240F9158f"
 }

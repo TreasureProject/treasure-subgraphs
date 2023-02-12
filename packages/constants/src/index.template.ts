@@ -17,6 +17,12 @@ export const BALANCER_CRYSTAL_ADDRESS = Address.fromString(
 export const CONSUMABLE_ADDRESS = Address.fromString(
   "{{consumable_address}}{{^consumable_address}}{{burner_address}}{{/consumable_address}}"
 );
+export const CORRUPTION_CRYPTS_ADDRESS = Address.fromString(
+  "{{corruption_crypts_address}}{{^corruption_crypts_address}}{{burner_address}}{{/corruption_crypts_address}}"
+);
+export const CORRUPTION_REMOVAL_ADDRESS = Address.fromString(
+  "{{corruption_removal_address}}{{^corruption_removal_address}}{{burner_address}}{{/corruption_removal_address}}"
+);
 export const CRAFTING_ADDRESS = Address.fromString(
   "{{crafting_address}}{{^crafting_address}}{{burner_address}}{{/crafting_address}}"
 );
@@ -46,6 +52,9 @@ export const SUMMONING_ADDRESS = Address.fromString(
 );
 export const TREASURE_ADDRESS = Address.fromString(
   "{{treasure_address}}{{^treasure_address}}{{burner_address}}{{/treasure_address}}"
+);
+export const TREASURE_CORRUPTION_HANDLER_ADDRESS = Address.fromString(
+  "{{treasure_corruption_handler_address}}{{^treasure_corruption_handler_address}}{{burner_address}}{{/treasure_corruption_handler_address}}"
 );
 export const TREASURE_FRAGMENT_ADDRESS = Address.fromString(
   "{{treasure_fragment_address}}{{^treasure_fragment_address}}{{burner_address}}{{/treasure_fragment_address}}"

@@ -48,37 +48,32 @@ function handleCraftingStarted(
   finishTime: BigInt,
   difficulty: i32
 ): void {
-  let random = Random.load(requestId.toHexString());
-  let craft = new Craft(getAddressId(address, tokenId));
-
+  const random = Random.load(requestId.toHexString());
   if (!random) {
     log.error("[craft-started] Unknown random: {}", [requestId.toString()]);
-
     return;
   }
 
   addCrafterToCircle();
 
-  // TODO: Add treasures sent in for craft
+  const craft = new Craft(getAddressId(address, tokenId));
   craft.difficulty = DIFFICULTY[difficulty];
   craft.endTimestamp = finishTime.times(BigInt.fromI32(1000));
   craft.token = getAddressId(LEGION_ADDRESS, tokenId);
   craft.random = random.id;
   craft.status = "Idle";
   craft.user = user.toHexString();
+  craft.save();
 
   random.craft = craft.id;
   random.requestId = requestId;
-
-  craft.save();
   random.save();
 }
 
 export function handleCraftingStartedWithDifficulty(
   event: CraftingStarted
 ): void {
-  let params = event.params;
-
+  const params = event.params;
   handleCraftingStarted(
     event.address,
     params._owner,
@@ -92,8 +87,7 @@ export function handleCraftingStartedWithDifficulty(
 export function handleCraftingStartedWithoutDifficulty(
   event: craftingLegacy.CraftingStarted
 ): void {
-  let params = event.params;
-
+  const params = event.params;
   handleCraftingStarted(
     event.address,
     params._owner,
