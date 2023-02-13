@@ -1,0 +1,268 @@
+enum Status {
+  Started
+  Ready
+  Finished
+}
+
+enum ItemType {
+  ERC20
+  ERC1155
+}
+
+enum ItemEffect {
+  Burn
+  MoveToTreasury
+  Custom
+}
+
+enum TreasureCategory {
+  Alchemy
+  Arcana
+  Brewing
+  Enchanting
+  Leatherworking
+  Smithing
+}
+
+type Config @entity {
+  "Singleton"
+  id: Bytes!
+
+  "Latest global Randomizer request ID"
+  cryptsRequestId: Bytes
+
+  "Current round in progress"
+  cryptsRound: Int!
+
+  "True if round is still waiting for random seed to start"
+  cryptsRoundStarting: Boolean!
+
+  "Current round start time"
+  cryptsRoundStartTime: BigInt!
+
+  "Number of seconds per epoch"
+  cryptsSecondsInEpoch: BigInt!
+
+  "Amount of time before a Legion squad can be unstaked, in seconds"
+  cryptsLegionsUnstakeCooldown: BigInt!
+
+  "Number of Legions that have reached a temple in the current round"
+  cryptsLegionsReachedTemple: Int!
+
+  "Maximum number of Legions to reach temple before the round advances"
+  maxLegionsInCryptsTemple: Int!
+
+  "Maximum number of Legion squads per user"
+  maxCryptsSquadsPerUser: Int!
+
+  "Maximum number of Legions on a single squad"
+  maxLegionsPerCryptsSquad: Int!
+
+  "Maximum number of map tiles a user can have in their hand"
+  maxCryptsMapTilesInHand: Int!
+
+  "Maximum number of map tiles a user can have on the board at once"
+  maxCryptsMapTilesOnBoard: Int!
+
+  "Minimum number of tiles away from temple a Legion squad must be placed on board"
+  minimumDistanceFromTempleForCryptsLegionSquad: Int!
+
+  "Amout of time, in seconds, a Legion has to craft Corruption after the Crypts round resets"
+  cryptsCraftRoundResetTimeAllowance: Int!
+
+  "Number of Malevolent Prisms required per Corruption craft"
+  cryptsCraftMalevolentPrismsRequired: Int!
+
+  "Minimum crafting level for an Auxiliary Legion to craft Corruption"
+  cryptsCraftMinimumAuxLegionLevel: Int!
+}
+
+type Building @entity {
+  id: Bytes!
+
+  address: Bytes!
+  ratePerSecond: BigInt!
+  generatedCorruptionCap: BigInt!
+  recipes: [Recipe!]!
+}
+
+type Recipe @entity(immutable: true) {
+  id: Bytes!
+
+  recipeId: BigInt!
+  corruptionRemoved: BigInt!
+  items: [RecipeItem!]! @derivedFrom(field: "recipe")
+}
+
+type RecipeItem @entity(immutable: true) {
+  id: Bytes!
+
+  recipe: Recipe!
+
+  address: Bytes
+  type: ItemType!
+  effect: ItemEffect!
+  effectChance: BigInt!
+  itemId: BigInt
+  amount: BigInt
+  customHandler: Bytes
+  customRequirementData: [BigInt!]
+  treasureRequirement: RecipeItemTreasureRequirement @derivedFrom(field: "item")
+}
+
+type RecipeItemTreasureRequirement @entity(immutable: true) {
+  id: Bytes!
+
+  item: RecipeItem!
+
+  tier: Int!
+  amount: Int!
+}
+
+type Removal @entity {
+  id: Bytes!
+
+  requestId: BigInt!
+  startTimestamp: BigInt!
+  user: User!
+  building: Building!
+  recipe: Recipe!
+  status: Status!
+  corruptionRemoved: BigInt!
+  prismMinted: BigInt
+  brokenTreasureIds: [BigInt!]!
+  brokenTreasureAmounts: [BigInt!]!
+}
+
+"Tracks related Randomizer commits"
+type Seeded @entity {
+  id: Bytes!
+
+  "Requests related to this commit"
+  requests: [Bytes!]!
+}
+
+type User @entity {
+  id: Bytes!
+
+  "Next time this user's Crypts cooldown expires, in seconds, if applicable"
+  cryptsCooldownExpirationTime: BigInt
+
+  removals: [Removal!]! @derivedFrom(field: "user")
+  squads: [CryptsSquad!]! @derivedFrom(field: "user")
+  mapTiles: [CryptsUserMapTile!]! @derivedFrom(field: "user")
+}
+
+type CryptsTemple @entity {
+  id: Bytes!
+
+  "Contract ID"
+  templeId: Int!
+
+  "Contract associated with temple, if any"
+  address: Bytes
+
+  "X coordinate on board"
+  positionX: Int!
+
+  "Y coordinate on board"
+  positionY: Int!
+}
+
+type CryptsBoardTreasureFragment @entity {
+  "Singleton"
+  id: Bytes!
+
+  "Treasure Fragment token ID"
+  tokenId: Int!
+
+  "X coordinate on board"
+  positionX: Int!
+
+  "Y coordinate on board"
+  positionY: Int!
+
+  "Number of Fragments already claimed this round"
+  numClaimed: Int!
+
+  "Maximum number of Fragments that can be claimed this round"
+  maxSupply: Int!
+}
+
+type CryptsMapTile @entity(immutable: true) {
+  id: Bytes!
+
+  "Global map tile ID"
+  mapTileType: Int!
+
+  "Number of moves the tile enables"
+  moves: Int!
+
+  "True if tile has a move to the north"
+  north: Boolean!
+
+  "True if tile has a move to the east"
+  east: Boolean!
+
+  "True if tile has a move to the south"
+  south: Boolean!
+
+  "True if tile has a move to the west"
+  west: Boolean!
+}
+
+type CryptsSquad @entity {
+  id: Bytes!
+
+  "Contract squad ID"
+  squadId: BigInt!
+
+  "Creator of this squad"
+  user: User!
+
+  "Legion token IDs within this squad"
+  legionTokenIds: [Int!]!
+
+  "Time squad was staked, in seconds"
+  stakedTimestamp: BigInt!
+
+  "Temple this squad is targeting"
+  targetTemple: CryptsTemple!
+
+  "Custom name for squad"
+  name: String!
+
+  "X coordinate on board, -1 if not placed"
+  positionX: Int!
+
+  "Y coordinate on board, -1 if not placed"
+  positionY: Int!
+
+  "Last round ID where this squad entered the target temple"
+  lastRoundInTemple: Int!
+}
+
+type CryptsUserMapTile @entity {
+  id: Bytes!
+
+  "Contract ID"
+  userMapTileId: BigInt!
+
+  "Owner of the tile"
+  user: User!
+
+  "Associated map tile details"
+  mapTile: CryptsMapTile!
+
+  "X coordinate on board, -1 if not placed"
+  positionX: Int!
+
+  "Y coordinate on board, -1 if not placed"
+  positionY: Int!
+
+  "Block number for this tile's placement, if applicable"
+  placedBlockNumber: BigInt
+
+  "Log index for this tile's placement, if applicable"
+  placedIndex: Int
+}

@@ -10,6 +10,8 @@ enum Difficulty {
   Easy
   Medium
   Hard
+  PrismUpgradeSmallToMedium
+  PrismUpgradeMediumToLarge
 }
 
 enum Status {
