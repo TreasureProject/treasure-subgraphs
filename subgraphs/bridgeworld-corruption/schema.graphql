@@ -80,9 +80,19 @@ type Config @entity {
 type Building @entity {
   id: Bytes!
 
+  "Associated contract address"
   address: Bytes!
+
+  "Corruption token mint rate"
   ratePerSecond: BigInt!
+
+  "Corruption token mint rate boost"
+  boost: BigInt!
+
+  "Maximum Corruption token balance"
   generatedCorruptionCap: BigInt!
+
+  "Associated Corruption removal recipes"
   recipes: [Recipe!]!
 }
 

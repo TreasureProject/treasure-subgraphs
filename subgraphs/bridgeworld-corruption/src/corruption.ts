@@ -2,7 +2,10 @@ import { Address, BigInt, Bytes, log } from "@graphprotocol/graph-ts";
 
 import { TREASURE_CORRUPTION_HANDLER_ADDRESS } from "@treasure/constants";
 
-import { CorruptionStreamModified } from "../generated/Corruption/Corruption";
+import {
+  CorruptionStreamBoostModified,
+  CorruptionStreamModified,
+} from "../generated/Corruption/Corruption";
 import {
   CorruptionRemovalEnded,
   CorruptionRemovalRecipeAdded,
@@ -33,6 +36,15 @@ export function handleCorruptionStreamModified(
   const building = getOrCreateBuilding(params._account);
   building.ratePerSecond = params._ratePerSecond;
   building.generatedCorruptionCap = params._generatedCorruptionCap;
+  building.save();
+}
+
+export function handleCorruptionStreamBoostModified(
+  event: CorruptionStreamBoostModified
+): void {
+  const params = event.params;
+  const building = getOrCreateBuilding(params._account);
+  building.boost = params._boost;
   building.save();
 }
 

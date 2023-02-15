@@ -71,6 +71,7 @@ export const getOrCreateBuilding = (address: Address): Building => {
     building = new Building(address);
     building.address = address;
     building.ratePerSecond = BigInt.zero();
+    building.boost = BigInt.zero();
     building.generatedCorruptionCap = BigInt.zero();
     building.recipes = [];
     building.save();

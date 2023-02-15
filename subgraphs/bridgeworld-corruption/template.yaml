@@ -21,6 +21,8 @@ dataSources:
       eventHandlers:
         - event: CorruptionStreamModified(address,uint128,uint256)
           handler: handleCorruptionStreamModified
+        - event: CorruptionStreamBoostModified(address,uint32)
+          handler: handleCorruptionStreamBoostModified
       file: ./src/corruption.ts
   - name: CorruptionRemoval
     kind: ethereum/contract
