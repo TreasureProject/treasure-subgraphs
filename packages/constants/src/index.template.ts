@@ -6,6 +6,9 @@ export const EXPLORER = "{{ explorer }}";
 export const MAGIC_ADDRESS = Address.fromString(
   "{{magic_address}}{{^magic_address}}{{burner_address}}{{/magic_address}}"
 );
+export const HOURLY_STAT_INTERVAL_START_BLOCK = BigInt.fromString(
+  "{{hourly_stat_interval_start_block}}{{^hourly_stat_interval_start_block}}0{{/hourly_stat_interval_start_block}}"
+);
 
 // Bridgeworld
 export const ADVANCED_QUESTING_ADDRESS = Address.fromString(
