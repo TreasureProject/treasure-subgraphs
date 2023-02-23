@@ -167,7 +167,7 @@ dataSources:
     network: {{ network }}
     source:
       address: "{{ kote_squires_address }}"
-      abi: ERC1155
+      abi: ERC721
       startBlock: {{ kote_squires_start_block }}
     mapping:
       kind: ethereum/events
