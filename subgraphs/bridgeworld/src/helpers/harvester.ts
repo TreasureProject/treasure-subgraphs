@@ -84,8 +84,10 @@ export const calculateHarvesterLegionsBoost = (
   return stakedAmount
     .times(TWO_BI)
     .minus(stakedAmount.pow(2).div(maxStakedAmount))
-    .times(rankModifier.div(ONE_BI))
-    .times(boostFactor.div(maxStakedAmount));
+    .times(rankModifier)
+    .div(ONE_BI)
+    .times(boostFactor)
+    .div(maxStakedAmount);
 };
 
 export const createOrUpdateHarvesterTokenBoost = (
