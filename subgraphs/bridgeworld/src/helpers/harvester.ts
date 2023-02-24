@@ -10,7 +10,7 @@ import {
   StakedToken,
   Token,
 } from "../../generated/schema";
-import { TWO_BI } from "./constants";
+import { ONE_BI, TWO_BI } from "./constants";
 import { etherToWei } from "./number";
 
 const getHarvesterById = (id: string): Harvester | null => {
@@ -69,21 +69,23 @@ export const calculateHarvesterLegionsBoost = (
     return BigInt.zero();
   }
 
-  // (2n - n^2/maxLegions)/maxLegions) * (0.9 + avgLegionRank / 10)
+  // Constant.ONE + (2 * n - n ** 2 / maxLegions) * legionRankModifier / Constant.ONE * boostFactor / maxLegions
+  const boostFactor = ONE_BI; // hard-coded for Legions
   const stakedAmount = etherToWei(
     Math.min(harvester.legionsStaked, harvester.maxLegionsStaked)
   );
   const maxStakedAmount = etherToWei(harvester.maxLegionsStaked);
-  const legionsRankBoost = etherToWei(0.9).plus(
-    harvester.legionsTotalRank
-      .div(BigInt.fromI32(harvester.legionsStaked))
-      .div(etherToWei(10))
+  const averageRank = harvester.legionsTotalRank.div(
+    BigInt.fromI32(harvester.legionsStaked)
+  );
+  const rankModifier = etherToWei(0.9).plus(
+    averageRank.div(BigInt.fromI32(10))
   );
   return stakedAmount
     .times(TWO_BI)
     .minus(stakedAmount.pow(2).div(maxStakedAmount))
-    .times(legionsRankBoost)
-    .div(maxStakedAmount);
+    .times(rankModifier.div(ONE_BI))
+    .times(boostFactor.div(maxStakedAmount));
 };
 
 export const createOrUpdateHarvesterTokenBoost = (
