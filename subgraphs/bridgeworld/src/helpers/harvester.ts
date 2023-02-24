@@ -65,12 +65,14 @@ export const calculateHarvesterPartsBoost = (harvester: Harvester): BigInt => {
 export const calculateHarvesterLegionsBoost = (
   harvester: Harvester
 ): BigInt => {
-  if (harvester.legionsStaked == 0) {
+  if (harvester.legionsStaked == 0 || harvester.maxLegionsStaked == 0) {
     return BigInt.zero();
   }
 
   // (2n - n^2/maxLegions)/maxLegions) * (0.9 + avgLegionRank / 10)
-  const stakedAmount = etherToWei(harvester.legionsStaked);
+  const stakedAmount = etherToWei(
+    Math.min(harvester.legionsStaked, harvester.maxLegionsStaked)
+  );
   const maxStakedAmount = etherToWei(harvester.maxLegionsStaked);
   const legionsRankBoost = etherToWei(0.9).plus(
     harvester.legionsTotalRank
