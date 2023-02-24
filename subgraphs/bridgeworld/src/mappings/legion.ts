@@ -62,9 +62,9 @@ const HARVESTERS_WEIGHT_MATRIX = [
   [
     BigInt.fromString("120000000000000000000"), // Legendary = 120
     BigInt.fromString("40000000000000000000"), // Rare = 40
-    BigInt.fromString("15000000000000000000"), // Special = 15
-    BigInt.fromString("20000000000000000000"), // Uncommon = 20
-    BigInt.fromString("10000000000000000000"), // Common = 10
+    BigInt.fromString("16000000000000000000"), // Special = 16
+    BigInt.fromString("21000000000000000000"), // Uncommon = 21
+    BigInt.fromString("11000000000000000000"), // Common = 11
     ZERO_BI, // Recruit = N/A
   ],
   // Auxiliary
