@@ -1,6 +1,10 @@
 import { BigInt, Bytes, log, store } from "@graphprotocol/graph-ts";
 
-import { CONSUMABLE_ADDRESS, LEGION_ADDRESS } from "@treasure/constants";
+import {
+  CONSUMABLE_ADDRESS,
+  KOTE_SQUIRE_ADDRESS,
+  LEGION_ADDRESS,
+} from "@treasure/constants";
 
 import { HarvesterDeployed } from "../../generated/Harvester Factory/HarvesterFactory";
 import {
@@ -50,6 +54,7 @@ import {
 } from "../helpers/harvester";
 import { getLegionMetadata } from "../helpers/legion";
 import { weiToEther } from "../helpers/number";
+import { getOrCreateToken } from "../helpers/token";
 
 export function handleHarvesterDeployed(event: HarvesterDeployed): void {
   const params = event.params;
@@ -122,15 +127,23 @@ export function handleNftStaked(event: Staked): void {
     return;
   }
 
+  const token = getOrCreateToken(nftAddress, tokenId);
+  const isKoteSquire = nftAddress.equals(KOTE_SQUIRE_ADDRESS);
+  if (isKoteSquire) {
+    token.category = "KoteSquire";
+    token.name = "KOTE Squire";
+    token.save();
+  }
+
   const userAddress = params.user;
-  const stakedTokenId = `${
-    harvester.id
-  }-${userAddress.toHexString()}-${getAddressId(nftAddress, tokenId)}`;
+  const stakedTokenId = `${harvester.id}-${userAddress.toHexString()}-${
+    token.id
+  }`;
   let stakedToken = StakedToken.load(stakedTokenId);
   if (!stakedToken) {
     stakedToken = new StakedToken(stakedTokenId);
     stakedToken.user = userAddress.toHexString();
-    stakedToken.token = getAddressId(nftAddress, tokenId);
+    stakedToken.token = token.id;
     stakedToken.quantity = BigInt.zero();
     stakedToken.harvester = harvester.id;
     stakedToken.expirationProcessed = false;
@@ -147,15 +160,19 @@ export function handleNftStaked(event: Staked): void {
   ) {
     harvester.partsStaked += amount;
     harvester.partsBoost = calculateHarvesterPartsBoost(harvester);
-  } else if (nftAddress.equals(LEGION_ADDRESS)) {
+  } else if (nftAddress.equals(LEGION_ADDRESS) || isKoteSquire) {
     harvester.legionsStaked += amount;
 
-    const metadata = getLegionMetadata(tokenId);
-    stakedToken.index = weiToEther(metadata.harvestersRank) as i32;
+    if (isKoteSquire) {
+      // Update with KOTE metadata
+    } else {
+      const metadata = getLegionMetadata(tokenId);
+      stakedToken.index = weiToEther(metadata.harvestersRank) as i32;
+      harvester.legionsTotalRank = harvester.legionsTotalRank.plus(
+        metadata.harvestersRank.times(params.amount)
+      );
+    }
 
-    harvester.legionsTotalRank = harvester.legionsTotalRank.plus(
-      metadata.harvestersRank.times(params.amount)
-    );
     harvester.legionsBoost = calculateHarvesterLegionsBoost(harvester);
   }
 

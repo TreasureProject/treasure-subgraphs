@@ -35,6 +35,9 @@ export const EXTRA_LIFE_ADDRESS = Address.fromString(
 export const KEYS_ADDRESS = Address.fromString(
   "{{keys_address}}{{^keys_address}}{{burner_address}}{{/keys_address}}"
 );
+export const KOTE_SQUIRE_ADDRESS = Address.fromString(
+  "{{kote_squire_address}}{{^kote_squire_address}}{{burner_address}}{{/kote_squire_address}}"
+);
 export const LEGACY_LEGION_ADDRESS = Address.fromString(
   "{{legacy_legion_address}}{{^legacy_legion_address}}{{burner_address}}{{/legacy_legion_address}}"
 );

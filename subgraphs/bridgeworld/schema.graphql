@@ -4,6 +4,7 @@ enum Category {
   Legion
   Treasure
   TreasureFragment
+  KoteSquire
 }
 
 enum Difficulty {
