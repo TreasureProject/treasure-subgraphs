@@ -17,7 +17,6 @@ export const LEGION_PFP_IPFS =
   "ipfs://QmdJAn4pHVyUFGcPPTVtcNQgkoWcD9YX9BfJgrSjMMAeN5";
 export const TREASURE_FRAGMENT_IPFS =
   "ipfs://QmUv5UT7X9qahf8bqcqZjX7TKqrJeMyRX3kxjVowz2WkRm";
-export const SUMMONING_SUCCESS_SENSITIVITY: f32 = 1;
 
 export const QUEST_DISTANCE_TRAVELLED_PER_PART = 10;
 

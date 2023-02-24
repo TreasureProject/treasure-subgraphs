@@ -1,6 +1,12 @@
-import { assert, clearStore, test } from "matchstick-as/assembly";
+import {
+  assert,
+  beforeEach,
+  clearStore,
+  describe,
+  test,
+} from "matchstick-as/assembly";
 
-import { Address, BigInt } from "@graphprotocol/graph-ts";
+import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
 
 import { LEGION_ADDRESS } from "@treasure/constants";
 
@@ -17,10 +23,6 @@ import {
   handleQuestStartedWithoutDifficulty,
   handleQuestXpGained,
 } from "../src/mappings/questing";
-import {
-  handleRandomRequest,
-  handleRandomSeeded,
-} from "../src/mappings/randomizer";
 import {
   Difficulty,
   LEGION_INFO_ENTITY_TYPE,
@@ -40,462 +42,374 @@ import {
   createQuestStartedWithoutDifficultyEvent,
   createQuestXpGainedEvent,
 } from "./helpers/questing";
-import {
-  createRandomRequestEvent,
-  createRandomSeededEvent,
-} from "./helpers/randomizer";
 
-test("questing increases xp when completed", () => {
-  clearStore();
+describe("questing", () => {
+  const TOKEN_ID = 1;
 
-  const mintEvent = createLegionTransferEvent(
-    Address.zero().toHexString(),
-    USER_ADDRESS,
-    1
-  );
+  beforeEach(() => {
+    clearStore();
 
-  handleTransfer(mintEvent);
-
-  const legionCreatedEvent = createLegionCreatedEvent(USER_ADDRESS, 1, 0, 6, 2);
-
-  handleLegionCreated(legionCreatedEvent);
-
-  const id = `${LEGION_ADDRESS.toHexString()}-0x1`;
-  const metadata = `${id}-metadata`;
-
-  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "questing", "1");
-  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "questingXp", "0");
-  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "questsCompleted", "0");
-  assert.fieldEquals(
-    LEGION_INFO_ENTITY_TYPE,
-    metadata,
-    "questsDistanceTravelled",
-    "0"
-  );
-
-  let questsToLevelUp = 10;
-
-  // Lets do 10 quests, then level up to level 2
-  for (let index = 1; index < questsToLevelUp + 1; index++) {
-    const randomRequestEvent = createRandomRequestEvent(index, index + 1);
-
-    handleRandomRequest(randomRequestEvent);
-
-    const questStartedEvent = createQuestStartedWithoutDifficultyEvent(
-      USER_ADDRESS,
-      1,
-      index
+    handleTransfer(
+      createLegionTransferEvent(
+        Address.zero().toHexString(),
+        USER_ADDRESS,
+        TOKEN_ID
+      )
     );
 
-    handleQuestStartedWithoutDifficulty(questStartedEvent);
-
-    const randomSeededEvent = createRandomSeededEvent(index + 1);
-
-    handleRandomSeeded(randomSeededEvent);
-
-    const questRevealedEvent = createQuestRevealedEvent(USER_ADDRESS, 1);
-
-    handleQuestRevealed(questRevealedEvent);
-
-    if (index === questsToLevelUp) {
-      // Level up on reveal
-      const questLevelUpEvent = createLegionQuestLevelUpEvent(1, 2);
-
-      handleLegionQuestLevelUp(questLevelUpEvent);
-
-      assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "questing", "2");
-      assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "questingXp", "0");
-    } else {
-      assert.fieldEquals(
-        LEGION_INFO_ENTITY_TYPE,
-        metadata,
-        "questingXp",
-        `${10 * index}`
-      );
-    }
-
-    const questFinishedEvent = createQuestFinishedEvent(USER_ADDRESS, 1);
-
-    handleQuestFinished(questFinishedEvent);
-  }
-
-  assert.fieldEquals(
-    LEGION_INFO_ENTITY_TYPE,
-    metadata,
-    "questsCompleted",
-    questsToLevelUp.toString()
-  );
-  assert.fieldEquals(
-    LEGION_INFO_ENTITY_TYPE,
-    metadata,
-    "questsDistanceTravelled",
-    (questsToLevelUp * 10).toString()
-  );
-
-  questsToLevelUp = 20;
-
-  // Lets do 20 quests, then level up to level 3
-  for (let index = 1; index < questsToLevelUp + 1; index++) {
-    const randomRequestEvent = createRandomRequestEvent(index, index + 1);
-
-    handleRandomRequest(randomRequestEvent);
-
-    const questStartedEvent = createQuestStartedWithoutDifficultyEvent(
-      USER_ADDRESS,
-      1,
-      index
+    handleLegionCreated(
+      createLegionCreatedEvent(USER_ADDRESS, TOKEN_ID, 0, 6, 2)
     );
 
-    handleQuestStartedWithoutDifficulty(questStartedEvent);
+    const legionMetadataId = `${LEGION_ADDRESS.toHexString()}-0x1-metadata`;
+    assert.fieldEquals(
+      LEGION_INFO_ENTITY_TYPE,
+      legionMetadataId,
+      "questing",
+      "1"
+    );
+    assert.fieldEquals(
+      LEGION_INFO_ENTITY_TYPE,
+      legionMetadataId,
+      "questingXp",
+      "0"
+    );
+    assert.fieldEquals(
+      LEGION_INFO_ENTITY_TYPE,
+      legionMetadataId,
+      "questsCompleted",
+      "0"
+    );
+    assert.fieldEquals(
+      LEGION_INFO_ENTITY_TYPE,
+      legionMetadataId,
+      "questsDistanceTravelled",
+      "0"
+    );
+  });
 
-    const randomSeededEvent = createRandomSeededEvent(index + 1);
+  test("questing increases xp when completed", () => {
+    const legionMetadataId = `${LEGION_ADDRESS.toHexString()}-0x1-metadata`;
 
-    handleRandomSeeded(randomSeededEvent);
+    let questsToLevelUp = 10;
 
-    const questRevealedEvent = createQuestRevealedEvent(USER_ADDRESS, 1);
-
-    handleQuestRevealed(questRevealedEvent);
-
-    if (index === questsToLevelUp) {
-      // Level up on reveal
-      const questLevelUpEvent = createLegionQuestLevelUpEvent(1, 3);
-
-      handleLegionQuestLevelUp(questLevelUpEvent);
-
-      assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "questing", "3");
-      assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "questingXp", "0");
-    } else {
-      assert.fieldEquals(
-        LEGION_INFO_ENTITY_TYPE,
-        metadata,
-        "questingXp",
-        `${10 * index}`
+    // Lets do 10 quests, then level up to level 2
+    for (let index = 1; index < questsToLevelUp + 1; index++) {
+      handleQuestStartedWithoutDifficulty(
+        createQuestStartedWithoutDifficultyEvent(USER_ADDRESS, 1, index)
       );
+
+      handleQuestRevealed(createQuestRevealedEvent(USER_ADDRESS, 1));
+
+      if (index === questsToLevelUp) {
+        // Level up on reveal
+        handleLegionQuestLevelUp(createLegionQuestLevelUpEvent(1, 2));
+        assert.fieldEquals(
+          LEGION_INFO_ENTITY_TYPE,
+          legionMetadataId,
+          "questing",
+          "2"
+        );
+        assert.fieldEquals(
+          LEGION_INFO_ENTITY_TYPE,
+          legionMetadataId,
+          "questingXp",
+          "0"
+        );
+      } else {
+        assert.fieldEquals(
+          LEGION_INFO_ENTITY_TYPE,
+          legionMetadataId,
+          "questingXp",
+          `${10 * index}`
+        );
+      }
+
+      handleQuestFinished(createQuestFinishedEvent(USER_ADDRESS, 1));
     }
 
-    const questFinishedEvent = createQuestFinishedEvent(USER_ADDRESS, 1);
-
-    handleQuestFinished(questFinishedEvent);
-  }
-
-  questsToLevelUp = 25;
-
-  // Lets do 25 quests, then level up to level 4
-  for (let index = 1; index < questsToLevelUp + 1; index++) {
-    const randomRequestEvent = createRandomRequestEvent(index, index + 1);
-
-    handleRandomRequest(randomRequestEvent);
-
-    const questStartedEvent = createQuestStartedWithoutDifficultyEvent(
-      USER_ADDRESS,
-      1,
-      index
+    assert.fieldEquals(
+      LEGION_INFO_ENTITY_TYPE,
+      legionMetadataId,
+      "questsCompleted",
+      questsToLevelUp.toString()
+    );
+    assert.fieldEquals(
+      LEGION_INFO_ENTITY_TYPE,
+      legionMetadataId,
+      "questsDistanceTravelled",
+      (questsToLevelUp * 10).toString()
     );
 
-    handleQuestStartedWithoutDifficulty(questStartedEvent);
+    questsToLevelUp = 20;
 
-    const randomSeededEvent = createRandomSeededEvent(index + 1);
-
-    handleRandomSeeded(randomSeededEvent);
-
-    const questRevealedEvent = createQuestRevealedEvent(USER_ADDRESS, 1);
-
-    handleQuestRevealed(questRevealedEvent);
-
-    if (index === questsToLevelUp) {
-      // Level up on reveal
-      const questLevelUpEvent = createLegionQuestLevelUpEvent(1, 4);
-
-      handleLegionQuestLevelUp(questLevelUpEvent);
-
-      assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "questing", "4");
-      assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "questingXp", "0");
-    } else {
-      assert.fieldEquals(
-        LEGION_INFO_ENTITY_TYPE,
-        metadata,
-        "questingXp",
-        `${20 * index}`
+    // Lets do 20 quests, then level up to level 3
+    for (let index = 1; index < questsToLevelUp + 1; index++) {
+      handleQuestStartedWithoutDifficulty(
+        createQuestStartedWithoutDifficultyEvent(USER_ADDRESS, 1, index)
       );
+
+      handleQuestRevealed(createQuestRevealedEvent(USER_ADDRESS, 1));
+
+      if (index === questsToLevelUp) {
+        // Level up on reveal
+        handleLegionQuestLevelUp(createLegionQuestLevelUpEvent(1, 3));
+        assert.fieldEquals(
+          LEGION_INFO_ENTITY_TYPE,
+          legionMetadataId,
+          "questing",
+          "3"
+        );
+        assert.fieldEquals(
+          LEGION_INFO_ENTITY_TYPE,
+          legionMetadataId,
+          "questingXp",
+          "0"
+        );
+      } else {
+        assert.fieldEquals(
+          LEGION_INFO_ENTITY_TYPE,
+          legionMetadataId,
+          "questingXp",
+          `${10 * index}`
+        );
+      }
+
+      handleQuestFinished(createQuestFinishedEvent(USER_ADDRESS, 1));
     }
 
-    const questFinishedEvent = createQuestFinishedEvent(USER_ADDRESS, 1);
+    questsToLevelUp = 25;
 
-    handleQuestFinished(questFinishedEvent);
-  }
+    // Lets do 25 quests, then level up to level 4
+    for (let index = 1; index < questsToLevelUp + 1; index++) {
+      handleQuestStartedWithoutDifficulty(
+        createQuestStartedWithoutDifficultyEvent(USER_ADDRESS, 1, index)
+      );
 
-  questsToLevelUp = 50;
+      handleQuestRevealed(createQuestRevealedEvent(USER_ADDRESS, 1));
 
-  // Lets do 50 quests, then level up to level 5
-  for (let index = 1; index < questsToLevelUp + 1; index++) {
-    const randomRequestEvent = createRandomRequestEvent(index, index + 1);
+      if (index === questsToLevelUp) {
+        // Level up on reveal
+        handleLegionQuestLevelUp(createLegionQuestLevelUpEvent(1, 4));
+        assert.fieldEquals(
+          LEGION_INFO_ENTITY_TYPE,
+          legionMetadataId,
+          "questing",
+          "4"
+        );
+        assert.fieldEquals(
+          LEGION_INFO_ENTITY_TYPE,
+          legionMetadataId,
+          "questingXp",
+          "0"
+        );
+      } else {
+        assert.fieldEquals(
+          LEGION_INFO_ENTITY_TYPE,
+          legionMetadataId,
+          "questingXp",
+          `${20 * index}`
+        );
+      }
 
-    handleRandomRequest(randomRequestEvent);
+      handleQuestFinished(createQuestFinishedEvent(USER_ADDRESS, 1));
+    }
 
-    const questStartedEvent = createQuestStartedWithoutDifficultyEvent(
-      USER_ADDRESS,
-      1,
-      index
+    questsToLevelUp = 50;
+
+    // Lets do 50 quests, then level up to level 5
+    for (let index = 1; index < questsToLevelUp + 1; index++) {
+      handleQuestStartedWithoutDifficulty(
+        createQuestStartedWithoutDifficultyEvent(USER_ADDRESS, 1, index)
+      );
+
+      handleQuestRevealed(createQuestRevealedEvent(USER_ADDRESS, 1));
+
+      if (index === questsToLevelUp) {
+        // Level up on reveal
+        handleLegionQuestLevelUp(createLegionQuestLevelUpEvent(1, 5));
+        assert.fieldEquals(
+          LEGION_INFO_ENTITY_TYPE,
+          legionMetadataId,
+          "questing",
+          "5"
+        );
+        assert.fieldEquals(
+          LEGION_INFO_ENTITY_TYPE,
+          legionMetadataId,
+          "questingXp",
+          "0"
+        );
+      } else {
+        assert.fieldEquals(
+          LEGION_INFO_ENTITY_TYPE,
+          legionMetadataId,
+          "questingXp",
+          `${20 * index}`
+        );
+      }
+
+      handleQuestFinished(createQuestFinishedEvent(USER_ADDRESS, 1));
+    }
+
+    // Lets do 50 quests, then level up to level 6 (max)
+    for (let index = 1; index < questsToLevelUp + 1; index++) {
+      handleQuestStartedWithoutDifficulty(
+        createQuestStartedWithoutDifficultyEvent(USER_ADDRESS, 1, index)
+      );
+
+      handleQuestRevealed(createQuestRevealedEvent(USER_ADDRESS, 1));
+
+      if (index === questsToLevelUp) {
+        // Level up on reveal
+        handleLegionQuestLevelUp(createLegionQuestLevelUpEvent(1, 6));
+        assert.fieldEquals(
+          LEGION_INFO_ENTITY_TYPE,
+          legionMetadataId,
+          "questing",
+          "6"
+        );
+        assert.fieldEquals(
+          LEGION_INFO_ENTITY_TYPE,
+          legionMetadataId,
+          "questingXp",
+          "0"
+        );
+      } else {
+        assert.fieldEquals(
+          LEGION_INFO_ENTITY_TYPE,
+          legionMetadataId,
+          "questingXp",
+          `${40 * index}`
+        );
+      }
+
+      handleQuestFinished(createQuestFinishedEvent(USER_ADDRESS, 1));
+    }
+  });
+
+  test("questing xp does not increase at max level (6)", () => {
+    // Short cut to max level
+    handleLegionQuestLevelUp(createLegionQuestLevelUpEvent(1, 6));
+
+    // Perform a craft
+    handleQuestStartedWithoutDifficulty(
+      createQuestStartedWithoutDifficultyEvent(USER_ADDRESS, 1, 1)
     );
 
-    handleQuestStartedWithoutDifficulty(questStartedEvent);
-
-    const randomSeededEvent = createRandomSeededEvent(index + 1);
-
-    handleRandomSeeded(randomSeededEvent);
-
-    const questRevealedEvent = createQuestRevealedEvent(USER_ADDRESS, 1);
-
-    handleQuestRevealed(questRevealedEvent);
-
-    if (index === questsToLevelUp) {
-      // Level up on reveal
-      const questLevelUpEvent = createLegionQuestLevelUpEvent(1, 5);
-
-      handleLegionQuestLevelUp(questLevelUpEvent);
-
-      assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "questing", "5");
-      assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "questingXp", "0");
-    } else {
-      assert.fieldEquals(
-        LEGION_INFO_ENTITY_TYPE,
-        metadata,
-        "questingXp",
-        `${20 * index}`
-      );
-    }
-
-    const questFinishedEvent = createQuestFinishedEvent(USER_ADDRESS, 1);
-
-    handleQuestFinished(questFinishedEvent);
-  }
-
-  // Lets do 50 quests, then level up to level 6 (max)
-  for (let index = 1; index < questsToLevelUp + 1; index++) {
-    const randomRequestEvent = createRandomRequestEvent(index, index + 1);
-
-    handleRandomRequest(randomRequestEvent);
-
-    const questStartedEvent = createQuestStartedWithoutDifficultyEvent(
-      USER_ADDRESS,
-      1,
-      index
+    const legionMetadataId = `${LEGION_ADDRESS.toHexString()}-0x1-metadata`;
+    assert.fieldEquals(
+      QUEST_ENTITY_TYPE,
+      Bytes.fromI32(TOKEN_ID).toHexString(),
+      "difficulty",
+      "0"
     );
 
-    handleQuestStartedWithoutDifficulty(questStartedEvent);
+    handleQuestRevealed(createQuestRevealedEvent(USER_ADDRESS, 1));
+    assert.fieldEquals(
+      LEGION_INFO_ENTITY_TYPE,
+      legionMetadataId,
+      "questingXp",
+      "0"
+    );
 
-    const randomSeededEvent = createRandomSeededEvent(index + 1);
+    handleQuestFinished(createQuestFinishedEvent(USER_ADDRESS, 1));
+    assert.fieldEquals(
+      LEGION_INFO_ENTITY_TYPE,
+      legionMetadataId,
+      "questsCompleted",
+      "1"
+    );
+    assert.fieldEquals(
+      LEGION_INFO_ENTITY_TYPE,
+      legionMetadataId,
+      "questsDistanceTravelled",
+      "10"
+    );
+  });
 
-    handleRandomSeeded(randomSeededEvent);
+  test("legacy questing xp does not increase after upgrade block", () => {
+    // Perform a quest
+    handleQuestStartedWithoutDifficulty(
+      createQuestStartedWithoutDifficultyEvent(USER_ADDRESS, 1, 1)
+    );
+    handleQuestRevealed(createQuestRevealedEvent(USER_ADDRESS, 1));
 
-    const questRevealedEvent = createQuestRevealedEvent(USER_ADDRESS, 1);
+    const legionMetadataId = `${LEGION_ADDRESS.toHexString()}-0x1-metadata`;
+    assert.fieldEquals(
+      LEGION_INFO_ENTITY_TYPE,
+      legionMetadataId,
+      "questingXp",
+      "10"
+    );
 
-    handleQuestRevealed(questRevealedEvent);
+    // Set the new Questing XP gained block number
+    const blockNumber = 12345678;
+    setQuestingXpGainedBlockNumberIfEmpty(BigInt.fromI32(blockNumber));
 
-    if (index === questsToLevelUp) {
-      // Level up on reveal
-      const questLevelUpEvent = createLegionQuestLevelUpEvent(1, 6);
+    // Simulate new quest after block
+    handleQuestStartedWithoutDifficulty(
+      createQuestStartedWithoutDifficultyEvent(USER_ADDRESS, 1, 1)
+    );
+    handleQuestRevealed(
+      createQuestRevealedEvent(USER_ADDRESS, 1, 0, 0, 0, 0, blockNumber)
+    );
 
-      handleLegionQuestLevelUp(questLevelUpEvent);
+    // Legion should NOT have gained XP
+    assert.fieldEquals(
+      LEGION_INFO_ENTITY_TYPE,
+      legionMetadataId,
+      "questingXp",
+      "10"
+    );
+  });
 
-      assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "questing", "6");
-      assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "questingXp", "0");
-    } else {
-      assert.fieldEquals(
-        LEGION_INFO_ENTITY_TYPE,
-        metadata,
-        "questingXp",
-        `${40 * index}`
-      );
-    }
+  test("new questing xp increases with event params", () => {
+    // Give Legion XP
+    handleQuestXpGained(createQuestXpGainedEvent(1, 1, 20));
 
-    const questFinishedEvent = createQuestFinishedEvent(USER_ADDRESS, 1);
+    // Assert XP is saved
+    const legionMetadataId = `${LEGION_ADDRESS.toHexString()}-0x1-metadata`;
+    assert.fieldEquals(
+      LEGION_INFO_ENTITY_TYPE,
+      legionMetadataId,
+      "questing",
+      "1"
+    );
+    assert.fieldEquals(
+      LEGION_INFO_ENTITY_TYPE,
+      legionMetadataId,
+      "questingXp",
+      "20"
+    );
 
-    handleQuestFinished(questFinishedEvent);
-  }
-});
+    // Give Legion XP
+    handleQuestXpGained(createQuestXpGainedEvent(1, 2, 0));
 
-test("questing xp does not increase at max level (6)", () => {
-  clearStore();
+    // Assert XP is saved
+    assert.fieldEquals(
+      LEGION_INFO_ENTITY_TYPE,
+      legionMetadataId,
+      "questing",
+      "2"
+    );
+    assert.fieldEquals(
+      LEGION_INFO_ENTITY_TYPE,
+      legionMetadataId,
+      "questingXp",
+      "0"
+    );
+  });
 
-  const mintEvent = createLegionTransferEvent(
-    Address.zero().toHexString(),
-    USER_ADDRESS,
-    1
-  );
-
-  handleTransfer(mintEvent);
-
-  const legionCreatedEvent = createLegionCreatedEvent(USER_ADDRESS, 1, 0, 6, 2);
-
-  handleLegionCreated(legionCreatedEvent);
-
-  const id = `${LEGION_ADDRESS.toHexString()}-0x1`;
-  const metadata = `${id}-metadata`;
-
-  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "questing", "1");
-  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "questingXp", "0");
-  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "questsCompleted", "0");
-  assert.fieldEquals(
-    LEGION_INFO_ENTITY_TYPE,
-    metadata,
-    "questsDistanceTravelled",
-    "0"
-  );
-
-  // Short cut to max level
-  const questLevelUp = createLegionQuestLevelUpEvent(1, 6);
-
-  handleLegionQuestLevelUp(questLevelUp);
-
-  // Perform a craft
-  const randomRequestEvent = createRandomRequestEvent(1, 2);
-
-  handleRandomRequest(randomRequestEvent);
-
-  const questStartedEvent = createQuestStartedWithoutDifficultyEvent(
-    USER_ADDRESS,
-    1,
-    1
-  );
-
-  handleQuestStartedWithoutDifficulty(questStartedEvent);
-
-  const questId = `${QUESTING_ADDRESS}-0x1`;
-
-  assert.fieldEquals(QUEST_ENTITY_TYPE, questId, "difficulty", "Easy");
-
-  const randomSeededEvent = createRandomSeededEvent(2);
-
-  handleRandomSeeded(randomSeededEvent);
-
-  const craftRevealedEvent = createQuestRevealedEvent(USER_ADDRESS, 1);
-
-  handleQuestRevealed(craftRevealedEvent);
-
-  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "questingXp", "0");
-
-  const questFinishedEvent = createQuestFinishedEvent(USER_ADDRESS, 1);
-
-  handleQuestFinished(questFinishedEvent);
-
-  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "questsCompleted", "1");
-  assert.fieldEquals(
-    LEGION_INFO_ENTITY_TYPE,
-    metadata,
-    "questsDistanceTravelled",
-    "10"
-  );
-});
-
-test("legacy questing xp does not increase after upgrade block", () => {
-  clearStore();
-
-  // Create Legion
-  handleTransfer(
-    createLegionTransferEvent(Address.zero().toHexString(), USER_ADDRESS, 1)
-  );
-  handleLegionCreated(createLegionCreatedEvent(USER_ADDRESS, 1, 0, 6, 2));
-
-  const id = `${LEGION_ADDRESS.toHexString()}-0x1`;
-  const metadata = `${id}-metadata`;
-
-  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "questing", "1");
-  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "questingXp", "0");
-
-  // Perform a quest
-  handleRandomRequest(createRandomRequestEvent(1, 2));
-  handleQuestStartedWithoutDifficulty(
-    createQuestStartedWithoutDifficultyEvent(USER_ADDRESS, 1, 1)
-  );
-  handleRandomSeeded(createRandomSeededEvent(2));
-  handleQuestRevealed(createQuestRevealedEvent(USER_ADDRESS, 1));
-
-  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "questingXp", "10");
-
-  // Set the new Questing XP gained block number
-  const blockNumber = 12345678;
-  setQuestingXpGainedBlockNumberIfEmpty(BigInt.fromI32(blockNumber));
-
-  // Simulate new quest after block
-  handleRandomRequest(createRandomRequestEvent(1, 2));
-  handleQuestStartedWithoutDifficulty(
-    createQuestStartedWithoutDifficultyEvent(USER_ADDRESS, 1, 1)
-  );
-  handleRandomSeeded(createRandomSeededEvent(2));
-  handleQuestRevealed(
-    createQuestRevealedEvent(USER_ADDRESS, 1, 0, 0, 0, 0, blockNumber)
-  );
-
-  // Legion should NOT have gained XP
-  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "questingXp", "10");
-});
-
-test("new questing xp increases with event params", () => {
-  clearStore();
-
-  // Create Legion
-  handleTransfer(
-    createLegionTransferEvent(Address.zero().toHexString(), USER_ADDRESS, 1)
-  );
-  handleLegionCreated(createLegionCreatedEvent(USER_ADDRESS, 1, 0, 6, 2));
-
-  const id = `${LEGION_ADDRESS.toHexString()}-0x1`;
-  const metadata = `${id}-metadata`;
-
-  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "questing", "1");
-  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "questingXp", "0");
-
-  // Give Legion XP
-  handleQuestXpGained(createQuestXpGainedEvent(1, 1, 20));
-
-  // Assert XP is saved
-  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "questing", "1");
-  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "questingXp", "20");
-
-  // Give Legion XP
-  handleQuestXpGained(createQuestXpGainedEvent(1, 2, 0));
-
-  // Assert XP is saved
-  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "questing", "2");
-  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "questingXp", "0");
-});
-
-test("questing works with difficulty parameter", () => {
-  clearStore();
-
-  const mintEvent = createLegionTransferEvent(
-    Address.zero().toHexString(),
-    USER_ADDRESS,
-    1
-  );
-
-  handleTransfer(mintEvent);
-
-  const legionCreatedEvent = createLegionCreatedEvent(USER_ADDRESS, 1, 0, 6, 2);
-
-  handleLegionCreated(legionCreatedEvent);
-
-  const id = `${LEGION_ADDRESS.toHexString()}-0x1`;
-  const metadata = `${id}-metadata`;
-
-  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "questing", "1");
-  assert.fieldEquals(LEGION_INFO_ENTITY_TYPE, metadata, "questingXp", "0");
-
-  const randomRequestEvent = createRandomRequestEvent(1, 2);
-
-  handleRandomRequest(randomRequestEvent);
-
-  const questStartedEvent = createQuestStartedEvent(
-    USER_ADDRESS,
-    1,
-    1,
-    Difficulty.Medium
-  );
-
-  handleQuestStartedWithDifficulty(questStartedEvent);
-
-  const questId = `${QUESTING_ADDRESS}-0x1`;
-
-  assert.fieldEquals(QUEST_ENTITY_TYPE, questId, "difficulty", "Medium");
+  test("questing works with difficulty parameter", () => {
+    handleQuestStartedWithDifficulty(
+      createQuestStartedEvent(USER_ADDRESS, TOKEN_ID, 1, Difficulty.Medium)
+    );
+    assert.fieldEquals(
+      QUEST_ENTITY_TYPE,
+      Bytes.fromI32(TOKEN_ID).toHexString(),
+      "difficulty",
+      "1"
+    );
+  });
 });
