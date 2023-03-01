@@ -1,4 +1,4 @@
-import { assert, beforeEach, clearStore, describe, test } from "matchstick-as";
+import { assert, describe, test } from "matchstick-as";
 
 import { Address, BigInt } from "@graphprotocol/graph-ts";
 

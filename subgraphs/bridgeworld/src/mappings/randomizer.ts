@@ -10,7 +10,6 @@ import { Summoning } from "../../generated/Summoning/Summoning";
 import {
   AdvancedQuest,
   Craft,
-  Quest,
   Random,
   Seeded,
   Summon,
@@ -74,19 +73,6 @@ export function handleRandomSeeded(event: RandomSeeded): void {
       continue;
     }
 
-    const questId = random.quest;
-    if (questId) {
-      const quest = Quest.load(questId);
-      if (quest) {
-        quest.status = "Revealable";
-        quest.save();
-      } else {
-        log.error("[randomizer] Quest not found: {}", [questId]);
-      }
-
-      continue;
-    }
-
     const advancedQuestId = random.advancedQuest;
     if (advancedQuestId) {
       const quest = AdvancedQuest.load(advancedQuestId);
@@ -118,28 +104,6 @@ export function handleRandomSeeded(event: RandomSeeded): void {
         log.error("[randomizer] AdvancedQuest not found: {}", [
           advancedQuestId,
         ]);
-      }
-
-      continue;
-    }
-
-    const summonId = random.summon;
-    if (summonId) {
-      const summon = Summon.load(summonId);
-      if (summon) {
-        let summoning = Summoning.bind(SUMMONING_ADDRESS);
-        let tokenId = BigInt.fromI32(toI32(summon.token.slice(45)));
-        let result = summoning.try_didSummoningSucceed(tokenId);
-
-        if (!result.reverted) {
-          summon.success = result.value.value0;
-          summon.endTimestamp = result.value.value1.times(BigInt.fromI32(1000));
-        }
-
-        summon.status = "Revealable";
-        summon.save();
-      } else {
-        log.error("[randomizer] Summon not found: {}", [summonId]);
       }
 
       continue;

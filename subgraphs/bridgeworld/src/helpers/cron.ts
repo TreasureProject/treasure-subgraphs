@@ -1,6 +1,5 @@
 import { BigInt } from "@graphprotocol/graph-ts";
 
-import { checkSummonFatigue } from "./fatigue";
 import {
   getHarvester,
   getOrCreateHarvesterConfig,
@@ -27,5 +26,4 @@ export const runHarvestersScheduledJobs = (timestamp: BigInt): void => {
 
 export const runScheduledJobs = (timestamp: BigInt): void => {
   runHarvestersScheduledJobs(timestamp);
-  checkSummonFatigue(timestamp.toI64() * 1000);
 };

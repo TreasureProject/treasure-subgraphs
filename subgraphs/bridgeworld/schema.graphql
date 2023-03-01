@@ -266,12 +266,9 @@ type Random @entity {
 
   "Set for crafting"
   craft: Craft
-  "Set for questing"
-  quest: Quest
+
   "Set for advanced questing"
   advancedQuest: AdvancedQuest
-  "Set for summoning"
-  summon: Summon
 
   requestId: BigInt!
   seeded: Seeded
@@ -334,15 +331,12 @@ type Reward @entity {
 }
 
 type Quest @entity {
-  id: ID!
+  id: Bytes!
 
-  difficulty: Difficulty!
-  endTimestamp: BigInt!
-  random: Random!
-  reward: Reward
-  status: Status!
-  token: Token!
   user: User!
+  token: Token!
+  difficulty: Int!
+  status: Status!
 }
 
 type AdvancedQuest @entity {
@@ -421,32 +415,11 @@ type StakedToken @entity {
 }
 
 type Summon @entity {
-  id: ID!
+  id: Bytes!
 
-  endTimestamp: BigInt
-  prismUsed: Token
-  random: Random!
-  resultToken: Token
-  status: Status!
-  success: Boolean
-  token: Token!
   user: User!
-}
-
-type SummoningCircle @entity {
-  id: ID!
-
-  crafters: Int!
-  summoners: Int!
-  successRate: String!
-}
-
-# Holds data to clear summon fatigue
-type _SummonFatigue @entity {
-  id: ID!
-
-  data: [String!]!
-  timestamp: BigInt!
+  token: Token!
+  status: Status!
 }
 
 type Token @entity {
