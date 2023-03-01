@@ -57,6 +57,10 @@
   "corruption_crypts_rewards_start_block": 6924548,
   "kote_squires_address": "0x7b43cc9f7d3c230c55d2dfe677c711e3783bc376",
   "kote_squires_start_block": 6924548,
+  "kote_potions_address": "0xfc6fc6bc755FCe9449ac082aE88a4ACC881e3412",
+  "kote_potions_start_block": 6924548,
+  "kote_trinkets_address": "0x96b273dcb8b4c0aa736694b2580dd3a23762e819",
+  "kote_trinkets_start_block": 6924548,
 
   "smol_brains_address": "0x2542421ACA04A98f5Cf04DA97a36DAD8F1FaC3f4",
   "smol_brains_start_block": 502313,
