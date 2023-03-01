@@ -517,16 +517,16 @@ type TokenQuantity @entity {
   token: Token!
 }
 
-type _HarvesterConfig @entity {
-  "Singleton with ID `only`"
-  id: ID!
+type HarvesterConfig @entity {
+  "Singleton"
+  id: Bytes!
 
   "List of all deployed Harvesters"
   harvesters: [Harvester!]!
 }
 
 type Harvester @entity {
-  id: ID!
+  id: Bytes!
 
   "Block when this Harvester was deployed"
   deployedBlockNumber: BigInt!
@@ -617,17 +617,20 @@ type Harvester @entity {
 }
 
 type HarvesterNftHandler @entity {
-  id: ID!
+  id: Bytes!
 
   "Harvester associated with this NftHandler"
   harvester: Harvester!
 }
 
 type HarvesterStakingRule @entity {
-  id: ID!
+  id: Bytes!
 
   "Harvester associated with this StakingRule"
   harvester: Harvester!
+
+  "NFT collection associated with this StakingRule"
+  nft: Bytes!
 }
 
 type HarvesterTokenBoost @entity {
@@ -644,7 +647,7 @@ type HarvesterTokenBoost @entity {
 }
 
 type HarvesterTimelock @entity {
-  id: ID!
+  id: Bytes!
 
   "Harvester associated with this timelock"
   harvester: Harvester!

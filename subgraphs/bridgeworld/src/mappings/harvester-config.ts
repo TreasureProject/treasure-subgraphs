@@ -13,12 +13,18 @@ import {
   Token,
 } from "../../generated/schema";
 import {
+  ERC721StakingRules,
   ExtractorsStakingRules,
   ExtractorsStakingRulesConfig,
   LegionsStakingRules,
   PartsStakingRules,
   TreasuresStakingRules,
 } from "../../generated/templates";
+import {
+  MaxStakeableTotal as ERC721MaxStakeableTotal,
+  MaxWeight as ERC721MaxWeight,
+  ERC721StakingRules as ERC721StakingRulesContract,
+} from "../../generated/templates/ERC721StakingRules/ERC721StakingRules";
 import {
   ExtractorBoost,
   ExtractorsStakingRules as ExtractorsStakingRulesContract,
@@ -82,12 +88,11 @@ export function handleUpdatedPartsDepositCap(event: DepositCapPerWallet): void {
 }
 
 export function handleAddedTimelockOption(event: TimelockOption): void {
-  const harvesterId = event.address.toHexString();
   const params = event.params;
   const timelock = new HarvesterTimelock(
-    `${harvesterId}-${params.id.toHexString()}`
+    event.address.concatI32(params.id.toI32())
   );
-  timelock.harvester = harvesterId;
+  timelock.harvester = event.address;
   timelock.enabled = params.timelock.enabled;
   timelock.timelockId = params.id;
   timelock.boost = params.timelock.boost;
@@ -99,10 +104,9 @@ export function handleAddedTimelockOption(event: TimelockOption): void {
 export function handleEnabledTimelockOption(
   event: TimelockOptionEnabled
 ): void {
-  const harvesterId = event.address.toHexString();
   const params = event.params;
   const timelock = HarvesterTimelock.load(
-    `${harvesterId}-${params.id.toHexString()}`
+    event.address.concatI32(params.id.toI32())
   );
   if (!timelock) {
     log.error("Unknown timelock option: {}", [params.id.toString()]);
@@ -116,10 +120,9 @@ export function handleEnabledTimelockOption(
 export function handleDisabledTimelockOption(
   event: TimelockOptionDisabled
 ): void {
-  const harvesterId = event.address.toHexString();
   const params = event.params;
   const timelock = HarvesterTimelock.load(
-    `${harvesterId}-${params.id.toHexString()}`
+    event.address.concatI32(params.id.toI32())
   );
   if (!timelock) {
     log.error("Unknown timelock option: {}", [params.id.toString()]);
@@ -138,16 +141,15 @@ export function handleNftConfigSet(event: NftConfigSet): void {
   }
 
   const params = event.params;
+  const nftAddress = params._nft;
 
   // Create StakingRule entity
   const stakingRulesAddress = params._nftConfig.stakingRules;
-  const stakingRule = new HarvesterStakingRule(
-    stakingRulesAddress.toHexString()
-  );
+  const stakingRule = new HarvesterStakingRule(stakingRulesAddress);
   stakingRule.harvester = harvester.id;
+  stakingRule.nft = nftAddress;
   stakingRule.save();
 
-  const nftAddress = params._nft;
   const tokenId = params._tokenId;
 
   // Determine the type of StakingRule and start listening for events at this address
@@ -173,6 +175,10 @@ export function handleNftConfigSet(event: NftConfigSet): void {
   } else if (nftAddress.equals(TREASURE_ADDRESS)) {
     TreasuresStakingRules.create(stakingRulesAddress);
     processTreasuresStakingRules(stakingRulesAddress, harvester);
+  } else if (params._nftConfig.supportedInterface == 1) {
+    // ERC721
+    ERC721StakingRules.create(stakingRulesAddress);
+    processERC721StakingRules(stakingRulesAddress, harvester);
   }
 }
 
@@ -277,6 +283,31 @@ const processLegionsStakingRules = (
     harvester.maxLegionsWeightPerUser = result.value;
   } else {
     log.error("Error fetching Legions max weight: {}", [address.toHexString()]);
+  }
+
+  harvester.save();
+};
+
+const processERC721StakingRules = (
+  address: Address,
+  harvester: Harvester
+): void => {
+  const contract = ERC721StakingRulesContract.bind(address);
+
+  let result = contract.try_maxStakeableTotal();
+  if (!result.reverted) {
+    harvester.maxLegionsStaked = result.value.toI32();
+  } else {
+    log.error("Error fetching ERC721 max stakeable: {}", [
+      address.toHexString(),
+    ]);
+  }
+
+  result = contract.try_maxWeight();
+  if (!result.reverted) {
+    harvester.maxLegionsWeightPerUser = result.value;
+  } else {
+    log.error("Error fetching ERC721 max weight: {}", [address.toHexString()]);
   }
 
   harvester.save();
@@ -407,5 +438,27 @@ export function handleUpdatedTreasuresMaxStakeablePerUser(
 
   harvester.maxTreasuresStakedPerUser =
     event.params.maxStakeablePerUser.toI32();
+  harvester.save();
+}
+
+export function handleUpdatedERC721MaxStakeableTotal(
+  event: ERC721MaxStakeableTotal
+): void {
+  const harvester = getHarvesterForStakingRule(event.address);
+  if (!harvester) {
+    return;
+  }
+
+  harvester.maxLegionsStaked = event.params.maxStakeableTotal.toI32();
+  harvester.save();
+}
+
+export function handleUpdatedERC721MaxWeight(event: ERC721MaxWeight): void {
+  const harvester = getHarvesterForStakingRule(event.address);
+  if (!harvester) {
+    return;
+  }
+
+  harvester.maxLegionsWeightPerUser = event.params.maxWeight;
   harvester.save();
 }

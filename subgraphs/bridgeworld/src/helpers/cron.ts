@@ -1,19 +1,18 @@
-import { BigInt, log } from "@graphprotocol/graph-ts";
+import { BigInt } from "@graphprotocol/graph-ts";
 
-import { Harvester, _HarvesterConfig } from "../../generated/schema";
 import { checkSummonFatigue } from "./fatigue";
-import { removeExpiredExtractors } from "./harvester";
+import {
+  getHarvester,
+  getOrCreateHarvesterConfig,
+  removeExpiredExtractors,
+} from "./harvester";
 
 export const runHarvestersScheduledJobs = (timestamp: BigInt): void => {
-  const harvesterConfig = _HarvesterConfig.load("only");
-  if (!harvesterConfig) {
-    return;
-  }
+  const config = getOrCreateHarvesterConfig();
 
-  for (let i = 0; i < harvesterConfig.harvesters.length; i++) {
-    const harvester = Harvester.load(harvesterConfig.harvesters[i]);
+  for (let i = 0; i < config.harvesters.length; i++) {
+    const harvester = getHarvester(config.harvesters[i]);
     if (!harvester) {
-      log.warning("Unknown Harvester: {}", [harvesterConfig.harvesters[i]]);
       continue;
     }
 

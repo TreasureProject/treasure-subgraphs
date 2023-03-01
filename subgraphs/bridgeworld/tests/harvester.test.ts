@@ -1,6 +1,6 @@
 import { assert, beforeEach, clearStore, describe, test } from "matchstick-as";
 
-import { BigInt } from "@graphprotocol/graph-ts";
+import { Address, BigInt } from "@graphprotocol/graph-ts";
 
 import { Harvester } from "../generated/schema";
 import {
@@ -10,7 +10,7 @@ import {
 
 describe("harvesters", () => {
   test("that partially full parts boost is calculated", () => {
-    const harvester = new Harvester("test-harvester");
+    const harvester = new Harvester(Address.zero());
     harvester.maxPartsStaked = 800;
     harvester.partsBoostFactor = BigInt.fromString("500000000000000000");
     harvester.partsStaked = 200;
@@ -21,7 +21,7 @@ describe("harvesters", () => {
   });
 
   test("that full parts boost is calculated", () => {
-    const harvester = new Harvester("test-harvester");
+    const harvester = new Harvester(Address.zero());
     harvester.maxPartsStaked = 800;
     harvester.partsBoostFactor = BigInt.fromString("500000000000000000");
     harvester.partsStaked = 800;
@@ -32,7 +32,7 @@ describe("harvesters", () => {
   });
 
   test("that partially full legions boost is calculated", () => {
-    const harvester = new Harvester("test-harvester");
+    const harvester = new Harvester(Address.zero());
     harvester.legionsStaked = 3;
     harvester.maxLegionsStaked = 1000;
     harvester.legionsTotalRank = BigInt.fromString("3300000000000000000");
@@ -43,7 +43,7 @@ describe("harvesters", () => {
   });
 
   test("that full legions boost is calculated", () => {
-    const harvester = new Harvester("test-harvester");
+    const harvester = new Harvester(Address.zero());
     harvester.legionsStaked = 1320;
     harvester.maxLegionsStaked = 1000;
     harvester.legionsTotalRank = BigInt.fromString("1926800000000000000000");

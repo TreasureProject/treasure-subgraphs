@@ -644,6 +644,8 @@ templates:
           file: {{{ abis }}}/LegionStakingRules.json
         - name: TreasuresStakingRules
           file: {{{ abis }}}/TreasureStakingRules.json
+        - name: ERC721StakingRules
+          file: {{{ abis }}}/ERC721StakingRules.json
       eventHandlers:
         - event: NftConfigSet(indexed address,indexed uint256,(uint8,address))
           handler: handleNftConfigSet
@@ -729,4 +731,24 @@ templates:
       eventHandlers:
         - event: MaxStakeablePerUser(uint256)
           handler: handleUpdatedTreasuresMaxStakeablePerUser
+      file: ./src/mappings/harvester-config.ts
+  - name: ERC721StakingRules
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      abi: ERC721StakingRules
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - HarvesterStakingRule
+      abis:
+        - name: ERC721StakingRules
+          file: {{{ abis }}}/ERC721StakingRules.json
+      eventHandlers:
+        - event: MaxStakeableTotal(uint256)
+          handler: handleUpdatedERC721MaxStakeableTotal
+        - event: MaxWeight(uint256)
+          handler: handleUpdatedERC721MaxWeight
       file: ./src/mappings/harvester-config.ts
