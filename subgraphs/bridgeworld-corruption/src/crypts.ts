@@ -134,8 +134,8 @@ export function handleCharacterSquadStaked(event: CharacterSquadStaked): void {
     params._targetTemple,
     params._legionSquadId,
     params._legionSquadName,
-    params._characters.map<Address>(({ collection }) => collection),
-    params._characters.map<BigInt>(({ tokenId }) => tokenId)
+    params._characters.map<Address>((character) => character.collection),
+    params._characters.map<BigInt>((character) => character.tokenId)
   );
 }
 
