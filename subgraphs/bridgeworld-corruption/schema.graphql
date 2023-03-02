@@ -230,8 +230,8 @@ type CryptsSquad @entity {
   "Creator of this squad"
   user: User!
 
-  "Legion token IDs within this squad"
-  legionTokenIds: [Int!]!
+  "Characters in this squad"
+  characters: [CryptsSquadCharacter!]!
 
   "Time squad was staked, in seconds"
   stakedTimestamp: BigInt!
@@ -250,6 +250,16 @@ type CryptsSquad @entity {
 
   "Last round ID where this squad entered the target temple"
   lastRoundInTemple: Int!
+}
+
+type CryptsSquadCharacter @entity(immutable: true) {
+  id: Bytes!
+
+  "Character NFT address"
+  collection: Bytes!
+
+  "Character NFT token ID"
+  tokenId: Int!
 }
 
 type CryptsUserMapTile @entity {

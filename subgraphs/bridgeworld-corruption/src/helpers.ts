@@ -4,6 +4,7 @@ import {
   Building,
   Config,
   CryptsBoardTreasureFragment,
+  CryptsSquadCharacter,
   CryptsUserMapTile,
   User,
 } from "../generated/schema";
@@ -96,6 +97,22 @@ export const getOrCreateUserMapTile = (
   }
 
   return userMapTile;
+};
+
+export const getOrCreateCryptsSquadCharacter = (
+  collection: Address,
+  tokenId: BigInt
+): CryptsSquadCharacter => {
+  const id = collection.concat(Bytes.fromI32(tokenId.toI32()));
+  let character = CryptsSquadCharacter.load(id);
+  if (!character) {
+    character = new CryptsSquadCharacter(id);
+    character.collection = collection;
+    character.tokenId = tokenId.toI32();
+    character.save();
+  }
+
+  return character;
 };
 
 export const decodeBigIntArray = (data: Bytes): BigInt[] => {

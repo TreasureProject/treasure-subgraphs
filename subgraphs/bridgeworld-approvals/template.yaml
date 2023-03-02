@@ -222,5 +222,3 @@ dataSources:
         - event: ApprovalForAll(indexed address,indexed address,bool)
           handler: handleApprovalERC1155
       file: ./src/mapping.ts
-
-
