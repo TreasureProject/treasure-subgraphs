@@ -18,7 +18,10 @@ import {
   TempleEntered,
   TreasureClaimed,
 } from "../generated/CorruptionCrypts/CorruptionCrypts";
-import { LegionSquadStaked as CharacterSquadStaked } from "../generated/CorruptionCryptsV2/CorruptionCryptsV2";
+import {
+  CharacterHandlerSet,
+  LegionSquadStaked as CharacterSquadStaked,
+} from "../generated/CorruptionCryptsV2/CorruptionCryptsV2";
 import {
   CryptsMapTile,
   CryptsSquad,
@@ -31,6 +34,7 @@ import {
   getOrCreateConfig,
   getOrCreateCryptsSquadCharacter,
   getOrCreateUser,
+  updateCharacterHandler,
 } from "./helpers";
 
 export function handleConfigUpdated(event: ConfigUpdated): void {
@@ -70,6 +74,11 @@ export function handleGlobalRandomnessRequested(
   config.cryptsRoundStartTime = event.block.timestamp;
   config.cryptsLegionsReachedTemple = 0;
   config.save();
+}
+
+export function handleCharacterHandlerSet(event: CharacterHandlerSet): void {
+  const params = event.params;
+  updateCharacterHandler(params._collection, params._handler);
 }
 
 const handleSquadStaked = (

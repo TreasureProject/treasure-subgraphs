@@ -252,6 +252,16 @@ type CryptsSquad @entity {
   lastRoundInTemple: Int!
 }
 
+type CryptsCharacterHandler @entity {
+  id: Bytes!
+
+  "Character NFT address"
+  collection: Bytes!
+
+  "Contract address for character handler"
+  address: Bytes!
+}
+
 type CryptsSquadCharacter @entity(immutable: true) {
   id: Bytes!
 

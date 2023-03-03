@@ -140,6 +140,8 @@ dataSources:
         - name: CorruptionCryptsV2
           file: {{{ abis }}}/CorruptionCryptsV2.json
       eventHandlers:
+        - event: CharacterHandlerSet(address,address)
+          handler: handleCharacterHandlerSet
         - event: LegionSquadStaked(address,uint64,(address,uint32)[],uint16,string)
           handler: handleCharacterSquadStaked
       file: ./src/crypts.ts

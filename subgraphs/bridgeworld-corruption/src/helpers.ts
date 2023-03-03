@@ -4,6 +4,7 @@ import {
   Building,
   Config,
   CryptsBoardTreasureFragment,
+  CryptsCharacterHandler,
   CryptsSquadCharacter,
   CryptsUserMapTile,
   User,
@@ -79,6 +80,21 @@ export const getOrCreateBuilding = (address: Address): Building => {
   }
 
   return building;
+};
+
+export const updateCharacterHandler = (
+  collection: Address,
+  handler: Address
+): CryptsCharacterHandler => {
+  let characterHandler = CryptsCharacterHandler.load(collection);
+  if (!characterHandler) {
+    characterHandler = new CryptsCharacterHandler(collection);
+  }
+
+  characterHandler.collection = collection;
+  characterHandler.address = handler;
+  characterHandler.save();
+  return characterHandler;
 };
 
 export const getOrCreateUserMapTile = (
