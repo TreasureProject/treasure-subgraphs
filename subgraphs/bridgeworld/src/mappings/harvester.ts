@@ -2,7 +2,7 @@ import { BigInt, Bytes, log, store } from "@graphprotocol/graph-ts";
 
 import {
   CONSUMABLE_ADDRESS,
-  KOTE_SQUIRE_ADDRESS,
+  KOTE_SQUIRES_ADDRESS,
   LEGION_ADDRESS,
 } from "@treasure/constants";
 
@@ -122,7 +122,7 @@ export function handleNftStaked(event: Staked): void {
   }
 
   const token = getOrCreateToken(nftAddress, tokenId);
-  const isKoteSquire = nftAddress.equals(KOTE_SQUIRE_ADDRESS);
+  const isKoteSquire = nftAddress.equals(KOTE_SQUIRES_ADDRESS);
   if (isKoteSquire) {
     token.category = "KoteSquire";
     token.name = "KOTE Squire";
@@ -205,7 +205,7 @@ export function handleNftUnstaked(event: Unstaked): void {
   }
 
   const amount = params.amount.toI32();
-  const isKoteSquire = nftAddress.equals(KOTE_SQUIRE_ADDRESS);
+  const isKoteSquire = nftAddress.equals(KOTE_SQUIRES_ADDRESS);
   const partsAddress = harvester.partsAddress || CONSUMABLE_ADDRESS;
   const partsTokenId = harvester.partsTokenId || HARVESTER_PART_TOKEN_ID;
   if (
