@@ -116,8 +116,9 @@ type RecipeItem @entity(immutable: true) {
   itemId: BigInt
   amount: BigInt
   customHandler: Bytes
-  customRequirementData: [BigInt!]
+  customRequirementData: Bytes
   treasureRequirement: RecipeItemTreasureRequirement @derivedFrom(field: "item")
+  erc1155TokenSetRequirement: RecipeItemERC1155Requirement @derivedFrom(field: "item")
 }
 
 type RecipeItemTreasureRequirement @entity(immutable: true) {
@@ -126,6 +127,16 @@ type RecipeItemTreasureRequirement @entity(immutable: true) {
   item: RecipeItem!
 
   tier: Int!
+  amount: Int!
+}
+
+type RecipeItemERC1155Requirement @entity(immutable: true) {
+  id: Bytes!
+
+  item: RecipeItem!
+
+  collection: Bytes!
+  tokenIds: [Int!]!
   amount: Int!
 }
 

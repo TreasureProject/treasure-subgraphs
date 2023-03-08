@@ -29,6 +29,9 @@ export const CORRUPTION_REMOVAL_ADDRESS = Address.fromString(
 export const CRAFTING_ADDRESS = Address.fromString(
   "{{crafting_address}}{{^crafting_address}}{{burner_address}}{{/crafting_address}}"
 );
+export const ERC1155_TOKEN_SET_CORRUPTION_HANDLER_ADDRESS = Address.fromString(
+  "{{erc1155_token_set_corruption_handler_address}}{{^erc1155_token_set_corruption_handler_address}}{{burner_address}}{{/erc1155_token_set_corruption_handler_address}}"
+);
 export const EXTRA_LIFE_ADDRESS = Address.fromString(
   "{{extra_life_address}}{{^extra_life_address}}{{burner_address}}{{/extra_life_address}}"
 );

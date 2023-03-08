@@ -131,10 +131,31 @@ export const getOrCreateCryptsSquadCharacter = (
   return character;
 };
 
-export const decodeBigIntArray = (data: Bytes): BigInt[] => {
+export const decodeTreasureHandlerRequirementData = (
+  data: Bytes
+): i32[] | null => {
+  const decoded = ethereum.decode(`(uint8,uint8)`, data);
+  if (!decoded) {
+    return null;
+  }
+
+  const decodedData = decoded.toTuple();
+  return [decodedData[0].toI32(), decodedData[1].toI32()];
+};
+
+export const decodeERC1155TokenSetHandlerRequirementData = (
+  data: Bytes
+): ethereum.Tuple | null => {
   const dataString = data.toHexString().replace("0x", "");
-  const decoded = ethereum.decode(`uint256[${dataString.length / 64}]`, data);
-  return decoded ? decoded.toBigIntArray() : [];
+  const decoded = ethereum.decode(
+    `(uint256,address,uint256[${dataString.substr(128).length / 64}])`,
+    data
+  );
+  if (!decoded) {
+    return null;
+  }
+
+  return decoded.toTuple();
 };
 
 export const bytesFromBigInt = (bigInt: BigInt): Bytes =>
