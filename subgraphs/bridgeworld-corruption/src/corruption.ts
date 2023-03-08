@@ -1,4 +1,4 @@
-import { Address, BigInt, Bytes, ethereum, log } from "@graphprotocol/graph-ts";
+import { Address, BigInt, Bytes, log } from "@graphprotocol/graph-ts";
 
 import {
   ERC1155_TOKEN_SET_CORRUPTION_HANDLER_ADDRESS,
@@ -80,9 +80,8 @@ export function handleCorruptionRemovalRecipeCreated(
     const itemId = item.itemId.notEqual(BigInt.zero()) ? item.itemId : null;
 
     const addressId = (address || customHandler) as Address;
-    const baseId = itemId ? addressId.concatI32(itemId.toI32()) : addressId;
     const recipeItem = new RecipeItem(
-      baseId.concatI32(event.block.number.toI32())
+      addressId.concatI32(params._recipeId.toI32()).concatI32(i + 1)
     );
     recipeItem.recipe = recipe.id;
     recipeItem.address = address;
@@ -102,8 +101,8 @@ export function handleCorruptionRemovalRecipeCreated(
         );
         if (!data) {
           log.error(
-            "Error decoding Treasure Corruption Handler requirement data",
-            []
+            "[corruption] Error decoding Treasure Corruption Handler requirement data: {}",
+            [params._recipeId.toString()]
           );
           return;
         }
@@ -123,8 +122,8 @@ export function handleCorruptionRemovalRecipeCreated(
         );
         if (!data) {
           log.error(
-            "Error decoding ERC1155 Token Set Corruption Handler requirement data",
-            []
+            "[corruption] Error decoding ERC1155 Token Set Corruption Handler requirement data: {}",
+            [params._recipeId.toString()]
           );
           return;
         }
