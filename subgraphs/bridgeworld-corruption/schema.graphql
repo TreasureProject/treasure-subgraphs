@@ -118,7 +118,8 @@ type RecipeItem @entity(immutable: true) {
   customHandler: Bytes
   customRequirementData: Bytes
   treasureRequirement: RecipeItemTreasureRequirement @derivedFrom(field: "item")
-  erc1155TokenSetRequirement: RecipeItemERC1155Requirement @derivedFrom(field: "item")
+  erc1155TokenSetRequirement: RecipeItemERC1155Requirement
+    @derivedFrom(field: "item")
 }
 
 type RecipeItemTreasureRequirement @entity(immutable: true) {
