@@ -146,11 +146,7 @@ export const decodeTreasureHandlerRequirementData = (
 export const decodeERC1155TokenSetHandlerRequirementData = (
   data: Bytes
 ): ethereum.Tuple | null => {
-  const dataString = data.toHexString().replace("0x", "");
-  const decoded = ethereum.decode(
-    `(uint256,address,uint256[${dataString.substr(128).length / 64}])`,
-    data
-  );
+  const decoded = ethereum.decode(`(uint256,address,uint256[])`, data);
   if (!decoded) {
     return null;
   }

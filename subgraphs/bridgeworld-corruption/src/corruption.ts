@@ -134,7 +134,7 @@ export function handleCorruptionRemovalRecipeCreated(
         erc1155Requirement.item = recipeItem.id;
         erc1155Requirement.amount = data[0].toI32();
         erc1155Requirement.collection = data[1].toAddress();
-        erc1155Requirement.tokenIds = data[2].toI32Array().slice(2);
+        erc1155Requirement.tokenIds = data[2].toI32Array();
         erc1155Requirement.save();
       }
     }
