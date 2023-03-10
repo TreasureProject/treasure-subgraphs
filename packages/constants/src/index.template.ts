@@ -38,8 +38,14 @@ export const EXTRA_LIFE_ADDRESS = Address.fromString(
 export const KEYS_ADDRESS = Address.fromString(
   "{{keys_address}}{{^keys_address}}{{burner_address}}{{/keys_address}}"
 );
+export const KOTE_POTIONS_ADDRESS = Address.fromString(
+  "{{kote_potions_address}}{{^kote_potions_address}}{{burner_address}}{{/kote_potions_address}}"
+);
 export const KOTE_SQUIRES_ADDRESS = Address.fromString(
   "{{kote_squires_address}}{{^kote_squires_address}}{{burner_address}}{{/kote_squires_address}}"
+);
+export const KOTE_TRINKETS_ADDRESS = Address.fromString(
+  "{{kote_trinkets_address}}{{^kote_trinkets_address}}{{burner_address}}{{/kote_trinkets_address}}"
 );
 export const LEGACY_LEGION_ADDRESS = Address.fromString(
   "{{legacy_legion_address}}{{^legacy_legion_address}}{{burner_address}}{{/legacy_legion_address}}"
