@@ -6,8 +6,7 @@ import {
 } from "@treasure/constants";
 
 import { TransferSingle } from "../generated/KOTE Potions/ERC1155";
-import { Transfer } from "../generated/KOTE Squires/ERC721";
-import { KoteSquires } from "../generated/KOTE Squires/KoteSquires";
+import { KoteSquires, Transfer } from "../generated/KOTE Squires/KoteSquires";
 import { Item, Squire, UserItem } from "../generated/schema";
 
 const SQUIRE_TYPES = ["", "Strength", "Wisdom", "Luck", "Faith"];
