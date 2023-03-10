@@ -1,9 +1,10 @@
-import { Address, BigInt, log } from "@graphprotocol/graph-ts";
+import { Address, BigInt, Bytes, log } from "@graphprotocol/graph-ts";
 
 import { CONSUMABLE_ADDRESS } from "@treasure/constants";
 
 import {
   Harvester,
+  HarvesterConfig,
   HarvesterNftHandler,
   HarvesterStakingRule,
   HarvesterTokenBoost,
@@ -13,42 +14,49 @@ import {
 import { ONE_BI, TWO_BI } from "./constants";
 import { etherToWei } from "./number";
 
-const getHarvesterById = (id: string): Harvester | null => {
-  const harvester = Harvester.load(id);
+const SINGLETON_ID = Bytes.fromI32(1);
+
+export const getOrCreateHarvesterConfig = (): HarvesterConfig => {
+  let config = HarvesterConfig.load(SINGLETON_ID);
+  if (!config) {
+    config = new HarvesterConfig(SINGLETON_ID);
+    config.harvesters = [];
+  }
+
+  return config;
+};
+
+export const getHarvester = (address: Bytes): Harvester | null => {
+  const harvester = Harvester.load(address);
   if (!harvester) {
-    log.error("Unknown Harvester: {}", [id]);
+    log.error("Unknown Harvester: {}", [address.toHexString()]);
   }
 
   return harvester;
 };
 
-export const getHarvester = (address: Address): Harvester | null =>
-  getHarvesterById(address.toHexString());
-
 export const getHarvesterForNftHandler = (
   address: Address
 ): Harvester | null => {
-  const nftHandlerId = address.toHexString();
-  const nftHandler = HarvesterNftHandler.load(nftHandlerId);
+  const nftHandler = HarvesterNftHandler.load(address);
   if (!nftHandler) {
-    log.error("Unknown HarvesterNftHandler: {}", [nftHandlerId]);
+    log.error("Unknown HarvesterNftHandler: {}", [address.toHexString()]);
     return null;
   }
 
-  return getHarvesterById(nftHandler.harvester);
+  return getHarvester(nftHandler.harvester);
 };
 
 export const getHarvesterForStakingRule = (
   address: Address
 ): Harvester | null => {
-  const stakingRuleId = address.toHexString();
-  const stakingRule = HarvesterStakingRule.load(stakingRuleId);
+  const stakingRule = HarvesterStakingRule.load(address);
   if (!stakingRule) {
-    log.error("Unknown HarvesterStakingRule: {}", [stakingRuleId]);
+    log.error("Unknown HarvesterStakingRule: {}", [address.toHexString()]);
     return null;
   }
 
-  return getHarvesterById(stakingRule.harvester);
+  return getHarvester(stakingRule.harvester);
 };
 
 export const calculateHarvesterPartsBoost = (harvester: Harvester): BigInt => {
@@ -134,7 +142,7 @@ export const removeExpiredExtractors = (
         );
         if (!tokenBoost) {
           log.error("Extractor boost info not found: {}, {}", [
-            harvester.id,
+            harvester.id.toHexString(),
             stakedToken.token.toString(),
           ]);
           continue;
@@ -142,7 +150,7 @@ export const removeExpiredExtractors = (
 
         log.info(
           "Removing boost value for expired Extractor from Harvester {} in spot {}",
-          [harvester.id, stakedToken.index.toString()]
+          [harvester.id.toHexString(), stakedToken.index.toString()]
         );
 
         harvester.extractorsBoost = harvester.extractorsBoost.minus(

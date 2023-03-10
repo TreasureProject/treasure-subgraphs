@@ -86,7 +86,10 @@ dataSources:
       apiVersion: 0.0.6
       language: wasm/assemblyscript
       entities:
-        - Removal
+        - CryptsMapTile
+        - CryptsSquad
+        - CryptsTemple
+        - CryptsUserMapTile
       abis:
         - name: CorruptionCrypts
           file: {{{ abis }}}/CorruptionCrypts.json
@@ -119,6 +122,28 @@ dataSources:
           handler: handleTempleEntered
         - event: TreasureClaimed(address,uint64,uint256,((uint8,uint8),uint8,uint8,uint8,uint16,uint16),uint256)
           handler: handleTreasureClaimed
+      file: ./src/crypts.ts
+  - name: CorruptionCryptsV2
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ corruption_crypts_address }}"
+      abi: CorruptionCryptsV2
+      startBlock: {{ corruption_crypts_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - CryptsSquad
+      abis:
+        - name: CorruptionCryptsV2
+          file: {{{ abis }}}/CorruptionCryptsV2.json
+      eventHandlers:
+        - event: CharacterHandlerSet(address,address)
+          handler: handleCharacterHandlerSet
+        - event: LegionSquadStaked(address,uint64,(address,uint32)[],uint16,string)
+          handler: handleCharacterSquadStaked
       file: ./src/crypts.ts
   - name: CorruptionCryptsRewards
     kind: ethereum/contract

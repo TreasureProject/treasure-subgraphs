@@ -1,6 +1,10 @@
 import { BigInt, Bytes, log, store } from "@graphprotocol/graph-ts";
 
-import { CONSUMABLE_ADDRESS, LEGION_ADDRESS } from "@treasure/constants";
+import {
+  CONSUMABLE_ADDRESS,
+  KOTE_SQUIRES_ADDRESS,
+  LEGION_ADDRESS,
+} from "@treasure/constants";
 
 import { HarvesterDeployed } from "../../generated/Harvester Factory/HarvesterFactory";
 import {
@@ -12,7 +16,6 @@ import {
   HarvesterTokenBoost,
   StakedToken,
   Withdraw,
-  _HarvesterConfig,
 } from "../../generated/schema";
 import {
   HarvesterConfig,
@@ -46,17 +49,20 @@ import {
   getHarvester,
   getHarvesterForNftHandler,
   getHarvesterForStakingRule,
+  getOrCreateHarvesterConfig,
   removeExpiredExtractors,
 } from "../helpers/harvester";
 import { getLegionMetadata } from "../helpers/legion";
 import { weiToEther } from "../helpers/number";
+import { getOrCreateToken } from "../helpers/token";
+import { HARVESTERS_RANK_MATRIX } from "./legion";
 
 export function handleHarvesterDeployed(event: HarvesterDeployed): void {
   const params = event.params;
 
   // Create Harvester entity
   const harvesterAddress = params.harvester;
-  const harvester = new Harvester(harvesterAddress.toHexString());
+  const harvester = new Harvester(harvesterAddress);
   harvester.deployedBlockNumber = event.block.number;
   harvester.maxMagicDeposited = BigInt.zero();
   harvester.maxPartsStaked = 0;
@@ -84,7 +90,7 @@ export function handleHarvesterDeployed(event: HarvesterDeployed): void {
 
   // Create NftHandler entity
   const nftHandlerAddress = params.nftHandler;
-  const nftHandler = new HarvesterNftHandler(nftHandlerAddress.toHexString());
+  const nftHandler = new HarvesterNftHandler(nftHandlerAddress);
   nftHandler.harvester = harvester.id;
   nftHandler.save();
 
@@ -93,16 +99,9 @@ export function handleHarvesterDeployed(event: HarvesterDeployed): void {
   NftHandler.create(nftHandlerAddress);
 
   // Save Harvester to config
-  let harvesterConfig = _HarvesterConfig.load("only");
-  if (!harvesterConfig) {
-    harvesterConfig = new _HarvesterConfig("only");
-    harvesterConfig.harvesters = [];
-  }
-
-  harvesterConfig.harvesters = harvesterConfig.harvesters.concat([
-    harvester.id,
-  ]);
-  harvesterConfig.save();
+  const config = getOrCreateHarvesterConfig();
+  config.harvesters = config.harvesters.concat([harvester.id]);
+  config.save();
 }
 
 export function handleNftStaked(event: Staked): void {
@@ -122,15 +121,23 @@ export function handleNftStaked(event: Staked): void {
     return;
   }
 
+  const token = getOrCreateToken(nftAddress, tokenId);
+  const isKoteSquire = nftAddress.equals(KOTE_SQUIRES_ADDRESS);
+  if (isKoteSquire) {
+    token.category = "KoteSquire";
+    token.name = "KOTE Squire";
+    token.save();
+  }
+
   const userAddress = params.user;
-  const stakedTokenId = `${
-    harvester.id
-  }-${userAddress.toHexString()}-${getAddressId(nftAddress, tokenId)}`;
+  const stakedTokenId = `${harvester.id}-${userAddress.toHexString()}-${
+    token.id
+  }`;
   let stakedToken = StakedToken.load(stakedTokenId);
   if (!stakedToken) {
     stakedToken = new StakedToken(stakedTokenId);
     stakedToken.user = userAddress.toHexString();
-    stakedToken.token = getAddressId(nftAddress, tokenId);
+    stakedToken.token = token.id;
     stakedToken.quantity = BigInt.zero();
     stakedToken.harvester = harvester.id;
     stakedToken.expirationProcessed = false;
@@ -147,15 +154,21 @@ export function handleNftStaked(event: Staked): void {
   ) {
     harvester.partsStaked += amount;
     harvester.partsBoost = calculateHarvesterPartsBoost(harvester);
-  } else if (nftAddress.equals(LEGION_ADDRESS)) {
+  } else if (nftAddress.equals(LEGION_ADDRESS) || isKoteSquire) {
     harvester.legionsStaked += amount;
 
-    const metadata = getLegionMetadata(tokenId);
-    stakedToken.index = weiToEther(metadata.harvestersRank) as i32;
+    if (isKoteSquire) {
+      harvester.legionsTotalRank = harvester.legionsTotalRank.plus(
+        HARVESTERS_RANK_MATRIX[1][4]
+      );
+    } else {
+      const metadata = getLegionMetadata(tokenId);
+      stakedToken.index = weiToEther(metadata.harvestersRank) as i32;
+      harvester.legionsTotalRank = harvester.legionsTotalRank.plus(
+        metadata.harvestersRank.times(params.amount)
+      );
+    }
 
-    harvester.legionsTotalRank = harvester.legionsTotalRank.plus(
-      metadata.harvestersRank.times(params.amount)
-    );
     harvester.legionsBoost = calculateHarvesterLegionsBoost(harvester);
   }
 
@@ -192,6 +205,7 @@ export function handleNftUnstaked(event: Unstaked): void {
   }
 
   const amount = params.amount.toI32();
+  const isKoteSquire = nftAddress.equals(KOTE_SQUIRES_ADDRESS);
   const partsAddress = harvester.partsAddress || CONSUMABLE_ADDRESS;
   const partsTokenId = harvester.partsTokenId || HARVESTER_PART_TOKEN_ID;
   if (
@@ -201,13 +215,20 @@ export function handleNftUnstaked(event: Unstaked): void {
     // Extractors cannot be unstaked
     harvester.partsStaked -= amount;
     harvester.partsBoost = calculateHarvesterPartsBoost(harvester);
-  } else if (nftAddress.equals(LEGION_ADDRESS)) {
+  } else if (nftAddress.equals(LEGION_ADDRESS) || isKoteSquire) {
     harvester.legionsStaked -= amount;
 
-    const metadata = getLegionMetadata(params.tokenId);
-    harvester.legionsTotalRank = harvester.legionsTotalRank.minus(
-      metadata.harvestersRank.times(params.amount)
-    );
+    if (isKoteSquire) {
+      harvester.legionsTotalRank = harvester.legionsTotalRank.minus(
+        HARVESTERS_RANK_MATRIX[1][4]
+      );
+    } else {
+      const metadata = getLegionMetadata(params.tokenId);
+      harvester.legionsTotalRank = harvester.legionsTotalRank.minus(
+        metadata.harvestersRank.times(params.amount)
+      );
+    }
+
     harvester.legionsBoost = calculateHarvesterLegionsBoost(harvester);
   }
 
@@ -229,7 +250,7 @@ export function handleExtractorStaked(event: ExtractorStaked): void {
   const tokenBoost = HarvesterTokenBoost.load(`${harvester.id}-${extractorId}`);
   if (!tokenBoost) {
     log.error("Extractor boost info not found: {}, {}", [
-      harvester.id,
+      harvester.id.toHexString(),
       tokenId.toString(),
     ]);
   }
@@ -297,7 +318,7 @@ export function handleExtractorReplaced(event: ExtractorReplaced): void {
   );
   if (!stakedToken) {
     log.error("Replacing unknown Extractor spot ID: {}, {}", [
-      harvester.id,
+      harvester.id.toHexString(),
       params.replacedSpotId.toString(),
     ]);
     return;
@@ -308,7 +329,7 @@ export function handleExtractorReplaced(event: ExtractorReplaced): void {
   );
   if (!oldTokenBoost) {
     log.error("Extractor boost info not found: {}, {}", [
-      harvester.id,
+      harvester.id.toHexString(),
       stakedToken.token.toString(),
     ]);
   }
@@ -323,7 +344,7 @@ export function handleExtractorReplaced(event: ExtractorReplaced): void {
   );
   if (!newTokenBoost) {
     log.error("Extractor boost info not found: {}, {}", [
-      harvester.id,
+      harvester.id.toHexString(),
       tokenId.toString(),
     ]);
   }
@@ -375,7 +396,7 @@ export function handleMagicDeposited(event: DepositEvent): void {
   const userAddress = params.user;
 
   const timelock = HarvesterTimelock.load(
-    `${harvester.id}-${params.lock.toHexString()}`
+    harvester.id.concatI32(params.lock.toI32())
   );
   if (!timelock) {
     log.error("Unknown timelock option: {}", [params.lock.toString()]);

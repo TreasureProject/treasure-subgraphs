@@ -116,8 +116,10 @@ type RecipeItem @entity(immutable: true) {
   itemId: BigInt
   amount: BigInt
   customHandler: Bytes
-  customRequirementData: [BigInt!]
+  customRequirementData: Bytes
   treasureRequirement: RecipeItemTreasureRequirement @derivedFrom(field: "item")
+  erc1155TokenSetRequirement: RecipeItemERC1155Requirement
+    @derivedFrom(field: "item")
 }
 
 type RecipeItemTreasureRequirement @entity(immutable: true) {
@@ -126,6 +128,16 @@ type RecipeItemTreasureRequirement @entity(immutable: true) {
   item: RecipeItem!
 
   tier: Int!
+  amount: Int!
+}
+
+type RecipeItemERC1155Requirement @entity(immutable: true) {
+  id: Bytes!
+
+  item: RecipeItem!
+
+  collection: Bytes!
+  tokenIds: [Int!]!
   amount: Int!
 }
 
@@ -230,8 +242,8 @@ type CryptsSquad @entity {
   "Creator of this squad"
   user: User!
 
-  "Legion token IDs within this squad"
-  legionTokenIds: [Int!]!
+  "Characters in this squad"
+  characters: [CryptsSquadCharacter!]!
 
   "Time squad was staked, in seconds"
   stakedTimestamp: BigInt!
@@ -250,6 +262,26 @@ type CryptsSquad @entity {
 
   "Last round ID where this squad entered the target temple"
   lastRoundInTemple: Int!
+}
+
+type CryptsCharacterHandler @entity {
+  id: Bytes!
+
+  "Character NFT address"
+  collection: Bytes!
+
+  "Contract address for character handler"
+  address: Bytes!
+}
+
+type CryptsSquadCharacter @entity(immutable: true) {
+  id: Bytes!
+
+  "Character NFT address"
+  collection: Bytes!
+
+  "Character NFT token ID"
+  tokenId: Int!
 }
 
 type CryptsUserMapTile @entity {

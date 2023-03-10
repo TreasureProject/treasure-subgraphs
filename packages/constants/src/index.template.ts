@@ -6,6 +6,9 @@ export const EXPLORER = "{{ explorer }}";
 export const MAGIC_ADDRESS = Address.fromString(
   "{{magic_address}}{{^magic_address}}{{burner_address}}{{/magic_address}}"
 );
+export const HOURLY_STAT_INTERVAL_START_BLOCK = BigInt.fromString(
+  "{{hourly_stat_interval_start_block}}{{^hourly_stat_interval_start_block}}0{{/hourly_stat_interval_start_block}}"
+);
 
 // Bridgeworld
 export const ADVANCED_QUESTING_ADDRESS = Address.fromString(
@@ -26,11 +29,23 @@ export const CORRUPTION_REMOVAL_ADDRESS = Address.fromString(
 export const CRAFTING_ADDRESS = Address.fromString(
   "{{crafting_address}}{{^crafting_address}}{{burner_address}}{{/crafting_address}}"
 );
+export const ERC1155_TOKEN_SET_CORRUPTION_HANDLER_ADDRESS = Address.fromString(
+  "{{erc1155_token_set_corruption_handler_address}}{{^erc1155_token_set_corruption_handler_address}}{{burner_address}}{{/erc1155_token_set_corruption_handler_address}}"
+);
 export const EXTRA_LIFE_ADDRESS = Address.fromString(
   "{{extra_life_address}}{{^extra_life_address}}{{burner_address}}{{/extra_life_address}}"
 );
 export const KEYS_ADDRESS = Address.fromString(
   "{{keys_address}}{{^keys_address}}{{burner_address}}{{/keys_address}}"
+);
+export const KOTE_POTIONS_ADDRESS = Address.fromString(
+  "{{kote_potions_address}}{{^kote_potions_address}}{{burner_address}}{{/kote_potions_address}}"
+);
+export const KOTE_SQUIRES_ADDRESS = Address.fromString(
+  "{{kote_squires_address}}{{^kote_squires_address}}{{burner_address}}{{/kote_squires_address}}"
+);
+export const KOTE_TRINKETS_ADDRESS = Address.fromString(
+  "{{kote_trinkets_address}}{{^kote_trinkets_address}}{{burner_address}}{{/kote_trinkets_address}}"
 );
 export const LEGACY_LEGION_ADDRESS = Address.fromString(
   "{{legacy_legion_address}}{{^legacy_legion_address}}{{burner_address}}{{/legacy_legion_address}}"
@@ -144,68 +159,4 @@ export const WRAPPED_SMOLS_ADDRESS = Address.fromString(
 );
 export const BATTLEFLY_SMOLVERSE_FLYWHEEL_VAULT_ADDRESS = Address.fromString(
   "{{battlefly_smolverse_flywheel_vault_address}}{{^battlefly_smolverse_flywheel_vault_address}}{{burner_address}}{{/battlefly_smolverse_flywheel_vault_address}}"
-);
-
-// Trove
-export const MARKETPLACE_ADDRESS = Address.fromString(
-  "{{treasure_marketplace_address}}{{^treasure_marketplace_address}}{{burner_address}}{{/treasure_marketplace_address}}"
-);
-export const MARKETPLACE_V2_ADDRESS = Address.fromString(
-  "{{treasure_marketplace_v2_address}}{{^treasure_marketplace_v2_address}}{{burner_address}}{{/treasure_marketplace_v2_address}}"
-);
-export const MARKETPLACE_BUYER_ADDRESS = Address.fromString(
-  "{{treasure_marketplace_buyer_address}}{{^treasure_marketplace_buyer_address}}{{burner_address}}{{/treasure_marketplace_buyer_address}}"
-);
-export const TROVE_MAGIC_ADDRESS = Address.fromString(
-  "{{trove_magic_address}}{{^trove_magic_address}}{{burner_address}}{{/trove_magic_address}}"
-);
-
-// DEPRECATED
-
-// Bridgeworld Stats
-export const HOURLY_STAT_INTERVAL_START_BLOCK = BigInt.fromString(
-  "{{hourly_stat_interval_start_block}}{{^hourly_stat_interval_start_block}}0{{/hourly_stat_interval_start_block}}"
-);
-
-// Marketplace
-export const BATTLEFLY_ADDRESS = Address.fromString(
-  "{{battlefly_address}}{{^battlefly_address}}{{burner_address}}{{/battlefly_address}}"
-);
-export const BATTLEFLY_FOUNDERS_ADDRESS = Address.fromString(
-  "{{battlefly_founders_address}}{{^battlefly_founders_address}}{{burner_address}}{{/battlefly_founders_address}}"
-);
-export const KOTE_QUESTING_ADDRESS = Address.fromString(
-  "{{kote_questing_address}}{{^kote_questing_address}}{{burner_address}}{{/kote_questing_address}}"
-);
-export const TALES_OF_ELLERIA_ADDRESS = Address.fromString(
-  "{{tales_of_elleria_address}}{{^tales_of_elleria_address}}{{burner_address}}{{/tales_of_elleria_address}}"
-);
-export const TALES_OF_ELLERIA_DATA_ADDRESS = Address.fromString(
-  "{{tales_of_elleria_data_address}}{{^tales_of_elleria_data_address}}{{burner_address}}{{/tales_of_elleria_data_address}}"
-);
-export const TOADSTOOLZ_ADDRESS = Address.fromString(
-  "{{toadstoolz_address}}{{^toadstoolz_address}}{{burner_address}}{{/toadstoolz_address}}"
-);
-export const TOADSTOOLZ_ITEMZ_ADDRESS = Address.fromString(
-  "{{toadstoolz_itemz_address}}{{^toadstoolz_itemz_address}}{{burner_address}}{{/toadstoolz_itemz_address}}"
-);
-export const TREASURE_MARKETPLACE_PAUSE_START_BLOCK = BigInt.fromString(
-  "{{treasure_marketplace_pause_start_block}}{{^treasure_marketplace_pause_start_block}}0{{/treasure_marketplace_pause_start_block}}"
-);
-
-// Seed of Life
-export const SEED_OF_LIFE_ADDRESS = Address.fromString(
-  "{{seed_of_life_address}}{{^seed_of_life_address}}{{burner_address}}{{/seed_of_life_address}}"
-);
-export const SEED_OF_LIFE_RESOURCES_ADDRESS = Address.fromString(
-  "{{sol_resources_address}}{{^sol_resources_address}}{{burner_address}}{{/sol_resources_address}}"
-);
-export const SEED_EVOLUTION_ADDRESS = Address.fromString(
-  "{{seed_evolution_address}}{{^seed_evolution_address}}{{burner_address}}{{/seed_evolution_address}}"
-);
-export const IMBUED_SOULS_ADDRESS = Address.fromString(
-  "{{imbued_souls_address}}{{^imbued_souls_address}}{{burner_address}}{{/imbued_souls_address}}"
-);
-export const SEED_OF_LIFE_TREASURES_ADDRESS = Address.fromString(
-  "{{seed_of_life_treasures_address}}{{^seed_of_life_treasures_address}}{{burner_address}}{{/seed_of_life_treasures_address}}"
 );

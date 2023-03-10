@@ -12,6 +12,7 @@ on:
         - bridgeworld
         - bridgeworld-approvals
         - bridgeworld-corruption
+        - bridgeworld-kote
         - bridgeworld-recruits
         - magic-stats
         - magicswap-exchange

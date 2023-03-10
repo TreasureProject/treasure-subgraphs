@@ -55,6 +55,10 @@
   "corruption_crypts_start_block": 6924578,
   "corruption_crypts_rewards_address": "0xf992e54b8de47056825e1f5cfa3d1817b40dc62f",
   "corruption_crypts_rewards_start_block": 6924548,
+  "erc1155_token_set_corruption_handler_address": "0x35ac7fff4ab4e51291acaa2c5fe0c6b5c5f4b01e",
+  "kote_squires_address": "0x7b43cc9f7d3c230c55d2dfe677c711e3783bc376",
+  "kote_potions_address": "0xfc6fc6bc755FCe9449ac082aE88a4ACC881e3412",
+  "kote_trinkets_address": "0x96b273dcb8b4c0aa736694b2580dd3a23762e819",
 
   "smol_brains_address": "0x2542421ACA04A98f5Cf04DA97a36DAD8F1FaC3f4",
   "smol_brains_start_block": 502313,
@@ -91,11 +95,10 @@
   "smolidays_start_block": 2765235,
   "smol_chop_shop_address": "0x9D47a763B744BC181F58b353b7Ee597807C37607",
   "smol_chop_shop_start_block": 4936962,
-
-  "hourly_stat_interval_start_block": 309123,
+  "battlefly_smolverse_flywheel_vault_address": "0xFFb425a9520D4BD4C512eCD8A4c3cfD240F9158f",
 
   "magicswap_factory_address": "0x6Cd71961e531aBB505256ffa945D59ab9a2156ec",
   "magicswap_factory_start_block": 529452,
 
-  "battlefly_smolverse_flywheel_vault_address": "0xFFb425a9520D4BD4C512eCD8A4c3cfD240F9158f"
+  "hourly_stat_interval_start_block": 309123
 }

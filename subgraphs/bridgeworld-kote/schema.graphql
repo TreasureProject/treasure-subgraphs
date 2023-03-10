@@ -1,0 +1,35 @@
+type Squire @entity {
+  id: Bytes!
+
+  tokenId: Int!
+  owner: Bytes!
+
+  faith: Int!
+  luck: Int!
+  strength: Int!
+  type: Int!
+  wisdom: Int!
+  genesis: Int!
+
+  name: String!
+  image: String!
+}
+
+type Item @entity(immutable: true) {
+  id: Bytes!
+
+  contract: Bytes!
+  tokenId: Int!
+  type: String!
+  name: String!
+  image: String!
+}
+
+type UserItem @entity {
+  id: Bytes!
+
+  owner: Bytes!
+
+  item: Item!
+  quantity: Int!
+}

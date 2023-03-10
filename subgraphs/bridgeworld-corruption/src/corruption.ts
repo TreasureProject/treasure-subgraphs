@@ -1,6 +1,9 @@
 import { Address, BigInt, Bytes, log } from "@graphprotocol/graph-ts";
 
-import { TREASURE_CORRUPTION_HANDLER_ADDRESS } from "@treasure/constants";
+import {
+  ERC1155_TOKEN_SET_CORRUPTION_HANDLER_ADDRESS,
+  TREASURE_CORRUPTION_HANDLER_ADDRESS,
+} from "@treasure/constants";
 
 import {
   CorruptionStreamBoostModified,
@@ -18,13 +21,15 @@ import {
   Building,
   Recipe,
   RecipeItem,
+  RecipeItemERC1155Requirement,
   RecipeItemTreasureRequirement,
   Removal,
 } from "../generated/schema";
 import {
   ITEM_EFFECTS,
   ITEM_TYPES,
-  decodeBigIntArray,
+  decodeERC1155TokenSetHandlerRequirementData,
+  decodeTreasureHandlerRequirementData,
   getOrCreateBuilding,
   getOrCreateUser,
 } from "./helpers";
@@ -75,9 +80,8 @@ export function handleCorruptionRemovalRecipeCreated(
     const itemId = item.itemId.notEqual(BigInt.zero()) ? item.itemId : null;
 
     const addressId = (address || customHandler) as Address;
-    const baseId = itemId ? addressId.concatI32(itemId.toI32()) : addressId;
     const recipeItem = new RecipeItem(
-      baseId.concatI32(event.block.number.toI32())
+      addressId.concatI32(params._recipeId.toI32()).concatI32(i + 1)
     );
     recipeItem.recipe = recipe.id;
     recipeItem.address = address;
@@ -90,19 +94,48 @@ export function handleCorruptionRemovalRecipeCreated(
       : null;
     recipeItem.customHandler = customHandler;
     if (customHandler) {
-      const requirementData = decodeBigIntArray(item.customRequirementData);
-      recipeItem.customRequirementData = requirementData;
-      if (
-        customHandler.equals(TREASURE_CORRUPTION_HANDLER_ADDRESS) &&
-        requirementData.length >= 2
-      ) {
+      recipeItem.customRequirementData = item.customRequirementData;
+      if (customHandler.equals(TREASURE_CORRUPTION_HANDLER_ADDRESS)) {
+        const data = decodeTreasureHandlerRequirementData(
+          item.customRequirementData
+        );
+        if (!data) {
+          log.error(
+            "[corruption] Error decoding Treasure Corruption Handler requirement data: {}",
+            [params._recipeId.toString()]
+          );
+          return;
+        }
+
         const treasureRequirement = new RecipeItemTreasureRequirement(
           recipeItem.id
         );
         treasureRequirement.item = recipeItem.id;
-        treasureRequirement.tier = requirementData[0].toI32();
-        treasureRequirement.amount = requirementData[1].toI32();
+        treasureRequirement.tier = data[0];
+        treasureRequirement.amount = data[1];
         treasureRequirement.save();
+      } else if (
+        customHandler.equals(ERC1155_TOKEN_SET_CORRUPTION_HANDLER_ADDRESS)
+      ) {
+        const data = decodeERC1155TokenSetHandlerRequirementData(
+          item.customRequirementData
+        );
+        if (!data) {
+          log.error(
+            "[corruption] Error decoding ERC1155 Token Set Corruption Handler requirement data: {}",
+            [params._recipeId.toString()]
+          );
+          return;
+        }
+
+        const erc1155Requirement = new RecipeItemERC1155Requirement(
+          recipeItem.id
+        );
+        erc1155Requirement.item = recipeItem.id;
+        erc1155Requirement.amount = data[0].toI32();
+        erc1155Requirement.collection = data[1].toAddress();
+        erc1155Requirement.tokenIds = data[2].toI32Array();
+        erc1155Requirement.save();
       }
     }
 

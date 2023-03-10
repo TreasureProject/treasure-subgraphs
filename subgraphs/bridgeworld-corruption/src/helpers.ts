@@ -4,6 +4,8 @@ import {
   Building,
   Config,
   CryptsBoardTreasureFragment,
+  CryptsCharacterHandler,
+  CryptsSquadCharacter,
   CryptsUserMapTile,
   User,
 } from "../generated/schema";
@@ -80,6 +82,21 @@ export const getOrCreateBuilding = (address: Address): Building => {
   return building;
 };
 
+export const updateCharacterHandler = (
+  collection: Address,
+  handler: Address
+): CryptsCharacterHandler => {
+  let characterHandler = CryptsCharacterHandler.load(collection);
+  if (!characterHandler) {
+    characterHandler = new CryptsCharacterHandler(collection);
+  }
+
+  characterHandler.collection = collection;
+  characterHandler.address = handler;
+  characterHandler.save();
+  return characterHandler;
+};
+
 export const getOrCreateUserMapTile = (
   user: Bytes,
   mapTile: Bytes
@@ -98,10 +115,43 @@ export const getOrCreateUserMapTile = (
   return userMapTile;
 };
 
-export const decodeBigIntArray = (data: Bytes): BigInt[] => {
-  const dataString = data.toHexString().replace("0x", "");
-  const decoded = ethereum.decode(`uint256[${dataString.length / 64}]`, data);
-  return decoded ? decoded.toBigIntArray() : [];
+export const getOrCreateCryptsSquadCharacter = (
+  collection: Address,
+  tokenId: BigInt
+): CryptsSquadCharacter => {
+  const id = collection.concat(Bytes.fromI32(tokenId.toI32()));
+  let character = CryptsSquadCharacter.load(id);
+  if (!character) {
+    character = new CryptsSquadCharacter(id);
+    character.collection = collection;
+    character.tokenId = tokenId.toI32();
+    character.save();
+  }
+
+  return character;
+};
+
+export const decodeTreasureHandlerRequirementData = (
+  data: Bytes
+): i32[] | null => {
+  const decoded = ethereum.decode(`(uint8,uint8)`, data);
+  if (!decoded) {
+    return null;
+  }
+
+  const decodedData = decoded.toTuple();
+  return [decodedData[0].toI32(), decodedData[1].toI32()];
+};
+
+export const decodeERC1155TokenSetHandlerRequirementData = (
+  data: Bytes
+): ethereum.Tuple | null => {
+  const decoded = ethereum.decode(`(uint256,address,uint256[])`, data);
+  if (!decoded) {
+    return null;
+  }
+
+  return decoded.toTuple();
 };
 
 export const bytesFromBigInt = (bigInt: BigInt): Bytes =>

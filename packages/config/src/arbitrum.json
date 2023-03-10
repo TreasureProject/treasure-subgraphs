@@ -56,6 +56,9 @@
   "corruption_crypts_start_block": 60119196,
   "corruption_crypts_rewards_address": "0xc0df5094b3b2413e4891a2dc2ff583a2ffd3e8d3",
   "corruption_crypts_rewards_start_block": 60119058,
+  "kote_squires_address": "0xf7fbe8eec9063aa518d11639565b018468bb4abb",
+  "kote_potions_address": "0x6f2aa70c70625e45424652aed968e3971020f205",
+  "kote_trinkets_address": "0x9f0cc315cae0826005b94462b5400849b3d39d91",
 
   "extra_life_address": "0x21e1969884D477afD2Afd4Ad668864a0EebD644c",
   "extra_life_start_block": 2416557,
@@ -90,87 +93,16 @@
   "smol_racing_address": "0xEc895f620D1c103d5Bbc85CcE3b623C958Ce35cC",
   "smol_racing_start_block": 24817191,
   "smol_racing_trophies_address": "0xD5e7c7128A4b348E2b9b2d8539BC53130B7F5789",
-
-  "randomizer_seed_of_life_start_block": 10014588,
-  "seed_of_life_address": "0x3956C81A51FeAed98d7A678d53F44b9166c8ed66",
-  "seed_of_life_start_block": 2416557,
-  "seed_evolution_address": "0x3e455c3321Ef4861DD8492d7FC099190a846458a",
-  "seed_evolution_start_block": 10014588,
-  "sol_resources_address": "0xCf51E9622471fb2bF2D66226a878280eabD71778",
-  "sol_resources_start_block": 10014636,
-  "imbued_souls_address": "0xDc758b92c7311280aeeB48096a3bf4D1C1f936d4",
-  "imbued_souls_start_block": 10014628,
-  "seed_of_life_magic_address": "0x539bdE0d7Dbd336b79148AA742883198BBF60342",
-  "seed_of_life_magic_start_block": 10014588,
-  "seed_of_life_treasures_address": "0xEBba467eCB6b21239178033189CeAE27CA12EaDf",
-  "seed_of_life_treasures_start_block": 2416540,
-
-  "battlefly_address": "0x0af85a5624d24e2c6e7af3c0a0b102a28e36cea3",
-  "battlefly_start_block": 7242277,
-  "battlefly_founders_address": "0xc43104775bd9f6076808b5f8df6cbdbeac96d7de",
-  "battlefly_founders_start_block": 7242255,
+  "smoloween_address": "0x919c574D12dF2b534467f224c16Bd8475846B25c",
+  "smoloween_start_block": 31361568,
+  "smolidays_address": "0x346BA11c7e220e4E8700Bafa9eEdaf674be3E0f5",
+  "smolidays_start_block": 47422160,
+  "smol_chop_shop_address": "0xA3d2C13426Bc856830C2DfF68821FaceA6B81835",
+  "smol_chop_shop_start_block": 54982945,
   "battlefly_smolverse_flywheel_vault_address": "0xccb747d04ae0b127075929b28084f11920491929",
-
-  "treasure_marketplace_buyer_address": "0x812cda2181ed7c45a35a691e0c85e231d218e273",
-  "treasure_marketplace_address": "0x2E3b85F85628301a0Bce300Dee3A6B04195A15Ee",
-  "treasure_marketplace_start_block": 2983469,
-  "treasure_marketplace_v2_address": "0x09986B4e255B3c548041a30A2Ee312Fe176731c2",
-  "treasure_marketplace_v2_start_block": 7764399,
-  "treasure_marketplace_trove_start_block": 14096500,
-  "treasure_marketplace_pause_start_block": 7322795,
-  "trove_magic_address": "0x539bdE0d7Dbd336b79148AA742883198BBF60342",
-
-  "peek_a_boo_address": "0xbb5e6438336187ef87e21798dcda8fc98fcfa65a",
-  "peek_a_boo_start_block": 8279648,
-
-  "realm_address": "0x4de95c1e202102e22e801590c51d7b979f167fbb",
-  "realm_start_block": 758297,
-
-  "tales_of_elleria_address": "0x7480224ec2b98f28cee3740c80940a2f489bf352",
-  "tales_of_elleria_start_block": 8701560,
-  "tales_of_elleria_data_address": "0x7A0D491469fb5D7D3aDbF186221891AfE3b5d028",
-  "tales_of_elleria_data_start_block": 8701736,
-  "tales_of_elleria_relics_address": "0x381227255eF6c5d85966b78d13e4B4a4c8719b5E",
-  "tales_of_elleria_relics_start_block": 12941260,
-
-  "smithonia_weapons_address": "0x00000000016c35e3613ad3ed484aa48f161b67fd",
-  "smithonia_weapons_start_block": 8971700,
-
-  "toadstoolz_address": "0x09CAE384C6626102ABE47Ff50588A1dBe8432174",
-  "toadstoolz_start_block": 9816777,
-  "toadstoolz_itemz_address": "0x5e0ba87362f239bDBF40E621Fa11DBD50d190389",
-  "toadstoolz_itemz_start_block": 9816829,
-
-  "kote_squires_address": "0xF7fBE8EEc9063AA518D11639565B018468bB4AbB",
-  "kote_squires_start_block": 10050034,
-  "kote_questing_address": "0x1C478220c520a20924295E2325D0cE96ff64dCA6",
-  "kote_questing_start_block": 11280436,
-  "kote_potions_address": "0x6F2aA70c70625E45424652aEd968E3971020F205",
-  "kote_potions_start_block": 12959247,
-  "kote_rings_address": "0x37865Fe8A9c839F330f35104EeD08d4E8136c339",
-  "kote_rings_start_block": 12959142,
-  "kote_trinkets_address": "0x9f0cc315caE0826005b94462B5400849b3d39d91",
-  "kote_trinkets_start_block": 12959211,
-
-  "samurise_land_address": "0x71bD1562f7E0F182f8BE472151bEfdFb824E26BE",
-  "samurise_land_start_block": 10217321,
-  "samurise_items_address": "0x5e01c1889085B528EefF5e1bEe64Bfe94f454703",
-  "samurise_items_start_block": 10216948,
-
-  "lost_donkeys_address": "0x5e84c1A06E6AD1a8ED66Bc48dBe5eB06BF2Fe4aA",
-  "lost_donkeys_start_block": 11440957,
-
-  "hourly_stat_interval_start_block": 6470000,
 
   "magicswap_factory_address": "0x015e379Ce0Ff195228b3A9eBDFA13F9afC155Dd7",
   "magicswap_factory_start_block": 20547275,
 
-  "smoloween_address": "0x919c574D12dF2b534467f224c16Bd8475846B25c",
-  "smoloween_start_block": 31361568,
-
-  "smolidays_address": "0x346BA11c7e220e4E8700Bafa9eEdaf674be3E0f5",
-  "smolidays_start_block": 47422160,
-
-  "smol_chop_shop_address": "0xA3d2C13426Bc856830C2DfF68821FaceA6B81835",
-  "smol_chop_shop_start_block": 54982945
+  "hourly_stat_interval_start_block": 6470000
 }

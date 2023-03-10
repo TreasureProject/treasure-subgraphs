@@ -1,4 +1,6 @@
-import { Bytes, log, store } from "@graphprotocol/graph-ts";
+import { Address, BigInt, Bytes, log, store } from "@graphprotocol/graph-ts";
+
+import { LEGION_ADDRESS } from "@treasure/constants";
 
 import {
   ConfigUpdated,
@@ -17,6 +19,10 @@ import {
   TreasureClaimed,
 } from "../generated/CorruptionCrypts/CorruptionCrypts";
 import {
+  CharacterHandlerSet,
+  LegionSquadStaked as CharacterSquadStaked,
+} from "../generated/CorruptionCryptsV2/CorruptionCryptsV2";
+import {
   CryptsMapTile,
   CryptsSquad,
   CryptsTemple,
@@ -26,7 +32,9 @@ import {
   bytesFromBigInt,
   getOrCreateBoardTreasureFragment,
   getOrCreateConfig,
+  getOrCreateCryptsSquadCharacter,
   getOrCreateUser,
+  updateCharacterHandler,
 } from "./helpers";
 
 export function handleConfigUpdated(event: ConfigUpdated): void {
@@ -68,27 +76,76 @@ export function handleGlobalRandomnessRequested(
   config.save();
 }
 
-export function handleLegionSquadStaked(event: LegionSquadStaked): void {
+export function handleCharacterHandlerSet(event: CharacterHandlerSet): void {
   const params = event.params;
-  const temple = CryptsTemple.load(Bytes.fromI32(params._targetTemple));
+  updateCharacterHandler(params._collection, params._handler);
+}
+
+const handleSquadStaked = (
+  user: Address,
+  timestamp: BigInt,
+  targetTemple: i32,
+  squadId: BigInt,
+  squadName: string,
+  characterCollections: Address[],
+  characterTokenIds: BigInt[]
+): void => {
+  const temple = CryptsTemple.load(Bytes.fromI32(targetTemple));
   if (!temple) {
     log.error("[crypts] Squad staked targeting unknown temple: {}", [
-      params._targetTemple.toString(),
+      targetTemple.toString(),
     ]);
     return;
   }
 
-  const squad = new CryptsSquad(bytesFromBigInt(params._legionSquadId));
-  squad.squadId = params._legionSquadId;
-  squad.user = getOrCreateUser(params._user).id;
-  squad.legionTokenIds = params._legionIds.map<i32>((value) => value.toI32());
-  squad.stakedTimestamp = event.block.timestamp;
+  const squad = new CryptsSquad(bytesFromBigInt(squadId));
+  squad.squadId = squadId;
+  squad.user = getOrCreateUser(user).id;
+  squad.stakedTimestamp = timestamp;
   squad.targetTemple = temple.id;
-  squad.name = params._legionSquadName;
+  squad.name = squadName;
   squad.positionX = -1;
   squad.positionY = -1;
   squad.lastRoundInTemple = -1;
+
+  let characters: Bytes[] = [];
+  for (let i = 0; i < characterCollections.length; i += 1) {
+    characters.push(
+      getOrCreateCryptsSquadCharacter(
+        characterCollections[i],
+        characterTokenIds[i]
+      ).id
+    );
+  }
+
+  squad.characters = characters;
   squad.save();
+};
+
+export function handleLegionSquadStaked(event: LegionSquadStaked): void {
+  const params = event.params;
+  handleSquadStaked(
+    params._user,
+    event.block.timestamp,
+    params._targetTemple,
+    params._legionSquadId,
+    params._legionSquadName,
+    params._legionIds.map<Address>(() => LEGION_ADDRESS),
+    params._legionIds
+  );
+}
+
+export function handleCharacterSquadStaked(event: CharacterSquadStaked): void {
+  const params = event.params;
+  handleSquadStaked(
+    params._user,
+    event.block.timestamp,
+    params._targetTemple,
+    params._legionSquadId,
+    params._legionSquadName,
+    params._characters.map<Address>((character) => character.collection),
+    params._characters.map<BigInt>((character) => character.tokenId)
+  );
 }
 
 export function handleLegionSquadMoved(event: LegionSquadMoved): void {
@@ -234,7 +291,7 @@ export function handleTempleEntered(event: TempleEntered): void {
   squad.save();
 
   const config = getOrCreateConfig();
-  config.cryptsLegionsReachedTemple += squad.legionTokenIds.length;
+  config.cryptsLegionsReachedTemple += squad.characters.length;
   config.save();
 }
 
