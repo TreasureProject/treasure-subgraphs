@@ -57,8 +57,11 @@
   "corruption_crypts_rewards_address": "0xc0df5094b3b2413e4891a2dc2ff583a2ffd3e8d3",
   "corruption_crypts_rewards_start_block": 60119058,
   "kote_squires_address": "0xf7fbe8eec9063aa518d11639565b018468bb4abb",
+  "kote_squires_start_block": 10050034,
   "kote_potions_address": "0x6f2aa70c70625e45424652aed968e3971020f205",
+  "kote_potions_start_block": 12959247,
   "kote_trinkets_address": "0x9f0cc315cae0826005b94462b5400849b3d39d91",
+  "kote_trinkets_start_block": 12959211,
 
   "extra_life_address": "0x21e1969884D477afD2Afd4Ad668864a0EebD644c",
   "extra_life_start_block": 2416557,
