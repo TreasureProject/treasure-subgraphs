@@ -70,7 +70,7 @@ const TRINKET_NAMES = [
 const getSquireMetadata = (genesis: i32, type: i32): string[] => {
   const typeName = SQUIRE_TYPES[type];
   return [
-    genesis == 1 ? `Genesis ${typeName}` : typeName,
+    genesis == 1 ? `Genesis ${typeName} Squire` : `${typeName} Squire`,
     `https://knightsoftheether.com/squires/images/${typeName.toLowerCase()}${
       genesis == 1 ? "G" : ""
     }.png`,
@@ -103,12 +103,13 @@ export function handleTransfer(event: Transfer): void {
   const params = event.params;
   const tokenId = params.tokenId;
 
-  const contract = KoteSquires.bind(event.address);
   const squireId = Bytes.fromI32(tokenId.toI32());
   let squire = Squire.load(squireId);
   if (!squire) {
     squire = new Squire(squireId);
     squire.tokenId = tokenId.toI32();
+
+    const contract = KoteSquires.bind(event.address);
 
     const type = contract.try_squireTypeByTokenId(tokenId);
     if (type.reverted) {
@@ -130,40 +131,6 @@ export function handleTransfer(event: Transfer): void {
     squire.type = type.value.toI32();
     squire.name = metadata[0];
     squire.image = metadata[1];
-  }
-
-  const faith = contract.try_faithByTokenId(tokenId);
-  if (faith.reverted) {
-    log.warning("Error reading Squire faith value: {}", [tokenId.toString()]);
-    squire.faith = 0;
-  } else {
-    squire.faith = faith.value.toI32();
-  }
-
-  const luck = contract.try_luckByTokenId(tokenId);
-  if (luck.reverted) {
-    log.warning("Error reading Squire luck value: {}", [tokenId.toString()]);
-    squire.luck = 0;
-  } else {
-    squire.luck = luck.value.toI32();
-  }
-
-  const strength = contract.try_strengthByTokenId(tokenId);
-  if (strength.reverted) {
-    log.warning("Error reading Squire strength value: {}", [
-      tokenId.toString(),
-    ]);
-    squire.strength = 0;
-  } else {
-    squire.strength = strength.value.toI32();
-  }
-
-  const wisdom = contract.try_wisdomByTokenId(tokenId);
-  if (wisdom.reverted) {
-    log.warning("Error reading Squire wisdom value: {}", [tokenId.toString()]);
-    squire.wisdom = 0;
-  } else {
-    squire.wisdom = wisdom.value.toI32();
   }
 
   squire.owner = params.to;

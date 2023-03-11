@@ -4,11 +4,7 @@ type Squire @entity {
   tokenId: Int!
   owner: Bytes!
 
-  faith: Int!
-  luck: Int!
-  strength: Int!
   type: Int!
-  wisdom: Int!
   genesis: Int!
 
   name: String!
