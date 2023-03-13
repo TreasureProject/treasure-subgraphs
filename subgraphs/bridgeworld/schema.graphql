@@ -86,7 +86,6 @@ type ConsumableInfo implements Metadata @entity {
 
   type: String!
   size: Size
-  isSoulbound: Boolean
 }
 
 type LegionClass @entity {

@@ -37,7 +37,7 @@ dataSources:
     network: {{ network }}
     source:
       address: "{{ consumable_address }}"
-      abi: ERC1155
+      abi: Consumable
       startBlock: {{ consumable_start_block }}
     mapping:
       kind: ethereum/events
@@ -48,13 +48,15 @@ dataSources:
         - User
         - UserToken
       abis:
-        - name: ERC1155
-          file: {{{ abis }}}/1155.json
+        - name: Consumable
+          file: {{{ abis }}}/Consumable.json
       eventHandlers:
         - event: TransferBatch(indexed address,indexed address,indexed address,uint256[],uint256[])
           handler: handleTransferBatch
         - event: TransferSingle(indexed address,indexed address,indexed address,uint256,uint256)
           handler: handleTransferSingle
+        - event: TokenTraitChanged(uint256,(string,string,string,(string,string,uint8)[]))
+          handler: handleTokenTraitChanged
       file: ./src/mappings/consumable.ts
   - name: Balancer Crystal
     kind: ethereum/contract
