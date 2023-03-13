@@ -1,33 +1,12 @@
-import { Address, BigInt, log } from "@graphprotocol/graph-ts";
-
 import {
   TokenTraitChanged,
   TransferBatch,
   TransferSingle,
 } from "../../generated/Consumable/Consumable";
-import { ConsumableInfo, Token } from "../../generated/schema";
-import { getAddressId, isMint } from "../helpers";
+import { ConsumableInfo } from "../../generated/schema";
+import { isMint } from "../helpers";
+import { getOrCreateToken } from "../helpers/token";
 import { handleTransfer } from "../mapping";
-
-const ensureMetadata = (contract: Address, tokenId: BigInt): void => {
-  const token = Token.load(getAddressId(contract, tokenId));
-  if (!token) {
-    log.error("Unknown Consumable: {}", [tokenId.toString()]);
-    return;
-  }
-
-  // Details are set by TokenTraitChanged event
-  const metadata = new ConsumableInfo(`${token.id}-metadata`);
-  metadata.type = "";
-  metadata.save();
-
-  token.category = "Consumable";
-  token.name = "";
-  token.image = "";
-  token.metadata = metadata.id;
-  token.rarity = "None";
-  token.save();
-};
 
 export function handleTransferBatch(event: TransferBatch): void {
   const params = event.params;
@@ -42,7 +21,9 @@ export function handleTransferBatch(event: TransferBatch): void {
     );
 
     if (isMint(params.from)) {
-      ensureMetadata(event.address, params.ids[i]);
+      const token = getOrCreateToken(event.address, params.ids[i]);
+      token.category = "Consumable";
+      token.save();
     }
   }
 }
@@ -58,29 +39,23 @@ export function handleTransferSingle(event: TransferSingle): void {
   );
 
   if (isMint(params.from)) {
-    ensureMetadata(event.address, params.id);
+    const token = getOrCreateToken(event.address, params.id);
+    token.category = "Consumable";
+    token.save();
   }
 }
 
 export function handleTokenTraitChanged(event: TokenTraitChanged): void {
   const params = event.params;
-  const token = Token.load(getAddressId(event.address, params._tokenId));
-  if (!token) {
-    log.error("Changing token trait for unknown Consumable: {}", [
-      params._tokenId.toString(),
-    ]);
-    return;
-  }
-
-  const metadata = ConsumableInfo.load(`${token.id}-metadata`);
+  const token = getOrCreateToken(event.address, params._tokenId);
+  const metadataId = `${token.id}-metadata`;
+  let metadata = ConsumableInfo.load(metadataId);
   if (!metadata) {
-    log.error("Changing token trait for unknown Consumable metadata: {}", [
-      token.id,
-    ]);
-    return;
+    metadata = new ConsumableInfo(metadataId);
   }
 
   const data = params._traitData;
+  token.category = "Consumable";
   token.name = data.name;
   token.description = data.description;
   token.image = data.url;
