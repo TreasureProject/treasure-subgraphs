@@ -1,0 +1,54 @@
+enum NftType {
+  ERC721
+  ERC1155
+}
+
+type Collection @entity {
+  id: Bytes!
+
+  type: NftType!
+
+  nftVaultCollections: [NftVaultCollection!]! @derivedFrom(field: "collection")
+}
+
+type NftVaultCollection @entity {
+  id: Bytes!
+
+  nftVault: NftVault!
+  collection: Collection!
+  tokenIds: [BigInt!]
+}
+
+type NftVault @entity {
+  id: Bytes!
+
+  vaultId: BigInt!
+  creator: Bytes!
+  owner: Bytes!
+  name: String!
+  symbol: String!
+
+  nftVaultCollections: [NftVaultCollection!]! @derivedFrom(field: "nftVault")
+}
+
+type Token @entity {
+  id: Bytes!
+
+  nftVault: NftVault
+
+  totalSupply: BigInt!
+  decimals: BigInt!
+  decimalDivisor: BigDecimal!
+
+  basePairs: [Pair!]! @derivedFrom(field: "token0")
+  quotePairs: [Pair!]! @derivedFrom(field: "token1")
+}
+
+type Pair @entity {
+  id: Bytes!
+
+  token0: Token!
+  token1: Token!
+  reserve0: BigDecimal!
+  reserve1: BigDecimal!
+}

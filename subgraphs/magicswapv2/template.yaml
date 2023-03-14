@@ -1,0 +1,67 @@
+specVersion: 0.0.4
+schema:
+  file: ./schema.graphql
+dataSources:
+  - name: NftVaultFactory
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ magicswapv2_nft_vault_factory_address }}"
+      abi: NftVaultFactory
+      startBlock: {{ magicswapv2_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - NftVault
+      abis:
+        - name: NftVaultFactory
+          file: {{{ abis }}}/magicswapv2/NftVaultFactory.json
+      eventHandlers:
+        - event: VaultCreated(string,string,address,uint256,(address,uint8,bool,uint256[])[],address,address)
+          handler: handleVaultCreated
+      file: ./src/mappings/nft-vault.ts
+  - name: UniswapV2Factory
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ magicswapv2_uniswapv2_factory_address }}"
+      abi: UniswapV2Factory
+      startBlock: {{ magicswapv2_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Pair
+      abis:
+        - name: UniswapV2Factory
+          file: {{{ abis }}}/magicswapv2/UniswapV2Factory.json
+        - name: ERC20
+          file: {{{ abis }}}/20.json
+      eventHandlers:
+        - event: PairCreated(indexed address,indexed address,address,uint256)
+          handler: handlePairCreated
+      file: ./src/mappings/pair.ts
+templates:
+  - name: UniswapV2Pair
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      abi: UniswapV2Pair
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Pair
+      abis:
+        - name: UniswapV2Pair
+          file: {{{ abis }}}/magicswapv2/UniswapV2Pair.json
+      eventHandlers:
+        # - event: Swap(indexed address,uint256,uint256,uint256,uint256,indexed address)
+        #   handler: onSwap
+        - event: Sync(uint112,uint112)
+          handler: handleSync
+      file: ./src/mappings/pair.ts
