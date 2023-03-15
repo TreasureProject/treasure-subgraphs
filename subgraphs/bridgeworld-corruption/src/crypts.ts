@@ -93,19 +93,11 @@ const handleSquadStaked = (
   characterCollections: Address[],
   characterTokenIds: BigInt[]
 ): void => {
-  const temple = CryptsTemple.load(Bytes.fromI32(targetTemple));
-  if (!temple) {
-    log.error("[crypts] Squad staked targeting unknown temple: {}", [
-      targetTemple.toString(),
-    ]);
-    return;
-  }
-
   const squad = new CryptsSquad(bytesFromBigInt(squadId));
   squad.squadId = squadId;
   squad.user = getOrCreateUser(user).id;
   squad.stakedTimestamp = timestamp;
-  squad.targetTemple = temple.id;
+  squad.targetTemple = Bytes.fromI32(targetTemple);
   squad.name = squadName;
   squad.positionX = -1;
   squad.positionY = -1;
@@ -184,11 +176,6 @@ export function handleLegionSquadRemoved(event: LegionSquadRemoved): void {
   squad.positionX = -1;
   squad.positionY = -1;
   squad.save();
-
-  const config = getOrCreateConfig();
-  config.cryptsLegionsActive -= squad.characters.length;
-  config.maxLegionsInCryptsTemple = calculateMaxLegionsInTemple(config);
-  config.save();
 }
 
 export function handleLegionSquadUnstaked(event: LegionSquadUnstaked): void {
@@ -200,6 +187,18 @@ export function handleLegionSquadUnstaked(event: LegionSquadUnstaked): void {
     config.cryptsLegionsUnstakeCooldown
   );
   user.save();
+
+  const squad = CryptsSquad.load(bytesFromBigInt(params._legionSquadId));
+  if (!squad) {
+    log.error("[crypts] Unstaking unknown Legion squad: {}", [
+      params._legionSquadId.toString(),
+    ]);
+    return;
+  }
+
+  config.cryptsLegionsActive -= squad.characters.length;
+  config.maxLegionsInCryptsTemple = calculateMaxLegionsInTemple(config);
+  config.save();
 
   store.remove(
     "CryptsSquad",
