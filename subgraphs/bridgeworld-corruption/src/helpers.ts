@@ -135,7 +135,8 @@ export const getOrCreateCryptsSquadCharacter = (
 
 export const calculateMaxLegionsInTemple = (config: Config): i32 =>
   Math.ceil(
-    config.cryptsLegionsActive * (config.cryptsRoundAdvancePercentage / 100)
+    config.cryptsLegionsActive *
+      ((config.cryptsRoundAdvancePercentage as f64) / 100)
   ) as i32;
 
 export const decodeTreasureHandlerRequirementData = (
