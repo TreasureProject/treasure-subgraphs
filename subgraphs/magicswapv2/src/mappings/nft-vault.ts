@@ -8,7 +8,6 @@ export function handleVaultCreated(event: VaultCreated): void {
   const vault = new NftVault(params.vault);
   vault.vaultId = params.vaultId;
   vault.creator = params.creator;
-  vault.owner = params.owner;
   vault.name = params.name;
   vault.symbol = params.symbol;
   vault.save();

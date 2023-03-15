@@ -24,7 +24,6 @@ type NftVault @entity {
 
   vaultId: BigInt!
   creator: Bytes!
-  owner: Bytes!
   name: String!
   symbol: String!
 
