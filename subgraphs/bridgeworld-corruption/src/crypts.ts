@@ -26,6 +26,7 @@ import {
   TreasureTierChanged,
 } from "../generated/CorruptionCryptsV2/CorruptionCryptsV2";
 import {
+  Config,
   CryptsMapTile,
   CryptsSquad,
   CryptsTemple,
@@ -124,9 +125,7 @@ const handleSquadStaked = (
 
   const config = getOrCreateConfig();
   config.cryptsLegionsActive += characters.length;
-  config.maxLegionsInCryptsTemple = Math.ceil(
-    config.cryptsLegionsActive * (config.cryptsRoundAdvancePercentage / 100)
-  ) as i32;
+  config.maxLegionsInCryptsTemple = calculateMaxLegionsInTemple(config);
   config.save();
 };
 
@@ -187,9 +186,7 @@ export function handleLegionSquadRemoved(event: LegionSquadRemoved): void {
 
   const config = getOrCreateConfig();
   config.cryptsLegionsActive -= squad.characters.length;
-  config.maxLegionsInCryptsTemple = Math.ceil(
-    config.cryptsLegionsActive * (config.cryptsRoundAdvancePercentage / 100)
-  ) as i32;
+  config.maxLegionsInCryptsTemple = calculateMaxLegionsInTemple(config);
   config.save();
 }
 
@@ -299,6 +296,7 @@ export function handleRoundAdvancePercentageUpdated(
   const config = getOrCreateConfig();
   config.cryptsRoundAdvancePercentage =
     event.params._percentageToReachForRoundAdvancement.toI32();
+  config.maxLegionsInCryptsTemple = calculateMaxLegionsInTemple(config);
   config.save();
 }
 
@@ -342,3 +340,8 @@ export function handleTreasureTierChanged(event: TreasureTierChanged): void {
   boardTreasureFragment.tokenId = boardTreasureData.value.correspondingId;
   boardTreasureFragment.save();
 }
+
+const calculateMaxLegionsInTemple = (config: Config): i32 =>
+  Math.ceil(
+    config.cryptsLegionsActive * (config.cryptsRoundAdvancePercentage / 100)
+  ) as i32;
