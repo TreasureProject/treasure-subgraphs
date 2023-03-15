@@ -16,6 +16,7 @@ on:
         - bridgeworld-recruits
         - magic-stats
         - magicswap-exchange
+        - magicswapv2
         - migration
         - smol-racing
         - smolidays
