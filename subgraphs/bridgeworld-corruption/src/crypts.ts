@@ -34,6 +34,7 @@ import {
 } from "../generated/schema";
 import {
   bytesFromBigInt,
+  calculateMaxLegionsInTemple,
   getOrCreateBoardTreasureFragment,
   getOrCreateConfig,
   getOrCreateCryptsSquadCharacter,
@@ -340,8 +341,3 @@ export function handleTreasureTierChanged(event: TreasureTierChanged): void {
   boardTreasureFragment.tokenId = boardTreasureData.value.correspondingId;
   boardTreasureFragment.save();
 }
-
-const calculateMaxLegionsInTemple = (config: Config): i32 =>
-  Math.ceil(
-    config.cryptsLegionsActive * (config.cryptsRoundAdvancePercentage / 100)
-  ) as i32;
