@@ -3,8 +3,10 @@ import { assert, describe, test } from "matchstick-as";
 import { Address, Bytes } from "@graphprotocol/graph-ts";
 
 import {
+  calculateMaxLegionsInTemple,
   decodeERC1155TokenSetHandlerRequirementData,
   decodeTreasureHandlerRequirementData,
+  getOrCreateConfig,
 } from "../src/helpers";
 
 describe("corruption helpers", () => {
@@ -42,5 +44,12 @@ describe("corruption helpers", () => {
     assert.i32Equals(104, tokenIds[4]);
     assert.i32Equals(105, tokenIds[5]);
     assert.i32Equals(106, tokenIds[6]);
+  });
+
+  test("that max legions in temple is calculated", () => {
+    const config = getOrCreateConfig();
+    config.cryptsLegionsActive = 42;
+    config.cryptsRoundAdvancePercentage = 60;
+    assert.i32Equals(26, calculateMaxLegionsInTemple(config));
   });
 });
