@@ -26,7 +26,6 @@ import {
   TreasureTierChanged,
 } from "../generated/CorruptionCryptsV2/CorruptionCryptsV2";
 import {
-  Config,
   CryptsMapTile,
   CryptsSquad,
   CryptsTemple,
