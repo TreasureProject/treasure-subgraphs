@@ -144,6 +144,10 @@ dataSources:
           handler: handleCharacterHandlerSet
         - event: LegionSquadStaked(address,uint64,(address,uint32)[],uint16,string)
           handler: handleCharacterSquadStaked
+        - event: RoundAdvancePercentageUpdated(uint256)
+          handler: handleRoundAdvancePercentageUpdated
+        - event: TreasureTierChanged(uint8)
+          handler: handleTreasureTierChanged
       file: ./src/crypts.ts
   - name: CorruptionCryptsRewards
     kind: ethereum/contract

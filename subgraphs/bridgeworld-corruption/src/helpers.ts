@@ -23,10 +23,12 @@ export const getOrCreateConfig = (): Config => {
     config.cryptsRound = -1;
     config.cryptsRoundStarting = false;
     config.cryptsRoundStartTime = BigInt.zero();
+    config.cryptsRoundAdvancePercentage = 0;
     config.cryptsSecondsInEpoch = BigInt.zero();
     config.cryptsLegionsUnstakeCooldown = BigInt.zero();
+    config.cryptsLegionsActive = 0;
     config.cryptsLegionsReachedTemple = 0;
-    config.maxLegionsInCryptsTemple = 3;
+    config.maxLegionsInCryptsTemple = 0;
     config.maxCryptsSquadsPerUser = 3;
     config.maxLegionsPerCryptsSquad = 20;
     config.maxCryptsMapTilesInHand = 60;

@@ -40,11 +40,17 @@ type Config @entity {
   "Current round start time"
   cryptsRoundStartTime: BigInt!
 
+  "Percentage of staked Legions that must reach temples before round advances"
+  cryptsRoundAdvancePercentage: Int!
+
   "Number of seconds per epoch"
   cryptsSecondsInEpoch: BigInt!
 
   "Amount of time before a Legion squad can be unstaked, in seconds"
   cryptsLegionsUnstakeCooldown: BigInt!
+
+  "Number of Legions playing Crypts"
+  cryptsLegionsActive: Int!
 
   "Number of Legions that have reached a temple in the current round"
   cryptsLegionsReachedTemple: Int!
