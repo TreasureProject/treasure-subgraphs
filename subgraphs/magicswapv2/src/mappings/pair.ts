@@ -3,7 +3,7 @@ import { log } from "@graphprotocol/graph-ts";
 import { PairCreated } from "../../generated/UniswapV2Factory/UniswapV2Factory";
 import { Pair, Token } from "../../generated/schema";
 import { UniswapV2Pair } from "../../generated/templates";
-import { Sync } from "../../generated/templates/Pair/UniswapV2Pair";
+import { Sync } from "../../generated/templates/UniswapV2Pair/UniswapV2Pair";
 import { ZERO_BD } from "../const";
 import { getOrCreateToken } from "../helpers";
 import { tokenAmountToBigDecimal } from "../utils";
