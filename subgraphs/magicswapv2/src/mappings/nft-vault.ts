@@ -23,5 +23,6 @@ export function handleVaultCreated(event: VaultCreated): void {
     if (!params.collections[i].allowAllIds) {
       vaultCollection.tokenIds = params.collections[i].tokenIds;
     }
+    vaultCollection.save();
   }
 }
