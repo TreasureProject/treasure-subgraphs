@@ -8,6 +8,7 @@ import {
   VaultReserveItem,
   Withdrawal,
 } from "../../generated/schema";
+import { NftVault } from "../../generated/templates";
 import {
   Deposit as DepositEvent,
   Withdraw,
@@ -36,6 +37,8 @@ export function handleVaultCreated(event: VaultCreated): void {
     }
     vaultCollection.save();
   }
+
+  NftVault.create(params.vault);
 }
 
 export function handleDeposit(event: DepositEvent): void {
