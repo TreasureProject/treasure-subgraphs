@@ -20,7 +20,7 @@ export function handleVaultCreated(event: VaultCreated): void {
   const vault = new Token(params.vault);
   vault.name = params.name;
   vault.symbol = params.symbol;
-  setTokenContractData(vault);
+  setTokenContractData(vault, true);
   vault.save();
 
   for (let i = 0; i < params.collections.length; i++) {

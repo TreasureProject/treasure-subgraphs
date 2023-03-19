@@ -21,11 +21,14 @@ export const getOrCreateCollection = (
   return collection;
 };
 
-export const setTokenContractData = (token: Token): void => {
+export const setTokenContractData = (
+  token: Token,
+  skipNameAndSymbol: bool = false
+): void => {
   const address = Address.fromBytes(token.id);
   const contract = ERC20.bind(address);
 
-  if (!token.name) {
+  if (!skipNameAndSymbol) {
     const nameResult = contract.try_name();
     if (nameResult.reverted) {
       log.error("Error reading token name: {}", [address.toHexString()]);
@@ -33,9 +36,7 @@ export const setTokenContractData = (token: Token): void => {
     } else {
       token.name = nameResult.value;
     }
-  }
 
-  if (!token.symbol) {
     const symbolResult = contract.try_symbol();
     if (symbolResult.reverted) {
       log.error("Error reading token symbol: {}", [address.toHexString()]);
