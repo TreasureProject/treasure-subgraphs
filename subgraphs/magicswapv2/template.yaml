@@ -84,8 +84,8 @@ templates:
         - name: NftVault
           file: {{{ abis }}}/magicswapv2/NftVault.json
       eventHandlers:
-        - event: Deposit(address,address,uint256,uint256)
+        - event: Deposit(indexed address,indexed address,uint256,uint256)
           handler: handleDeposit
-        - event: Withdraw(address,address,uint256,uint256)
+        - event: Withdraw(indexed address,indexed address,uint256,uint256)
           handler: handleWithdraw
       file: ./src/mappings/vault.ts
