@@ -27,7 +27,7 @@ type Token @entity {
   totalSupply: BigInt!
   decimals: BigInt!
   decimalDivisor: BigDecimal!
-  
+
   vaultCollections: [VaultCollection!]! @derivedFrom(field: "vault")
   vaultReserveItems: [VaultReserveItem!]! @derivedFrom(field: "vault")
 
