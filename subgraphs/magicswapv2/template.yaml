@@ -14,14 +14,16 @@ dataSources:
       apiVersion: 0.0.6
       language: wasm/assemblyscript
       entities:
-        - NftVault
+        - Token
+        - Collection
+        - VaultCollection
       abis:
         - name: NftVaultFactory
           file: {{{ abis }}}/magicswapv2/NftVaultFactory.json
       eventHandlers:
         - event: VaultCreated(string,string,indexed address,indexed uint256,(address,uint8,bool,uint256[])[],address)
           handler: handleVaultCreated
-      file: ./src/mappings/nft-vault.ts
+      file: ./src/mappings/vault.ts
   - name: UniswapV2Factory
     kind: ethereum/contract
     network: {{ network }}
@@ -65,3 +67,23 @@ templates:
         - event: Sync(uint112,uint112)
           handler: handleSync
       file: ./src/mappings/pair.ts
+  - name: NftVault
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      abi: NftVault
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Token
+      abis:
+        - name: NftVault
+          file: {{{ abis }}}/magicswapv2/NftVault.json
+      eventHandlers:
+        - event: Deposit(address,address,uint256,uint256)
+          handler: handleDeposit
+        - event: Withdraw(address,address,uint256,uint256)
+          handler: handleWithdraw
+      file: ./src/mappings/vault.ts

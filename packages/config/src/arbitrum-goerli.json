@@ -102,7 +102,7 @@
 
   "magicswap_factory_address": "0x6Cd71961e531aBB505256ffa945D59ab9a2156ec",
   "magicswap_factory_start_block": 529452,
-  "magicswapv2_start_block": 11658625,
+  "magicswapv2_start_block": 11776278,
   "magicswapv2_nft_vault_factory_address": "0x5d701784243802202403a44e5831f491cfd2a402",
   "magicswapv2_uniswapv2_factory_address": "0xd9d465f742393c14ab92a70412c5b8dbd6ee5ace",
 

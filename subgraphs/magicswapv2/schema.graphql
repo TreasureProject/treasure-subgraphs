@@ -8,39 +8,40 @@ type Collection @entity {
 
   type: NftType!
 
-  nftVaultCollections: [NftVaultCollection!]! @derivedFrom(field: "collection")
+  vaultCollections: [VaultCollection!]! @derivedFrom(field: "collection")
 }
 
-type NftVaultCollection @entity {
+type VaultCollection @entity {
   id: Bytes!
 
-  nftVault: NftVault!
+  vault: Token!
   collection: Collection!
   tokenIds: [BigInt!]
-}
-
-type NftVault @entity {
-  id: Bytes!
-
-  vaultId: BigInt!
-  creator: Bytes!
-  name: String!
-  symbol: String!
-
-  nftVaultCollections: [NftVaultCollection!]! @derivedFrom(field: "nftVault")
 }
 
 type Token @entity {
   id: Bytes!
 
-  nftVault: NftVault
-
+  name: String!
+  symbol: String!
   totalSupply: BigInt!
   decimals: BigInt!
   decimalDivisor: BigDecimal!
+  
+  vaultCollections: [VaultCollection!]! @derivedFrom(field: "vault")
+  vaultReserveItems: [VaultReserveItem!]! @derivedFrom(field: "vault")
 
   basePairs: [Pair!]! @derivedFrom(field: "token0")
   quotePairs: [Pair!]! @derivedFrom(field: "token1")
+}
+
+type VaultReserveItem @entity {
+  id: Bytes!
+
+  vault: Token!
+  collection: Collection!
+  tokenId: BigInt!
+  amount: Int!
 }
 
 type Pair @entity {
@@ -50,4 +51,26 @@ type Pair @entity {
   token1: Token!
   reserve0: BigDecimal!
   reserve1: BigDecimal!
+}
+
+type Deposit @entity(immutable: true) {
+  id: Bytes!
+
+  transactionHash: Bytes!
+  timestamp: BigInt!
+  vault: Token!
+  collection: Collection!
+  tokenId: BigInt!
+  amount: Int!
+}
+
+type Withdrawal @entity(immutable: true) {
+  id: Bytes!
+
+  transactionHash: Bytes!
+  timestamp: BigInt!
+  vault: Token!
+  collection: Collection!
+  tokenId: BigInt!
+  amount: Int!
 }
