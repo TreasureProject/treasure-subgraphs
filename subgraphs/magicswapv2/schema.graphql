@@ -3,6 +3,11 @@ enum NftType {
   ERC1155
 }
 
+enum VaultTransactionType {
+  Deposit
+  Withdrawal
+}
+
 type Collection @entity {
   id: Bytes!
 
@@ -53,22 +58,12 @@ type Pair @entity {
   reserve1: BigDecimal!
 }
 
-type Deposit @entity(immutable: true) {
+type VaultTransaction @entity(immutable: true) {
   id: Bytes!
-
+  
   transactionHash: Bytes!
   timestamp: BigInt!
-  vault: Token!
-  collection: Collection!
-  tokenId: BigInt!
-  amount: Int!
-}
-
-type Withdrawal @entity(immutable: true) {
-  id: Bytes!
-
-  transactionHash: Bytes!
-  timestamp: BigInt!
+  type: VaultTransactionType!
   vault: Token!
   collection: Collection!
   tokenId: BigInt!

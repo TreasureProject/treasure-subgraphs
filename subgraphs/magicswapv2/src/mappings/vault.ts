@@ -2,11 +2,10 @@ import { log, store } from "@graphprotocol/graph-ts";
 
 import { VaultCreated } from "../../generated/NftVaultFactory/NftVaultFactory";
 import {
-  Deposit,
   Token,
   VaultCollection,
   VaultReserveItem,
-  Withdrawal,
+  VaultTransaction,
 } from "../../generated/schema";
 import { NftVault } from "../../generated/templates";
 import {
@@ -44,11 +43,12 @@ export function handleVaultCreated(event: VaultCreated): void {
 export function handleDeposit(event: DepositEvent): void {
   const params = event.params;
 
-  const deposit = new Deposit(
+  const deposit = new VaultTransaction(
     event.transaction.hash.concatI32(event.logIndex.toI32())
   );
   deposit.transactionHash = event.transaction.hash;
   deposit.timestamp = event.block.timestamp;
+  deposit.type = "Deposit";
   deposit.vault = event.address;
   deposit.collection = params.collection;
   deposit.tokenId = params.tokenId;
@@ -74,11 +74,12 @@ export function handleDeposit(event: DepositEvent): void {
 export function handleWithdraw(event: Withdraw): void {
   const params = event.params;
 
-  const withdrawal = new Withdrawal(
+  const withdrawal = new VaultTransaction(
     event.transaction.hash.concatI32(event.logIndex.toI32())
   );
   withdrawal.transactionHash = event.transaction.hash;
   withdrawal.timestamp = event.block.timestamp;
+  withdrawal.type = "Withdrawal";
   withdrawal.vault = event.address;
   withdrawal.collection = params.collection;
   withdrawal.tokenId = params.tokenId;
