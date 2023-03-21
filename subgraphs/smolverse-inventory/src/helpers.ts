@@ -30,7 +30,7 @@ import {
 } from "../generated/schema";
 
 const COLLECTION_NAMES = new TypedMap<Address, string>();
-COLLECTION_NAMES.set(SMOL_BRAINS_ADDRESS, "SmolBrains");
+COLLECTION_NAMES.set(SMOL_BRAINS_ADDRESS, "SmolBrainsV1");
 COLLECTION_NAMES.set(SMOL_BRAINS_V2_ADDRESS, "SmolBrains");
 COLLECTION_NAMES.set(SMOL_BODIES_ADDRESS, "SmolBodies");
 COLLECTION_NAMES.set(SMOL_BRAINS_PETS_ADDRESS, "SmolBrainsPets");

@@ -1,4 +1,5 @@
 enum CollectionName {
+  SmolBrainsV1
   SmolBrains
   SmolBodies
   SmolBrainsPets
