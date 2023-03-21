@@ -62,12 +62,11 @@ export function handleJoinSchool(event: JoinSchool): void {
 }
 
 export function handleJoinSchoolV2(event: TokenJoinedStat): void {
-  const token = Token.load(
-    getTokenId(SMOL_BRAINS_ADDRESS, event.params._tokenId)
-  );
+  const params = event.params;
+  const token = Token.load(getTokenId(params._collection, params._tokenId));
   if (!token) {
     log.error("[staking] Unknown token joining School: {}", [
-      event.params._tokenId.toString(),
+      params._tokenId.toString(),
     ]);
     return;
   }
@@ -95,12 +94,11 @@ export function handleDropSchool(event: DropSchool): void {
 }
 
 export function handleDropSchoolV2(event: TokenLeftStat): void {
-  const token = Token.load(
-    getTokenId(SMOL_BRAINS_ADDRESS, event.params._tokenId)
-  );
+  const params = event.params;
+  const token = Token.load(getTokenId(params._collection, params._tokenId));
   if (!token) {
     log.error("[staking] Unknown token dropping School: {}", [
-      event.params._tokenId.toString(),
+      params._tokenId.toString(),
     ]);
     return;
   }
