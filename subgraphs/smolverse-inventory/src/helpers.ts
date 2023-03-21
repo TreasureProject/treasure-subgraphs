@@ -10,6 +10,7 @@ import {
   SMOL_BRAINS_PETS_ADDRESS,
   SMOL_BRAINS_SCHOOL_ADDRESS,
   SMOL_BRAINS_SCHOOL_V2_ADDRESS,
+  SMOL_BRAINS_V2_ADDRESS,
   SMOL_CARS_ADDRESS,
   SMOL_FARM_ADDRESS,
   SMOL_RACING_ADDRESS,
@@ -19,7 +20,6 @@ import {
   SWOLERCYCLES_ADDRESS,
   WRAPPED_SMOLS_ADDRESS,
 } from "@treasure/constants";
-import { SMOL_BRAINS_V2_ADDRESS } from "@treasure/constants/src/index.template";
 
 import {
   Collection,
