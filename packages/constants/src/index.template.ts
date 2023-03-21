@@ -118,6 +118,9 @@ export const SMOL_BODIES_PETS_ADDRESS = Address.fromString(
 export const SMOL_BRAINS_ADDRESS = Address.fromString(
   "{{smol_brains_address}}{{^smol_brains_address}}{{burner_address}}{{/smol_brains_address}}"
 );
+export const SMOL_BRAINS_V2_ADDRESS = Address.fromString(
+  "{{smol_brains_v2_address}}{{^smol_brains_v2_address}}{{burner_address}}{{/smol_brains_v2_address}}"
+);
 export const SMOL_BRAINS_LAND_ADDRESS = Address.fromString(
   "{{smol_brains_land_address}}{{^smol_brains_land_address}}{{burner_address}}{{/smol_brains_land_address}}"
 );
@@ -126,6 +129,9 @@ export const SMOL_BRAINS_PETS_ADDRESS = Address.fromString(
 );
 export const SMOL_BRAINS_SCHOOL_ADDRESS = Address.fromString(
   "{{smol_brains_school_address}}{{^smol_brains_school_address}}{{burner_address}}{{/smol_brains_school_address}}"
+);
+export const SMOL_BRAINS_SCHOOL_V2_ADDRESS = Address.fromString(
+  "{{smol_brains_school_v2_address}}{{^smol_brains_school_v2_address}}{{burner_address}}{{/smol_brains_school_v2_address}}"
 );
 export const SMOL_CARS_ADDRESS = Address.fromString(
   "{{smol_cars_address}}{{^smol_cars_address}}{{burner_address}}{{/smol_cars_address}}"

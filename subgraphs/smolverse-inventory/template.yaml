@@ -248,6 +248,32 @@ dataSources:
         - event: DropSchool(uint256)
           handler: handleDropSchool
       file: ./src/staking.ts
+  - name: Smol Brains School V2
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ smol_brains_school_v2_address }}"
+      abi: SchoolV2
+      startBlock: {{ smol_brains_school_v2_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - User
+        - Collection
+        - StakingContract
+        - Token
+        - UserToken
+      abis:
+        - name: SchoolV2
+          file: {{{ abis }}}/SmolBrainsSchoolV2.json
+      eventHandlers:
+        - event: TokenJoinedStat(address,uint256,uint256)
+          handler: handleJoinSchoolV2
+        - event: TokenLeftStat(address,uint256,uint256)
+          handler: handleDropSchoolV2
+      file: ./src/staking.ts
   - name: Smol Bodies Gym
     kind: ethereum/contract
     network: {{ network }}
