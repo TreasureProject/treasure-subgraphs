@@ -48,7 +48,7 @@ type StakingContract @entity(immutable: true) {
   tokens: [UserToken!]! @derivedFrom(field: "stakedIn")
 }
 
-type Token @entity(immutable: true) {
+type Token @entity {
   id: Bytes!
 
   "Token collection"

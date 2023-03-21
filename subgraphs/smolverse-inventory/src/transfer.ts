@@ -27,17 +27,6 @@ const handleTransferCommon = (
   const id = getTokenId(address, tokenId);
   let token = Token.load(id);
 
-  // Handle burn
-  if (token && to.equals(SMOLS_BURN_ADDRESS)) {
-    const userToken = UserToken.load(token.id.concat(from));
-    if (userToken) {
-      store.remove("UserToken", userToken.id.toHexString());
-    }
-
-    store.remove("Token", token.id.toHexString());
-    return;
-  }
-
   // Handle mint
   if (from.equals(Address.zero())) {
     // ERC1155 token may already exist
@@ -59,6 +48,17 @@ const handleTransferCommon = (
       address.toHexString(),
       tokenId.toString(),
     ]);
+    return;
+  }
+
+  // Handle burn
+  if (to.equals(SMOLS_BURN_ADDRESS)) {
+    const userToken = UserToken.load(token.id.concat(from));
+    if (userToken) {
+      store.remove("UserToken", userToken.id.toHexString());
+    }
+
+    store.remove("Token", token.id.toHexString());
     return;
   }
 
