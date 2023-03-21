@@ -47,19 +47,13 @@ export function handleTransferSingle(event: TransferSingle): void {
 
 export function handleTokenTraitChanged(event: TokenTraitChanged): void {
   const params = event.params;
+  const data = params._traitData;
   const token = getOrCreateToken(event.address, params._tokenId);
   const metadataId = `${token.id}-metadata`;
   let metadata = ConsumableInfo.load(metadataId);
   if (!metadata) {
     metadata = new ConsumableInfo(metadataId);
   }
-
-  const data = params._traitData;
-  token.category = "Consumable";
-  token.name = data.name;
-  token.description = data.description;
-  token.image = data.url;
-  token.save();
 
   for (let i = 0; i < data.properties.length; i += 1) {
     const name = data.properties[i].name;
@@ -70,4 +64,13 @@ export function handleTokenTraitChanged(event: TokenTraitChanged): void {
       metadata.size = value;
     }
   }
+
+  metadata.save();
+
+  token.category = "Consumable";
+  token.name = data.name;
+  token.description = data.description;
+  token.image = data.url;
+  token.metadata = metadataId;
+  token.save();
 }
