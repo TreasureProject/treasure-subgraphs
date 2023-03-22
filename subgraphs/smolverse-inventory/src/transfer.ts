@@ -5,8 +5,9 @@ import {
   TransferBatch,
   TransferSingle,
 } from "../generated/Smol Treasures/ERC1155";
-import { Token } from "../generated/schema";
+import { Token, UserToken } from "../generated/schema";
 import {
+  SMOLS_BURN_ADDRESS,
   getOrCreateCollection,
   getOrCreateUserToken,
   getStakingContract,
@@ -47,6 +48,17 @@ const handleTransferCommon = (
       address.toHexString(),
       tokenId.toString(),
     ]);
+    return;
+  }
+
+  // Handle burn
+  if (to.equals(SMOLS_BURN_ADDRESS)) {
+    const userToken = UserToken.load(token.id.concat(from));
+    if (userToken) {
+      store.remove("UserToken", userToken.id.toHexString());
+    }
+
+    store.remove("Token", token.id.toHexString());
     return;
   }
 
