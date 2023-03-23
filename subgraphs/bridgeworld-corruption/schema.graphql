@@ -280,7 +280,7 @@ type CryptsCharacterHandler @entity {
   address: Bytes!
 }
 
-type CryptsSquadCharacter @entity(immutable: true) {
+type CryptsSquadCharacter @entity {
   id: Bytes!
 
   "Character NFT address"
@@ -288,6 +288,9 @@ type CryptsSquadCharacter @entity(immutable: true) {
 
   "Character NFT token ID"
   tokenId: Int!
+
+  "Character position within squad"
+  index: Int!
 }
 
 type CryptsUserMapTile @entity {

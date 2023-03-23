@@ -28,6 +28,7 @@ import {
 import {
   CryptsMapTile,
   CryptsSquad,
+  CryptsSquadCharacter,
   CryptsTemple,
   CryptsUserMapTile,
 } from "../generated/schema";
@@ -36,7 +37,6 @@ import {
   calculateMaxLegionsInTemple,
   getOrCreateBoardTreasureFragment,
   getOrCreateConfig,
-  getOrCreateCryptsSquadCharacter,
   getOrCreateUser,
   updateCharacterHandler,
 } from "./helpers";
@@ -104,12 +104,19 @@ const handleSquadStaked = (
 
   let characters: Bytes[] = [];
   for (let i = 0; i < characterCollections.length; i += 1) {
-    characters.push(
-      getOrCreateCryptsSquadCharacter(
-        characterCollections[i],
-        characterTokenIds[i]
-      ).id
+    const characterId = characterCollections[i].concat(
+      Bytes.fromI32(characterTokenIds[i].toI32())
     );
+    let character = CryptsSquadCharacter.load(characterId);
+    if (!character) {
+      character = new CryptsSquadCharacter(characterId);
+      character.collection = characterCollections[i];
+      character.tokenId = characterTokenIds[i].toI32();
+    }
+
+    character.index = i;
+    character.save();
+    characters.push(characterId);
   }
 
   squad.characters = characters;
