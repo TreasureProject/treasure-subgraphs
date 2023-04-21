@@ -1,9 +1,12 @@
-import { log } from "@graphprotocol/graph-ts";
+import { Address, log } from "@graphprotocol/graph-ts";
 
 import { PairCreated } from "../../generated/UniswapV2Factory/UniswapV2Factory";
 import { Pair, Token } from "../../generated/schema";
 import { UniswapV2Pair } from "../../generated/templates";
-import { Sync } from "../../generated/templates/UniswapV2Pair/UniswapV2Pair";
+import {
+  Sync,
+  Transfer,
+} from "../../generated/templates/UniswapV2Pair/UniswapV2Pair";
 import { ZERO_BD } from "../const";
 import { getOrCreateToken } from "../helpers";
 import { tokenAmountToBigDecimal } from "../utils";
@@ -48,5 +51,25 @@ export function handleSync(event: Sync): void {
 
   pair.reserve0 = tokenAmountToBigDecimal(token0, params.reserve0);
   pair.reserve1 = tokenAmountToBigDecimal(token1, params.reserve1);
+  pair.save();
+}
+
+export function handleTransfer(event: Transfer): void {
+  const params = event.params;
+
+  const pair = Pair.load(event.address);
+  if (!pair) {
+    log.error("Error transferring unknown Pair: {}", [
+      event.address.toHexString(),
+    ]);
+    return;
+  }
+
+  if (params.from.equals(Address.zero())) {
+    pair.totalSupply = pair.totalSupply.plus(params.value);
+  } else if (params.to.equals(Address.zero()) && params.from.equals(pair.id)) {
+    pair.totalSupply = pair.totalSupply.minus(params.value);
+  }
+
   pair.save();
 }
