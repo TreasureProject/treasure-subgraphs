@@ -7,7 +7,7 @@ import {
   Sync,
   Transfer,
 } from "../../generated/templates/UniswapV2Pair/UniswapV2Pair";
-import { ZERO_BD } from "../const";
+import { ZERO_BD, ZERO_BI } from "../const";
 import { getOrCreateToken } from "../helpers";
 import { tokenAmountToBigDecimal } from "../utils";
 
@@ -19,6 +19,7 @@ export function handlePairCreated(event: PairCreated): void {
   pair.token1 = getOrCreateToken(params.token1).id;
   pair.reserve0 = ZERO_BD;
   pair.reserve1 = ZERO_BD;
+  pair.totalSupply = ZERO_BI;
   pair.save();
 
   UniswapV2Pair.create(params.pair);
