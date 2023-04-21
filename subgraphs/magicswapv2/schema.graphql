@@ -61,7 +61,7 @@ type Pair @entity {
 
 type VaultTransaction @entity(immutable: true) {
   id: Bytes!
-  
+
   transactionHash: Bytes!
   timestamp: BigInt!
   type: VaultTransactionType!
