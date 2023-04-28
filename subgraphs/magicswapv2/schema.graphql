@@ -87,7 +87,7 @@ type Transaction @entity(immutable: true) {
 
   amount0: BigDecimal!
   amount1: BigDecimal!
-  isAmount1Out: Boolean!
+  isAmount1Out: Boolean
 
   tokenIds0: [Int!]
   tokenIds1: [Int!]

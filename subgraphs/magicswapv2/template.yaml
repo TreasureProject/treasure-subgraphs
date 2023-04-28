@@ -64,6 +64,10 @@ templates:
         - name: UniswapV2Pair
           file: {{{ abis }}}/magicswapv2/UniswapV2Pair.json
       eventHandlers:
+        - event: Burn(indexed address,uint256,uint256,indexed address)
+          handler: handleBurn
+        - event: Mint(indexed address,uint256,uint256)
+          handler: handleMint
         - event: Swap(indexed address,uint256,uint256,uint256,uint256,indexed address)
           handler: handleSwap
         - event: Sync(uint112,uint112)
