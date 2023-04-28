@@ -11,6 +11,7 @@ import {
   Deposit as DepositEvent,
   Withdraw,
 } from "../../generated/templates/NftVault/NftVault";
+import { ZERO_BD, ZERO_BI } from "../const";
 import { getOrCreateCollection, setTokenContractData } from "../helpers";
 
 export function handleVaultCreated(event: VaultCreated): void {
@@ -20,6 +21,8 @@ export function handleVaultCreated(event: VaultCreated): void {
   vault.name = params.name;
   vault.symbol = params.symbol;
   setTokenContractData(vault, true);
+  vault.volume = ZERO_BD;
+  vault.txCount = ZERO_BI;
   vault.save();
 
   for (let i = 0; i < params.collections.length; i++) {

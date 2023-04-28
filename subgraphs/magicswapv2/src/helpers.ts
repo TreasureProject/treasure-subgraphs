@@ -80,6 +80,8 @@ export const getOrCreateToken = (address: Address): Token => {
   if (!token) {
     token = new Token(address);
     setTokenContractData(token);
+    token.volume = ZERO_BD;
+    token.txCount = ZERO_BI;
     token.save();
   }
 

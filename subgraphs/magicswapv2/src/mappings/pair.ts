@@ -24,6 +24,9 @@ export function handlePairCreated(event: PairCreated): void {
   pair.reserve0 = ZERO_BD;
   pair.reserve1 = ZERO_BD;
   pair.totalSupply = ZERO_BI;
+  pair.volume0 = ZERO_BD;
+  pair.volume1 = ZERO_BD;
+  pair.txCount = ZERO_BI;
   pair.save();
 
   UniswapV2Pair.create(params.pair);
