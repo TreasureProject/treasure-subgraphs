@@ -1,7 +1,7 @@
-import { Address, BigInt, log } from "@graphprotocol/graph-ts";
+import { Address, BigDecimal, BigInt, log } from "@graphprotocol/graph-ts";
 
 import { ERC20 } from "../generated/UniswapV2Factory/ERC20";
-import { Collection, Token } from "../generated/schema";
+import { Collection, Token, User } from "../generated/schema";
 import { ZERO_BD, ZERO_BI } from "./const";
 import { exponentToBigDecimal } from "./utils";
 
@@ -19,6 +19,16 @@ export const getOrCreateCollection = (
   }
 
   return collection;
+};
+
+export const getOrCreateUser = (address: Address): User => {
+  let user = User.load(address);
+  if (!user) {
+    user = new User(address);
+    user.save();
+  }
+
+  return user;
 };
 
 export const setTokenContractData = (

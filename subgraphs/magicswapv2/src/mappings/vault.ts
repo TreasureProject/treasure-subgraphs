@@ -5,7 +5,6 @@ import {
   Token,
   VaultCollection,
   VaultReserveItem,
-  VaultTransaction,
 } from "../../generated/schema";
 import { NftVault } from "../../generated/templates";
 import {
@@ -43,18 +42,6 @@ export function handleVaultCreated(event: VaultCreated): void {
 export function handleDeposit(event: DepositEvent): void {
   const params = event.params;
 
-  const deposit = new VaultTransaction(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
-  );
-  deposit.transactionHash = event.transaction.hash;
-  deposit.timestamp = event.block.timestamp;
-  deposit.type = "Deposit";
-  deposit.vault = event.address;
-  deposit.collection = params.collection;
-  deposit.tokenId = params.tokenId;
-  deposit.amount = params.amount.toI32();
-  deposit.save();
-
   const reserveItemId = event.address
     .concat(params.collection)
     .concatI32(params.tokenId.toI32());
@@ -73,18 +60,6 @@ export function handleDeposit(event: DepositEvent): void {
 
 export function handleWithdraw(event: Withdraw): void {
   const params = event.params;
-
-  const withdrawal = new VaultTransaction(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
-  );
-  withdrawal.transactionHash = event.transaction.hash;
-  withdrawal.timestamp = event.block.timestamp;
-  withdrawal.type = "Withdrawal";
-  withdrawal.vault = event.address;
-  withdrawal.collection = params.collection;
-  withdrawal.tokenId = params.tokenId;
-  withdrawal.amount = params.amount.toI32();
-  withdrawal.save();
 
   const reserveItem = VaultReserveItem.load(
     event.address.concat(params.collection).concatI32(params.tokenId.toI32())

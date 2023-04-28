@@ -1,14 +1,16 @@
 import { Address, log } from "@graphprotocol/graph-ts";
 
 import { PairCreated } from "../../generated/UniswapV2Factory/UniswapV2Factory";
-import { Pair, Token } from "../../generated/schema";
+import { Pair, Token, Transaction } from "../../generated/schema";
 import { UniswapV2Pair } from "../../generated/templates";
 import {
+  Swap,
   Sync,
   Transfer,
 } from "../../generated/templates/UniswapV2Pair/UniswapV2Pair";
 import { ZERO_BD, ZERO_BI } from "../const";
-import { getOrCreateToken } from "../helpers";
+import { ONE_BI } from "../const";
+import { getOrCreateToken, getOrCreateUser } from "../helpers";
 import { tokenAmountToBigDecimal } from "../utils";
 
 export function handlePairCreated(event: PairCreated): void {
@@ -23,6 +25,66 @@ export function handlePairCreated(event: PairCreated): void {
   pair.save();
 
   UniswapV2Pair.create(params.pair);
+}
+
+export function handleSwap(event: Swap): void {
+  const params = event.params;
+
+  const pair = Pair.load(event.address);
+  if (!pair) {
+    log.error("Error swapping unknown Pair: {}", [event.address.toHexString()]);
+    return;
+  }
+
+  const token0 = Token.load(pair.token0);
+  if (!token0) {
+    log.error("Error swapping unknown Token: {}", [pair.token0.toHexString()]);
+    return;
+  }
+
+  const token1 = Token.load(pair.token0);
+  if (!token1) {
+    log.error("Error swapping unknown Token: {}", [pair.token1.toHexString()]);
+    return;
+  }
+
+  const amount0 = tokenAmountToBigDecimal(
+    token0,
+    params.amount0In.plus(params.amount0Out)
+  );
+  const amount1 = tokenAmountToBigDecimal(
+    token1,
+    params.amount1In.plus(params.amount1Out)
+  );
+
+  // Update volume
+  token0.volume = token0.volume.plus(amount0);
+  token1.volume = token1.volume.plus(amount1);
+  pair.volume0 = pair.volume0.plus(amount0);
+  pair.volume1 = pair.volume1.plus(amount1);
+
+  // Update transaction counts
+  token0.txCount = token0.txCount.plus(ONE_BI);
+  token1.txCount = token1.txCount.plus(ONE_BI);
+  pair.txCount = pair.txCount.plus(ONE_BI);
+
+  // Log transaction
+  const transaction = new Transaction(
+    event.transaction.hash.concatI32(event.logIndex.toI32())
+  );
+  transaction.hash = event.transaction.hash;
+  transaction.timestamp = event.block.timestamp;
+  transaction.type = "Swap";
+  transaction.user = getOrCreateUser(params.to).id;
+  transaction.pair = pair.id;
+  transaction.amount0 = amount0;
+  transaction.amount1 = amount1;
+  transaction.isAmount1Out = params.amount1Out.gt(ZERO_BI);
+  transaction.save();
+
+  token0.save();
+  token1.save();
+  pair.save();
 }
 
 export function handleSync(event: Sync): void {

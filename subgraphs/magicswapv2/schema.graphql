@@ -3,7 +3,8 @@ enum NftType {
   ERC1155
 }
 
-enum VaultTransactionType {
+enum TransactionType {
+  Swap
   Deposit
   Withdrawal
 }
@@ -38,6 +39,9 @@ type Token @entity {
 
   basePairs: [Pair!]! @derivedFrom(field: "token0")
   quotePairs: [Pair!]! @derivedFrom(field: "token1")
+
+  volume: BigDecimal!
+  txCount: BigInt!
 }
 
 type VaultReserveItem @entity {
@@ -57,16 +61,34 @@ type Pair @entity {
   reserve0: BigDecimal!
   reserve1: BigDecimal!
   totalSupply: BigInt!
+
+  volume0: BigDecimal!
+  volume1: BigDecimal!
+  txCount: BigInt!
+
+  transactions: [Transaction!]! @derivedFrom(field: "pair")
 }
 
-type VaultTransaction @entity(immutable: true) {
+type User @entity(immutable: true) {
   id: Bytes!
 
-  transactionHash: Bytes!
+  transactions: [Transaction!]! @derivedFrom(field: "user")
+}
+
+type Transaction @entity(immutable: true) {
+  id: Bytes!
+
+  hash: Bytes!
   timestamp: BigInt!
-  type: VaultTransactionType!
-  vault: Token!
-  collection: Collection!
-  tokenId: BigInt!
-  amount: Int!
+  type: TransactionType!
+  user: User!
+
+  pair: Pair!
+
+  amount0: BigDecimal!
+  amount1: BigDecimal!
+  isAmount1Out: Boolean!
+
+  tokenIds0: [Int!]
+  tokenIds1: [Int!]
 }
