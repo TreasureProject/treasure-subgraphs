@@ -25,6 +25,7 @@ export function handleVaultCreated(event: VaultCreated): void {
   vault.volume = ZERO_BD;
   vault.volumeUsd = ZERO_BD;
   vault.txCount = ZERO_BI;
+  vault.derivedMagic = ZERO_BD;
   vault.save();
 
   for (let i = 0; i < params.collections.length; i++) {
