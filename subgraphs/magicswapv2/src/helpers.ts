@@ -105,6 +105,7 @@ export const getOrCreateToken = (address: Address): Token => {
     setTokenContractData(token);
     token.magicPairs = [];
     token.volume = ZERO_BD;
+    token.volumeUsd = ZERO_BD;
     token.txCount = ZERO_BI;
     token.derivedMagic = ZERO_BD;
     token.save();
