@@ -1,7 +1,5 @@
 import { Address, log } from "@graphprotocol/graph-ts";
 
-import { MAGIC_ADDRESS } from "@treasure/constants";
-
 import { PairCreated } from "../../generated/UniswapV2Factory/UniswapV2Factory";
 import { Pair, Token, Transaction } from "../../generated/schema";
 import { UniswapV2Pair } from "../../generated/templates";
@@ -12,13 +10,14 @@ import {
   Sync,
   Transfer,
 } from "../../generated/templates/UniswapV2Pair/UniswapV2Pair";
-import { ZERO_BD, ZERO_BI } from "../const";
+import { TWO_BD, ZERO_BD, ZERO_BI } from "../const";
 import { ONE_BI } from "../const";
 import {
   getDerivedMagic,
   getOrCreateFactory,
   getOrCreateToken,
   getOrCreateUser,
+  isMagic,
 } from "../helpers";
 import { tokenAmountToBigDecimal } from "../utils";
 
@@ -45,10 +44,10 @@ export function handlePairCreated(event: PairCreated): void {
   factory.pairCount = factory.pairCount.plus(ONE_BI);
   factory.save();
 
-  if (token0.id.equals(MAGIC_ADDRESS)) {
+  if (isMagic(token0)) {
     token1.magicPairs = token1.magicPairs.concat([pair.id]);
     token1.save();
-  } else if (token1.id.equals(MAGIC_ADDRESS)) {
+  } else if (isMagic(token1)) {
     token0.magicPairs = token0.magicPairs.concat([pair.id]);
     token0.save();
   }
@@ -109,6 +108,10 @@ export function handleBurn(event: Burn): void {
 
   transaction.amount0 = amount0;
   transaction.amount1 = amount1;
+  transaction.amountUsd = amount0
+    .times(token0.derivedMagic)
+    .plus(amount1.times(token1.derivedMagic))
+    .times(factory.magicUsd);
   transaction.save();
 }
 
@@ -165,6 +168,10 @@ export function handleMint(event: Mint): void {
 
   transaction.amount0 = amount0;
   transaction.amount1 = amount1;
+  transaction.amountUsd = amount0
+    .times(token0.derivedMagic)
+    .plus(amount1.times(token1.derivedMagic))
+    .times(factory.magicUsd);
   transaction.save();
 }
 
@@ -224,6 +231,7 @@ export function handleSwap(event: Swap): void {
   factory.save();
 
   // Log transaction
+  const isAmount1Out = params.amount1Out.gt(ZERO_BI);
   const transaction = new Transaction(
     event.transaction.hash.concatI32(event.logIndex.toI32())
   );
@@ -234,7 +242,10 @@ export function handleSwap(event: Swap): void {
   transaction.pair = pair.id;
   transaction.amount0 = amount0;
   transaction.amount1 = amount1;
-  transaction.isAmount1Out = params.amount1Out.gt(ZERO_BI);
+  transaction.amountUsd = isAmount1Out
+    ? amount0.times(token0.derivedMagic).times(factory.magicUsd)
+    : amount1.times(token1.derivedMagic).times(factory.magicUsd);
+  transaction.isAmount1Out = isAmount1Out;
   transaction.save();
 }
 
@@ -263,20 +274,33 @@ export function handleSync(event: Sync): void {
     return;
   }
 
-  const factory = getOrCreateFactory();
-
-  token0.derivedMagic = getDerivedMagic(token0);
-  token0.save();
-
-  token1.derivedMagic = getDerivedMagic(token1);
-  token1.save();
-
   pair.reserve0 = tokenAmountToBigDecimal(token0, params.reserve0);
   pair.reserve1 = tokenAmountToBigDecimal(token1, params.reserve1);
-  pair.reserveUsd = pair.reserve0
-    .times(token0.derivedMagic)
-    .plus(pair.reserve1.times(token1.derivedMagic))
-    .times(factory.magicUsd);
+
+  const factory = getOrCreateFactory();
+  const isToken0Magic = isMagic(token0);
+  const isToken1Magic = isMagic(token1);
+
+  token0.derivedMagic = isToken1Magic
+    ? pair.reserve1.div(pair.reserve0)
+    : getDerivedMagic(token0);
+  token1.derivedMagic = isToken0Magic
+    ? pair.reserve0.div(pair.reserve1)
+    : getDerivedMagic(token1);
+
+  if (isToken0Magic) {
+    pair.reserveUsd = pair.reserve0.times(factory.magicUsd).times(TWO_BD);
+  } else if (isToken1Magic) {
+    pair.reserveUsd = pair.reserve1.times(factory.magicUsd).times(TWO_BD);
+  } else {
+    pair.reserveUsd = pair.reserve0
+      .times(token0.derivedMagic)
+      .plus(pair.reserve1.times(token1.derivedMagic))
+      .times(factory.magicUsd);
+  }
+
+  token0.save();
+  token1.save();
   pair.save();
 }
 
@@ -303,6 +327,7 @@ export function handleTransfer(event: Transfer): void {
     transaction.pair = pair.id;
     transaction.amount0 = ZERO_BD;
     transaction.amount1 = ZERO_BD;
+    transaction.amountUsd = ZERO_BD;
     transaction.save();
   } else if (params.to.equals(Address.zero()) && params.from.equals(pair.id)) {
     pair.totalSupply = pair.totalSupply.minus(params.value);
@@ -316,6 +341,7 @@ export function handleTransfer(event: Transfer): void {
     transaction.pair = pair.id;
     transaction.amount0 = ZERO_BD;
     transaction.amount1 = ZERO_BD;
+    transaction.amountUsd = ZERO_BD;
     transaction.save();
   }
 

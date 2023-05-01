@@ -114,8 +114,10 @@ export const getOrCreateToken = (address: Address): Token => {
   return token;
 };
 
+export const isMagic = (token: Token): bool => token.id.equals(MAGIC_ADDRESS);
+
 export const getDerivedMagic = (token: Token): BigDecimal => {
-  if (token.id.equals(MAGIC_ADDRESS)) {
+  if (isMagic(token)) {
     return ONE_BD;
   }
 
@@ -129,8 +131,8 @@ export const getDerivedMagic = (token: Token): BigDecimal => {
   }
 
   if (pair.token0.equals(token.id)) {
-    return pair.reserve1;
+    return pair.reserve1.div(pair.reserve0);
   }
 
-  return pair.reserve0;
+  return pair.reserve0.div(pair.reserve1);
 };
