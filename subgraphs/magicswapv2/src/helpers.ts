@@ -1,11 +1,30 @@
 import { Address, BigDecimal, BigInt, log } from "@graphprotocol/graph-ts";
 
+import {
+  MAGICSWAP_V2_FACTORY_ADDRESS,
+  MAGIC_ADDRESS,
+} from "@treasure/constants";
+
 import { ERC20 } from "../generated/UniswapV2Factory/ERC20";
-import { Collection, Token, User } from "../generated/schema";
-import { ZERO_BD, ZERO_BI } from "./const";
+import { Collection, Factory, Pair, Token, User } from "../generated/schema";
+import { ONE_BD, ONE_BI, ZERO_BD, ZERO_BI } from "./const";
 import { exponentToBigDecimal } from "./utils";
 
 export const NFT_TYPES = ["ERC721", "ERC1155"];
+
+export const getOrCreateFactory = (): Factory => {
+  let factory = Factory.load(MAGICSWAP_V2_FACTORY_ADDRESS);
+  if (!factory) {
+    factory = new Factory(MAGICSWAP_V2_FACTORY_ADDRESS);
+    factory.pairCount = ZERO_BI;
+    factory.txCount = ZERO_BI;
+    factory.userCount = ZERO_BI;
+    factory.magicUsd = ZERO_BD;
+    factory.save();
+  }
+
+  return factory;
+};
 
 export const getOrCreateCollection = (
   address: Address,
@@ -26,6 +45,10 @@ export const getOrCreateUser = (address: Address): User => {
   if (!user) {
     user = new User(address);
     user.save();
+
+    const factory = getOrCreateFactory();
+    factory.userCount = factory.userCount.plus(ONE_BI);
+    factory.save();
   }
 
   return user;
@@ -80,10 +103,33 @@ export const getOrCreateToken = (address: Address): Token => {
   if (!token) {
     token = new Token(address);
     setTokenContractData(token);
+    token.magicPairs = [];
     token.volume = ZERO_BD;
     token.txCount = ZERO_BI;
+    token.derivedMagic = ZERO_BD;
     token.save();
   }
 
   return token;
+};
+
+export const getDerivedMagic = (token: Token): BigDecimal => {
+  if (token.id.equals(MAGIC_ADDRESS)) {
+    return ONE_BD;
+  }
+
+  if (token.magicPairs.length == 0) {
+    return ZERO_BD;
+  }
+
+  const pair = Pair.load(token.magicPairs[0]);
+  if (!pair) {
+    return ZERO_BD;
+  }
+
+  if (pair.token0.equals(token.id)) {
+    return pair.reserve1;
+  }
+
+  return pair.reserve0;
 };

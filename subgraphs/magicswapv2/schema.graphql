@@ -9,6 +9,16 @@ enum TransactionType {
   Withdrawal
 }
 
+type Factory @entity {
+  id: Bytes!
+
+  pairCount: BigInt!
+  txCount: BigInt!
+  userCount: BigInt!
+
+  magicUsd: BigDecimal!
+}
+
 type Collection @entity {
   id: Bytes!
 
@@ -37,11 +47,15 @@ type Token @entity {
   vaultCollections: [VaultCollection!]! @derivedFrom(field: "vault")
   vaultReserveItems: [VaultReserveItem!]! @derivedFrom(field: "vault")
 
+  magicPairs: [Pair!]!
   basePairs: [Pair!]! @derivedFrom(field: "token0")
   quotePairs: [Pair!]! @derivedFrom(field: "token1")
 
   volume: BigDecimal!
+  volumeUsd: BigDecimal!
   txCount: BigInt!
+
+  derivedMagic: BigDecimal!
 }
 
 type VaultReserveItem @entity {
@@ -60,10 +74,12 @@ type Pair @entity {
   token1: Token!
   reserve0: BigDecimal!
   reserve1: BigDecimal!
+  reserveUsd: BigDecimal!
   totalSupply: BigInt!
 
   volume0: BigDecimal!
   volume1: BigDecimal!
+  volumeUsd: BigDecimal!
   txCount: BigInt!
 
   transactions: [Transaction!]! @derivedFrom(field: "pair")

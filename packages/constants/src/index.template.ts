@@ -105,6 +105,10 @@ export const USDT_WETH_PAIR =
 
 export const MAGICSWAP_TOKEN_WHITELIST = [NATIVE.toHexString()];
 
+export const MAGICSWAP_V2_FACTORY_ADDRESS = Address.fromString(
+  "{{magicswap_v2_factory_address}}{{^magicswap_v2_factory_address}}{{burner_address}}{{/magicswap_v2_factory_address}}"
+);
+
 // Smolverse
 export const SMOL_BODIES_ADDRESS = Address.fromString(
   "{{smol_bodies_address}}{{^smol_bodies_address}}{{burner_address}}{{/smol_bodies_address}}"

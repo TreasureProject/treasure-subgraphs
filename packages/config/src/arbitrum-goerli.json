@@ -105,6 +105,7 @@
   "magicswapv2_start_block": 11776278,
   "magicswapv2_nft_vault_factory_address": "0x5d701784243802202403a44e5831f491cfd2a402",
   "magicswapv2_uniswapv2_factory_address": "0xd9d465f742393c14ab92a70412c5b8dbd6ee5ace",
+  "magic_usd_price_feed_address": "0xb1d4538b4571d411f07960ef2838ce337fe1e80e",
 
   "hourly_stat_interval_start_block": 309123
 }

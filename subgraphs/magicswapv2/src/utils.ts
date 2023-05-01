@@ -14,6 +14,19 @@ export const exponentToBigDecimal = (decimals: BigInt): BigDecimal => {
   return result;
 };
 
+export const amountToBigDecimal = (
+  amount: BigInt,
+  decimals: i32
+): BigDecimal => {
+  const divisor = exponentToBigDecimal(BigInt.fromI32(decimals));
+
+  if (divisor.equals(ZERO_BD)) {
+    return amount.toBigDecimal();
+  }
+
+  return amount.toBigDecimal().div(divisor);
+};
+
 export const tokenAmountToBigDecimal = (
   token: Token,
   amount: BigInt

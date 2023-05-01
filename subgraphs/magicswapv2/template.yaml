@@ -48,6 +48,26 @@ dataSources:
         - event: PairCreated(indexed address,indexed address,address,uint256)
           handler: handlePairCreated
       file: ./src/mappings/pair.ts
+  - name: ChainlinkAggregator
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ magic_usd_price_feed_address }}"
+      abi: ChainlinkAggregator
+      startBlock: {{ magicswapv2_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Factory
+      abis:
+        - name: ChainlinkAggregator
+          file: {{{ abis }}}/ChainlinkAggregator.json
+      eventHandlers:
+        - event: AnswerUpdated(indexed int256,indexed uint256,uint256)
+          handler: handleMagicUsdUpdated
+      file: ./src/mappings/price.ts
 templates:
   - name: UniswapV2Pair
     kind: ethereum/contract
