@@ -37,6 +37,7 @@ export function handlePairCreated(event: PairCreated): void {
   pair.totalSupply = ZERO_BI;
   pair.volume0 = ZERO_BD;
   pair.volume1 = ZERO_BD;
+  pair.volumeUsd = ZERO_BD;
   pair.txCount = ZERO_BI;
   pair.save();
 
