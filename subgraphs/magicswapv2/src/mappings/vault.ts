@@ -21,6 +21,7 @@ export function handleVaultCreated(event: VaultCreated): void {
   vault.name = params.name;
   vault.symbol = params.symbol;
   setTokenContractData(vault, true);
+  vault.magicPairs = [];
   vault.volume = ZERO_BD;
   vault.txCount = ZERO_BI;
   vault.save();
