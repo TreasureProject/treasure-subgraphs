@@ -307,16 +307,17 @@ export function handleSync(event: Sync): void {
 export function handleTransfer(event: Transfer): void {
   const params = event.params;
 
-  const pair = Pair.load(event.address);
-  if (!pair) {
-    log.error("Error transferring unknown Pair: {}", [
-      event.address.toHexString(),
-    ]);
-    return;
-  }
-
   if (params.from.equals(Address.zero())) {
+    const pair = Pair.load(event.address);
+    if (!pair) {
+      log.error("Error transferring unknown Pair: {}", [
+        event.address.toHexString(),
+      ]);
+      return;
+    }
+
     pair.totalSupply = pair.totalSupply.plus(params.value);
+    pair.save();
 
     // Log transaction
     const transaction = new Transaction(event.transaction.hash);
@@ -329,8 +330,20 @@ export function handleTransfer(event: Transfer): void {
     transaction.amount1 = ZERO_BD;
     transaction.amountUsd = ZERO_BD;
     transaction.save();
-  } else if (params.to.equals(Address.zero()) && params.from.equals(pair.id)) {
+  } else if (
+    params.to.equals(Address.zero()) &&
+    params.from.equals(event.address)
+  ) {
+    const pair = Pair.load(event.address);
+    if (!pair) {
+      log.error("Error transferring unknown Pair: {}", [
+        event.address.toHexString(),
+      ]);
+      return;
+    }
+
     pair.totalSupply = pair.totalSupply.minus(params.value);
+    pair.save();
 
     // Log transaction
     const transaction = new Transaction(event.transaction.hash);
@@ -344,6 +357,4 @@ export function handleTransfer(event: Transfer): void {
     transaction.amountUsd = ZERO_BD;
     transaction.save();
   }
-
-  pair.save();
 }
