@@ -72,7 +72,7 @@ export function handleBurn(event: Burn): void {
     return;
   }
 
-  const token1 = Token.load(pair.token0);
+  const token1 = Token.load(pair.token1);
   if (!token1) {
     log.error("Error burning Pair with unknown Token: {}", [
       pair.token1.toHexString(),
@@ -132,7 +132,7 @@ export function handleMint(event: Mint): void {
     return;
   }
 
-  const token1 = Token.load(pair.token0);
+  const token1 = Token.load(pair.token1);
   if (!token1) {
     log.error("Error minting Pair with unknown Token: {}", [
       pair.token1.toHexString(),
@@ -190,7 +190,7 @@ export function handleSwap(event: Swap): void {
     return;
   }
 
-  const token1 = Token.load(pair.token0);
+  const token1 = Token.load(pair.token1);
   if (!token1) {
     log.error("Error swapping unknown Token: {}", [pair.token1.toHexString()]);
     return;

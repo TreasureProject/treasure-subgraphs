@@ -3,21 +3,25 @@ import {
   beforeEach,
   clearStore,
   describe,
-  logStore,
   newMockEvent,
   test,
 } from "matchstick-as";
 
 import { Address, BigInt, Bytes, ethereum } from "@graphprotocol/graph-ts";
 
-import { MAGIC_ADDRESS } from "@treasure/constants";
+import {
+  MAGICSWAP_V2_FACTORY_ADDRESS,
+  MAGIC_ADDRESS,
+} from "@treasure/constants";
 
 import { PairCreated } from "../generated/UniswapV2Factory/UniswapV2Factory";
 import {
+  Mint,
   Sync,
   Transfer,
 } from "../generated/templates/UniswapV2Pair/UniswapV2Pair";
 import {
+  handleMint,
   handlePairCreated,
   handleSync,
   handleTransfer,
@@ -107,6 +111,33 @@ const createTransferEvent = (
     new ethereum.EventParam(
       "value",
       ethereum.Value.fromUnsignedBigInt(BigInt.fromString(value))
+    ),
+  ];
+  return event;
+};
+
+const createMintEvent = (
+  pair: string,
+  from: string,
+  amount0: string,
+  amount1: string,
+  hash: string = TX_HASH1
+): Mint => {
+  const event = changetype<Mint>(newMockEvent());
+  event.address = Address.fromString(pair);
+  event.transaction.hash = Bytes.fromHexString(hash);
+  event.parameters = [
+    new ethereum.EventParam(
+      "sender",
+      ethereum.Value.fromAddress(Address.fromString(from))
+    ),
+    new ethereum.EventParam(
+      "amount0",
+      ethereum.Value.fromUnsignedBigInt(BigInt.fromString(amount0))
+    ),
+    new ethereum.EventParam(
+      "amount1",
+      ethereum.Value.fromUnsignedBigInt(BigInt.fromString(amount1))
     ),
   ];
   return event;
@@ -288,5 +319,58 @@ describe("handleTransfer()", () => {
     );
 
     assert.fieldEquals("Pair", PAIR, "totalSupply", "0");
+  });
+});
+
+describe("handleMint()", () => {
+  beforeEach(() => {
+    clearStore();
+  });
+
+  test("should fill deposit transaction with amounts", () => {
+    // Create MAGIC pair
+    handlePairCreated(
+      createPairCreatedEvent(TOKEN0, MAGIC_ADDRESS.toHexString(), PAIR)
+    );
+
+    // Set MAGIC/USD price
+    handleMagicUsdUpdated(createAnswerUpdatedEvent("150000000"));
+
+    // Sync pair
+    handleSync(
+      createSyncEvent(PAIR, "5000000000000000000", "2500000000000000000000")
+    );
+
+    // Mint tokens
+    handleTransfer(
+      createTransferEvent(
+        PAIR,
+        Address.zero().toHexString(),
+        USER1,
+        "1000000000000000000",
+        TX_HASH1
+      )
+    );
+    handleMint(
+      createMintEvent(
+        PAIR,
+        USER1,
+        "1000000000000000000",
+        "500000000000000000000"
+      )
+    );
+
+    assert.fieldEquals("Token", TOKEN0, "txCount", "1");
+    assert.fieldEquals("Token", MAGIC_ADDRESS.toHexString(), "txCount", "1");
+    assert.fieldEquals("Pair", PAIR, "txCount", "1");
+    assert.fieldEquals(
+      "Factory",
+      MAGICSWAP_V2_FACTORY_ADDRESS.toHexString(),
+      "txCount",
+      "1"
+    );
+    assert.fieldEquals("Transaction", TX_HASH1, "amount0", "1");
+    assert.fieldEquals("Transaction", TX_HASH1, "amount1", "500");
+    assert.fieldEquals("Transaction", TX_HASH1, "amountUsd", "1500");
   });
 });
