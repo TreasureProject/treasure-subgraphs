@@ -26,7 +26,7 @@ import {
   handleSync,
   handleTransfer,
 } from "../src/mappings/pair";
-import { handleMagicUsdUpdated } from "../src/mappings/price";
+import { handleMagicUSDUpdated } from "../src/mappings/price";
 import { createAnswerUpdatedEvent } from "./helpers/price";
 import { mockToken } from "./helpers/token";
 
@@ -183,7 +183,7 @@ describe("handleSync()", () => {
     );
 
     // Set MAGIC/USD price
-    handleMagicUsdUpdated(createAnswerUpdatedEvent("150000000"));
+    handleMagicUSDUpdated(createAnswerUpdatedEvent("150000000"));
 
     // Sync pair
     handleSync(
@@ -334,7 +334,7 @@ describe("handleMint()", () => {
     );
 
     // Set MAGIC/USD price
-    handleMagicUsdUpdated(createAnswerUpdatedEvent("150000000"));
+    handleMagicUSDUpdated(createAnswerUpdatedEvent("150000000"));
 
     // Sync pair
     handleSync(

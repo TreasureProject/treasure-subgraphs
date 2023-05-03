@@ -2,7 +2,7 @@ import { AnswerUpdated } from "../../generated/ChainlinkAggregator/ChainlinkAggr
 import { getOrCreateFactory } from "../helpers";
 import { amountToBigDecimal } from "../utils";
 
-export function handleMagicUsdUpdated(event: AnswerUpdated): void {
+export function handleMagicUSDUpdated(event: AnswerUpdated): void {
   const factory = getOrCreateFactory();
   factory.magicUSD = amountToBigDecimal(event.params.current, 8);
   factory.save();

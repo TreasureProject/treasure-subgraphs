@@ -2,12 +2,12 @@ import { assert, describe, test } from "matchstick-as";
 
 import { MAGICSWAP_V2_FACTORY_ADDRESS } from "@treasure/constants";
 
-import { handleMagicUsdUpdated } from "../src/mappings/price";
+import { handleMagicUSDUpdated } from "../src/mappings/price";
 import { createAnswerUpdatedEvent } from "./helpers/price";
 
-describe("handleMagicUsdUpdated()", () => {
+describe("handleMagicUSDUpdated()", () => {
   test("should update MAGIC/USD price", () => {
-    handleMagicUsdUpdated(createAnswerUpdatedEvent());
+    handleMagicUSDUpdated(createAnswerUpdatedEvent());
 
     assert.fieldEquals(
       "Factory",
