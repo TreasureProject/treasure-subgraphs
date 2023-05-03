@@ -1,4 +1,10 @@
-import { Address, BigDecimal, BigInt, log } from "@graphprotocol/graph-ts";
+import {
+  Address,
+  BigDecimal,
+  BigInt,
+  Bytes,
+  log,
+} from "@graphprotocol/graph-ts";
 
 import {
   MAGICSWAP_V2_FACTORY_ADDRESS,
@@ -6,7 +12,15 @@ import {
 } from "@treasure/constants";
 
 import { ERC20 } from "../generated/UniswapV2Factory/ERC20";
-import { Collection, Factory, Pair, Token, User } from "../generated/schema";
+import {
+  Collection,
+  DayData,
+  Factory,
+  Pair,
+  PairDayData,
+  Token,
+  User,
+} from "../generated/schema";
 import { ONE_BD, ONE_BI, ZERO_BD, ZERO_BI } from "./const";
 import { exponentToBigDecimal } from "./utils";
 
@@ -17,9 +31,12 @@ export const getOrCreateFactory = (): Factory => {
   if (!factory) {
     factory = new Factory(MAGICSWAP_V2_FACTORY_ADDRESS);
     factory.pairCount = ZERO_BI;
+    factory.volumeUSD = ZERO_BD;
+    factory.reserveUSD = ZERO_BD;
+    factory.reserveNFT = ZERO_BD;
     factory.txCount = ZERO_BI;
     factory.userCount = ZERO_BI;
-    factory.magicUsd = ZERO_BD;
+    factory.magicUSD = ZERO_BD;
     factory.save();
   }
 
@@ -103,11 +120,12 @@ export const getOrCreateToken = (address: Address): Token => {
   if (!token) {
     token = new Token(address);
     setTokenContractData(token);
+    token.isNFT = false;
     token.magicPairs = [];
     token.volume = ZERO_BD;
-    token.volumeUsd = ZERO_BD;
+    token.volumeUSD = ZERO_BD;
     token.txCount = ZERO_BI;
-    token.derivedMagic = ZERO_BD;
+    token.derivedMAGIC = ZERO_BD;
     token.save();
   }
 
@@ -135,4 +153,53 @@ export const getDerivedMagic = (token: Token): BigDecimal => {
   }
 
   return pair.reserve0.div(pair.reserve1);
+};
+
+export const timestampToDate = (timestamp: BigInt): BigInt =>
+  BigInt.fromI32((timestamp.toI32() / 86400) * 86400);
+
+export const updateDayData = (timestamp: BigInt): DayData => {
+  const date = timestampToDate(timestamp);
+  const id = Bytes.fromI32(date.toI32());
+  let dayData = DayData.load(id);
+  if (!dayData) {
+    dayData = new DayData(id);
+    dayData.date = date;
+    dayData.volumeUSD = ZERO_BD;
+  }
+
+  const factory = getOrCreateFactory();
+  dayData.reserveUSD = factory.reserveUSD;
+  dayData.reserveNFT = factory.reserveNFT;
+  dayData.txCount = factory.txCount;
+  dayData.save();
+
+  return dayData;
+};
+
+export const updatePairDayData = (
+  pair: Pair,
+  timestamp: BigInt
+): PairDayData => {
+  const date = timestampToDate(timestamp);
+  const id = pair.id.concatI32(date.toI32());
+  let pairDayData = PairDayData.load(id);
+  if (!pairDayData) {
+    pairDayData = new PairDayData(id);
+    pairDayData.pair = pair.id;
+    pairDayData.date = date;
+    pairDayData.volume0 = ZERO_BD;
+    pairDayData.volume1 = ZERO_BD;
+    pairDayData.volumeUSD = ZERO_BD;
+    pairDayData.txCount = ZERO_BI;
+  }
+
+  pairDayData.reserve0 = pair.reserve0;
+  pairDayData.reserve1 = pair.reserve1;
+  pairDayData.reserveUSD = pair.reserveUSD;
+  pairDayData.totalSupply = pair.totalSupply;
+  pairDayData.txCount = pairDayData.txCount.plus(ONE_BI);
+  pairDayData.save();
+
+  return pairDayData;
 };

@@ -21,11 +21,12 @@ export function handleVaultCreated(event: VaultCreated): void {
   vault.name = params.name;
   vault.symbol = params.symbol;
   setTokenContractData(vault, true);
+  vault.isNFT = true;
   vault.magicPairs = [];
   vault.volume = ZERO_BD;
-  vault.volumeUsd = ZERO_BD;
+  vault.volumeUSD = ZERO_BD;
   vault.txCount = ZERO_BI;
-  vault.derivedMagic = ZERO_BD;
+  vault.derivedMAGIC = ZERO_BD;
   vault.save();
 
   for (let i = 0; i < params.collections.length; i++) {

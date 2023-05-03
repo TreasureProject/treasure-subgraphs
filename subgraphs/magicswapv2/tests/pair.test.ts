@@ -192,14 +192,14 @@ describe("handleSync()", () => {
 
     assert.fieldEquals("Pair", PAIR, "reserve0", "5");
     assert.fieldEquals("Pair", PAIR, "reserve1", "2500");
-    assert.fieldEquals("Token", TOKEN0, "derivedMagic", "500");
+    assert.fieldEquals("Token", TOKEN0, "derivedMAGIC", "500");
     assert.fieldEquals(
       "Token",
       MAGIC_ADDRESS.toHexString(),
-      "derivedMagic",
+      "derivedMAGIC",
       "1"
     );
-    assert.fieldEquals("Pair", PAIR, "reserveUsd", "7500");
+    assert.fieldEquals("Pair", PAIR, "reserveUSD", "7500");
   });
 });
 
@@ -371,6 +371,6 @@ describe("handleMint()", () => {
     );
     assert.fieldEquals("Transaction", TX_HASH1, "amount0", "1");
     assert.fieldEquals("Transaction", TX_HASH1, "amount1", "500");
-    assert.fieldEquals("Transaction", TX_HASH1, "amountUsd", "1500");
+    assert.fieldEquals("Transaction", TX_HASH1, "amountUSD", "1500");
   });
 });

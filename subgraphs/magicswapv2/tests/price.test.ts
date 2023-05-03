@@ -12,7 +12,7 @@ describe("handleMagicUsdUpdated()", () => {
     assert.fieldEquals(
       "Factory",
       MAGICSWAP_V2_FACTORY_ADDRESS.toHexString(),
-      "magicUsd",
+      "magicUSD",
       "1.5"
     );
   });
