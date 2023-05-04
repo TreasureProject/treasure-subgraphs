@@ -98,7 +98,7 @@ type Pair @entity {
   txCount: BigInt!
 
   transactions: [Transaction!]! @derivedFrom(field: "pair")
-
+  liquidityPositions: [LiquidityPosition!]! @derivedFrom(field: "pair")
   dayData: [PairDayData!]! @derivedFrom(field: "pair")
 }
 
@@ -123,6 +123,7 @@ type User @entity(immutable: true) {
   id: Bytes!
 
   transactions: [Transaction!]! @derivedFrom(field: "user")
+  liquidityPositions: [LiquidityPosition!]! @derivedFrom(field: "user")
 }
 
 type LiquidityPosition @entity {
