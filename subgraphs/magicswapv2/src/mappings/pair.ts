@@ -15,6 +15,7 @@ import { ONE_BI } from "../const";
 import {
   getDerivedMagic,
   getOrCreateFactory,
+  getOrCreateLiquidityPosition,
   getOrCreateToken,
   getOrCreateUser,
   isMagic,
@@ -357,20 +358,20 @@ export function handleSync(event: Sync): void {
 
 export function handleTransfer(event: Transfer): void {
   const params = event.params;
+  const pair = Pair.load(event.address);
+  if (!pair) {
+    log.error("Error transferring unknown Pair: {}", [
+      event.address.toHexString(),
+    ]);
+    return;
+  }
 
   if (params.from.equals(Address.zero())) {
-    const pair = Pair.load(event.address);
-    if (!pair) {
-      log.error("Error transferring unknown Pair: {}", [
-        event.address.toHexString(),
-      ]);
-      return;
-    }
-
+    // Update Pair
     pair.totalSupply = pair.totalSupply.plus(params.value);
     pair.save();
 
-    // Log transaction
+    // Log Transaction
     const transaction = new Transaction(event.transaction.hash);
     transaction.hash = event.transaction.hash;
     transaction.timestamp = event.block.timestamp;
@@ -385,27 +386,42 @@ export function handleTransfer(event: Transfer): void {
     params.to.equals(Address.zero()) &&
     params.from.equals(event.address)
   ) {
-    const pair = Pair.load(event.address);
-    if (!pair) {
-      log.error("Error transferring unknown Pair: {}", [
-        event.address.toHexString(),
-      ]);
-      return;
-    }
-
+    // Update Pair
     pair.totalSupply = pair.totalSupply.minus(params.value);
     pair.save();
 
-    // Log transaction
+    // Log Transaction
     const transaction = new Transaction(event.transaction.hash);
     transaction.hash = event.transaction.hash;
     transaction.timestamp = event.block.timestamp;
     transaction.type = "Withdrawal";
-    transaction.user = getOrCreateUser(params.to).id;
+    transaction.user = getOrCreateUser(params.from).id; // TODO: Break this out into two transactions
     transaction.pair = pair.id;
     transaction.amount0 = ZERO_BD;
     transaction.amount1 = ZERO_BD;
     transaction.amountUSD = ZERO_BD;
     transaction.save();
+  }
+
+  // Update Liquidity Positions
+  if (
+    params.from.notEqual(Address.zero()) &&
+    params.from.notEqual(event.address)
+  ) {
+    const fromUser = getOrCreateUser(params.from);
+    const fromLiquidityPosition = getOrCreateLiquidityPosition(pair, fromUser);
+    fromLiquidityPosition.balance = fromLiquidityPosition.balance.minus(
+      params.value
+    );
+    fromLiquidityPosition.save();
+  }
+
+  if (params.to.notEqual(Address.zero()) && params.to.notEqual(event.address)) {
+    const toUser = getOrCreateUser(params.to);
+    const toLiquidityPosition = getOrCreateLiquidityPosition(pair, toUser);
+    toLiquidityPosition.balance = toLiquidityPosition.balance.plus(
+      params.value
+    );
+    toLiquidityPosition.save();
   }
 }

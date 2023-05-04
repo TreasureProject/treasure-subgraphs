@@ -125,6 +125,15 @@ type User @entity(immutable: true) {
   transactions: [Transaction!]! @derivedFrom(field: "user")
 }
 
+type LiquidityPosition @entity {
+  id: Bytes!
+
+  pair: Pair!
+  user: User!
+
+  balance: BigInt!
+}
+
 type Transaction @entity(immutable: true) {
   id: Bytes!
 

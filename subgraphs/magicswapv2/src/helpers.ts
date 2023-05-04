@@ -16,6 +16,7 @@ import {
   Collection,
   DayData,
   Factory,
+  LiquidityPosition,
   Pair,
   PairDayData,
   Token,
@@ -69,6 +70,23 @@ export const getOrCreateUser = (address: Address): User => {
   }
 
   return user;
+};
+
+export const getOrCreateLiquidityPosition = (
+  pair: Pair,
+  user: User
+): LiquidityPosition => {
+  const id = pair.id.concat(user.id);
+  let liquidityPosition = LiquidityPosition.load(id);
+  if (!liquidityPosition) {
+    liquidityPosition = new LiquidityPosition(id);
+    liquidityPosition.pair = pair.id;
+    liquidityPosition.user = user.id;
+    liquidityPosition.balance = ZERO_BI;
+    liquidityPosition.save();
+  }
+
+  return liquidityPosition;
 };
 
 export const setTokenContractData = (
