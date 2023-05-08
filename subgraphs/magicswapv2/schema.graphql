@@ -105,6 +105,7 @@ type Pair @entity {
   protocolFee: BigDecimal!
   royaltiesFee: BigDecimal!
   royaltiesBeneficiary: Bytes
+  totalFee: BigDecimal!
 
   transactions: [Transaction!]! @derivedFrom(field: "pair")
   liquidityPositions: [LiquidityPosition!]! @derivedFrom(field: "pair")

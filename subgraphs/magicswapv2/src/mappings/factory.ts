@@ -1,4 +1,4 @@
-import { log } from "@graphprotocol/graph-ts";
+import { BigDecimal, log } from "@graphprotocol/graph-ts";
 
 import {
   DefaultFeesSet,
@@ -14,6 +14,13 @@ import { ZERO_BD, ZERO_BI } from "../const";
 import { ONE_BI } from "../const";
 import { getOrCreateFactory, getOrCreateToken, isMagic } from "../helpers";
 import { basisPointToBigDecimal } from "../utils";
+
+const MAX_FEE = BigDecimal.fromString("0.5");
+
+const updateTotalFee = (pair: Pair): void => {
+  const totalFee = pair.lpFee.plus(pair.protocolFee).plus(pair.royaltiesFee);
+  pair.totalFee = totalFee.ge(MAX_FEE) ? MAX_FEE : totalFee;
+};
 
 export function handlePairCreated(event: PairCreated): void {
   const params = event.params;
@@ -36,6 +43,7 @@ export function handlePairCreated(event: PairCreated): void {
   pair.lpFee = factory.lpFee;
   pair.protocolFee = factory.protocolFee;
   pair.royaltiesFee = ZERO_BD;
+  updateTotalFee(pair);
   pair.save();
 
   factory.pairCount = factory.pairCount.plus(ONE_BI);
@@ -80,12 +88,13 @@ export function handleLpFeesSet(event: LpFeesSet): void {
 
   if (params.overrideFee) {
     pair.lpFee = basisPointToBigDecimal(params.lpFee);
-    pair.save();
   } else {
     const factory = getOrCreateFactory();
     pair.lpFee = factory.lpFee;
-    pair.save();
   }
+
+  updateTotalFee(pair);
+  pair.save();
 }
 
 export function handleProtocolFeesSet(event: ProtocolFeesSet): void {
@@ -100,12 +109,13 @@ export function handleProtocolFeesSet(event: ProtocolFeesSet): void {
 
   if (params.overrideFee) {
     pair.protocolFee = basisPointToBigDecimal(params.protocolFee);
-    pair.save();
   } else {
     const factory = getOrCreateFactory();
     pair.protocolFee = factory.protocolFee;
-    pair.save();
   }
+
+  updateTotalFee(pair);
+  pair.save();
 }
 
 export function handleRoyaltiesFeesSet(event: RoyaltiesFeesSet): void {
@@ -120,5 +130,6 @@ export function handleRoyaltiesFeesSet(event: RoyaltiesFeesSet): void {
 
   pair.royaltiesFee = basisPointToBigDecimal(params.royaltiesFee);
   pair.royaltiesBeneficiary = params.beneficiary;
+  updateTotalFee(pair);
   pair.save();
 }
