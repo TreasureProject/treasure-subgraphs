@@ -20,12 +20,8 @@ import {
   Sync,
   Transfer,
 } from "../generated/templates/UniswapV2Pair/UniswapV2Pair";
-import {
-  handleMint,
-  handlePairCreated,
-  handleSync,
-  handleTransfer,
-} from "../src/mappings/pair";
+import { handlePairCreated } from "../src/mappings/factory";
+import { handleMint, handleSync, handleTransfer } from "../src/mappings/pair";
 import { handleMagicUSDUpdated } from "../src/mappings/price";
 import { createAnswerUpdatedEvent } from "./helpers/price";
 import { mockToken } from "./helpers/token";

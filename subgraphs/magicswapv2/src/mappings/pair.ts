@@ -1,8 +1,6 @@
-import { Address, log } from "@graphprotocol/graph-ts";
+import { Address, log, store } from "@graphprotocol/graph-ts";
 
-import { PairCreated } from "../../generated/UniswapV2Factory/UniswapV2Factory";
 import { Pair, Token, Transaction } from "../../generated/schema";
-import { UniswapV2Pair } from "../../generated/templates";
 import {
   Burn,
   Mint,
@@ -16,47 +14,12 @@ import {
   getDerivedMagic,
   getOrCreateFactory,
   getOrCreateLiquidityPosition,
-  getOrCreateToken,
   getOrCreateUser,
   isMagic,
   updateDayData,
   updatePairDayData,
 } from "../helpers";
 import { tokenAmountToBigDecimal } from "../utils";
-
-export function handlePairCreated(event: PairCreated): void {
-  const params = event.params;
-
-  const token0 = getOrCreateToken(params.token0);
-  const token1 = getOrCreateToken(params.token1);
-
-  const pair = new Pair(params.pair);
-  pair.token0 = token0.id;
-  pair.token1 = token1.id;
-  pair.reserve0 = ZERO_BD;
-  pair.reserve1 = ZERO_BD;
-  pair.reserveUSD = ZERO_BD;
-  pair.totalSupply = ZERO_BI;
-  pair.volume0 = ZERO_BD;
-  pair.volume1 = ZERO_BD;
-  pair.volumeUSD = ZERO_BD;
-  pair.txCount = ZERO_BI;
-  pair.save();
-
-  const factory = getOrCreateFactory();
-  factory.pairCount = factory.pairCount.plus(ONE_BI);
-  factory.save();
-
-  if (isMagic(token0)) {
-    token1.magicPairs = token1.magicPairs.concat([pair.id]);
-    token1.save();
-  } else if (isMagic(token1)) {
-    token0.magicPairs = token0.magicPairs.concat([pair.id]);
-    token0.save();
-  }
-
-  UniswapV2Pair.create(params.pair);
-}
 
 export function handleBurn(event: Burn): void {
   const params = event.params;
@@ -410,15 +373,32 @@ export function handleTransfer(event: Transfer): void {
   ) {
     const fromUser = getOrCreateUser(params.from);
     const fromLiquidityPosition = getOrCreateLiquidityPosition(pair, fromUser);
-    fromLiquidityPosition.balance = fromLiquidityPosition.balance.minus(
-      params.value
-    );
-    fromLiquidityPosition.save();
+    const balance = fromLiquidityPosition.balance.minus(params.value);
+    if (balance.le(ZERO_BI)) {
+      // Remove Liquidity Position
+      store.remove("LiquidityPosition", fromLiquidityPosition.id.toHexString());
+
+      // Update User
+      fromUser.liquidityPositionCount =
+        fromUser.liquidityPositionCount.minus(ONE_BI);
+      fromUser.save();
+    } else {
+      fromLiquidityPosition.balance = balance;
+      fromLiquidityPosition.save();
+    }
   }
 
   if (params.to.notEqual(Address.zero()) && params.to.notEqual(event.address)) {
     const toUser = getOrCreateUser(params.to);
     const toLiquidityPosition = getOrCreateLiquidityPosition(pair, toUser);
+
+    // Update User
+    if (toLiquidityPosition.balance.equals(ZERO_BI)) {
+      toUser.liquidityPositionCount =
+        toUser.liquidityPositionCount.plus(ONE_BI);
+      toUser.save();
+    }
+
     toLiquidityPosition.balance = toLiquidityPosition.balance.plus(
       params.value
     );

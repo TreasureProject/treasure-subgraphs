@@ -38,6 +38,8 @@ export const getOrCreateFactory = (): Factory => {
     factory.txCount = ZERO_BI;
     factory.userCount = ZERO_BI;
     factory.magicUSD = ZERO_BD;
+    factory.lpFee = ZERO_BD;
+    factory.protocolFee = ZERO_BD;
     factory.save();
   }
 
@@ -62,6 +64,7 @@ export const getOrCreateUser = (address: Address): User => {
   let user = User.load(address);
   if (!user) {
     user = new User(address);
+    user.liquidityPositionCount = ZERO_BI;
     user.save();
 
     const factory = getOrCreateFactory();

@@ -20,6 +20,10 @@ type Factory @entity {
   userCount: BigInt!
 
   magicUSD: BigDecimal!
+
+  lpFee: BigDecimal!
+  protocolFee: BigDecimal!
+  protocolFeeBeneficiary: Bytes
 }
 
 type DayData @entity {
@@ -97,6 +101,11 @@ type Pair @entity {
   volumeUSD: BigDecimal!
   txCount: BigInt!
 
+  lpFee: BigDecimal!
+  protocolFee: BigDecimal!
+  royaltiesFee: BigDecimal!
+  royaltiesBeneficiary: Bytes
+
   transactions: [Transaction!]! @derivedFrom(field: "pair")
   liquidityPositions: [LiquidityPosition!]! @derivedFrom(field: "pair")
   dayData: [PairDayData!]! @derivedFrom(field: "pair")
@@ -119,8 +128,10 @@ type PairDayData @entity {
   txCount: BigInt!
 }
 
-type User @entity(immutable: true) {
+type User @entity {
   id: Bytes!
+
+  liquidityPositionCount: BigInt!
 
   transactions: [Transaction!]! @derivedFrom(field: "user")
   liquidityPositions: [LiquidityPosition!]! @derivedFrom(field: "user")

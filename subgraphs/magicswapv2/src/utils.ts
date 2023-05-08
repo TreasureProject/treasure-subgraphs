@@ -37,3 +37,9 @@ export const tokenAmountToBigDecimal = (
 
   return amount.toBigDecimal().div(token.decimalDivisor);
 };
+
+export const basisPointToBigDecimal = (
+  value: BigInt,
+  denominator: i32 = 10000
+): BigDecimal =>
+  value.toBigDecimal().div(BigDecimal.fromString(denominator.toString()));

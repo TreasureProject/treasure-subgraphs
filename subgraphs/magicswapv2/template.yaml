@@ -45,9 +45,19 @@ dataSources:
         - name: ERC20
           file: {{{ abis }}}/20.json
       eventHandlers:
+        - event: DefaultFeesSet((uint256,uint256))
+          handler: handleDefaultFeesSet
+        - event: LpFeesSet(indexed address,uint256,bool)
+          handler: handleLpFeesSet
         - event: PairCreated(indexed address,indexed address,address,uint256)
           handler: handlePairCreated
-      file: ./src/mappings/pair.ts
+        - event: ProtocolFeeBeneficiarySet(address)
+          handler: handleProtocolFeeBeneficiarySet
+        - event: ProtocolFeesSet(indexed address,uint256,bool)
+          handler: handleProtocolFeesSet
+        - event: RoyaltiesFeesSet(indexed address,address,uint256)
+          handler: handleRoyaltiesFeesSet
+      file: ./src/mappings/factory.ts
   - name: ChainlinkAggregator
     kind: ethereum/contract
     network: {{ network }}
