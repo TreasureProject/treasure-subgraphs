@@ -3,6 +3,7 @@ import {
   BigDecimal,
   BigInt,
   Bytes,
+  ethereum,
   log,
 } from "@graphprotocol/graph-ts";
 
@@ -20,6 +21,7 @@ import {
   Pair,
   PairDayData,
   Token,
+  Transaction,
   User,
 } from "../generated/schema";
 import { ONE_BD, ONE_BI, ZERO_BD, ZERO_BI } from "./const";
@@ -151,6 +153,27 @@ export const getOrCreateToken = (address: Address): Token => {
   }
 
   return token;
+};
+
+export const getOrCreateTransaction = (
+  event: ethereum.Event,
+  type: string,
+  user: Address
+): Transaction => {
+  let transaction = Transaction.load(event.transaction.hash);
+  if (!transaction) {
+    transaction = new Transaction(event.transaction.hash);
+    transaction.hash = event.transaction.hash;
+    transaction.timestamp = event.block.timestamp;
+    transaction.type = type;
+    transaction.user = getOrCreateUser(user).id;
+    transaction.amount0 = ZERO_BD;
+    transaction.amount1 = ZERO_BD;
+    transaction.amountUSD = ZERO_BD;
+    transaction.save();
+  }
+
+  return transaction;
 };
 
 export const isMagic = (token: Token): bool => token.id.equals(MAGIC_ADDRESS);

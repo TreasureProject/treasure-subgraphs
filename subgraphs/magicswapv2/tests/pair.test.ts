@@ -23,24 +23,23 @@ import {
 import { handlePairCreated } from "../src/mappings/factory";
 import { handleMint, handleSync, handleTransfer } from "../src/mappings/pair";
 import { handleMagicUSDUpdated } from "../src/mappings/price";
+import {
+  PAIR,
+  TOKEN0,
+  TOKEN1,
+  TX_HASH1,
+  TX_HASH2,
+  USER1,
+  USER2,
+} from "./helpers/constants";
 import { createAnswerUpdatedEvent } from "./helpers/price";
 import { mockToken } from "./helpers/token";
-
-const TOKEN0 = "0x0000000000000000000000000000000000000001";
-const TOKEN1 = "0x0000000000000000000000000000000000000002";
-const PAIR = "0x1000000000000000000000000000000000000000";
-const USER1 = "0x5d701784243802202403a44e5831f491cfd2a402";
-const USER2 = "0xd9d465f742393c14ab92a70412c5b8dbd6ee5ace";
-const TX_HASH1 =
-  "0x340d87d1573243d505e3082393e738203210688dfbe62e8712ad74c9fcf7e23b";
-const TX_HASH2 =
-  "0xd4c1ca41a78d1bb725b91db096b1cc7b29134d64f582106d3b93adaaebb12cd8";
 
 mockToken(TOKEN0, "Token 0", "TK0");
 mockToken(TOKEN1, "Token 1", "TK1");
 mockToken(MAGIC_ADDRESS.toHexString(), "Magic Token", "MAGIC");
 
-const createPairCreatedEvent = (
+export const createPairCreatedEvent = (
   token0: string = TOKEN0,
   token1: string = TOKEN1,
   pair: string = PAIR
@@ -85,7 +84,7 @@ const createSyncEvent = (
   return event;
 };
 
-const createTransferEvent = (
+export const createTransferEvent = (
   pair: string,
   from: string,
   to: string,

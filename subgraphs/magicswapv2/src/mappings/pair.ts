@@ -1,6 +1,11 @@
-import { Address, log, store } from "@graphprotocol/graph-ts";
+import { Address, Bytes, log, store } from "@graphprotocol/graph-ts";
 
-import { Pair, Token, Transaction } from "../../generated/schema";
+import {
+  Pair,
+  Token,
+  Transaction,
+  TransactionItem,
+} from "../../generated/schema";
 import {
   Burn,
   Mint,
@@ -8,12 +13,13 @@ import {
   Sync,
   Transfer,
 } from "../../generated/templates/UniswapV2Pair/UniswapV2Pair";
-import { TWO_BD, ZERO_BD, ZERO_BI } from "../const";
+import { TWO_BD, ZERO_BI } from "../const";
 import { ONE_BI } from "../const";
 import {
   getDerivedMagic,
   getOrCreateFactory,
   getOrCreateLiquidityPosition,
+  getOrCreateTransaction,
   getOrCreateUser,
   isMagic,
   updateDayData,
@@ -329,22 +335,16 @@ export function handleTransfer(event: Transfer): void {
     return;
   }
 
+  let transaction: Transaction | null = null;
+
   if (params.from.equals(Address.zero())) {
     // Update Pair
     pair.totalSupply = pair.totalSupply.plus(params.value);
     pair.save();
 
     // Log Transaction
-    const transaction = new Transaction(event.transaction.hash);
-    transaction.hash = event.transaction.hash;
-    transaction.timestamp = event.block.timestamp;
-    transaction.type = "Deposit";
-    transaction.user = getOrCreateUser(params.to).id;
+    transaction = getOrCreateTransaction(event, "Deposit", params.to);
     transaction.pair = pair.id;
-    transaction.amount0 = ZERO_BD;
-    transaction.amount1 = ZERO_BD;
-    transaction.amountUSD = ZERO_BD;
-    transaction.save();
   } else if (
     params.to.equals(Address.zero()) &&
     params.from.equals(event.address)
@@ -354,15 +354,37 @@ export function handleTransfer(event: Transfer): void {
     pair.save();
 
     // Log Transaction
-    const transaction = new Transaction(event.transaction.hash);
-    transaction.hash = event.transaction.hash;
-    transaction.timestamp = event.block.timestamp;
-    transaction.type = "Withdrawal";
-    transaction.user = getOrCreateUser(params.from).id; // TODO: Break this out into two transactions
+    transaction = getOrCreateTransaction(event, "Withdrawal", params.from);
     transaction.pair = pair.id;
-    transaction.amount0 = ZERO_BD;
-    transaction.amount1 = ZERO_BD;
-    transaction.amountUSD = ZERO_BD;
+  }
+
+  if (transaction) {
+    // Move transaction items to their desginated place in pair
+    const items = transaction._items;
+    if (items && items.length > 0) {
+      let items0 = (transaction.items0 || []) as Bytes[];
+      let items1 = (transaction.items1 || []) as Bytes[];
+      for (let i = 0; i < items.length; i += 1) {
+        const item = TransactionItem.load(items[i]);
+        if (!item) {
+          log.error("Error updating deposit transaction item: {}", [
+            items[i].toHexString(),
+          ]);
+          continue;
+        }
+
+        if (item.vault.equals(pair.token0)) {
+          items0.push(items[i]);
+        } else if (item.vault.equals(pair.token1)) {
+          items1.push(items[i]);
+        }
+      }
+
+      transaction._items = null;
+      transaction.items0 = items0;
+      transaction.items1 = items1;
+    }
+
     transaction.save();
   }
 

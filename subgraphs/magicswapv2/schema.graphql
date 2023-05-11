@@ -147,7 +147,7 @@ type LiquidityPosition @entity {
   balance: BigInt!
 }
 
-type Transaction @entity(immutable: true) {
+type Transaction @entity {
   id: Bytes!
 
   hash: Bytes!
@@ -155,13 +155,22 @@ type Transaction @entity(immutable: true) {
   type: TransactionType!
   user: User!
 
-  pair: Pair!
-
+  pair: Pair
   amount0: BigDecimal!
   amount1: BigDecimal!
   amountUSD: BigDecimal!
   isAmount1Out: Boolean
 
-  tokenIds0: [Int!]
-  tokenIds1: [Int!]
+  _items: [TransactionItem!]
+  items0: [TransactionItem!]
+  items1: [TransactionItem!]
+}
+
+type TransactionItem @entity(immutable: true) {
+  id: Bytes!
+
+  vault: Token!
+  collection: Collection!
+  tokenId: BigInt!
+  amount: Int!
 }

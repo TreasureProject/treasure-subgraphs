@@ -1,8 +1,9 @@
-import { log, store } from "@graphprotocol/graph-ts";
+import { Bytes, log, store } from "@graphprotocol/graph-ts";
 
 import { VaultCreated } from "../../generated/NftVaultFactory/NftVaultFactory";
 import {
   Token,
+  TransactionItem,
   VaultCollection,
   VaultReserveItem,
 } from "../../generated/schema";
@@ -12,7 +13,11 @@ import {
   Withdraw,
 } from "../../generated/templates/NftVault/NftVault";
 import { ZERO_BD, ZERO_BI } from "../const";
-import { getOrCreateCollection, setTokenContractData } from "../helpers";
+import {
+  getOrCreateCollection,
+  getOrCreateTransaction,
+  setTokenContractData,
+} from "../helpers";
 
 export function handleVaultCreated(event: VaultCreated): void {
   const params = event.params;
@@ -63,6 +68,24 @@ export function handleDeposit(event: DepositEvent): void {
 
   reserveItem.amount += params.amount.toI32();
   reserveItem.save();
+
+  const transactionItem = new TransactionItem(
+    event.transaction.hash
+      .concat(event.address)
+      .concat(params.collection)
+      .concatI32(params.tokenId.toI32())
+  );
+  transactionItem.vault = event.address;
+  transactionItem.collection = params.collection;
+  transactionItem.tokenId = params.tokenId;
+  transactionItem.amount = params.amount.toI32();
+  transactionItem.save();
+
+  const transaction = getOrCreateTransaction(event, "Deposit", params.to);
+  transaction._items = ((transaction._items || []) as Bytes[]).concat([
+    transactionItem.id,
+  ]);
+  transaction.save();
 }
 
 export function handleWithdraw(event: Withdraw): void {
