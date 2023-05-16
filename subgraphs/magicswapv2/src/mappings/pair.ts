@@ -256,7 +256,7 @@ export function handleSwap(event: Swap): void {
   transaction.hash = event.transaction.hash;
   transaction.timestamp = event.block.timestamp;
   transaction.type = "Swap";
-  transaction.user = getOrCreateUser(params.to).id;
+  transaction.user = getOrCreateUser(event.transaction.from).id; // TODO: handle case where swap result is sent to someone other than tx sender
   transaction.pair = pair.id;
   transaction.amount0 = amount0;
   transaction.amount1 = amount1;
