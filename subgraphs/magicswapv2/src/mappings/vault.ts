@@ -107,4 +107,22 @@ export function handleWithdraw(event: Withdraw): void {
   } else {
     store.remove("VaultReserveItem", reserveItem.id.toHexString());
   }
+
+  const transactionItem = new TransactionItem(
+    event.transaction.hash
+      .concat(event.address)
+      .concat(params.collection)
+      .concatI32(params.tokenId.toI32())
+  );
+  transactionItem.vault = event.address;
+  transactionItem.collection = params.collection;
+  transactionItem.tokenId = params.tokenId;
+  transactionItem.amount = params.amount.toI32();
+  transactionItem.save();
+
+  const transaction = getOrCreateTransaction(event, "Withdrawal", params.to);
+  transaction._items = ((transaction._items || []) as Bytes[]).concat([
+    transactionItem.id,
+  ]);
+  transaction.save();
 }
