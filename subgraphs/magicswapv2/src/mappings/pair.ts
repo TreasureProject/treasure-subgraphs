@@ -1,11 +1,6 @@
-import { Address, Bytes, log, store } from "@graphprotocol/graph-ts";
+import { Address, log, store } from "@graphprotocol/graph-ts";
 
-import {
-  Pair,
-  Token,
-  Transaction,
-  TransactionItem,
-} from "../../generated/schema";
+import { Pair, Token, Transaction } from "../../generated/schema";
 import {
   Burn,
   Mint,
@@ -22,6 +17,7 @@ import {
   getOrCreateTransaction,
   getOrCreateUser,
   isMagic,
+  populateTransactionItems,
   updateDayData,
   updatePairDayData,
 } from "../helpers";
@@ -54,8 +50,16 @@ export function handleBurn(event: Burn): void {
 
   const factory = getOrCreateFactory();
 
-  const amount0 = tokenAmountToBigDecimal(token0, params.amount0);
-  const amount1 = tokenAmountToBigDecimal(token1, params.amount1);
+  let amount0 = tokenAmountToBigDecimal(token0, params.amount0);
+  if (token0.isNFT) {
+    amount0 = amount0.truncate(0);
+  }
+
+  let amount1 = tokenAmountToBigDecimal(token1, params.amount1);
+  if (token1.isNFT) {
+    amount1 = amount1.truncate(0);
+  }
+
   const amountUSD = amount0
     .times(token0.derivedMAGIC)
     .plus(amount1.times(token1.derivedMAGIC))
@@ -90,17 +94,13 @@ export function handleBurn(event: Burn): void {
   updatePairDayData(pair, event.block.timestamp);
 
   // Update Transaction
-  const transaction = Transaction.load(event.transaction.hash);
-  if (!transaction) {
-    log.error("Error update unknown burn Transaction: {}", [
-      event.transaction.hash.toHexString(),
-    ]);
-    return;
-  }
-
+  const transaction = getOrCreateTransaction(event, "Withdrawal");
+  transaction.user = getOrCreateUser(params.to).id;
+  transaction.pair = pair.id;
   transaction.amount0 = amount0;
   transaction.amount1 = amount1;
   transaction.amountUSD = amountUSD;
+  populateTransactionItems(transaction, pair);
   transaction.save();
 }
 
@@ -167,17 +167,13 @@ export function handleMint(event: Mint): void {
   updatePairDayData(pair, event.block.timestamp);
 
   // Update Transaction
-  const transaction = Transaction.load(event.transaction.hash);
-  if (!transaction) {
-    log.error("Error update unknown mint Transaction: {}", [
-      event.transaction.hash.toHexString(),
-    ]);
-    return;
-  }
-
+  const transaction = getOrCreateTransaction(event, "Deposit");
+  transaction.user = getOrCreateUser(params.sender).id;
+  transaction.pair = pair.id;
   transaction.amount0 = amount0;
   transaction.amount1 = amount1;
   transaction.amountUSD = amountUSD;
+  populateTransactionItems(transaction, pair);
   transaction.save();
 }
 
@@ -335,60 +331,17 @@ export function handleTransfer(event: Transfer): void {
     return;
   }
 
-  let transaction: Transaction | null = null;
-
   if (params.from.equals(Address.zero())) {
-    // Pair is minted
-    // Update Pair
+    // Minted
     pair.totalSupply = pair.totalSupply.plus(params.value);
     pair.save();
-
-    // Log Transaction
-    transaction = getOrCreateTransaction(event, "Deposit", params.to);
-    transaction.pair = pair.id;
-  } else if (params.to.equals(event.address)) {
-    // User deposits their pair to the contract before withdrawal
-    // Log Transaction
-    transaction = getOrCreateTransaction(event, "Withdrawal", params.from);
-    transaction.pair = pair.id;
   } else if (
     params.to.equals(Address.zero()) &&
     params.from.equals(event.address)
   ) {
-    // Pair is burned
-    // Update Pair
+    // Burned
     pair.totalSupply = pair.totalSupply.minus(params.value);
     pair.save();
-  }
-
-  if (transaction) {
-    // Move transaction items to their desginated place in pair
-    const items = transaction._items;
-    if (items && items.length > 0) {
-      let items0 = (transaction.items0 || []) as Bytes[];
-      let items1 = (transaction.items1 || []) as Bytes[];
-      for (let i = 0; i < items.length; i += 1) {
-        const item = TransactionItem.load(items[i]);
-        if (!item) {
-          log.error("Error updating deposit transaction item: {}", [
-            items[i].toHexString(),
-          ]);
-          continue;
-        }
-
-        if (item.vault.equals(pair.token0)) {
-          items0.push(items[i]);
-        } else if (item.vault.equals(pair.token1)) {
-          items1.push(items[i]);
-        }
-      }
-
-      transaction._items = null;
-      transaction.items0 = items0;
-      transaction.items1 = items1;
-    }
-
-    transaction.save();
   }
 
   // Update Liquidity Positions

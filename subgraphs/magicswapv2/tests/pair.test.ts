@@ -1,27 +1,19 @@
-import {
-  assert,
-  beforeEach,
-  clearStore,
-  describe,
-  newMockEvent,
-  test,
-} from "matchstick-as";
+import { assert, beforeEach, clearStore, describe, test } from "matchstick-as";
 
-import { Address, BigInt, Bytes, ethereum } from "@graphprotocol/graph-ts";
+import { Address } from "@graphprotocol/graph-ts";
 
 import {
   MAGICSWAP_V2_FACTORY_ADDRESS,
   MAGIC_ADDRESS,
 } from "@treasure/constants";
 
-import { PairCreated } from "../generated/UniswapV2Factory/UniswapV2Factory";
-import {
-  Mint,
-  Sync,
-  Transfer,
-} from "../generated/templates/UniswapV2Pair/UniswapV2Pair";
 import { handlePairCreated } from "../src/mappings/factory";
-import { handleMint, handleSync, handleTransfer } from "../src/mappings/pair";
+import {
+  handleBurn,
+  handleMint,
+  handleSync,
+  handleTransfer,
+} from "../src/mappings/pair";
 import { handleMagicUSDUpdated } from "../src/mappings/price";
 import {
   PAIR,
@@ -32,111 +24,19 @@ import {
   USER1,
   USER2,
 } from "./helpers/constants";
+import {
+  createBurnEvent,
+  createMintEvent,
+  createPairCreatedEvent,
+  createSyncEvent,
+  createTransferEvent,
+} from "./helpers/pair";
 import { createAnswerUpdatedEvent } from "./helpers/price";
 import { mockToken } from "./helpers/token";
 
 mockToken(TOKEN0, "Token 0", "TK0");
 mockToken(TOKEN1, "Token 1", "TK1");
 mockToken(MAGIC_ADDRESS.toHexString(), "Magic Token", "MAGIC");
-
-export const createPairCreatedEvent = (
-  token0: string = TOKEN0,
-  token1: string = TOKEN1,
-  pair: string = PAIR
-): PairCreated => {
-  const event = changetype<PairCreated>(newMockEvent());
-  event.parameters = [
-    new ethereum.EventParam(
-      "token0",
-      ethereum.Value.fromAddress(Address.fromString(token0))
-    ),
-    new ethereum.EventParam(
-      "token1",
-      ethereum.Value.fromAddress(Address.fromString(token1))
-    ),
-    new ethereum.EventParam(
-      "pair",
-      ethereum.Value.fromAddress(Address.fromString(pair))
-    ),
-    new ethereum.EventParam("param3", ethereum.Value.fromI32(0)),
-  ];
-
-  return event;
-};
-
-const createSyncEvent = (
-  pair: string,
-  reserve0: string,
-  reserve1: string
-): Sync => {
-  const event = changetype<Sync>(newMockEvent());
-  event.address = Address.fromString(pair);
-  event.parameters = [
-    new ethereum.EventParam(
-      "reserve0",
-      ethereum.Value.fromUnsignedBigInt(BigInt.fromString(reserve0))
-    ),
-    new ethereum.EventParam(
-      "reserve1",
-      ethereum.Value.fromUnsignedBigInt(BigInt.fromString(reserve1))
-    ),
-  ];
-  return event;
-};
-
-export const createTransferEvent = (
-  pair: string,
-  from: string,
-  to: string,
-  value: string,
-  hash: string = TX_HASH1
-): Transfer => {
-  const event = changetype<Transfer>(newMockEvent());
-  event.address = Address.fromString(pair);
-  event.transaction.hash = Bytes.fromHexString(hash);
-  event.parameters = [
-    new ethereum.EventParam(
-      "from",
-      ethereum.Value.fromAddress(Address.fromString(from))
-    ),
-    new ethereum.EventParam(
-      "to",
-      ethereum.Value.fromAddress(Address.fromString(to))
-    ),
-    new ethereum.EventParam(
-      "value",
-      ethereum.Value.fromUnsignedBigInt(BigInt.fromString(value))
-    ),
-  ];
-  return event;
-};
-
-const createMintEvent = (
-  pair: string,
-  from: string,
-  amount0: string,
-  amount1: string,
-  hash: string = TX_HASH1
-): Mint => {
-  const event = changetype<Mint>(newMockEvent());
-  event.address = Address.fromString(pair);
-  event.transaction.hash = Bytes.fromHexString(hash);
-  event.parameters = [
-    new ethereum.EventParam(
-      "sender",
-      ethereum.Value.fromAddress(Address.fromString(from))
-    ),
-    new ethereum.EventParam(
-      "amount0",
-      ethereum.Value.fromUnsignedBigInt(BigInt.fromString(amount0))
-    ),
-    new ethereum.EventParam(
-      "amount1",
-      ethereum.Value.fromUnsignedBigInt(BigInt.fromString(amount1))
-    ),
-  ];
-  return event;
-};
 
 describe("handlePairCreated()", () => {
   beforeEach(() => {
@@ -228,25 +128,6 @@ describe("handleTransfer()", () => {
     assert.fieldEquals("Pair", PAIR, "totalSupply", "2000000000000000000");
   });
 
-  test("should create deposit transaction on mint", () => {
-    // Create pair
-    handlePairCreated(createPairCreatedEvent());
-
-    // Mint tokens
-    handleTransfer(
-      createTransferEvent(
-        PAIR,
-        Address.zero().toHexString(),
-        USER1,
-        "1000000000000000000",
-        TX_HASH1
-      )
-    );
-
-    assert.entityCount("Transaction", 1);
-    assert.fieldEquals("Transaction", TX_HASH1, "type", "Deposit");
-  });
-
   test("should decrease total supply on burns", () => {
     // Create pair
     handlePairCreated(createPairCreatedEvent());
@@ -275,39 +156,6 @@ describe("handleTransfer()", () => {
     );
 
     assert.fieldEquals("Pair", PAIR, "totalSupply", "500000000000000000");
-  });
-
-  test("should create withdrawal transaction on burn", () => {
-    // Create pair
-    handlePairCreated(createPairCreatedEvent());
-
-    // Mint tokens
-    handleTransfer(
-      createTransferEvent(
-        PAIR,
-        Address.zero().toHexString(),
-        USER1,
-        "1000000000000000000",
-        TX_HASH1
-      )
-    );
-
-    // Burn tokens
-    handleTransfer(
-      createTransferEvent(PAIR, USER1, PAIR, "500000000000000000", TX_HASH2)
-    );
-    handleTransfer(
-      createTransferEvent(
-        PAIR,
-        PAIR,
-        Address.zero().toHexString(),
-        "500000000000000000",
-        TX_HASH2
-      )
-    );
-
-    assert.entityCount("Transaction", 2);
-    assert.fieldEquals("Transaction", TX_HASH2, "type", "Withdrawal");
   });
 
   test("should ignore transfers that aren't mints or burns", () => {
@@ -370,8 +218,91 @@ describe("handleMint()", () => {
       "txCount",
       "1"
     );
+    assert.fieldEquals("Transaction", TX_HASH1, "type", "Deposit");
+    assert.fieldEquals("Transaction", TX_HASH1, "user", USER1);
+    assert.fieldEquals("Transaction", TX_HASH1, "pair", PAIR);
     assert.fieldEquals("Transaction", TX_HASH1, "amount0", "1");
     assert.fieldEquals("Transaction", TX_HASH1, "amount1", "500");
     assert.fieldEquals("Transaction", TX_HASH1, "amountUSD", "1500");
+  });
+});
+
+describe("handleBurn()", () => {
+  beforeEach(() => {
+    clearStore();
+  });
+
+  test("should fill withdrawal transaction with amounts", () => {
+    // Create MAGIC pair
+    handlePairCreated(
+      createPairCreatedEvent(TOKEN0, MAGIC_ADDRESS.toHexString(), PAIR)
+    );
+
+    // Set MAGIC/USD price
+    handleMagicUSDUpdated(createAnswerUpdatedEvent("150000000"));
+
+    // Sync pair
+    handleSync(
+      createSyncEvent(PAIR, "5000000000000000000", "2500000000000000000000")
+    );
+
+    // Mint tokens
+    handleTransfer(
+      createTransferEvent(
+        PAIR,
+        Address.zero().toHexString(),
+        USER1,
+        "1000000000000000000",
+        TX_HASH1
+      )
+    );
+    handleMint(
+      createMintEvent(
+        PAIR,
+        USER1,
+        "1000000000000000000",
+        "500000000000000000000"
+      )
+    );
+
+    // Burn tokens
+    handleTransfer(
+      createTransferEvent(PAIR, USER1, PAIR, "500000000000000000", TX_HASH2)
+    );
+    handleTransfer(
+      createTransferEvent(
+        PAIR,
+        PAIR,
+        Address.zero().toHexString(),
+        "500000000000000000",
+        TX_HASH2
+      )
+    );
+    handleBurn(
+      createBurnEvent(
+        PAIR,
+        USER1,
+        "500000000000000000",
+        "250000000000000000000",
+        USER1,
+        TX_HASH2
+      )
+    );
+
+    assert.fieldEquals("Token", TOKEN0, "txCount", "2");
+    assert.fieldEquals("Token", MAGIC_ADDRESS.toHexString(), "txCount", "2");
+    assert.fieldEquals("Pair", PAIR, "txCount", "2");
+    assert.fieldEquals(
+      "Factory",
+      MAGICSWAP_V2_FACTORY_ADDRESS.toHexString(),
+      "txCount",
+      "2"
+    );
+    assert.fieldEquals("Transaction", TX_HASH2, "type", "Withdrawal");
+    assert.fieldEquals("Transaction", TX_HASH2, "user", USER1);
+    assert.fieldEquals("Transaction", TX_HASH2, "pair", PAIR);
+    assert.fieldEquals("Transaction", TX_HASH2, "amount0", "0.5");
+    assert.fieldEquals("Transaction", TX_HASH2, "amount1", "250");
+    assert.fieldEquals("Transaction", TX_HASH2, "amountUSD", "750");
   });
 });

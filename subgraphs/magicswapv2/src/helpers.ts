@@ -22,6 +22,7 @@ import {
   PairDayData,
   Token,
   Transaction,
+  TransactionItem,
   User,
 } from "../generated/schema";
 import { ONE_BD, ONE_BI, ZERO_BD, ZERO_BI } from "./const";
@@ -157,23 +158,52 @@ export const getOrCreateToken = (address: Address): Token => {
 
 export const getOrCreateTransaction = (
   event: ethereum.Event,
-  type: string,
-  user: Address
+  type: string = "Other"
 ): Transaction => {
   let transaction = Transaction.load(event.transaction.hash);
   if (!transaction) {
     transaction = new Transaction(event.transaction.hash);
     transaction.hash = event.transaction.hash;
     transaction.timestamp = event.block.timestamp;
-    transaction.type = type;
-    transaction.user = getOrCreateUser(user).id;
+    transaction.user = getOrCreateUser(event.transaction.from).id;
     transaction.amount0 = ZERO_BD;
     transaction.amount1 = ZERO_BD;
     transaction.amountUSD = ZERO_BD;
-    transaction.save();
   }
 
+  transaction.type = type;
   return transaction;
+};
+
+export const populateTransactionItems = (
+  transaction: Transaction,
+  pair: Pair
+): void => {
+  // Move transaction items to their desginated place in pair
+  const items = transaction._items;
+  if (items && items.length > 0) {
+    let items0 = (transaction.items0 || []) as Bytes[];
+    let items1 = (transaction.items1 || []) as Bytes[];
+    for (let i = 0; i < items.length; i += 1) {
+      const item = TransactionItem.load(items[i]);
+      if (!item) {
+        log.error("Error updating deposit transaction item: {}", [
+          items[i].toHexString(),
+        ]);
+        continue;
+      }
+
+      if (item.vault.equals(pair.token0)) {
+        items0.push(items[i]);
+      } else if (item.vault.equals(pair.token1)) {
+        items1.push(items[i]);
+      }
+    }
+
+    transaction._items = null;
+    transaction.items0 = items0;
+    transaction.items1 = items1;
+  }
 };
 
 export const isMagic = (token: Token): bool => token.id.equals(MAGIC_ADDRESS);

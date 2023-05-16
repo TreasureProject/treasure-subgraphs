@@ -82,7 +82,7 @@ export function handleDeposit(event: DepositEvent): void {
   transactionItem.amount = params.amount.toI32();
   transactionItem.save();
 
-  const transaction = getOrCreateTransaction(event, "Deposit", params.to);
+  const transaction = getOrCreateTransaction(event, "Deposit");
   transaction._items = ((transaction._items || []) as Bytes[]).concat([
     transactionItem.id,
   ]);
@@ -121,7 +121,7 @@ export function handleWithdraw(event: Withdraw): void {
   transactionItem.amount = params.amount.toI32();
   transactionItem.save();
 
-  const transaction = getOrCreateTransaction(event, "Withdrawal", params.to);
+  const transaction = getOrCreateTransaction(event, "Withdrawal");
   let foundPairToken = false;
   if (transaction.pair) {
     const pair = Pair.load(transaction.pair as Bytes);

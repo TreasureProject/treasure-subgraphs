@@ -7,6 +7,7 @@ enum TransactionType {
   Swap
   Deposit
   Withdrawal
+  Other
 }
 
 type Factory @entity {
