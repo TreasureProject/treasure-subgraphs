@@ -2,6 +2,7 @@ import { Bytes, log, store } from "@graphprotocol/graph-ts";
 
 import { VaultCreated } from "../../generated/NftVaultFactory/NftVaultFactory";
 import {
+  Pair,
   Token,
   TransactionItem,
   VaultCollection,
@@ -121,8 +122,29 @@ export function handleWithdraw(event: Withdraw): void {
   transactionItem.save();
 
   const transaction = getOrCreateTransaction(event, "Withdrawal", params.to);
-  transaction._items = ((transaction._items || []) as Bytes[]).concat([
-    transactionItem.id,
-  ]);
+  let foundPairToken = false;
+  if (transaction.pair) {
+    const pair = Pair.load(transaction.pair);
+    if (pair) {
+      if (pair.token0.equals(event.address)) {
+        transaction.items0 = ((transaction.items0 || []) as Bytes[]).concat([
+          transactionItem.id,
+        ]);
+        foundPairToken = true;
+      } else if (pair.token1.equals(event.address)) {
+        transaction.items1 = ((transaction.items1 || []) as Bytes[]).concat([
+          transactionItem.id,
+        ]);
+        foundPairToken = true;
+      }
+    }
+  }
+
+  if (!foundPairToken) {
+    transaction._items = ((transaction._items || []) as Bytes[]).concat([
+      transactionItem.id,
+    ]);
+  }
+
   transaction.save();
 }

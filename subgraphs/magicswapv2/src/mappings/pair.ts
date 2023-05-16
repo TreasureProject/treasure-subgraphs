@@ -338,6 +338,7 @@ export function handleTransfer(event: Transfer): void {
   let transaction: Transaction | null = null;
 
   if (params.from.equals(Address.zero())) {
+    // Pair is minted
     // Update Pair
     pair.totalSupply = pair.totalSupply.plus(params.value);
     pair.save();
@@ -345,10 +346,16 @@ export function handleTransfer(event: Transfer): void {
     // Log Transaction
     transaction = getOrCreateTransaction(event, "Deposit", params.to);
     transaction.pair = pair.id;
+  } else if (params.to.equals(event.address)) {
+    // User deposits their pair to the contract before withdrawal
+    // Log Transaction
+    transaction = getOrCreateTransaction(event, "Withdrawal", params.from);
+    transaction.pair = pair.id;
   } else if (
     params.to.equals(Address.zero()) &&
     params.from.equals(event.address)
   ) {
+    // Pair is burned
     // Update Pair
     pair.totalSupply = pair.totalSupply.minus(params.value);
     pair.save();
