@@ -359,10 +359,6 @@ export function handleTransfer(event: Transfer): void {
     // Update Pair
     pair.totalSupply = pair.totalSupply.minus(params.value);
     pair.save();
-
-    // Log Transaction
-    transaction = getOrCreateTransaction(event, "Withdrawal", params.from);
-    transaction.pair = pair.id;
   }
 
   if (transaction) {

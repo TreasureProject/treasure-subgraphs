@@ -263,6 +263,9 @@ describe("handleTransfer()", () => {
 
     // Burn tokens
     handleTransfer(
+      createTransferEvent(PAIR, USER1, PAIR, "500000000000000000")
+    );
+    handleTransfer(
       createTransferEvent(
         PAIR,
         PAIR,
@@ -290,6 +293,9 @@ describe("handleTransfer()", () => {
     );
 
     // Burn tokens
+    handleTransfer(
+      createTransferEvent(PAIR, USER1, PAIR, "500000000000000000", TX_HASH2)
+    );
     handleTransfer(
       createTransferEvent(
         PAIR,

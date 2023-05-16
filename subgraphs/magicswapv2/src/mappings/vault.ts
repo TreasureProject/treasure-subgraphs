@@ -124,7 +124,7 @@ export function handleWithdraw(event: Withdraw): void {
   const transaction = getOrCreateTransaction(event, "Withdrawal", params.to);
   let foundPairToken = false;
   if (transaction.pair) {
-    const pair = Pair.load(transaction.pair);
+    const pair = Pair.load(transaction.pair as Bytes);
     if (pair) {
       if (pair.token0.equals(event.address)) {
         transaction.items0 = ((transaction.items0 || []) as Bytes[]).concat([
