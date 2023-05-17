@@ -95,7 +95,7 @@ export function handleBurn(event: Burn): void {
 
   // Update Transaction
   const transaction = getOrCreateTransaction(event, "Withdrawal");
-  transaction.user = getOrCreateUser(params.to).id;
+  transaction.user = getOrCreateUser(event.transaction.from).id; // TODO: handle case where swap result is sent to someone other than tx sender
   transaction.pair = pair.id;
   transaction.amount0 = amount0;
   transaction.amount1 = amount1;
@@ -168,7 +168,7 @@ export function handleMint(event: Mint): void {
 
   // Update Transaction
   const transaction = getOrCreateTransaction(event, "Deposit");
-  transaction.user = getOrCreateUser(params.sender).id;
+  transaction.user = getOrCreateUser(event.transaction.from).id; // TODO: handle case where swap result is sent to someone other than tx sender
   transaction.pair = pair.id;
   transaction.amount0 = amount0;
   transaction.amount1 = amount1;

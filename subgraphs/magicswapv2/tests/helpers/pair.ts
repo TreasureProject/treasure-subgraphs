@@ -85,7 +85,7 @@ export const createTransferEvent = (
 
 export const createMintEvent = (
   pair: string,
-  from: string,
+  sender: string,
   amount0: string,
   amount1: string,
   hash: string = TX_HASH1
@@ -93,10 +93,11 @@ export const createMintEvent = (
   const event = changetype<Mint>(newMockEvent());
   event.address = Address.fromString(pair);
   event.transaction.hash = Bytes.fromHexString(hash);
+  event.transaction.from = Address.fromString(sender);
   event.parameters = [
     new ethereum.EventParam(
       "sender",
-      ethereum.Value.fromAddress(Address.fromString(from))
+      ethereum.Value.fromAddress(Address.fromString(sender))
     ),
     new ethereum.EventParam(
       "amount0",
@@ -121,6 +122,7 @@ export const createBurnEvent = (
   const event = changetype<Burn>(newMockEvent());
   event.address = Address.fromString(pair);
   event.transaction.hash = Bytes.fromHexString(hash);
+  event.transaction.from = Address.fromString(sender);
   event.parameters = [
     new ethereum.EventParam(
       "sender",
