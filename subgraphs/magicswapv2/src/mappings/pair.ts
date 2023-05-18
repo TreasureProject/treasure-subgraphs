@@ -254,7 +254,7 @@ export function handleSwap(event: Swap): void {
   let items0 = [] as Bytes[];
   let items1 = [] as Bytes[];
   const nftTransaction = Transaction.load(event.transaction.hash);
-  if (nftTransaction && nftTransaction._items && nftTransaction.pair == null) {
+  if (nftTransaction && nftTransaction._items && !nftTransaction.pair) {
     const splitItems = generateTransactionItems(
       nftTransaction._items as Bytes[],
       pair
