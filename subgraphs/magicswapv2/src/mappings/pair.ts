@@ -1,4 +1,4 @@
-import { Address, log, store } from "@graphprotocol/graph-ts";
+import { Address, Bytes, log, store } from "@graphprotocol/graph-ts";
 
 import { Pair, Token, Transaction } from "../../generated/schema";
 import {
@@ -11,6 +11,7 @@ import {
 import { TWO_BD, ZERO_BI } from "../const";
 import { ONE_BI } from "../const";
 import {
+  generateTransactionItems,
   getDerivedMagic,
   getOrCreateFactory,
   getOrCreateLiquidityPosition,
@@ -249,6 +250,20 @@ export function handleSwap(event: Swap): void {
   pairDayData.volumeUSD = pairDayData.volumeUSD.plus(amountUSD);
   pairDayData.save();
 
+  // Find existing Transaction that wasn't a part of a burn or mint and extract its items
+  let items0 = [] as Bytes[];
+  let items1 = [] as Bytes[];
+  const nftTransaction = Transaction.load(event.transaction.hash);
+  if (nftTransaction && nftTransaction._items && nftTransaction.pair == null) {
+    const splitItems = generateTransactionItems(
+      nftTransaction._items as Bytes[],
+      pair
+    );
+    items0 = splitItems[0];
+    items1 = splitItems[1];
+    store.remove("Transaction", nftTransaction.id.toHexString());
+  }
+
   // Log Transaction
   const transaction = new Transaction(
     event.transaction.hash.concatI32(event.logIndex.toI32())
@@ -262,6 +277,12 @@ export function handleSwap(event: Swap): void {
   transaction.amount1 = amount1;
   transaction.amountUSD = amountUSD;
   transaction.isAmount1Out = isAmount1Out;
+  if (items0.length > 0) {
+    transaction.items0 = items0;
+  }
+  if (items1.length > 0) {
+    transaction.items1 = items1;
+  }
   transaction.save();
 }
 
