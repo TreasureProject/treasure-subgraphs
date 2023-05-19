@@ -133,9 +133,11 @@ export function handleWithdraw(event: Withdraw): void {
       if (pair) {
         if (pair.token0.equals(event.address)) {
           addTransactionItems0(swapTransaction, [transactionItem.id]);
+          swapTransaction.save();
           processedItems = true;
         } else if (pair.token1.equals(event.address)) {
           addTransactionItems1(swapTransaction, [transactionItem.id]);
+          swapTransaction.save();
           processedItems = true;
         }
       }
