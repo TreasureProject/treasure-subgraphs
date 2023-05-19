@@ -129,7 +129,7 @@ export function handleWithdraw(event: Withdraw): void {
   if (transaction.swap) {
     const swapTransaction = Transaction.load(transaction.swap as Bytes);
     if (swapTransaction && swapTransaction.pair) {
-      const pair = Pair.load(transaction.pair as Bytes);
+      const pair = Pair.load(swapTransaction.pair as Bytes);
       if (pair) {
         if (pair.token0.equals(event.address)) {
           addTransactionItems0(swapTransaction, [transactionItem.id]);
