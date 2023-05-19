@@ -198,6 +198,27 @@ export const generateTransactionItems = (
   return [items0, items1];
 };
 
+export const addTransactionItems = (
+  transaction: Transaction,
+  items: Bytes[]
+): void => {
+  transaction._items = ((transaction._items || []) as Bytes[]).concat(items);
+};
+
+export const addTransactionItems0 = (
+  transaction: Transaction,
+  items: Bytes[]
+): void => {
+  transaction.items0 = ((transaction.items0 || []) as Bytes[]).concat(items);
+};
+
+export const addTransactionItems1 = (
+  transaction: Transaction,
+  items: Bytes[]
+): void => {
+  transaction.items1 = ((transaction.items1 || []) as Bytes[]).concat(items);
+};
+
 export const populateTransactionItems = (
   transaction: Transaction,
   pair: Pair
@@ -207,12 +228,8 @@ export const populateTransactionItems = (
   if (items && items.length > 0) {
     const splitItems = generateTransactionItems(items, pair);
     transaction._items = null;
-    transaction.items0 = ((transaction.items0 || []) as Bytes[]).concat(
-      splitItems[0]
-    );
-    transaction.items1 = ((transaction.items1 || []) as Bytes[]).concat(
-      splitItems[1]
-    );
+    addTransactionItems0(transaction, splitItems[0]);
+    addTransactionItems1(transaction, splitItems[1]);
   }
 };
 

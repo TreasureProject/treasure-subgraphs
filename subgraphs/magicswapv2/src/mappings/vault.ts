@@ -4,6 +4,7 @@ import { VaultCreated } from "../../generated/NftVaultFactory/NftVaultFactory";
 import {
   Pair,
   Token,
+  Transaction,
   TransactionItem,
   VaultCollection,
   VaultReserveItem,
@@ -15,6 +16,9 @@ import {
 } from "../../generated/templates/NftVault/NftVault";
 import { ZERO_BD, ZERO_BI } from "../const";
 import {
+  addTransactionItems,
+  addTransactionItems0,
+  addTransactionItems1,
   getOrCreateCollection,
   getOrCreateTransaction,
   setTokenContractData,
@@ -83,9 +87,7 @@ export function handleDeposit(event: DepositEvent): void {
   transactionItem.save();
 
   const transaction = getOrCreateTransaction(event, "Deposit");
-  transaction._items = ((transaction._items || []) as Bytes[]).concat([
-    transactionItem.id,
-  ]);
+  addTransactionItems(transaction, [transactionItem.id]);
   transaction.save();
 }
 
@@ -122,28 +124,37 @@ export function handleWithdraw(event: Withdraw): void {
   transactionItem.save();
 
   const transaction = getOrCreateTransaction(event, "Withdrawal");
-  let foundPairToken = false;
-  if (transaction.pair) {
+  let processedItems = false;
+
+  if (transaction.swap) {
+    const swapTransaction = Transaction.load(transaction.swap as Bytes);
+    if (swapTransaction && swapTransaction.pair) {
+      const pair = Pair.load(transaction.pair as Bytes);
+      if (pair) {
+        if (pair.token0.equals(event.address)) {
+          addTransactionItems0(swapTransaction, [transactionItem.id]);
+          processedItems = true;
+        } else if (pair.token1.equals(event.address)) {
+          addTransactionItems1(swapTransaction, [transactionItem.id]);
+          processedItems = true;
+        }
+      }
+    }
+  } else if (transaction.pair) {
     const pair = Pair.load(transaction.pair as Bytes);
     if (pair) {
       if (pair.token0.equals(event.address)) {
-        transaction.items0 = ((transaction.items0 || []) as Bytes[]).concat([
-          transactionItem.id,
-        ]);
-        foundPairToken = true;
+        addTransactionItems0(transaction, [transactionItem.id]);
+        processedItems = true;
       } else if (pair.token1.equals(event.address)) {
-        transaction.items1 = ((transaction.items1 || []) as Bytes[]).concat([
-          transactionItem.id,
-        ]);
-        foundPairToken = true;
+        addTransactionItems1(transaction, [transactionItem.id]);
+        processedItems = true;
       }
     }
   }
 
-  if (!foundPairToken) {
-    transaction._items = ((transaction._items || []) as Bytes[]).concat([
-      transactionItem.id,
-    ]);
+  if (!processedItems) {
+    addTransactionItems(transaction, [transactionItem.id]);
   }
 
   transaction.save();
