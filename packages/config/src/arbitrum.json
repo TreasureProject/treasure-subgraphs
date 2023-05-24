@@ -62,6 +62,7 @@
   "kote_potions_start_block": 12959247,
   "kote_trinkets_address": "0x9f0cc315cae0826005b94462b5400849b3d39d91",
   "kote_trinkets_start_block": 12959211,
+  "beacon_address": "0x990eb28e378659b93a29d46ff41f08dc6316dd98",
 
   "extra_life_address": "0x21e1969884D477afD2Afd4Ad668864a0EebD644c",
   "extra_life_start_block": 2416557,
