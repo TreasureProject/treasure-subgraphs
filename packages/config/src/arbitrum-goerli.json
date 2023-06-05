@@ -62,6 +62,7 @@
   "kote_potions_start_block": 8434532,
   "kote_trinkets_address": "0x96b273dcb8b4c0aa736694b2580dd3a23762e819",
   "kote_trinkets_start_block": 8435075,
+  "beacon_address": "0x4694b21545a455bd8f1ad1cef9efa51d65c156c4",
 
   "smol_brains_address": "0x2542421ACA04A98f5Cf04DA97a36DAD8F1FaC3f4",
   "smol_brains_start_block": 502313,
