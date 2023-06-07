@@ -40,6 +40,9 @@ type Config @entity {
   "Current round start time"
   cryptsRoundStartTime: BigInt!
 
+  "Amount of time from round start before a Crypts round can be manually advanced, in seconds"
+  cryptsTimeToAllowManualRoundReset: BigInt
+
   "Percentage of staked Legions that must reach temples before round advances"
   cryptsRoundAdvancePercentage: Int!
 

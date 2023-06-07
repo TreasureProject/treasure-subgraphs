@@ -23,6 +23,7 @@ import {
   LegionSquadStaked as CharacterSquadStaked,
   CorruptionCryptsV2,
   RoundAdvancePercentageUpdated,
+  TimeToAllowManualRoundResetUpdated,
   TreasureTierChanged,
 } from "../generated/CorruptionCryptsV2/CorruptionCryptsV2";
 import {
@@ -321,6 +322,15 @@ export function handleTempleEntered(event: TempleEntered): void {
 
   const config = getOrCreateConfig();
   config.cryptsLegionsReachedTemple += squad.characters.length;
+  config.save();
+}
+
+export function handleTimeToAllowManualRoundResetUpdated(
+  event: TimeToAllowManualRoundResetUpdated
+): void {
+  const config = getOrCreateConfig();
+  config.cryptsTimeToAllowManualRoundReset =
+    event.params._timeToAllowManualRoundReset;
   config.save();
 }
 

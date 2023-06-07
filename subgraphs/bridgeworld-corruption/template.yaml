@@ -146,6 +146,8 @@ dataSources:
           handler: handleCharacterSquadStaked
         - event: RoundAdvancePercentageUpdated(uint256)
           handler: handleRoundAdvancePercentageUpdated
+        - event: TimeToAllowManualRoundResetUpdated(uint256)
+          handler: handleTimeToAllowManualRoundResetUpdated
         - event: TreasureTierChanged(uint8)
           handler: handleTreasureTierChanged
       file: ./src/crypts.ts

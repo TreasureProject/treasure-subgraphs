@@ -15,16 +15,19 @@ export const ITEM_EFFECTS = ["Burn", "MoveToTreasury", "Custom"];
 
 export const SINGLETON_ID = Bytes.fromI32(1);
 
+const ZERO_BI = BigInt.zero();
+
 export const getOrCreateConfig = (): Config => {
   let config = Config.load(SINGLETON_ID);
   if (!config) {
     config = new Config(SINGLETON_ID);
     config.cryptsRound = -1;
     config.cryptsRoundStarting = false;
-    config.cryptsRoundStartTime = BigInt.zero();
+    config.cryptsRoundStartTime = ZERO_BI;
+    config.cryptsTimeToAllowManualRoundReset = ZERO_BI;
     config.cryptsRoundAdvancePercentage = 0;
-    config.cryptsSecondsInEpoch = BigInt.zero();
-    config.cryptsLegionsUnstakeCooldown = BigInt.zero();
+    config.cryptsSecondsInEpoch = ZERO_BI;
+    config.cryptsLegionsUnstakeCooldown = ZERO_BI;
     config.cryptsLegionsActive = 0;
     config.cryptsLegionsReachedTemple = 0;
     config.maxLegionsInCryptsTemple = 0;
@@ -73,9 +76,9 @@ export const getOrCreateBuilding = (address: Address): Building => {
   if (!building) {
     building = new Building(address);
     building.address = address;
-    building.ratePerSecond = BigInt.zero();
-    building.boost = BigInt.zero();
-    building.generatedCorruptionCap = BigInt.zero();
+    building.ratePerSecond = ZERO_BI;
+    building.boost = ZERO_BI;
+    building.generatedCorruptionCap = ZERO_BI;
     building.recipes = [];
     building.save();
   }
