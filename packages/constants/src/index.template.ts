@@ -17,6 +17,9 @@ export const ADVANCED_QUESTING_ADDRESS = Address.fromString(
 export const BALANCER_CRYSTAL_ADDRESS = Address.fromString(
   "{{balancer_crystal_address}}{{^balancer_crystal_address}}{{burner_address}}{{/balancer_crystal_address}}"
 );
+export const BEACON_ADDRESS = Address.fromString(
+  "{{beacon_address}}{{^beacon_address}}{{burner_address}}{{/beacon_address}}"
+);
 export const CONSUMABLE_ADDRESS = Address.fromString(
   "{{consumable_address}}{{^consumable_address}}{{burner_address}}{{/consumable_address}}"
 );

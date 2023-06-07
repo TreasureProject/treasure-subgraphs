@@ -5,6 +5,7 @@ enum Category {
   Treasure
   TreasureFragment
   KoteSquire
+  BeaconPet
 }
 
 enum Difficulty {
@@ -556,6 +557,9 @@ type Harvester @entity {
 
   "Number of Legions staked to this Harvester"
   legionsStaked: Int!
+
+  "Number of other characters staked to this Harvester"
+  otherCharactersStaked: BigInt
 
   "Configurable boost factor for Harvester Parts"
   partsBoostFactor: BigInt!

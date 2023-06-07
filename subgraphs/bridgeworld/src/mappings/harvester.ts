@@ -1,6 +1,7 @@
 import { BigInt, Bytes, log, store } from "@graphprotocol/graph-ts";
 
 import {
+  BEACON_ADDRESS,
   CONSUMABLE_ADDRESS,
   KOTE_SQUIRES_ADDRESS,
   LEGION_ADDRESS,
@@ -40,6 +41,7 @@ import {
   HARVESTER_EXTRACTOR_TOKEN_IDS,
   HARVESTER_PART_TOKEN_ID,
   ONE_BI,
+  ZERO_BI,
   getAddressId,
 } from "../helpers";
 import {
@@ -64,24 +66,25 @@ export function handleHarvesterDeployed(event: HarvesterDeployed): void {
   const harvesterAddress = params.harvester;
   const harvester = new Harvester(harvesterAddress);
   harvester.deployedBlockNumber = event.block.number;
-  harvester.maxMagicDeposited = BigInt.zero();
+  harvester.maxMagicDeposited = ZERO_BI;
   harvester.maxPartsStaked = 0;
   harvester.maxPartsStakedPerUser = 0;
   harvester.maxExtractorsStaked = 0;
   harvester.maxLegionsStaked = 0;
-  harvester.maxLegionsWeightPerUser = BigInt.zero();
+  harvester.maxLegionsWeightPerUser = ZERO_BI;
   harvester.maxTreasuresStakedPerUser = 0;
-  harvester.magicDepositAllocationPerPart = BigInt.zero();
-  harvester.magicDeposited = BigInt.zero();
+  harvester.magicDepositAllocationPerPart = ZERO_BI;
+  harvester.magicDeposited = ZERO_BI;
   harvester.partsStaked = 0;
   harvester.extractorsStaked = 0;
-  harvester.extractorsLifetime = BigInt.zero();
+  harvester.extractorsLifetime = ZERO_BI;
   harvester.legionsStaked = 0;
-  harvester.partsBoostFactor = BigInt.zero();
-  harvester.partsBoost = BigInt.zero();
-  harvester.extractorsBoost = BigInt.zero();
-  harvester.legionsTotalRank = BigInt.zero();
-  harvester.legionsBoost = BigInt.zero();
+  harvester.otherCharactersStaked = ZERO_BI;
+  harvester.partsBoostFactor = ZERO_BI;
+  harvester.partsBoost = ZERO_BI;
+  harvester.extractorsBoost = ZERO_BI;
+  harvester.legionsTotalRank = ZERO_BI;
+  harvester.legionsBoost = ZERO_BI;
   harvester.save();
 
   // Start listening for Harvester events at this address
@@ -129,6 +132,13 @@ export function handleNftStaked(event: Staked): void {
     token.save();
   }
 
+  const isBeaconPet = nftAddress.equals(BEACON_ADDRESS);
+  if (isBeaconPet) {
+    token.category = "BeaconPet";
+    token.name = "The Beacon Pet";
+    token.save();
+  }
+
   const userAddress = params.user;
   const stakedTokenId = `${harvester.id}-${userAddress.toHexString()}-${
     token.id
@@ -138,7 +148,7 @@ export function handleNftStaked(event: Staked): void {
     stakedToken = new StakedToken(stakedTokenId);
     stakedToken.user = userAddress.toHexString();
     stakedToken.token = token.id;
-    stakedToken.quantity = BigInt.zero();
+    stakedToken.quantity = ZERO_BI;
     stakedToken.harvester = harvester.id;
     stakedToken.expirationProcessed = false;
   }
@@ -170,6 +180,10 @@ export function handleNftStaked(event: Staked): void {
     }
 
     harvester.legionsBoost = calculateHarvesterLegionsBoost(harvester);
+  } else if (isBeaconPet) {
+    harvester.otherCharactersStaked = (
+      (harvester.otherCharactersStaked || ZERO_BI) as BigInt
+    ).plus(params.amount);
   }
 
   stakedToken.save();
@@ -206,6 +220,7 @@ export function handleNftUnstaked(event: Unstaked): void {
 
   const amount = params.amount.toI32();
   const isKoteSquire = nftAddress.equals(KOTE_SQUIRES_ADDRESS);
+  const isBeaconPet = nftAddress.equals(BEACON_ADDRESS);
   const partsAddress = harvester.partsAddress || CONSUMABLE_ADDRESS;
   const partsTokenId = harvester.partsTokenId || HARVESTER_PART_TOKEN_ID;
   if (
@@ -230,6 +245,10 @@ export function handleNftUnstaked(event: Unstaked): void {
     }
 
     harvester.legionsBoost = calculateHarvesterLegionsBoost(harvester);
+  } else if (isBeaconPet) {
+    harvester.otherCharactersStaked = (
+      (harvester.otherCharactersStaked || ZERO_BI) as BigInt
+    ).minus(params.amount);
   }
 
   harvester.save();
@@ -255,7 +274,7 @@ export function handleExtractorStaked(event: ExtractorStaked): void {
     ]);
   }
 
-  const tokenBoostAmount = tokenBoost ? tokenBoost.boost : BigInt.zero();
+  const tokenBoostAmount = tokenBoost ? tokenBoost.boost : ZERO_BI;
 
   const amount = params.amount.toI32();
   const expirationTime = event.block.timestamp.plus(
@@ -334,9 +353,7 @@ export function handleExtractorReplaced(event: ExtractorReplaced): void {
     ]);
   }
 
-  const oldTokenBoostAmount = oldTokenBoost
-    ? oldTokenBoost.boost
-    : BigInt.zero();
+  const oldTokenBoostAmount = oldTokenBoost ? oldTokenBoost.boost : ZERO_BI;
 
   const newTokenId = getAddressId(CONSUMABLE_ADDRESS, tokenId);
   const newTokenBoost = HarvesterTokenBoost.load(
@@ -349,9 +366,7 @@ export function handleExtractorReplaced(event: ExtractorReplaced): void {
     ]);
   }
 
-  const newTokenBoostAmount = newTokenBoost
-    ? newTokenBoost.boost
-    : BigInt.zero();
+  const newTokenBoostAmount = newTokenBoost ? newTokenBoost.boost : ZERO_BI;
 
   const timestamp = event.block.timestamp;
   const oldExpirationTime = stakedToken.expirationTime;
@@ -369,8 +384,8 @@ export function handleExtractorReplaced(event: ExtractorReplaced): void {
   if (oldExpirationTime && (oldExpirationTime as BigInt).gt(timestamp)) {
     nextExtractorsBoost = nextExtractorsBoost.minus(oldTokenBoostAmount);
   }
-  harvester.extractorsBoost = nextExtractorsBoost.lt(BigInt.zero())
-    ? BigInt.zero()
+  harvester.extractorsBoost = nextExtractorsBoost.lt(ZERO_BI)
+    ? ZERO_BI
     : nextExtractorsBoost;
 
   // Update Harvester's next expiration time if this Extractor will expire sooner
@@ -447,7 +462,7 @@ export function handleMagicWithdrawn(event: WithdrawEvent): void {
     withdraw.deposit = deposit.id;
     withdraw.harvester = harvester.id;
     withdraw.user = userAddress.toHexString();
-    withdraw.amount = BigInt.zero();
+    withdraw.amount = ZERO_BI;
   }
   withdraw.amount = withdraw.amount.plus(params.amount);
   withdraw.save();
