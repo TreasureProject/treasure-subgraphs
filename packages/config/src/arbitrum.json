@@ -56,6 +56,7 @@
   "corruption_crypts_start_block": 60119196,
   "corruption_crypts_rewards_address": "0xc0df5094b3b2413e4891a2dc2ff583a2ffd3e8d3",
   "corruption_crypts_rewards_start_block": 60119058,
+  "erc1155_token_set_corruption_handler_address": "0x3c62778d8e01ed17c1048b64edaf121d36c71a4e",
   "kote_squires_address": "0xf7fbe8eec9063aa518d11639565b018468bb4abb",
   "kote_squires_start_block": 10050034,
   "kote_potions_address": "0x6f2aa70c70625e45424652aed968e3971020f205",
