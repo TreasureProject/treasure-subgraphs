@@ -15,6 +15,7 @@ type Global @entity {
 type Token @entity {
   id: Bytes!
 
+  tokenId: Int!
   name: TokenName!
   burnCount: Int!
 }

@@ -29,11 +29,13 @@ const getOrCreateGlobal = (): Global => {
 };
 
 const getOrCreateToken = (tokenId: BigInt): Token => {
-  const id = Bytes.fromI32(tokenId.toI32());
+  const tokenIdNum = tokenId.toI32();
+  const id = Bytes.fromI32(tokenIdNum);
   let token = Token.load(id);
   if (!token) {
     token = new Token(id);
-    token.name = TOKEN_NAMES[tokenId.toI32()];
+    token.tokenId = tokenIdNum;
+    token.name = TOKEN_NAMES[tokenIdNum];
     token.burnCount = 0;
   }
 
