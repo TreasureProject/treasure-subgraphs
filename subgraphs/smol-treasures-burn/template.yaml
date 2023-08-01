@@ -1,0 +1,27 @@
+specVersion: 0.0.4
+schema:
+  file: ./schema.graphql
+dataSources:
+  - name: Smol Treasures
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ smol_treasures_address }}"
+      abi: ERC1155
+      startBlock: {{ smol_treasures_burn_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Global
+        - Token
+      abis:
+        - name: ERC1155
+          file: {{{ abis }}}/1155.json
+      eventHandlers:
+        - event: TransferBatch(indexed address,indexed address,indexed address,uint256[],uint256[])
+          handler: handleTransferBatch
+        - event: TransferSingle(indexed address,indexed address,indexed address,uint256,uint256)
+          handler: handleTransferSingle
+      file: ./src/mapping.ts

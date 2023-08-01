@@ -1,0 +1,21 @@
+enum TokenName {
+  Stardust
+  MoonRock
+  CometShard
+  LunarGold
+  AlienRelic
+}
+
+type Global @entity {
+  id: Bytes!
+
+  burnCount: Int!
+}
+
+type Token @entity {
+  id: Bytes!
+
+  tokenId: Int!
+  name: TokenName!
+  burnCount: Int!
+}

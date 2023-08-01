@@ -95,6 +95,7 @@
   "smol_rocket_start_block": 4310278,
   "smol_treasures_address": "0xc5295C6a183F29b7c962dF076819D44E0076860E",
   "smol_treasures_start_block": 6399183,
+  "smol_treasures_burn_start_block": 117190205,
   "swolercycles_address": "0xdf32aED1eB841A174Cb637eAa1707026319fb563",
   "swolercycles_start_block": 11653410,
   "wrapped_smols_address": "0x1f245E83fB88A1e85b4A1c3e4B3c16660d54319a",
