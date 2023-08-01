@@ -8,6 +8,15 @@ import {
 } from "../generated/Smol Treasures/ERC1155";
 import { Global, Token } from "../generated/schema";
 
+const TOKEN_NAMES = [
+  "",
+  "MoonRock",
+  "Stardust",
+  "CometShard",
+  "LunarGold",
+  "AlienRelic",
+];
+
 const getOrCreateGlobal = (): Global => {
   const id = Bytes.fromI32(1);
   let global = Global.load(id);
@@ -24,7 +33,7 @@ const getOrCreateToken = (tokenId: BigInt): Token => {
   let token = Token.load(id);
   if (!token) {
     token = new Token(id);
-    token.name = "";
+    token.name = TOKEN_NAMES[tokenId.toI32()];
     token.burnCount = 0;
   }
 
