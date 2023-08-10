@@ -109,5 +109,8 @@
   "magicswap_factory_address": "0x6Cd71961e531aBB505256ffa945D59ab9a2156ec",
   "magicswap_factory_start_block": 529452,
 
-  "hourly_stat_interval_start_block": 309123
+  "hourly_stat_interval_start_block": 309123,
+
+  "smols_on_chain_trait_storage_address": "0xebCEe337D98830dbB9d91510B5Fa5b4e3736feAD",
+  "smols_on_chain_trait_storage_start_block": 33450555
 }

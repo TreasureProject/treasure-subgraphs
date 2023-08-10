@@ -1,0 +1,20 @@
+type Trait @entity {
+  id: Bytes!
+
+  gender: Int!
+
+  traitId: Int!
+
+  traitName: Bytes!
+  traitType: Bytes!
+  pngImage: PngImage!
+
+  isDetachable: Boolean!
+}
+
+type PngImage @entity {
+  id: Bytes!
+
+  male: Bytes!
+  female: Bytes!
+}

@@ -1,0 +1,24 @@
+specVersion: 0.0.4
+schema:
+  file: ./schema.graphql
+dataSources:
+  - name: Smols On Chain Traits
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ smols_on_chain_trait_storage_address }}"
+      abi: SmolsOnChainTraitStorage
+      startBlock: {{ smols_on_chain_trait_storage_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Trait
+      abis:
+        - name: SmolsOnChainTraitStorage
+          file: {{{ abis }}}/SmolsOnChainTraitStorage.json
+      eventHandlers:
+        - event: TraitAdded(uint256,uint256,(uint8,uint24,bytes,bytes,(bytes,bytes),bool))
+          handler: handleTraitAdded
+      file: ./src/mapping.ts
