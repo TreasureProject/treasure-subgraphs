@@ -57,6 +57,14 @@ enum TreasureCategory {
   Smithing
 }
 
+enum StakingRule {
+  Parts
+  Extractors
+  Legions
+  Treasures
+  ERC721
+}
+
 interface Metadata {
   id: ID!
 }
@@ -610,6 +618,9 @@ type HarvesterStakingRule @entity {
 
   "NFT collection associated with this StakingRule"
   nft: Bytes!
+
+  "NFT type associated with this StakingRule"
+  type: StakingRule!
 }
 
 type HarvesterTokenBoost @entity {
