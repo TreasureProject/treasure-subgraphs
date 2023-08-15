@@ -15,6 +15,7 @@ import {
   HarvesterNftHandler,
   HarvesterTimelock,
   HarvesterTokenBoost,
+  Lifetime,
   StakedToken,
   Withdraw,
 } from "../../generated/schema";
@@ -27,6 +28,7 @@ import {
 import {
   ExtractorReplaced,
   ExtractorStaked,
+  ExtractorsStakingRules as ExtractorsStakingRulesContract,
 } from "../../generated/templates/ExtractorsStakingRules/ExtractorsStakingRules";
 import {
   Deposit as DepositEvent,
@@ -266,6 +268,13 @@ export function handleExtractorStaked(event: ExtractorStaked): void {
   const tokenId = params.tokenId;
   const extractorId = getAddressId(CONSUMABLE_ADDRESS, tokenId);
 
+  const lifetime = Lifetime.load(event.address.concatI32(tokenId.toI32()));
+
+  if (!lifetime) {
+    log.error("Unknown Extractor lifetime: {}", [tokenId.toString()]);
+    return;
+  }
+
   const tokenBoost = HarvesterTokenBoost.load(`${harvester.id}-${extractorId}`);
   if (!tokenBoost) {
     log.error("Extractor boost info not found: {}, {}", [
@@ -277,9 +286,7 @@ export function handleExtractorStaked(event: ExtractorStaked): void {
   const tokenBoostAmount = tokenBoost ? tokenBoost.boost : ZERO_BI;
 
   const amount = params.amount.toI32();
-  const expirationTime = event.block.timestamp.plus(
-    harvester.extractorsLifetime
-  );
+  const expirationTime = event.block.timestamp.plus(lifetime.lifetime);
 
   // Save Extractors as StakedTokens based on spotId instead of tokenId
   // Only one event is fired for multiple Extractors staked
@@ -368,9 +375,16 @@ export function handleExtractorReplaced(event: ExtractorReplaced): void {
 
   const newTokenBoostAmount = newTokenBoost ? newTokenBoost.boost : ZERO_BI;
 
+  const lifetime = Lifetime.load(event.address.concatI32(tokenId.toI32()));
+
+  if (!lifetime) {
+    log.error("Unknown Extractor lifetime: {}", [tokenId.toString()]);
+    return;
+  }
+
   const timestamp = event.block.timestamp;
   const oldExpirationTime = stakedToken.expirationTime;
-  const newExpirationTime = timestamp.plus(harvester.extractorsLifetime);
+  const newExpirationTime = timestamp.plus(lifetime.lifetime);
   stakedToken.user = params.user.toHexString();
   stakedToken.token = newTokenId;
   stakedToken.quantity = ONE_BI;

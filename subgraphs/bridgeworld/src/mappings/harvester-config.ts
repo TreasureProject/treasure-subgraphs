@@ -10,6 +10,7 @@ import {
   Harvester,
   HarvesterStakingRule,
   HarvesterTimelock,
+  Lifetime as LifetimeEntity,
   Token,
 } from "../../generated/schema";
 import {
@@ -27,6 +28,7 @@ import {
 } from "../../generated/templates/ERC721StakingRules/ERC721StakingRules";
 import {
   ExtractorBoost,
+  ExtractorLifetime,
   ExtractorsStakingRules as ExtractorsStakingRulesContract,
   Lifetime,
   MaxStakeable,
@@ -371,6 +373,24 @@ export function handleUpdatedPartsStakeableTotal(
   harvester.save();
 }
 
+export function handleUpdatedExtractorLifetime(event: ExtractorLifetime): void {
+  const params = event.params;
+
+  const tokenId = params.tokenId.toI32();
+  const id = event.address.concatI32(tokenId);
+
+  let lifetime = LifetimeEntity.load(id);
+
+  if (!lifetime) {
+    lifetime = new LifetimeEntity(id);
+  }
+
+  lifetime.lifetime = params.lifetime;
+  lifetime.tokenId = params.tokenId;
+  lifetime.save();
+}
+
+/* deprecated */
 export function handleUpdatedExtractorsLifetime(event: Lifetime): void {
   const harvester = getHarvesterForStakingRule(event.address);
   if (!harvester) {

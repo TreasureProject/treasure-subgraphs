@@ -394,6 +394,12 @@ type TreasureTriadCardInfo @entity {
   west: Int!
 }
 
+type Lifetime @entity {
+  id: Bytes!
+  tokenId: BigInt!
+  lifetime: BigInt!
+}
+
 type StakedToken @entity {
   id: ID!
 
