@@ -146,7 +146,7 @@ export function handleNftConfigSet(event: NftConfigSet): void {
   // Create StakingRule entity
   const stakingRulesAddress = params._nftConfig.stakingRules;
   const tokenId = params._tokenId;
-  let stakingRuleType = "";
+  let stakingRuleType = "Parts";
   // Determine the type of StakingRule and start listening for events at this address
   // Pull initial rules from the contract because we weren't listening for init events
   const partsAddress = harvester.partsAddress || CONSUMABLE_ADDRESS;
