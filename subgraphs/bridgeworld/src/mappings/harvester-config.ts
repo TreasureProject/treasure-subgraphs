@@ -148,45 +148,45 @@ export function handleNftConfigSet(event: NftConfigSet): void {
   // Create StakingRule entity
   const stakingRulesAddress = params._nftConfig.stakingRules;
   const tokenId = params._tokenId;
-  let stakingRuleType = "Parts";
   // Determine the type of StakingRule and start listening for events at this address
   // Pull initial rules from the contract because we weren't listening for init events
   const partsAddress = harvester.partsAddress || CONSUMABLE_ADDRESS;
   const partsTokenId = harvester.partsTokenId || HARVESTER_PART_TOKEN_ID;
+
+  const stakingRule = new HarvesterStakingRule(stakingRulesAddress);
+  stakingRule.harvester = harvester.id;
+  stakingRule.nft = nftAddress;
+
   if (
     nftAddress.equals(partsAddress as Bytes) &&
     tokenId.equals(partsTokenId as BigInt)
   ) {
-    stakingRuleType = "Parts";
+    stakingRule.type = "Parts";
     PartsStakingRules.create(stakingRulesAddress);
     processPartsStakingRules(stakingRulesAddress, harvester);
   } else if (
     nftAddress.equals(CONSUMABLE_ADDRESS) &&
     HARVESTER_EXTRACTOR_TOKEN_IDS.includes(tokenId)
   ) {
-    stakingRuleType = "Extractors";
+    stakingRule.type = "Extractors";
     ExtractorsStakingRulesConfig.create(stakingRulesAddress);
     ExtractorsStakingRules.create(stakingRulesAddress);
     processExtractorsStakingRules(stakingRulesAddress, harvester);
   } else if (nftAddress.equals(LEGION_ADDRESS)) {
-    stakingRuleType = "Legions";
+    stakingRule.type = "Legions";
     LegionsStakingRules.create(stakingRulesAddress);
     processLegionsStakingRules(stakingRulesAddress, harvester);
   } else if (nftAddress.equals(TREASURE_ADDRESS)) {
-    stakingRuleType = "Treasures";
+    stakingRule.type = "Treasures";
     TreasuresStakingRules.create(stakingRulesAddress);
     processTreasuresStakingRules(stakingRulesAddress, harvester);
   } else if (params._nftConfig.supportedInterface == 1) {
     // ERC721
-    stakingRuleType = "ERC721";
+    stakingRule.type = "ERC721";
     ERC721StakingRules.create(stakingRulesAddress);
     processERC721StakingRules(stakingRulesAddress, harvester);
   }
 
-  const stakingRule = new HarvesterStakingRule(stakingRulesAddress);
-  stakingRule.harvester = harvester.id;
-  stakingRule.nft = nftAddress;
-  stakingRule.type = stakingRuleType;
   stakingRule.save();
 }
 
