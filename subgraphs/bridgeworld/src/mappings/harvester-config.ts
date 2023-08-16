@@ -156,7 +156,7 @@ export function handleNftConfigSet(event: NftConfigSet): void {
   const stakingRule = new HarvesterStakingRule(stakingRulesAddress);
   stakingRule.harvester = harvester.id;
   stakingRule.nft = nftAddress;
-  stakingRule.type = "Parts";
+  stakingRule.type = "Unknown";
 
   if (
     nftAddress.equals(partsAddress as Bytes) &&

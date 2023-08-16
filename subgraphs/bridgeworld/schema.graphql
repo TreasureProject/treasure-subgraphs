@@ -58,6 +58,7 @@ enum TreasureCategory {
 }
 
 enum StakingRule {
+  Unknown
   Parts
   Extractors
   Legions
