@@ -627,7 +627,7 @@ type HarvesterStakingRule @entity {
   nft: Bytes!
 
   "NFT type associated with this StakingRule"
-  type: StakingRule!
+  type: StakingRule
 }
 
 type HarvesterTokenBoost @entity {
