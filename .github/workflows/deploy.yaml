@@ -46,6 +46,9 @@ jobs:
       - name: Prepare for DEV
         if: inputs.environment == 'Development'
         run: yarn prepare:dev
+      - name: Prepare for DEV (Sepolia)
+        if: inputs.environment == 'Development (Sepolia)'
+        run: yarn prepare:dev-sepolia
       - name: Prepare for PROD
         if: inputs.environment == 'Production'
         run: yarn prepare:prod
@@ -56,6 +59,9 @@ jobs:
       - name: Deploy to DEV
         if: inputs.environment == 'Development'
         run: yarn graph deploy ${{ inputs.subgraph }}-dev --version-label ${{ inputs.version }} --node https://app.satsuma.xyz/api/subgraphs/deploy --ipfs https://ipfs.satsuma.xyz --deploy-key ${{ secrets.SATSUMA_DEPLOY_KEY }}
+      - name: Deploy to DEV (Sepolia)
+        if: inputs.environment == 'Development (Sepolia)'
+        run: yarn graph deploy ${{ inputs.subgraph }}-dev-sepolia --version-label ${{ inputs.version }} --node https://app.satsuma.xyz/api/subgraphs/deploy --ipfs https://ipfs.satsuma.xyz --deploy-key ${{ secrets.SATSUMA_DEPLOY_KEY }}
       - name: Deploy to PROD
         if: inputs.environment == 'Production'
         run: yarn graph deploy ${{ inputs.subgraph }} --version-label ${{ inputs.version }} --node https://app.satsuma.xyz/api/subgraphs/deploy --ipfs https://ipfs.satsuma.xyz --deploy-key ${{ secrets.SATSUMA_DEPLOY_KEY }}
