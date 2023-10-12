@@ -3,6 +3,8 @@ import { Bytes } from "@graphprotocol/graph-ts";
 import { TraitAdded } from "../generated/Smols Trait Storage/SmolsTraitStorage";
 import { Trait } from "../generated/schema";
 
+const GENDERS = ["Unset", "Male", "Female"];
+
 export function handleTraitAdded(event: TraitAdded): void {
   const params = event.params;
 
@@ -13,11 +15,11 @@ export function handleTraitAdded(event: TraitAdded): void {
   }
 
   trait.traitId = params._traitId.toI32();
-  trait.gender = params._trait.gender;
-  trait.traitName = params._trait.traitName;
-  trait.traitType = params._trait.traitType;
-  trait.maleImage = params._trait.pngImage.male;
-  trait.femaleImage = params._trait.pngImage.female;
+  trait.gender = GENDERS[params._trait.gender];
+  trait.traitName = params._trait.traitName.toString();
+  trait.traitType = params._trait.traitType.toString();
+  trait.maleImage = params._trait.pngImage.male.toString();
+  trait.femaleImage = params._trait.pngImage.female.toString();
   trait.isDetachable = params._trait.isDetachable;
   trait.save();
 }
