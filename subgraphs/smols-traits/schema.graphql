@@ -1,0 +1,17 @@
+enum Gender {
+  Unset
+  Male
+  Female
+}
+
+type Trait @entity {
+  id: Bytes!
+
+  traitId: Int!
+  gender: Gender!
+  traitName: String!
+  traitType: String!
+  maleImage: String!
+  femaleImage: String!
+  isDetachable: Boolean!
+}

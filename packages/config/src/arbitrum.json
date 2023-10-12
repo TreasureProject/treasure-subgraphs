@@ -107,6 +107,8 @@
   "smolidays_start_block": 47422160,
   "smol_chop_shop_address": "0xA3d2C13426Bc856830C2DfF68821FaceA6B81835",
   "smol_chop_shop_start_block": 54982945,
+  "smols_trait_storage_address": "0x764C01513ee52A9D56c189a9E98Fb24F8088A5d6",
+  "smols_trait_storage_start_block": 120080197,
   "battlefly_smolverse_flywheel_vault_address": "0xccb747d04ae0b127075929b28084f11920491929",
 
   "magicswap_factory_address": "0x015e379Ce0Ff195228b3A9eBDFA13F9afC155Dd7",
