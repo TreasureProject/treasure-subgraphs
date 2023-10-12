@@ -2,7 +2,6 @@ import { Address, BigInt } from "@graphprotocol/graph-ts";
 
 // Global
 export const BURNER_ADDRESS = Address.fromString("{{ burner_address}}");
-export const EXPLORER = "{{ explorer }}";
 export const MAGIC_ADDRESS = Address.fromString(
   "{{magic_address}}{{^magic_address}}{{burner_address}}{{/magic_address}}"
 );
