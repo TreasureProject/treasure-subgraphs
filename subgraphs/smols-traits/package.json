@@ -1,7 +1,7 @@
 {
-  "name": "smols-on-chain-traits",
+  "name": "smols-traits",
   "version": "1.0.0",
-  "description": "Subgraph that powers smols on chain traits",
+  "description": "Subgraph that powers Smols On Chain traits",
   "license": "MIT",
   "scripts": {
     "codegen": "graph codegen",

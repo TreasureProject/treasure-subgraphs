@@ -1,20 +1,11 @@
 type Trait @entity {
   id: Bytes!
 
-  gender: Int!
-
   traitId: Int!
-
+  gender: Int!
   traitName: Bytes!
   traitType: Bytes!
-  pngImage: PngImage!
-
+  maleImage: Bytes!
+  femaleImage: Bytes!
   isDetachable: Boolean!
-}
-
-type PngImage @entity {
-  id: Bytes!
-
-  male: Bytes!
-  female: Bytes!
 }
