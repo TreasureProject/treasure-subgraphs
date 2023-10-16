@@ -11,7 +11,16 @@ type Trait @entity {
   gender: Gender!
   traitName: String!
   traitType: String!
+  isDetachable: Boolean!
+
+  dependencyLevels: [TraitDependency!]! @derivedFrom(field: "trait")
+}
+
+type TraitDependency @entity {
+  id: Bytes!
+
+  trait: Trait!
+  dependencyLevel: Int!
   maleImage: String!
   femaleImage: String!
-  isDetachable: Boolean!
 }
