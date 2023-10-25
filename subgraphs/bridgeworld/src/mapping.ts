@@ -1,7 +1,13 @@
 import { Address, BigInt, store } from "@graphprotocol/graph-ts";
 
 import { Token, UserToken } from "../generated/schema";
-import { getAddressId, getImageHash, getName, getRarity } from "./helpers";
+import {
+  ZERO_BI,
+  getAddressId,
+  getImageHash,
+  getName,
+  getRarity,
+} from "./helpers";
 import { getUser } from "./helpers/user";
 
 class Transfer {
@@ -52,7 +58,7 @@ export function handleTransfer(
     fromUserToken.quantity = fromUserToken.quantity.minus(quantity);
     fromUserToken.save();
 
-    if (fromUserToken.quantity.toI32() == 0) {
+    if (fromUserToken.quantity.equals(ZERO_BI)) {
       store.remove("UserToken", fromUserToken.id);
     }
   }

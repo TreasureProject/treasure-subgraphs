@@ -184,6 +184,11 @@ export function handleTransferBatch(event: TransferBatch): void {
     let id = params.ids[index];
     let value = params.values[index];
 
+    // Ignore bad token ID inputs
+    if (id.gt(BigInt.fromI32(1000))) {
+      return;
+    }
+
     if (getTier(id.toI32()) == 0) {
       continue;
     }
@@ -198,6 +203,11 @@ export function handleTransferBatch(event: TransferBatch): void {
 
 export function handleTransferSingle(event: TransferSingle): void {
   let params = event.params;
+
+  // Ignore bad token ID inputs
+  if (params.id.gt(BigInt.fromI32(1000))) {
+    return;
+  }
 
   if (getTier(params.id.toI32()) == 0) {
     return;
