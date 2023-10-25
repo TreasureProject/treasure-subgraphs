@@ -17,7 +17,7 @@
     "@trivago/prettier-plugin-sort-imports": "^4.2.0",
     "husky": "^8.0.3",
     "lint-staged": "^15.0.2",
-    "matchstick-as": "^0.6.0",
+    "matchstick-as": "^0.5.2",
     "mustache": "^4.2.0",
     "prettier": "^3.0.0"
   }
