@@ -10,6 +10,7 @@ import {
   Harvester,
   HarvesterStakingRule,
   HarvesterTimelock,
+  Lifetime as LifetimeEntity,
   Token,
 } from "../../generated/schema";
 import {
@@ -27,6 +28,7 @@ import {
 } from "../../generated/templates/ERC721StakingRules/ERC721StakingRules";
 import {
   ExtractorBoost,
+  ExtractorLifetime,
   ExtractorsStakingRules as ExtractorsStakingRulesContract,
   Lifetime,
   MaxStakeable,
@@ -145,41 +147,48 @@ export function handleNftConfigSet(event: NftConfigSet): void {
 
   // Create StakingRule entity
   const stakingRulesAddress = params._nftConfig.stakingRules;
-  const stakingRule = new HarvesterStakingRule(stakingRulesAddress);
-  stakingRule.harvester = harvester.id;
-  stakingRule.nft = nftAddress;
-  stakingRule.save();
-
   const tokenId = params._tokenId;
-
   // Determine the type of StakingRule and start listening for events at this address
   // Pull initial rules from the contract because we weren't listening for init events
   const partsAddress = harvester.partsAddress || CONSUMABLE_ADDRESS;
   const partsTokenId = harvester.partsTokenId || HARVESTER_PART_TOKEN_ID;
+
+  const stakingRule = new HarvesterStakingRule(stakingRulesAddress);
+  stakingRule.harvester = harvester.id;
+  stakingRule.nft = nftAddress;
+  stakingRule.type = "Unknown";
+
   if (
     nftAddress.equals(partsAddress as Bytes) &&
     tokenId.equals(partsTokenId as BigInt)
   ) {
+    stakingRule.type = "Parts";
     PartsStakingRules.create(stakingRulesAddress);
     processPartsStakingRules(stakingRulesAddress, harvester);
   } else if (
     nftAddress.equals(CONSUMABLE_ADDRESS) &&
     HARVESTER_EXTRACTOR_TOKEN_IDS.includes(tokenId)
   ) {
+    stakingRule.type = "Extractors";
     ExtractorsStakingRulesConfig.create(stakingRulesAddress);
     ExtractorsStakingRules.create(stakingRulesAddress);
     processExtractorsStakingRules(stakingRulesAddress, harvester);
   } else if (nftAddress.equals(LEGION_ADDRESS)) {
+    stakingRule.type = "Legions";
     LegionsStakingRules.create(stakingRulesAddress);
     processLegionsStakingRules(stakingRulesAddress, harvester);
   } else if (nftAddress.equals(TREASURE_ADDRESS)) {
+    stakingRule.type = "Treasures";
     TreasuresStakingRules.create(stakingRulesAddress);
     processTreasuresStakingRules(stakingRulesAddress, harvester);
   } else if (params._nftConfig.supportedInterface == 1) {
     // ERC721
+    stakingRule.type = "ERC721";
     ERC721StakingRules.create(stakingRulesAddress);
     processERC721StakingRules(stakingRulesAddress, harvester);
   }
+
+  stakingRule.save();
 }
 
 const processPartsStakingRules = (
@@ -365,6 +374,24 @@ export function handleUpdatedPartsStakeableTotal(
   harvester.save();
 }
 
+export function handleUpdatedExtractorLifetime(event: ExtractorLifetime): void {
+  const params = event.params;
+
+  const tokenId = params.tokenId.toI32();
+  const id = event.address.concatI32(tokenId);
+
+  let lifetime = LifetimeEntity.load(id);
+
+  if (!lifetime) {
+    lifetime = new LifetimeEntity(id);
+  }
+
+  lifetime.lifetime = params.lifetime;
+  lifetime.tokenId = params.tokenId;
+  lifetime.save();
+}
+
+/* deprecated */
 export function handleUpdatedExtractorsLifetime(event: Lifetime): void {
   const harvester = getHarvesterForStakingRule(event.address);
   if (!harvester) {

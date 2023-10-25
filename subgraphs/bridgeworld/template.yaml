@@ -690,6 +690,8 @@ templates:
           file: {{{ abis }}}/ExtractorStakingRules.json
       eventHandlers:
         - event: Lifetime(uint256)
+          handler: handleUpdatedExtractorLifetime
+        - event: ExtractorLifetime(uint256,uint256)
           handler: handleUpdatedExtractorsLifetime
         - event: MaxStakeable(uint256)
           handler: handleUpdatedExtractorsMaxStakeable

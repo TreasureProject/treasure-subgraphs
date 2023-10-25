@@ -11,6 +11,9 @@ export const HARVESTER_EXTRACTOR_TOKEN_IDS: BigInt[] = [
   BigInt.fromI32(4),
   BigInt.fromI32(5),
   BigInt.fromI32(6),
+  BigInt.fromI32(19),
+  BigInt.fromI32(20),
+  BigInt.fromI32(21),
 ];
 
 function isTreasure(tokenId: number): bool {
