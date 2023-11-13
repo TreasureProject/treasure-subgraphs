@@ -66,5 +66,8 @@
   "keys_address": "0x98C462aC0ceeF470F76a8EBcf7c1E3839340c823",
   "keys_start_block": 494000,
 
+  "magicswap_factory_address": "0x9b58fc8c7B224Ae8479DA7E6eD37CA4Ac58099a9",
+  "magicswap_factory_start_block": 654981,
+
   "hourly_stat_interval_start_block": 494000
 }
