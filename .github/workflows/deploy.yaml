@@ -59,10 +59,10 @@ jobs:
         run: yarn test
       - name: Deploy to DEV
         if: inputs.environment == 'Development'
-        run: yarn graph deploy ${{ inputs.subgraph }}-dev --version-label ${{ inputs.version }} --node https://app.satsuma.xyz/api/subgraphs/deploy --ipfs https://ipfs.satsuma.xyz --deploy-key ${{ secrets.SATSUMA_DEPLOY_KEY }}
+        run: yarn graph deploy ${{ inputs.subgraph }}-dev --version-label ${{ inputs.version }} --node https://subgraphs.alchemy.com/api/subgraphs/deploy --ipfs https://ipfs.satsuma.xyz --deploy-key ${{ secrets.SATSUMA_DEPLOY_KEY }}
       - name: Deploy to DEV (Sepolia)
         if: inputs.environment == 'Development (Sepolia)'
-        run: yarn graph deploy ${{ inputs.subgraph }}-dev-arbsepolia --version-label ${{ inputs.version }} --node https://app.satsuma.xyz/api/subgraphs/deploy --ipfs https://ipfs.satsuma.xyz --deploy-key ${{ secrets.SATSUMA_DEPLOY_KEY }}
+        run: yarn graph deploy ${{ inputs.subgraph }}-dev-arbsepolia --version-label ${{ inputs.version }} --node https://subgraphs.alchemy.com/api/subgraphs/deploy --ipfs https://ipfs.satsuma.xyz --deploy-key ${{ secrets.SATSUMA_DEPLOY_KEY }}
       - name: Deploy to PROD
         if: inputs.environment == 'Production'
-        run: yarn graph deploy ${{ inputs.subgraph }} --version-label ${{ inputs.version }} --node https://app.satsuma.xyz/api/subgraphs/deploy --ipfs https://ipfs.satsuma.xyz --deploy-key ${{ secrets.SATSUMA_DEPLOY_KEY }}
+        run: yarn graph deploy ${{ inputs.subgraph }} --version-label ${{ inputs.version }} --node https://subgraphs.alchemy.com/api/subgraphs/deploy --ipfs https://ipfs.satsuma.xyz --deploy-key ${{ secrets.SATSUMA_DEPLOY_KEY }}
