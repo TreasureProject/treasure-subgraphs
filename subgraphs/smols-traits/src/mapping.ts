@@ -1,9 +1,35 @@
-import { Bytes } from "@graphprotocol/graph-ts";
+import { BigInt, Bytes } from "@graphprotocol/graph-ts";
 
 import { TraitAdded } from "../generated/Smols Trait Storage/SmolsTraitStorage";
-import { Trait, TraitDependency } from "../generated/schema";
+import { SmolRecipeAdded } from "../generated/Transmolgrifier/Transmolgrifier";
+import { Recipe, Season, Trait, TraitDependency } from "../generated/schema";
 
 const GENDERS = ["Unset", "Male", "Female"];
+
+const getOrCreateSeason = (seasonId: BigInt): Season => {
+  const id = Bytes.fromI32(seasonId.toI32());
+  let season = Season.load(id);
+  if (!season) {
+    season = new Season(id);
+    season.seasonId = seasonId;
+    season.save();
+  }
+
+  return season;
+};
+
+const getOrCreateRecipe = (seasonId: BigInt, recipeId: BigInt): Recipe => {
+  const season = getOrCreateSeason(seasonId);
+  const id = Bytes.fromI32(seasonId.toI32()).concatI32(recipeId.toI32());
+  let recipe = Recipe.load(id);
+  if (!recipe) {
+    recipe = new Recipe(id);
+    recipe.recipeId = recipeId;
+    recipe.season = season.id;
+  }
+
+  return recipe;
+};
 
 export function handleTraitAdded(event: TraitAdded): void {
   const params = event.params;
@@ -34,4 +60,25 @@ export function handleTraitAdded(event: TraitAdded): void {
   traitDependency.maleImage = params._trait.pngImage.male.toString();
   traitDependency.femaleImage = params._trait.pngImage.female.toString();
   traitDependency.save();
+}
+
+export function handleRecipeAdded(event: SmolRecipeAdded): void {
+  const params = event.params;
+  const data = params.smolData;
+  const smol = data.smol;
+
+  const recipe = getOrCreateRecipe(params.seasonId, params.smolRecipeId);
+  recipe.background =
+    smol.background > 0 ? Bytes.fromI32(smol.background) : null;
+  recipe.body = smol.body > 0 ? Bytes.fromI32(smol.body) : null;
+  recipe.clothes = smol.clothes > 0 ? Bytes.fromI32(smol.clothes) : null;
+  recipe.mouth = smol.mouth > 0 ? Bytes.fromI32(smol.mouth) : null;
+  recipe.glasses = smol.glasses > 0 ? Bytes.fromI32(smol.glasses) : null;
+  recipe.hat = smol.hat > 0 ? Bytes.fromI32(smol.hat) : null;
+  recipe.hair = smol.hair > 0 ? Bytes.fromI32(smol.hair) : null;
+  recipe.skin = smol.skin > 0 ? Bytes.fromI32(smol.skin) : null;
+  recipe.smolCost = data.smolInputAmount;
+  recipe.treasureCost = data.treasureAmount;
+  recipe.treasureTokenId = data.treasureId;
+  recipe.save();
 }

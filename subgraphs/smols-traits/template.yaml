@@ -22,3 +22,29 @@ dataSources:
         - event: TraitAdded(uint256,uint256,(uint8,uint24,bytes,bytes,(bytes,bytes),bool))
           handler: handleTraitAdded
       file: ./src/mapping.ts
+  - name: Transmolgrifier
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ transmolgrifier_address }}"
+      abi: Transmolgrifier
+      startBlock: {{ transmolgrifier_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Recipe
+        - Season
+        - Trait
+      abis:
+        - name: Transmolgrifier
+          file: {{{ abis }}}/Transmolgrifier.json
+      eventHandlers:
+        - event: SmolRecipeAdded(uint256,uint256,((uint24,uint24,uint24,uint24,uint24,uint24,uint24,uint24,uint8,uint8),bool,uint8,uint16,uint8))
+          handler: handleRecipeAdded
+        - event: SmolRecipeAdjusted(uint256,uint256,((uint24,uint24,uint24,uint24,uint24,uint24,uint24,uint24,uint8,uint8),bool,uint8,uint16,uint8))
+          handler: handleRecipeAdjusted
+        - event: SmolRecipeDeleted(uint256,uint256)
+          handler: handleRecipeDeleted
+      file: ./src/mapping.ts
