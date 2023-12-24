@@ -3,12 +3,22 @@ import { Address, ethereum } from "@graphprotocol/graph-ts";
 import { MAGICSWAP_FACTORY_ADDRESS } from "@treasure/constants";
 
 import { DayData, Factory } from "../../generated/schema";
+import { ZERO_BD, ZERO_BI } from "../helpers/constants";
 
 export function getFactory(id: Address = MAGICSWAP_FACTORY_ADDRESS): Factory {
   let factory = Factory.load(id.toHex());
 
   if (factory === null) {
     factory = new Factory(id.toHex());
+    factory.pairCount = ZERO_BI;
+    factory.volumeUSD = ZERO_BD;
+    factory.volumeETH = ZERO_BD;
+    factory.untrackedVolumeUSD = ZERO_BD;
+    factory.liquidityUSD = ZERO_BD;
+    factory.liquidityETH = ZERO_BD;
+    factory.txCount = ZERO_BI;
+    factory.tokenCount = ZERO_BI;
+    factory.userCount = ZERO_BI;
     factory.save();
   }
 
@@ -25,6 +35,9 @@ export function getDayData(event: ethereum.Event): DayData {
     dayData = new DayData(id.toString());
     dayData.factory = factory.id;
     dayData.date = id * 86400;
+    dayData.volumeETH = ZERO_BD;
+    dayData.volumeUSD = ZERO_BD;
+    dayData.untrackedVolume = ZERO_BD;
     dayData.liquidityUSD = factory.liquidityUSD;
     dayData.liquidityETH = factory.liquidityETH;
     dayData.txCount = factory.txCount;
