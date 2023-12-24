@@ -2,6 +2,7 @@ import { BigDecimal, BigInt, ethereum } from "@graphprotocol/graph-ts";
 
 import { getBundle } from ".";
 import { Token, TokenDayData } from "../../generated/schema";
+import { ZERO_BD, ZERO_BI } from "../helpers/constants";
 
 export function getTokenDayData(
   token: Token,
@@ -24,8 +25,14 @@ export function getTokenDayData(
     tokenDayData = new TokenDayData(id);
     tokenDayData.date = date;
     tokenDayData.token = token.id;
+    tokenDayData.volume = ZERO_BD;
+    tokenDayData.volumeETH = ZERO_BD;
+    tokenDayData.volumeUSD = ZERO_BD;
+    tokenDayData.liquidity = ZERO_BD;
+    tokenDayData.liquidityETH = ZERO_BD;
+    tokenDayData.liquidityUSD = ZERO_BD;
     tokenDayData.priceUSD = token.derivedETH.times(bundle.ethPrice);
-    tokenDayData.txCount = BigInt.fromI32(0);
+    tokenDayData.txCount = ZERO_BI;
   }
 
   return tokenDayData as TokenDayData;

@@ -1,6 +1,7 @@
 import { Address, ethereum } from "@graphprotocol/graph-ts";
 
 import { LiquidityPosition } from "../../generated/schema";
+import { ZERO_BD } from "../helpers/constants";
 
 // TODO: getLiquidityPosition
 // export function getLiquidityPosition(id: string): LiquidityPosition {}
@@ -31,16 +32,12 @@ export function createLiquidityPosition(
     // const pairContract = PairContract.bind(pair)
     // const liquidityTokenBalance = pairContract.balanceOf(user).divDecimal(BigDecimal.fromString('1e18'))
 
-    const timestamp = block.timestamp.toI32();
-
     liquidityPosition = new LiquidityPosition(id);
-
     liquidityPosition.user = userAddress;
     liquidityPosition.pair = pairAddress;
-
+    liquidityPosition.liquidityTokenBalance = ZERO_BD;
     liquidityPosition.block = block.number.toI32();
-    liquidityPosition.timestamp = timestamp;
-
+    liquidityPosition.timestamp = block.timestamp.toI32();
     liquidityPosition.save();
   }
 
