@@ -25,10 +25,12 @@ type TraitDependency @entity {
   femaleImage: String!
 }
 
-type Season @entity(immutable: true) {
+type Season @entity {
   id: Bytes!
 
   seasonId: BigInt!
+  name: String!
+  isActive: Boolean!
   recipes: [Recipe!]! @derivedFrom(field: "season")
 }
 

@@ -11,8 +11,8 @@
     "prepare": "husky install"
   },
   "devDependencies": {
-    "@graphprotocol/graph-cli": "^0.61.0",
-    "@graphprotocol/graph-ts": "^0.31.0",
+    "@graphprotocol/graph-cli": "^0.64.1",
+    "@graphprotocol/graph-ts": "^0.32.0",
     "@sushiswap/core": "^1.4.2",
     "@trivago/prettier-plugin-sort-imports": "^4.2.0",
     "husky": "^8.0.3",

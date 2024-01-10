@@ -47,4 +47,8 @@ dataSources:
           handler: handleRecipeAdjusted
         - event: SmolRecipeDeleted(uint256,uint256)
           handler: handleRecipeDeleted
+        - event: SeasonStateUpdated(uint256,bool)
+          handler: handleSeasonStateUpdated
+        - event: SeasonTextUpdated(uint256,string)
+          handler: handleSeasonTextUpdated
       file: ./src/mapping.ts

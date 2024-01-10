@@ -2,6 +2,8 @@ import { BigInt, Bytes, store } from "@graphprotocol/graph-ts";
 
 import { TraitAdded } from "../generated/Smols Trait Storage/SmolsTraitStorage";
 import {
+  SeasonStateUpdated,
+  SeasonTextUpdated,
   SmolRecipeAdded,
   SmolRecipeAdjusted,
   SmolRecipeDeleted,
@@ -16,6 +18,8 @@ const getOrCreateSeason = (seasonId: BigInt): Season => {
   if (!season) {
     season = new Season(id);
     season.seasonId = seasonId;
+    season.name = `Season ${seasonId.toString()}`;
+    season.isActive = false;
     season.save();
   }
 
@@ -116,4 +120,18 @@ export function handleRecipeDeleted(event: SmolRecipeDeleted): void {
       .concatI32(params.smolRecipeId.toI32())
       .toHexString()
   );
+}
+
+export function handleSeasonStateUpdated(event: SeasonStateUpdated): void {
+  const params = event.params;
+  const season = getOrCreateSeason(params.seasonId);
+  season.isActive = params.isActive;
+  season.save();
+}
+
+export function handleSeasonTextUpdated(event: SeasonTextUpdated): void {
+  const params = event.params;
+  const season = getOrCreateSeason(params.seasonId);
+  season.name = params.seasonText;
+  season.save();
 }
