@@ -50,6 +50,8 @@ type Recipe @entity {
   hair: Trait
   skin: Trait
 
+  image: String!
+
   # Cost
   smolCost: Int!
   treasureCost: Int!

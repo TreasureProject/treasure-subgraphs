@@ -165,6 +165,9 @@ export const SWOLERCYCLES_ADDRESS = Address.fromString(
 export const WRAPPED_SMOLS_ADDRESS = Address.fromString(
   "{{wrapped_smols_address}}{{^wrapped_smols_address}}{{burner_address}}{{/wrapped_smols_address}}"
 );
+export const SMOL_RENDERER_ADDRESS = Address.fromString(
+  "{{smol_renderer_address}}{{^smol_renderer_address}}{{burner_address}}{{/smol_renderer_address}}"
+);
 export const BATTLEFLY_SMOLVERSE_FLYWHEEL_VAULT_ADDRESS = Address.fromString(
   "{{battlefly_smolverse_flywheel_vault_address}}{{^battlefly_smolverse_flywheel_vault_address}}{{burner_address}}{{/battlefly_smolverse_flywheel_vault_address}}"
 );

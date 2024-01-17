@@ -1,6 +1,12 @@
-import { BigInt, Bytes, store } from "@graphprotocol/graph-ts";
+import { BigInt, Bytes, ethereum, log, store } from "@graphprotocol/graph-ts";
+
+import { SMOL_RENDERER_ADDRESS } from "@treasure/constants";
 
 import { TraitAdded } from "../generated/Smols Trait Storage/SmolsTraitStorage";
+import {
+  SmolRenderer,
+  SmolRenderer__generateSVGInput_smolStruct,
+} from "../generated/Transmolgrifier/SmolRenderer";
 import {
   SeasonStateUpdated,
   SeasonTextUpdated,
@@ -34,6 +40,7 @@ const getOrCreateRecipe = (seasonId: BigInt, recipeId: BigInt): Recipe => {
     recipe = new Recipe(id);
     recipe.recipeId = recipeId;
     recipe.season = season.id;
+    recipe.image = "";
   }
 
   return recipe;
@@ -70,46 +77,97 @@ export function handleTraitAdded(event: TraitAdded): void {
   traitDependency.save();
 }
 
+const updateRecipe = (
+  seasonId: BigInt,
+  recipeId: BigInt,
+  background: i32,
+  body: i32,
+  clothes: i32,
+  mouth: i32,
+  glasses: i32,
+  hat: i32,
+  hair: i32,
+  skin: i32,
+  smolCost: i32,
+  treasureCost: i32,
+  treasureTokenId: i32
+): void => {
+  const recipe = getOrCreateRecipe(seasonId, recipeId);
+  recipe.background = background > 0 ? Bytes.fromI32(background) : null;
+  recipe.body = body > 0 ? Bytes.fromI32(body) : null;
+  recipe.clothes = clothes > 0 ? Bytes.fromI32(clothes) : null;
+  recipe.mouth = mouth > 0 ? Bytes.fromI32(mouth) : null;
+  recipe.glasses = glasses > 0 ? Bytes.fromI32(glasses) : null;
+  recipe.hat = hat > 0 ? Bytes.fromI32(hat) : null;
+  recipe.hair = hair > 0 ? Bytes.fromI32(hair) : null;
+  recipe.skin = skin > 0 ? Bytes.fromI32(skin) : null;
+  recipe.smolCost = smolCost;
+  recipe.treasureCost = treasureCost;
+  recipe.treasureTokenId = treasureTokenId;
+
+  const contract = SmolRenderer.bind(SMOL_RENDERER_ADDRESS);
+  const tuple = new SmolRenderer__generateSVGInput_smolStruct(10);
+  tuple[0] = ethereum.Value.fromI32(background);
+  tuple[1] = ethereum.Value.fromI32(body);
+  tuple[2] = ethereum.Value.fromI32(clothes);
+  tuple[3] = ethereum.Value.fromI32(mouth);
+  tuple[4] = ethereum.Value.fromI32(glasses);
+  tuple[5] = ethereum.Value.fromI32(hat);
+  tuple[6] = ethereum.Value.fromI32(hair);
+  tuple[7] = ethereum.Value.fromI32(skin);
+  tuple[8] = ethereum.Value.fromI32(1); // gender
+  tuple[9] = ethereum.Value.fromI32(0); // headSize
+  const result = contract.try_generateSVG(tuple);
+  if (!result.reverted) {
+    recipe.image = result.value.toString();
+  } else {
+    log.warning("Error rendering recipe: {}", [recipeId.toString()]);
+    recipe.image = "";
+  }
+
+  recipe.save();
+};
+
 export function handleRecipeAdded(event: SmolRecipeAdded): void {
   const params = event.params;
   const data = params.smolData;
   const smol = data.smol;
-
-  const recipe = getOrCreateRecipe(params.seasonId, params.smolRecipeId);
-  recipe.background =
-    smol.background > 0 ? Bytes.fromI32(smol.background) : null;
-  recipe.body = smol.body > 0 ? Bytes.fromI32(smol.body) : null;
-  recipe.clothes = smol.clothes > 0 ? Bytes.fromI32(smol.clothes) : null;
-  recipe.mouth = smol.mouth > 0 ? Bytes.fromI32(smol.mouth) : null;
-  recipe.glasses = smol.glasses > 0 ? Bytes.fromI32(smol.glasses) : null;
-  recipe.hat = smol.hat > 0 ? Bytes.fromI32(smol.hat) : null;
-  recipe.hair = smol.hair > 0 ? Bytes.fromI32(smol.hair) : null;
-  recipe.skin = smol.skin > 0 ? Bytes.fromI32(smol.skin) : null;
-  recipe.smolCost = data.smolInputAmount;
-  recipe.treasureCost = data.treasureAmount;
-  recipe.treasureTokenId = data.treasureId;
-  recipe.save();
+  updateRecipe(
+    params.seasonId,
+    params.smolRecipeId,
+    smol.background,
+    smol.body,
+    smol.clothes,
+    smol.mouth,
+    smol.glasses,
+    smol.hat,
+    smol.hair,
+    smol.skin,
+    data.smolInputAmount,
+    data.treasureAmount,
+    data.treasureId
+  );
 }
 
 export function handleRecipeAdjusted(event: SmolRecipeAdjusted): void {
   const params = event.params;
   const data = params.smolData;
   const smol = data.smol;
-
-  const recipe = getOrCreateRecipe(params.seasonId, params.smolRecipeId);
-  recipe.background =
-    smol.background > 0 ? Bytes.fromI32(smol.background) : null;
-  recipe.body = smol.body > 0 ? Bytes.fromI32(smol.body) : null;
-  recipe.clothes = smol.clothes > 0 ? Bytes.fromI32(smol.clothes) : null;
-  recipe.mouth = smol.mouth > 0 ? Bytes.fromI32(smol.mouth) : null;
-  recipe.glasses = smol.glasses > 0 ? Bytes.fromI32(smol.glasses) : null;
-  recipe.hat = smol.hat > 0 ? Bytes.fromI32(smol.hat) : null;
-  recipe.hair = smol.hair > 0 ? Bytes.fromI32(smol.hair) : null;
-  recipe.skin = smol.skin > 0 ? Bytes.fromI32(smol.skin) : null;
-  recipe.smolCost = data.smolInputAmount;
-  recipe.treasureCost = data.treasureAmount;
-  recipe.treasureTokenId = data.treasureId;
-  recipe.save();
+  updateRecipe(
+    params.seasonId,
+    params.smolRecipeId,
+    smol.background,
+    smol.body,
+    smol.clothes,
+    smol.mouth,
+    smol.glasses,
+    smol.hat,
+    smol.hair,
+    smol.skin,
+    data.smolInputAmount,
+    data.treasureAmount,
+    data.treasureId
+  );
 }
 
 export function handleRecipeDeleted(event: SmolRecipeDeleted): void {

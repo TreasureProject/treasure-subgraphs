@@ -40,6 +40,8 @@ dataSources:
       abis:
         - name: Transmolgrifier
           file: {{{ abis }}}/Transmolgrifier.json
+        - name: SmolRenderer
+          file: {{{ abis }}}/SmolRenderer.json
       eventHandlers:
         - event: SmolRecipeAdded(uint256,uint256,((uint24,uint24,uint24,uint24,uint24,uint24,uint24,uint24,uint8,uint8),bool,uint8,uint16,uint8))
           handler: handleRecipeAdded
