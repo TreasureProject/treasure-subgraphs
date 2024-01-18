@@ -107,16 +107,16 @@ const updateRecipe = (
 
   const contract = SmolRenderer.bind(SMOL_RENDERER_ADDRESS);
   const tuple = new SmolRenderer__generateSVGInput_smolStruct(10);
-  tuple[0] = ethereum.Value.fromI32(background);
-  tuple[1] = ethereum.Value.fromI32(body);
-  tuple[2] = ethereum.Value.fromI32(clothes);
-  tuple[3] = ethereum.Value.fromI32(mouth);
-  tuple[4] = ethereum.Value.fromI32(glasses);
-  tuple[5] = ethereum.Value.fromI32(hat);
-  tuple[6] = ethereum.Value.fromI32(hair);
-  tuple[7] = ethereum.Value.fromI32(skin);
-  tuple[8] = ethereum.Value.fromI32(1); // gender
-  tuple[9] = ethereum.Value.fromI32(0); // headSize
+  tuple[0] = ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(background));
+  tuple[1] = ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(body));
+  tuple[2] = ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(clothes));
+  tuple[3] = ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(mouth));
+  tuple[4] = ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(glasses));
+  tuple[5] = ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(hat));
+  tuple[6] = ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(hair));
+  tuple[7] = ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(skin));
+  tuple[8] = ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(1)); // gender
+  tuple[9] = ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(0)); // headSize
   const result = contract.try_generateSVG(tuple);
   if (!result.reverted) {
     recipe.image = result.value.toString();
