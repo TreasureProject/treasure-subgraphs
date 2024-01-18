@@ -13,6 +13,7 @@ import {
   SmolRecipeAdded,
   SmolRecipeAdjusted,
   SmolRecipeDeleted,
+  SmolTransmolgrified,
 } from "../generated/Transmolgrifier/Transmolgrifier";
 import { Recipe, Season, Trait, TraitDependency } from "../generated/schema";
 
@@ -41,6 +42,7 @@ const getOrCreateRecipe = (seasonId: BigInt, recipeId: BigInt): Recipe => {
     recipe.recipeId = recipeId;
     recipe.season = season.id;
     recipe.image = "";
+    recipe.minted = false;
   }
 
   return recipe;
@@ -192,4 +194,11 @@ export function handleSeasonTextUpdated(event: SeasonTextUpdated): void {
   const season = getOrCreateSeason(params.seasonId);
   season.name = params.seasonText;
   season.save();
+}
+
+export function handleTransmolgrified(event: SmolTransmolgrified): void {
+  const params = event.params;
+  const recipe = getOrCreateRecipe(params.seasonId, params.smolRecipeId);
+  recipe.minted = true;
+  recipe.save();
 }

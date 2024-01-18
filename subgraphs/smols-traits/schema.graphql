@@ -51,6 +51,7 @@ type Recipe @entity {
   skin: Trait
 
   image: String!
+  minted: Boolean!
 
   # Cost
   smolCost: Int!

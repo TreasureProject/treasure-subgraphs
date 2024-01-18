@@ -53,4 +53,6 @@ dataSources:
           handler: handleSeasonStateUpdated
         - event: SeasonTextUpdated(uint256,string)
           handler: handleSeasonTextUpdated
+        - event: SmolTransmolgrified(uint256,uint256,uint256,uint256[])
+          handler: handleTransmolgrified
       file: ./src/mapping.ts
