@@ -1,6 +1,7 @@
 import { BigInt, ethereum } from "@graphprotocol/graph-ts";
 
 import { Pair, PairDayData } from "../../generated/schema";
+import { ZERO_BD } from "../helpers/constants";
 
 export function updatePairDayData(event: ethereum.Event): PairDayData {
   const timestamp = event.block.timestamp.toI32();
@@ -31,6 +32,9 @@ export function updatePairDayData(event: ethereum.Event): PairDayData {
   pairDayData.reserve0 = pair.reserve0;
   pairDayData.reserve1 = pair.reserve1;
   pairDayData.reserveUSD = pair.reserveUSD;
+  pairDayData.volumeToken0 = ZERO_BD;
+  pairDayData.volumeToken1 = ZERO_BD;
+  pairDayData.volumeUSD = ZERO_BD;
   pairDayData.txCount = pairDayData.txCount.plus(BigInt.fromI32(1));
   pairDayData.save();
 

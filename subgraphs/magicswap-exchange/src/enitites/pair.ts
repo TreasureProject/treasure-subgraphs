@@ -8,6 +8,7 @@ import {
 import { getToken } from ".";
 import { Pair } from "../../generated/schema";
 import { Pair as PairContract } from "../../generated/templates/Pair/Pair";
+import { ZERO_BD, ZERO_BI } from "../helpers/constants";
 
 export function getPair(
   address: Address,
@@ -54,9 +55,26 @@ export function getPair(
     pair.name = token0.symbol.concat("-").concat(token1.symbol);
     pair.token0 = token0.id;
     pair.token1 = token1.id;
+    pair.reserve0 = ZERO_BD;
+    pair.reserve1 = ZERO_BD;
+    pair.totalSupply = ZERO_BD;
+    pair.reserveETH = ZERO_BD;
+    pair.reserveUSD = ZERO_BD;
+    pair.trackedReserveETH = ZERO_BD;
+    pair.token0Price = ZERO_BD;
+    pair.token1Price = ZERO_BD;
+    pair.volumeToken0 = ZERO_BD;
+    pair.volumeToken1 = ZERO_BD;
+    pair.volumeUSD = ZERO_BD;
+    pair.untrackedVolumeUSD = ZERO_BD;
+    pair.txCount = ZERO_BI;
+    pair.liquidityProviderCount = ZERO_BI;
     if (block) {
       pair.timestamp = block.timestamp;
       pair.block = block.number;
+    } else {
+      pair.timestamp = ZERO_BI;
+      pair.block = ZERO_BI;
     }
   }
 
