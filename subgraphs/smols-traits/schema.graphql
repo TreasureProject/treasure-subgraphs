@@ -24,3 +24,37 @@ type TraitDependency @entity {
   maleImage: String!
   femaleImage: String!
 }
+
+type Season @entity {
+  id: Bytes!
+
+  seasonId: BigInt!
+  name: String!
+  isActive: Boolean!
+  recipes: [Recipe!]! @derivedFrom(field: "season")
+}
+
+type Recipe @entity {
+  id: Bytes!
+
+  recipeId: BigInt!
+  season: Season!
+
+  # Traits
+  background: Trait
+  body: Trait
+  clothes: Trait
+  mouth: Trait
+  glasses: Trait
+  hat: Trait
+  hair: Trait
+  skin: Trait
+
+  image: String!
+  minted: Boolean!
+
+  # Cost
+  smolCost: Int!
+  treasureCost: Int!
+  treasureTokenId: Int!
+}

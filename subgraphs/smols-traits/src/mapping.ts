@@ -1,9 +1,52 @@
-import { Bytes } from "@graphprotocol/graph-ts";
+import { BigInt, Bytes, ethereum, log, store } from "@graphprotocol/graph-ts";
+
+import { SMOL_RENDERER_ADDRESS } from "@treasure/constants";
 
 import { TraitAdded } from "../generated/Smols Trait Storage/SmolsTraitStorage";
-import { Trait, TraitDependency } from "../generated/schema";
+import {
+  SmolRenderer,
+  SmolRenderer__generateSVGInput_smolStruct,
+} from "../generated/Transmolgrifier/SmolRenderer";
+import {
+  SeasonStateUpdated,
+  SeasonTextUpdated,
+  SmolRecipeAdded,
+  SmolRecipeAdjusted,
+  SmolRecipeDeleted,
+  SmolTransmolgrified,
+} from "../generated/Transmolgrifier/Transmolgrifier";
+import { Recipe, Season, Trait, TraitDependency } from "../generated/schema";
 
 const GENDERS = ["Unset", "Male", "Female"];
+
+const getOrCreateSeason = (seasonId: BigInt): Season => {
+  const id = Bytes.fromI32(seasonId.toI32());
+  let season = Season.load(id);
+  if (!season) {
+    season = new Season(id);
+    season.seasonId = seasonId;
+    season.name = `Season ${seasonId.toString()}`;
+    season.isActive = false;
+    season.save();
+  }
+
+  return season;
+};
+
+const getOrCreateRecipe = (seasonId: BigInt, recipeId: BigInt): Recipe => {
+  const season = getOrCreateSeason(seasonId);
+  const id = Bytes.fromI32(seasonId.toI32()).concatI32(recipeId.toI32());
+  let recipe = Recipe.load(id);
+  if (!recipe) {
+    recipe = new Recipe(id);
+    recipe.recipeId = recipeId;
+    recipe.season = season.id;
+    recipe.image = "";
+    recipe.minted = false;
+  }
+
+  return recipe;
+};
 
 export function handleTraitAdded(event: TraitAdded): void {
   const params = event.params;
@@ -34,4 +77,128 @@ export function handleTraitAdded(event: TraitAdded): void {
   traitDependency.maleImage = params._trait.pngImage.male.toString();
   traitDependency.femaleImage = params._trait.pngImage.female.toString();
   traitDependency.save();
+}
+
+const updateRecipe = (
+  seasonId: BigInt,
+  recipeId: BigInt,
+  background: i32,
+  body: i32,
+  clothes: i32,
+  mouth: i32,
+  glasses: i32,
+  hat: i32,
+  hair: i32,
+  skin: i32,
+  smolCost: i32,
+  treasureCost: i32,
+  treasureTokenId: i32
+): void => {
+  const recipe = getOrCreateRecipe(seasonId, recipeId);
+  recipe.background = background > 0 ? Bytes.fromI32(background) : null;
+  recipe.body = body > 0 ? Bytes.fromI32(body) : null;
+  recipe.clothes = clothes > 0 ? Bytes.fromI32(clothes) : null;
+  recipe.mouth = mouth > 0 ? Bytes.fromI32(mouth) : null;
+  recipe.glasses = glasses > 0 ? Bytes.fromI32(glasses) : null;
+  recipe.hat = hat > 0 ? Bytes.fromI32(hat) : null;
+  recipe.hair = hair > 0 ? Bytes.fromI32(hair) : null;
+  recipe.skin = skin > 0 ? Bytes.fromI32(skin) : null;
+  recipe.smolCost = smolCost;
+  recipe.treasureCost = treasureCost;
+  recipe.treasureTokenId = treasureTokenId;
+
+  const contract = SmolRenderer.bind(SMOL_RENDERER_ADDRESS);
+  const tuple = new SmolRenderer__generateSVGInput_smolStruct(10);
+  tuple[0] = ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(background));
+  tuple[1] = ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(body));
+  tuple[2] = ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(clothes));
+  tuple[3] = ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(mouth));
+  tuple[4] = ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(glasses));
+  tuple[5] = ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(hat));
+  tuple[6] = ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(hair));
+  tuple[7] = ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(skin));
+  tuple[8] = ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(1)); // gender
+  tuple[9] = ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(0)); // headSize
+  const result = contract.try_generateSVG(tuple);
+  if (!result.reverted) {
+    recipe.image = result.value.toString();
+  } else {
+    log.warning("Error rendering recipe: {}", [recipeId.toString()]);
+    recipe.image = "";
+  }
+
+  recipe.save();
+};
+
+export function handleRecipeAdded(event: SmolRecipeAdded): void {
+  const params = event.params;
+  const data = params.smolData;
+  const smol = data.smol;
+  updateRecipe(
+    params.seasonId,
+    params.smolRecipeId,
+    smol.background,
+    smol.body,
+    smol.clothes,
+    smol.mouth,
+    smol.glasses,
+    smol.hat,
+    smol.hair,
+    smol.skin,
+    data.smolInputAmount,
+    data.treasureAmount,
+    data.treasureId
+  );
+}
+
+export function handleRecipeAdjusted(event: SmolRecipeAdjusted): void {
+  const params = event.params;
+  const data = params.smolData;
+  const smol = data.smol;
+  updateRecipe(
+    params.seasonId,
+    params.smolRecipeId,
+    smol.background,
+    smol.body,
+    smol.clothes,
+    smol.mouth,
+    smol.glasses,
+    smol.hat,
+    smol.hair,
+    smol.skin,
+    data.smolInputAmount,
+    data.treasureAmount,
+    data.treasureId
+  );
+}
+
+export function handleRecipeDeleted(event: SmolRecipeDeleted): void {
+  const params = event.params;
+  store.remove(
+    "Recipe",
+    Bytes.fromI32(params.seasonId.toI32())
+      .concatI32(params.smolRecipeId.toI32())
+      .toHexString()
+  );
+}
+
+export function handleSeasonStateUpdated(event: SeasonStateUpdated): void {
+  const params = event.params;
+  const season = getOrCreateSeason(params.seasonId);
+  season.isActive = params.isActive;
+  season.save();
+}
+
+export function handleSeasonTextUpdated(event: SeasonTextUpdated): void {
+  const params = event.params;
+  const season = getOrCreateSeason(params.seasonId);
+  season.name = params.seasonText;
+  season.save();
+}
+
+export function handleTransmolgrified(event: SmolTransmolgrified): void {
+  const params = event.params;
+  const recipe = getOrCreateRecipe(params.seasonId, params.smolRecipeId);
+  recipe.minted = true;
+  recipe.save();
 }
