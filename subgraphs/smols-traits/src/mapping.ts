@@ -90,6 +90,8 @@ const updateRecipe = (
   hat: i32,
   hair: i32,
   skin: i32,
+  gender: i32,
+  headSize: i32,
   smolCost: i32,
   treasureCost: i32,
   treasureTokenId: i32
@@ -103,6 +105,8 @@ const updateRecipe = (
   recipe.hat = hat > 0 ? Bytes.fromI32(hat) : null;
   recipe.hair = hair > 0 ? Bytes.fromI32(hair) : null;
   recipe.skin = skin > 0 ? Bytes.fromI32(skin) : null;
+  recipe.gender = gender;
+  recipe.headSize = headSize;
   recipe.smolCost = smolCost;
   recipe.treasureCost = treasureCost;
   recipe.treasureTokenId = treasureTokenId;
@@ -117,8 +121,8 @@ const updateRecipe = (
   tuple[5] = ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(hat));
   tuple[6] = ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(hair));
   tuple[7] = ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(skin));
-  tuple[8] = ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(1)); // gender
-  tuple[9] = ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(0)); // headSize
+  tuple[8] = ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(gender));
+  tuple[9] = ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(headSize));
   const result = contract.try_generateSVG(tuple);
   if (!result.reverted) {
     recipe.image = result.value.toString();
@@ -145,6 +149,8 @@ export function handleRecipeAdded(event: SmolRecipeAdded): void {
     smol.hat,
     smol.hair,
     smol.skin,
+    smol.gender,
+    smol.headSize,
     data.smolInputAmount,
     data.treasureAmount,
     data.treasureId
@@ -166,6 +172,8 @@ export function handleRecipeAdjusted(event: SmolRecipeAdjusted): void {
     smol.hat,
     smol.hair,
     smol.skin,
+    smol.gender,
+    smol.headSize,
     data.smolInputAmount,
     data.treasureAmount,
     data.treasureId

@@ -49,6 +49,8 @@ type Recipe @entity {
   hat: Trait
   hair: Trait
   skin: Trait
+  gender: Int!
+  headSize: Int!
 
   image: String!
   minted: Boolean!
