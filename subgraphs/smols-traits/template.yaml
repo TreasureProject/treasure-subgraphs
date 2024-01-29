@@ -17,7 +17,7 @@ dataSources:
         - Trait
       abis:
         - name: SmolsTraitStorage
-          file: {{{ abis }}}/SmolsTraitStorage.json
+          file: ./abis/SmolsTraitStorage.json
       eventHandlers:
         - event: TraitAdded(uint256,uint256,(uint8,uint24,bytes,bytes,(bytes,bytes),bool))
           handler: handleTraitAdded
@@ -39,9 +39,9 @@ dataSources:
         - Trait
       abis:
         - name: Transmolgrifier
-          file: {{{ abis }}}/Transmolgrifier.json
+          file: ./abis/Transmolgrifier.json
         - name: SmolRenderer
-          file: {{{ abis }}}/SmolRenderer.json
+          file: ./abis/SmolRenderer.json
       eventHandlers:
         - event: SmolRecipeAdded(uint256,uint256,((uint24,uint24,uint24,uint24,uint24,uint24,uint24,uint24,uint8,uint8),bool,uint8,uint16,uint8))
           handler: handleRecipeAdded
