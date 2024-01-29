@@ -16,6 +16,8 @@ dataSources:
       entities:
         - Trait
       abis:
+        - name: SmolRenderer
+          file: ./abis/SmolRenderer.json
         - name: SmolsTraitStorage
           file: ./abis/SmolsTraitStorage.json
       eventHandlers:
