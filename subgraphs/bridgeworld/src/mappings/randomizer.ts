@@ -73,43 +73,43 @@ export function handleRandomSeeded(event: RandomSeeded): void {
       continue;
     }
 
-    // const advancedQuestId = random.advancedQuest;
-    // if (advancedQuestId) {
-    //   const quest = AdvancedQuest.load(advancedQuestId);
-    //   if (quest !== null && quest.token !== null) {
-    //     const token = Token.load(quest.token);
-    //     if (token !== null) {
-    //       const success = setQuestEndTime(quest, token.tokenId);
-    //       if (!success) {
-    //         log.error("[randomizer] Failed to get endTime for legion: {}", [
-    //           quest.token,
-    //         ]);
-    //       }
+    const advancedQuestId = random.advancedQuest;
+    if (advancedQuestId) {
+      const quest = AdvancedQuest.load(advancedQuestId);
+      if (quest !== null && quest.token !== null) {
+        const token = Token.load(quest.token);
+        if (token !== null) {
+          const success = setQuestEndTime(quest, token.tokenId);
+          if (!success) {
+            log.error("[randomizer] Failed to get endTime for legion: {}", [
+              quest.token,
+            ]);
+          }
 
-    //       if (quest.stasisHitCount > 0) {
-    //         if (quest.part === 2) {
-    //           quest.hadStasisPart2 = true;
-    //         } else if (quest.part === 3) {
-    //           quest.hadStasisPart2 =
-    //             quest.hadStasisPart2 || quest.stasisHitCount >= 2;
-    //           quest.hadStasisPart3 = true;
-    //         }
-    //       }
+          if (quest.stasisHitCount > 0) {
+            if (quest.part === 2) {
+              quest.hadStasisPart2 = true;
+            } else if (quest.part === 3) {
+              quest.hadStasisPart2 =
+                quest.hadStasisPart2 || quest.stasisHitCount >= 2;
+              quest.hadStasisPart3 = true;
+            }
+          }
 
-    //       quest.save();
-    //     } else {
-    //       log.error("[randomizer] Token not found: {}", [quest.token]);
-    //     }
-    //   } else {
-    //     log.error("[randomizer] AdvancedQuest not found: {}", [
-    //       advancedQuestId,
-    //     ]);
-    //   }
+          quest.save();
+        } else {
+          log.error("[randomizer] Token not found: {}", [quest.token]);
+        }
+      } else {
+        log.error("[randomizer] AdvancedQuest not found: {}", [
+          advancedQuestId,
+        ]);
+      }
 
-    //   continue;
-    // }
+      continue;
+    }
 
-    log.warning("Unhandled seeded: {}", [commitId.toString()]);
+    log.error("Unhandled seeded: {}", [commitId.toString()]);
   }
 
   // Every time a random is seeded (~5 min), check scheduled jobs
