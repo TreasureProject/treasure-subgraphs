@@ -14,6 +14,14 @@ type Trait @entity {
   isDetachable: Boolean!
 
   dependencyLevels: [TraitDependency!]! @derivedFrom(field: "trait")
+  backgroundRecipes: [Recipe!]! @derivedFrom(field: "background")
+  bodyRecipes: [Recipe!]! @derivedFrom(field: "body")
+  clothesRecipes: [Recipe!]! @derivedFrom(field: "clothes")
+  mouthRecipes: [Recipe!]! @derivedFrom(field: "mouth")
+  glassesRecipes: [Recipe!]! @derivedFrom(field: "glasses")
+  hatRecipes: [Recipe!]! @derivedFrom(field: "hat")
+  hairRecipes: [Recipe!]! @derivedFrom(field: "hair")
+  skinRecipes: [Recipe!]! @derivedFrom(field: "skin")
 }
 
 type TraitDependency @entity {
