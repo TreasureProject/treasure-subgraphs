@@ -19,13 +19,10 @@ import {
   AdvancedQuestReward,
   LegionInfo,
   Random,
-  Token,
   TokenQuantity,
   TreasureTriadResult,
-  User,
 } from "../../generated/schema";
 import { QUEST_DISTANCE_TRAVELLED_PER_PART } from "../helpers";
-import { setQuestEndTime } from "../helpers/advanced-questing";
 import {
   isQuestingXpGainedEnabled,
   setQuestingXpGainedBlockNumberIfEmpty,
@@ -141,23 +138,9 @@ export function handleTreasureTriadPlayed(event: TreasureTriadPlayed): void {
   result.numberOfCardsFlipped = params._numberOfCardsFlipped;
   result.numberOfCorruptedCardsRemaining =
     params._numberOfCorruptedCardsRemaining;
+  result.save();
 
   quest.treasureTriadResult = result.id;
-
-  if (result.numberOfCorruptedCardsRemaining > 0) {
-    const token = Token.load(quest.token);
-    if (token) {
-      const success = setQuestEndTime(quest, token.tokenId);
-      if (!success) {
-        log.error(
-          "[advanced-quest-triad] Failed to get endTime for legion: {}",
-          [quest.token]
-        );
-      }
-    }
-  }
-
-  result.save();
   quest.save();
 }
 
