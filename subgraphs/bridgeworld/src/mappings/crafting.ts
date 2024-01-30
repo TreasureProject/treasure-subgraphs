@@ -1,4 +1,11 @@
-import { Address, BigInt, ethereum, log, store } from "@graphprotocol/graph-ts";
+import {
+  Address,
+  BigInt,
+  Bytes,
+  ethereum,
+  log,
+  store,
+} from "@graphprotocol/graph-ts";
 
 import {
   CONSUMABLE_ADDRESS,
@@ -42,7 +49,7 @@ function handleCraftingStarted(
   finishTime: BigInt,
   difficulty: i32
 ): void {
-  const random = Random.load(requestId.toHexString());
+  const random = Random.load(Bytes.fromBigInt(requestId));
   if (!random) {
     log.error("[craft-started] Unknown random: {}", [requestId.toString()]);
     return;
@@ -52,13 +59,11 @@ function handleCraftingStarted(
   craft.difficulty = DIFFICULTY[difficulty];
   craft.endTimestamp = finishTime.times(BigInt.fromI32(1000));
   craft.token = getAddressId(LEGION_ADDRESS, tokenId);
-  craft.random = random.id;
   craft.status = "Idle";
   craft.user = user.toHexString();
   craft.save();
 
   random.craft = craft.id;
-  random.requestId = requestId;
   random.save();
 }
 

@@ -271,22 +271,19 @@ type Harvest @entity {
 }
 
 type Random @entity {
-  id: ID!
+  id: Bytes!
 
   "Set for crafting"
   craft: Craft
 
-  "Set for advanced questing"
-  advancedQuest: AdvancedQuest
-
   requestId: BigInt!
-  seeded: Seeded
+  seeded: Seeded!
 }
 
 type Seeded @entity {
-  id: ID!
+  id: Bytes!
 
-  randoms: [Random!]!
+  randoms: [Random!]! @derivedFrom(field: "seeded")
 }
 
 type Broken @entity {
@@ -313,7 +310,7 @@ type Craft @entity {
   difficulty: Difficulty!
   endTimestamp: BigInt!
   outcome: Outcome
-  random: Random!
+  random: Random! @derivedFrom(field: "craft")
   status: Status!
   token: Token!
   user: User!
