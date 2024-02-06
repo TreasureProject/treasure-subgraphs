@@ -17,4 +17,4 @@ jobs:
       - name: Generate code
         run: npm run codegen --workspaces --if-present
       - name: Test
-        run: npm test --workspaces --if-present
+        run: npm test
