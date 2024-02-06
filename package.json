@@ -12,6 +12,7 @@
     "prepare": "husky"
   },
   "devDependencies": {
+    "@goldskycom/cli": "^8.3.0",
     "@graphprotocol/graph-cli": "^0.67.1",
     "@graphprotocol/graph-ts": "^0.32.0",
     "@sushiswap/core": "^1.4.2",
