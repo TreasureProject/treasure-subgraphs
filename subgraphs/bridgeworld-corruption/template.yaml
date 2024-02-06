@@ -17,7 +17,7 @@ dataSources:
         - Building
       abis:
         - name: Corruption
-          file: {{{ abis }}}/Corruption.json
+          file: ./abis/Corruption.json
       eventHandlers:
         - event: CorruptionStreamModified(address,uint128,uint256)
           handler: handleCorruptionStreamModified
@@ -41,7 +41,7 @@ dataSources:
         - Removal
       abis:
         - name: CorruptionRemoval
-          file: {{{ abis }}}/CorruptionRemoval.json
+          file: ./abis/CorruptionRemoval.json
       eventHandlers:
         - event: CorruptionRemovalRecipeCreated(uint256,uint256,(address,uint8,uint8,uint32,uint64,uint128,address,bytes)[],(uint128,uint32,uint32)[])
           handler: handleCorruptionRemovalRecipeCreated
@@ -69,7 +69,7 @@ dataSources:
         - Removal
       abis:
         - name: TreasureCorruptionHandler
-          file: {{{ abis }}}/TreasureCorruptionHandler.json
+          file: ./abis/TreasureCorruptionHandler.json
       eventHandlers:
         - event: TreasureUnstaked(address,uint256,uint256[],uint256[])
           handler: handleTreasureUnstaked
@@ -92,7 +92,7 @@ dataSources:
         - CryptsUserMapTile
       abis:
         - name: CorruptionCrypts
-          file: {{{ abis }}}/CorruptionCrypts.json
+          file: ./abis/CorruptionCrypts.json
       eventHandlers:
         - event: ConfigUpdated((uint256,uint256,uint256,uint256,uint256,uint256,uint64,uint256,uint256,uint256,uint256,uint256))
           handler: handleConfigUpdated
@@ -138,7 +138,7 @@ dataSources:
         - CryptsSquad
       abis:
         - name: CorruptionCryptsV2
-          file: {{{ abis }}}/CorruptionCryptsV2.json
+          file: ./abis/CorruptionCryptsV2.json
       eventHandlers:
         - event: CharacterHandlerSet(address,address)
           handler: handleCharacterHandlerSet
@@ -166,7 +166,7 @@ dataSources:
         - Config
       abis:
         - name: CorruptionCryptsRewards
-          file: {{{ abis }}}/CorruptionCryptsRewards.json
+          file: ./abis/CorruptionCryptsRewards.json
       eventHandlers:
         - event: MalevolentPrismsPerCraftSet(uint256)
           handler: handleMalevolentPrismsPerCraftSet
@@ -191,9 +191,9 @@ dataSources:
         - Seeded
       abis:
         - name: Randomizer
-          file: {{{ abis }}}/Randomizer.json
+          file: ./abis/Randomizer.json
         - name: CorruptionCrypts
-          file: {{{ abis }}}/CorruptionCrypts.json
+          file: ./abis/CorruptionCrypts.json
       eventHandlers:
         - event: RandomRequest(indexed uint256,indexed uint256)
           handler: handleRandomRequest
