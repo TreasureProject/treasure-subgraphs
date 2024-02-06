@@ -4,11 +4,11 @@ schema:
 dataSources:
   - name: Recruit Level
     kind: ethereum/contract
-    network: {{ network }}
+    network: { { network } }
     source:
       address: "{{ recruit_level_address }}"
       abi: RecruitLevel
-      startBlock: {{ recruit_level_start_block }}
+      startBlock: { { recruit_level_start_block } }
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -37,11 +37,11 @@ dataSources:
       file: ./src/recruit-level.ts
   - name: Randomizer
     kind: ethereum/contract
-    network: {{ network }}
+    network: { { network } }
     source:
       address: "{{ randomizer_address }}"
       abi: Randomizer
-      startBlock: {{ recruit_level_start_block }}
+      startBlock: { { recruit_level_start_block } }
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6

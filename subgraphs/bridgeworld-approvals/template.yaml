@@ -4,11 +4,11 @@ schema:
 dataSources:
   - name: Consumable
     kind: ethereum/contract
-    network: {{ network }}
+    network: { { network } }
     source:
       address: "{{ consumable_address }}"
       abi: ERC1155
-      startBlock: {{ consumable_start_block }}
+      startBlock: { { consumable_start_block } }
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -24,11 +24,11 @@ dataSources:
       file: ./src/mapping.ts
   - name: Balancer Crystal
     kind: ethereum/contract
-    network: {{ network }}
+    network: { { network } }
     source:
       address: "{{ balancer_crystal_address }}"
       abi: ERC1155
-      startBlock: {{ balancer_crystal_start_block }}
+      startBlock: { { balancer_crystal_start_block } }
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -44,11 +44,11 @@ dataSources:
       file: ./src/mapping.ts
   - name: Legion
     kind: ethereum/contract
-    network: {{ network }}
+    network: { { network } }
     source:
       address: "{{ legion_address }}"
       abi: ERC721
-      startBlock: {{ legion_start_block }}
+      startBlock: { { legion_start_block } }
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -64,11 +64,11 @@ dataSources:
       file: ./src/mapping.ts
   - name: Legacy Legion
     kind: ethereum/contract
-    network: {{ network }}
+    network: { { network } }
     source:
       address: "{{ legacy_legion_address }}"
       abi: ERC1155
-      startBlock: {{ legacy_legion_start_block }}
+      startBlock: { { legacy_legion_start_block } }
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -84,11 +84,11 @@ dataSources:
       file: ./src/mapping.ts
   - name: Legacy Legion Genesis
     kind: ethereum/contract
-    network: {{ network }}
+    network: { { network } }
     source:
       address: "{{ legacy_legion_genesis_address }}"
       abi: ERC1155
-      startBlock: {{ legacy_legion_genesis_start_block }}
+      startBlock: { { legacy_legion_genesis_start_block } }
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -104,11 +104,11 @@ dataSources:
       file: ./src/mapping.ts
   - name: Magic
     kind: ethereum/contract
-    network: {{ network }}
+    network: { { network } }
     source:
       address: "{{ magic_address }}"
       abi: ERC20
-      startBlock: {{ magic_start_block }}
+      startBlock: { { magic_start_block } }
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -124,11 +124,11 @@ dataSources:
       file: ./src/mapping.ts
   - name: Treasure
     kind: ethereum/contract
-    network: {{ network }}
+    network: { { network } }
     source:
       address: "{{ treasure_address }}"
       abi: ERC1155
-      startBlock: {{ treasure_start_block }}
+      startBlock: { { treasure_start_block } }
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -144,11 +144,11 @@ dataSources:
       file: ./src/mapping.ts
   - name: Treasure Fragment
     kind: ethereum/contract
-    network: {{ network }}
+    network: { { network } }
     source:
       address: "{{ treasure_fragment_address }}"
       abi: ERC1155
-      startBlock: {{ treasure_fragment_start_block }}
+      startBlock: { { treasure_fragment_start_block } }
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -164,11 +164,11 @@ dataSources:
       file: ./src/mapping.ts
   - name: KOTE Squires
     kind: ethereum/contract
-    network: {{ network }}
+    network: { { network } }
     source:
       address: "{{ kote_squires_address }}"
       abi: ERC721
-      startBlock: {{ corruption_crypts_start_block }}
+      startBlock: { { corruption_crypts_start_block } }
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -184,11 +184,11 @@ dataSources:
       file: ./src/mapping.ts
   - name: KOTE Potions
     kind: ethereum/contract
-    network: {{ network }}
+    network: { { network } }
     source:
       address: "{{ kote_potions_address }}"
       abi: ERC1155
-      startBlock: {{ corruption_crypts_start_block }}
+      startBlock: { { corruption_crypts_start_block } }
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -204,11 +204,11 @@ dataSources:
       file: ./src/mapping.ts
   - name: KOTE Trinkets
     kind: ethereum/contract
-    network: {{ network }}
+    network: { { network } }
     source:
       address: "{{ kote_trinkets_address }}"
       abi: ERC1155
-      startBlock: {{ corruption_crypts_start_block }}
+      startBlock: { { corruption_crypts_start_block } }
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -224,11 +224,11 @@ dataSources:
       file: ./src/mapping.ts
   - name: Beacon
     kind: ethereum/contract
-    network: {{ network }}
+    network: { { network } }
     source:
       address: "{{ beacon_address }}"
       abi: ERC1155
-      startBlock: {{ corruption_crypts_start_block }}
+      startBlock: { { corruption_crypts_start_block } }
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6

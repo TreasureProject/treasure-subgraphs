@@ -3,10 +3,8 @@ abis/
 build/
 generated/
 node_modules/
-**/helpers/base64.ts
-*.yaml
 .gitignore
 .lintstagedrc
 .prettierignore
 .prettierrc
-yarn.lock
+package-lock.json

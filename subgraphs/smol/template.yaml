@@ -4,11 +4,11 @@ schema:
 dataSources:
   - name: Smols Trait Storage
     kind: ethereum/contract
-    network: {{ network }}
+    network: { { network } }
     source:
       address: "{{ smols_trait_storage_address }}"
       abi: SmolsTraitStorage
-      startBlock: {{ smols_trait_storage_start_block }}
+      startBlock: { { smols_trait_storage_start_block } }
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -26,11 +26,11 @@ dataSources:
       file: ./src/mapping.ts
   - name: Transmolgrifier
     kind: ethereum/contract
-    network: {{ network }}
+    network: { { network } }
     source:
       address: "{{ transmolgrifier_address }}"
       abi: Transmolgrifier
-      startBlock: {{ transmolgrifier_start_block }}
+      startBlock: { { transmolgrifier_start_block } }
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -60,11 +60,11 @@ dataSources:
       file: ./src/mapping.ts
   - name: TransmolgrifierV2
     kind: ethereum/contract
-    network: {{ network }}
+    network: { { network } }
     source:
       address: "{{ transmolgrifier_address }}"
       abi: TransmolgrifierV2
-      startBlock: {{ transmolgrifier_start_block }}
+      startBlock: { { transmolgrifier_start_block } }
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6

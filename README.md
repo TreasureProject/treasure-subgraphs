@@ -6,72 +6,51 @@ Collection of subgraphs used by [Treasure](https://treasure.lol) to power its va
 
 ### bridgeworld
 
-General inventory, metadata, and legacy feature support for [Bridgeworld](https://bridgeworld.treasure.lol)
+General inventory, metadata, and feature support for [Bridgeworld](https://bridgeworld.treasure.lol)
 
 ### bridgeworld-approvals
 
 Approvals of NFTs and tokens related to [Bridgeworld](https://bridgeworld.treasure.lol)
 
+### bridgeworld-corruption
+
+Corruption balances and removals for [Bridgeworld](https://bridgeworld.treasure.lol)
+
+### bridgeworld-kote
+
+[Knights of the Ether](https://knightsoftheether.com) metadata for Harvesters in [Bridgeworld](https://bridgeworld.treasure.lol)
+
 ### bridgeworld-recruits
 
 [Bridgeworld](https://bridgeworld.treasure.lol) Recruit ascension configuration and attempts
-
-### magic-stats
-
-Time interval-based stats on interactions with the [MAGIC token](https://docs.treasure.lol/getting-started/what-is-magic)
 
 ### magicswap-exchange
 
 Fork of [Sushiswap subgraph](https://github.com/sushiswap/subgraphs) for [MagicSwap](https://magicswap.lol)
 
-### migration
+### smol
 
-L1 to L2 migration of Treasure NFTs
-
-### smol-racing
-
-Gameplay data forh [Smol Racing](https://www.smolverse.lol/racing)
-
-### smolidays
-
-Gameplay data for [Smolidays](https://smolidays.smolverse.lol)
-
-### smoloween
-
-Gameplay data for [Smoloween](https://smoloween.smolverse.lol)
-
-### smolverse
-
-General inventory, metadata, and legacy feature support for [Smolverse](https://smolverse.lol)
-
-### smolverse-chop-shop
-
-Gameplay data for [Smolverse Chop Shop](https://smolverse.lol)
-
-### smolverse-inventory
-
-Ownership and staking status for [Smolverse](https://smolverse.lol) NFTs
+Data for SMOL Admin and [Transmolgrifier](https://smolverse.lol/transmolgrify)
 
 ## Local Development
 
 Check out the repo and install dependencies in the root folder:
 
-```
-yarn install
+```sh
+npm install
 ```
 
 Navigate to a specific subgraph and run code generation:
 
-```
+```sh
 cd subgraphs/bridgeworld
-yarn prepare:dev
-yarn codegen
+npm run prepare:dev && npm run codegen
 ```
 
 Run unit tests:
 
-```
-yarn test
+```sh
+npm test
 ```
 
 ## Deployment
