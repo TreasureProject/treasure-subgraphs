@@ -8,14 +8,14 @@
   ],
   "scripts": {
     "format": "prettier --write .",
-    "prepare": "husky install"
+    "prepare": "husky"
   },
   "devDependencies": {
     "@graphprotocol/graph-cli": "^0.67.1",
     "@graphprotocol/graph-ts": "^0.32.0",
     "@sushiswap/core": "^1.4.2",
     "@trivago/prettier-plugin-sort-imports": "^4.2.0",
-    "husky": "^8.0.3",
+    "husky": "^9.0.10",
     "lint-staged": "^15.0.2",
     "matchstick-as": "^0.5.2",
     "mustache": "^4.2.0",
