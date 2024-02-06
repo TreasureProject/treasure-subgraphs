@@ -9,22 +9,13 @@ on:
         type: choice
         description: Select subgraph
         options:
-        - bridgeworld
-        - bridgeworld-approvals
-        - bridgeworld-corruption
-        - bridgeworld-kote
-        - bridgeworld-recruits
-        - magic-stats
-        - magicswap-exchange
-        - migration
-        - smol-racing
-        - smol-treasures-burn
-        - smolidays
-        - smoloween
-        - smols-traits
-        - smolverse
-        - smolverse-chop-shop
-        - smolverse-inventory
+          - bridgeworld
+          - bridgeworld-approvals
+          - bridgeworld-corruption
+          - bridgeworld-kote
+          - bridgeworld-recruits
+          - magicswap-exchange
+          - smol
       version:
         description: Subgraph version
         required: true
@@ -37,26 +28,28 @@ jobs:
         working-directory: ./subgraphs/${{ inputs.subgraph }}
     steps:
       - name: Check out code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Install Node
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
       - name: Install dependencies
-        run: yarn --frozen-lockfile
+        run: npm ci --prefix ../..
       - name: Prepare for DEV
         if: inputs.environment == 'Development'
-        run: yarn prepare:dev
+        run: npm run prepare:dev --if-present
       - name: Prepare for PROD
         if: inputs.environment == 'Production'
-        run: yarn prepare:prod
+        run: npm run prepare:prod --if-present
       - name: Generate code
-        run: yarn codegen
+        run: npm run codegen --if-present
       - name: Test
-        run: yarn test
+        run: npm test --if-present
+      - name: Build subgraph
+        run: npx graph build
       - name: Deploy to DEV
         if: inputs.environment == 'Development'
-        run: yarn graph deploy ${{ inputs.subgraph }}-dev --version-label ${{ inputs.version }} --node https://subgraphs.alchemy.com/api/subgraphs/deploy --ipfs https://ipfs.satsuma.xyz --deploy-key ${{ secrets.SATSUMA_DEPLOY_KEY }}
+        run: npx goldsky subgraph deploy ${{ inputs.subgraph }}-dev/${{ inputs.version }} --token ${{ secrets.GOLDSKY_DEPLOY_KEY }}
       - name: Deploy to PROD
         if: inputs.environment == 'Production'
-        run: yarn graph deploy ${{ inputs.subgraph }} --version-label ${{ inputs.version }} --node https://subgraphs.alchemy.com/api/subgraphs/deploy --ipfs https://ipfs.satsuma.xyz --deploy-key ${{ secrets.SATSUMA_DEPLOY_KEY }}
+        run: npx goldsky subgraph deploy ${{ inputs.subgraph }}/${{ inputs.version }} --token ${{ secrets.GOLDSKY_DEPLOY_KEY }}

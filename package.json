@@ -8,17 +8,22 @@
   ],
   "scripts": {
     "format": "prettier --write .",
-    "prepare": "husky install"
+    "test": "npm test --workspaces --if-present",
+    "prepare": "husky"
   },
   "devDependencies": {
+    "@goldskycom/cli": "^8.3.0",
     "@graphprotocol/graph-cli": "^0.67.1",
     "@graphprotocol/graph-ts": "^0.32.0",
     "@sushiswap/core": "^1.4.2",
     "@trivago/prettier-plugin-sort-imports": "^4.2.0",
-    "husky": "^8.0.3",
+    "husky": "^9.0.10",
     "lint-staged": "^15.0.2",
-    "matchstick-as": "^0.5.2",
+    "matchstick-as": "^0.6.0",
     "mustache": "^4.2.0",
     "prettier": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=20"
   }
 }

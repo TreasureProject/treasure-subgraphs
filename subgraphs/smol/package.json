@@ -1,7 +1,7 @@
 {
-  "name": "bridgeworld-kote",
+  "name": "smol",
   "version": "1.0.0",
-  "description": "Subgraph that powers Knights of the Ether inventory in Bridgeworld",
+  "description": "Subgraph that powers SMOL Admin and Transmolgrifier",
   "license": "MIT",
   "scripts": {
     "codegen": "graph codegen",

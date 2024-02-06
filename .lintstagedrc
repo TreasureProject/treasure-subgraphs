@@ -1,3 +1,3 @@
 {
-  "**/*.{ts,json,yaml}": "yarn format"
+  "*": "npm run format"
 }

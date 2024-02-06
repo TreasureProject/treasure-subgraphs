@@ -5,16 +5,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Install Node
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: npm ci
       - name: Prepare for DEV
-        run: yarn workspaces run prepare:dev
+        run: npm run prepare:dev --workspaces --if-present
       - name: Generate code
-        run: yarn workspaces run codegen
+        run: npm run codegen --workspaces --if-present
       - name: Test
-        run: yarn workspaces run test
+        run: npm test
