@@ -15,7 +15,7 @@ on:
         - bridgeworld-kote
         - bridgeworld-recruits
         - magicswap-exchange
-        - smols-traits
+        - smol
       version:
         description: Subgraph version
         required: true

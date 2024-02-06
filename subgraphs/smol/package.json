@@ -1,7 +1,7 @@
 {
-  "name": "smols-traits",
+  "name": "smol",
   "version": "1.0.0",
-  "description": "Subgraph that powers Smols On Chain traits",
+  "description": "Subgraph that powers SMOL Admin and Transmolgrifier",
   "license": "MIT",
   "scripts": {
     "codegen": "graph codegen",
