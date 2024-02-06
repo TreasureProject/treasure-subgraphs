@@ -45,6 +45,8 @@ jobs:
         run: npm run codegen --if-present
       - name: Test
         run: npm test --if-present
+      - name: Build subgraph
+        run: npx graph build
       - name: Deploy to DEV
         if: inputs.environment == 'Development'
         run: npx goldsky subgraph deploy ${{ inputs.subgraph }}-dev/${{ inputs.version }} --token ${{ secrets.GOLDSKY_DEPLOY_KEY }}
