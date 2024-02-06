@@ -4,11 +4,11 @@ schema:
 dataSources:
   - name: KOTE Squires
     kind: ethereum/contract
-    network: { { network } }
+    network: {{ network }}
     source:
       address: "{{ kote_squires_address }}"
       abi: KoteSquires
-      startBlock: { { kote_squires_start_block } }
+      startBlock: {{ kote_squires_start_block }}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -24,11 +24,11 @@ dataSources:
       file: ./src/mapping.ts
   - name: KOTE Potions
     kind: ethereum/contract
-    network: { { network } }
+    network: {{ network }}
     source:
       address: "{{ kote_potions_address }}"
       abi: ERC1155
-      startBlock: { { kote_potions_start_block } }
+      startBlock: {{ kote_potions_start_block }}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -45,11 +45,11 @@ dataSources:
       file: ./src/mapping.ts
   - name: KOTE Trinkets
     kind: ethereum/contract
-    network: { { network } }
+    network: {{ network }}
     source:
       address: "{{ kote_trinkets_address }}"
       abi: ERC1155
-      startBlock: { { kote_trinkets_start_block } }
+      startBlock: {{ kote_trinkets_start_block }}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6

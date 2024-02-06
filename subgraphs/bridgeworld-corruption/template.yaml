@@ -4,11 +4,11 @@ schema:
 dataSources:
   - name: Corruption
     kind: ethereum/contract
-    network: { { network } }
+    network: {{ network }}
     source:
       address: "{{ corruption_address }}"
       abi: Corruption
-      startBlock: { { corruption_start_block } }
+      startBlock: {{ corruption_start_block }}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -26,11 +26,11 @@ dataSources:
       file: ./src/corruption.ts
   - name: CorruptionRemoval
     kind: ethereum/contract
-    network: { { network } }
+    network: {{ network }}
     source:
       address: "{{ corruption_removal_address }}"
       abi: CorruptionRemoval
-      startBlock: { { corruption_removal_start_block } }
+      startBlock: {{ corruption_removal_start_block }}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -56,11 +56,11 @@ dataSources:
       file: ./src/corruption.ts
   - name: TreasureCorruptionHandler
     kind: ethereum/contract
-    network: { { network } }
+    network: {{ network }}
     source:
       address: "{{ treasure_corruption_handler_address }}"
       abi: TreasureCorruptionHandler
-      startBlock: { { treasure_corruption_handler_start_block } }
+      startBlock: {{ treasure_corruption_handler_start_block }}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -76,11 +76,11 @@ dataSources:
       file: ./src/corruption.ts
   - name: CorruptionCrypts
     kind: ethereum/contract
-    network: { { network } }
+    network: {{ network }}
     source:
       address: "{{ corruption_crypts_address }}"
       abi: CorruptionCrypts
-      startBlock: { { corruption_crypts_start_block } }
+      startBlock: {{ corruption_crypts_start_block }}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -125,11 +125,11 @@ dataSources:
       file: ./src/crypts.ts
   - name: CorruptionCryptsV2
     kind: ethereum/contract
-    network: { { network } }
+    network: {{ network }}
     source:
       address: "{{ corruption_crypts_address }}"
       abi: CorruptionCryptsV2
-      startBlock: { { corruption_crypts_start_block } }
+      startBlock: {{ corruption_crypts_start_block }}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -153,11 +153,11 @@ dataSources:
       file: ./src/crypts.ts
   - name: CorruptionCryptsRewards
     kind: ethereum/contract
-    network: { { network } }
+    network: {{ network }}
     source:
       address: "{{ corruption_crypts_rewards_address }}"
       abi: CorruptionCryptsRewards
-      startBlock: { { corruption_crypts_rewards_start_block } }
+      startBlock: {{ corruption_crypts_rewards_start_block }}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -177,11 +177,11 @@ dataSources:
       file: ./src/crypts-rewards.ts
   - name: Randomizer
     kind: ethereum/contract
-    network: { { network } }
+    network: {{ network }}
     source:
       address: "{{ randomizer_address }}"
       abi: Randomizer
-      startBlock: { { corruption_removal_start_block } }
+      startBlock: {{ corruption_removal_start_block }}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6

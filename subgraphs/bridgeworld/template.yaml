@@ -4,11 +4,11 @@ schema:
 dataSources:
   - name: Atlas Mine
     kind: ethereum/contract
-    network: { { network } }
+    network: {{ network }}
     source:
       address: "{{ atlas_mine_address }}"
       abi: AtlasMine
-      startBlock: { { atlas_mine_start_block } }
+      startBlock: {{ atlas_mine_start_block }}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -34,11 +34,11 @@ dataSources:
       file: ./src/mappings/atlas-mine.ts
   - name: Consumable
     kind: ethereum/contract
-    network: { { network } }
+    network: {{ network }}
     source:
       address: "{{ consumable_address }}"
       abi: Consumable
-      startBlock: { { consumable_start_block } }
+      startBlock: {{ consumable_start_block }}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -60,11 +60,11 @@ dataSources:
       file: ./src/mappings/consumable.ts
   - name: Balancer Crystal
     kind: ethereum/contract
-    network: { { network } }
+    network: {{ network }}
     source:
       address: "{{ balancer_crystal_address }}"
       abi: ERC1155
-      startBlock: { { balancer_crystal_start_block } }
+      startBlock: {{ balancer_crystal_start_block }}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -84,11 +84,11 @@ dataSources:
       file: ./src/mappings/balancer-crystal.ts
   - name: Crafting
     kind: ethereum/contract
-    network: { { network } }
+    network: {{ network }}
     source:
       address: "{{ crafting_address }}"
       abi: Crafting
-      startBlock: { { crafting_start_block } }
+      startBlock: {{ crafting_start_block }}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -112,11 +112,11 @@ dataSources:
       file: ./src/mappings/crafting.ts
   - name: Crafting Legacy
     kind: ethereum/contract
-    network: { { network } }
+    network: {{ network }}
     source:
       address: "{{ crafting_address }}"
       abi: Crafting
-      startBlock: { { crafting_start_block } }
+      startBlock: {{ crafting_start_block }}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -134,11 +134,11 @@ dataSources:
       file: ./src/mappings/crafting.ts
   - name: Mini Crafting
     kind: ethereum/contract
-    network: { { network } }
+    network: {{ network }}
     source:
       address: "{{ mini_crafting_address }}"
       abi: MiniCrafting
-      startBlock: { { mini_crafting_start_block } }
+      startBlock: {{ mini_crafting_start_block }}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -156,11 +156,11 @@ dataSources:
       file: ./src/mappings/mini-crafting.ts
   - name: Legion
     kind: ethereum/contract
-    network: { { network } }
+    network: {{ network }}
     source:
       address: "{{ legion_address }}"
       abi: ERC721
-      startBlock: { { legion_start_block } }
+      startBlock: {{ legion_start_block }}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -178,11 +178,11 @@ dataSources:
       file: ./src/mappings/legion.ts
   - name: Legion Metadata Store
     kind: ethereum/contract
-    network: { { network } }
+    network: {{ network }}
     source:
       address: "{{ legion_metadata_store_address }}"
       abi: LegionMetadataStore
-      startBlock: { { legion_metadata_store_start_block } }
+      startBlock: {{ legion_metadata_store_start_block }}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -206,11 +206,11 @@ dataSources:
       file: ./src/mappings/legion.ts
   - name: Legacy Legion
     kind: ethereum/contract
-    network: { { network } }
+    network: {{ network }}
     source:
       address: "{{ legacy_legion_address }}"
       abi: ERC1155
-      startBlock: { { legacy_legion_start_block } }
+      startBlock: {{ legacy_legion_start_block }}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -230,11 +230,11 @@ dataSources:
       file: ./src/mappings/legacy-legion.ts
   - name: Legacy Legion Genesis
     kind: ethereum/contract
-    network: { { network } }
+    network: {{ network }}
     source:
       address: "{{ legacy_legion_genesis_address }}"
       abi: ERC1155
-      startBlock: { { legacy_legion_genesis_start_block } }
+      startBlock: {{ legacy_legion_genesis_start_block }}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -254,11 +254,11 @@ dataSources:
       file: ./src/mappings/legacy-legion-genesis.ts
   - name: Pilgrimage
     kind: ethereum/contract
-    network: { { network } }
+    network: {{ network }}
     source:
       address: "{{ pilgrimage_address }}"
       abi: Pilgrimage
-      startBlock: { { pilgrimage_start_block } }
+      startBlock: {{ pilgrimage_start_block }}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -283,11 +283,11 @@ dataSources:
       file: ./src/mappings/pilgrimage.ts
   - name: Questing
     kind: ethereum/contract
-    network: { { network } }
+    network: {{ network }}
     source:
       address: "{{ questing_address }}"
       abi: Questing
-      startBlock: { { questing_start_block } }
+      startBlock: {{ questing_start_block }}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -311,11 +311,11 @@ dataSources:
       file: ./src/mappings/questing.ts
   - name: Questing Legacy
     kind: ethereum/contract
-    network: { { network } }
+    network: {{ network }}
     source:
       address: "{{ questing_address }}"
       abi: Questing
-      startBlock: { { questing_start_block } }
+      startBlock: {{ questing_start_block }}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -333,11 +333,11 @@ dataSources:
       file: ./src/mappings/questing.ts
   - name: Randomizer
     kind: ethereum/contract
-    network: { { network } }
+    network: {{ network }}
     source:
       address: "{{ randomizer_address }}"
       abi: Randomizer
-      startBlock: { { randomizer_start_block } }
+      startBlock: {{ randomizer_start_block }}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -362,11 +362,11 @@ dataSources:
       file: ./src/mappings/randomizer.ts
   - name: Summoning
     kind: ethereum/contract
-    network: { { network } }
+    network: {{ network }}
     source:
       address: "{{ summoning_address }}"
       abi: Summoning
-      startBlock: { { summoning_start_block } }
+      startBlock: {{ summoning_start_block }}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -386,11 +386,11 @@ dataSources:
       file: ./src/mappings/summoning.ts
   - name: Treasure
     kind: ethereum/contract
-    network: { { network } }
+    network: {{ network }}
     source:
       address: "{{ treasure_address }}"
       abi: ERC1155
-      startBlock: { { treasure_start_block } }
+      startBlock: {{ treasure_start_block }}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -410,11 +410,11 @@ dataSources:
       file: ./src/mappings/treasure.ts
   - name: Treasure Fragment
     kind: ethereum/contract
-    network: { { network } }
+    network: {{ network }}
     source:
       address: "{{ treasure_fragment_address }}"
       abi: ERC1155
-      startBlock: { { treasure_fragment_start_block } }
+      startBlock: {{ treasure_fragment_start_block }}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -434,11 +434,11 @@ dataSources:
       file: ./src/mappings/treasure-fragment.ts
   - name: Advanced Questing
     kind: ethereum/contract
-    network: { { network } }
+    network: {{ network }}
     source:
       address: "{{ advanced_questing_address }}"
       abi: AdvancedQuesting
-      startBlock: { { advanced_questing_start_block } }
+      startBlock: {{ advanced_questing_start_block }}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -464,11 +464,11 @@ dataSources:
       file: ./src/mappings/advanced-questing.ts
   - name: Treasure Triad
     kind: ethereum/contract
-    network: { { network } }
+    network: {{ network }}
     source:
       address: "{{ treasure_triad_address }}"
       abi: TreasureTriad
-      startBlock: { { treasure_triad_start_block } }
+      startBlock: {{ treasure_triad_start_block }}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -486,11 +486,11 @@ dataSources:
       file: ./src/mappings/treasure-triad.ts
   - name: Harvester Factory
     kind: ethereum/contract
-    network: { { network } }
+    network: {{ network }}
     source:
       address: "{{ harvester_factory_address }}"
       abi: HarvesterFactory
-      startBlock: { { harvester_factory_start_block } }
+      startBlock: {{ harvester_factory_start_block }}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -507,11 +507,11 @@ dataSources:
       file: ./src/mappings/harvester.ts
   - name: Recruit Level
     kind: ethereum/contract
-    network: { { network } }
+    network: {{ network }}
     source:
       address: "{{ recruit_level_address }}"
       abi: RecruitLevel
-      startBlock: { { recruit_level_start_block } }
+      startBlock: {{ recruit_level_start_block }}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -538,7 +538,7 @@ dataSources:
 templates:
   - name: Harvester
     kind: ethereum/contract
-    network: { { network } }
+    network: {{ network }}
     source:
       abi: Harvester
     mapping:
@@ -560,7 +560,7 @@ templates:
       file: ./src/mappings/harvester.ts
   - name: NftHandler
     kind: ethereum/contract
-    network: { { network } }
+    network: {{ network }}
     source:
       abi: NftHandler
     mapping:
@@ -580,7 +580,7 @@ templates:
       file: ./src/mappings/harvester.ts
   - name: ExtractorsStakingRules
     kind: ethereum/contract
-    network: { { network } }
+    network: {{ network }}
     source:
       abi: ExtractorsStakingRules
     mapping:
@@ -600,7 +600,7 @@ templates:
       file: ./src/mappings/harvester.ts
   - name: HarvesterConfig
     kind: ethereum/contract
-    network: { { network } }
+    network: {{ network }}
     source:
       abi: Harvester
     mapping:
@@ -626,7 +626,7 @@ templates:
       file: ./src/mappings/harvester-config.ts
   - name: NftHandlerConfig
     kind: ethereum/contract
-    network: { { network } }
+    network: {{ network }}
     source:
       abi: NftHandler
     mapping:
@@ -654,7 +654,7 @@ templates:
       file: ./src/mappings/harvester-config.ts
   - name: PartsStakingRules
     kind: ethereum/contract
-    network: { { network } }
+    network: {{ network }}
     source:
       abi: PartsStakingRules
     mapping:
@@ -676,7 +676,7 @@ templates:
       file: ./src/mappings/harvester-config.ts
   - name: ExtractorsStakingRulesConfig
     kind: ethereum/contract
-    network: { { network } }
+    network: {{ network }}
     source:
       abi: ExtractorsStakingRules
     mapping:
@@ -700,7 +700,7 @@ templates:
       file: ./src/mappings/harvester-config.ts
   - name: LegionsStakingRules
     kind: ethereum/contract
-    network: { { network } }
+    network: {{ network }}
     source:
       abi: LegionsStakingRules
     mapping:
@@ -720,7 +720,7 @@ templates:
       file: ./src/mappings/harvester-config.ts
   - name: TreasuresStakingRules
     kind: ethereum/contract
-    network: { { network } }
+    network: {{ network }}
     source:
       abi: TreasuresStakingRules
     mapping:
@@ -738,7 +738,7 @@ templates:
       file: ./src/mappings/harvester-config.ts
   - name: ERC721StakingRules
     kind: ethereum/contract
-    network: { { network } }
+    network: {{ network }}
     source:
       abi: ERC721StakingRules
     mapping:

@@ -4,11 +4,11 @@ schema:
 dataSources:
   - name: Factory
     kind: ethereum/contract
-    network: { { network } }
+    network: {{ network }}
     source:
       address: "{{ magicswap_factory_address }}"
       abi: Factory
-      startBlock: { { magicswap_factory_start_block } }
+      startBlock: {{ magicswap_factory_start_block }}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -33,7 +33,7 @@ dataSources:
 templates:
   - name: Pair
     kind: ethereum/contract
-    network: { { network } }
+    network: {{ network }}
     source:
       abi: Pair
     mapping:
