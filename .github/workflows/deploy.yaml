@@ -14,17 +14,8 @@ on:
         - bridgeworld-corruption
         - bridgeworld-kote
         - bridgeworld-recruits
-        - magic-stats
         - magicswap-exchange
-        - migration
-        - smol-racing
-        - smol-treasures-burn
-        - smolidays
-        - smoloween
         - smols-traits
-        - smolverse
-        - smolverse-chop-shop
-        - smolverse-inventory
       version:
         description: Subgraph version
         required: true
