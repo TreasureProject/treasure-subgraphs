@@ -34,7 +34,7 @@ jobs:
         with:
           node-version: 20
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --prefix ../..
       - name: Prepare for DEV
         if: inputs.environment == 'Development'
         run: npm run prepare:dev --if-present
