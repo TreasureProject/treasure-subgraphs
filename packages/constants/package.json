@@ -7,9 +7,7 @@
   "main": "index.ts",
   "scripts": {
     "prepare:arbitrum": "mustache ../../node_modules/@treasure/subgraph-config/src/arbitrum.json src/index.template.ts > index.ts",
-    "prepare:arbitrum-goerli": "mustache ../../node_modules/@treasure/subgraph-config/src/arbitrum-goerli.json src/index.template.ts > index.ts",
     "prepare:arbitrum-sepolia": "mustache ../../node_modules/@treasure/subgraph-config/src/arbitrum-sepolia.json src/index.template.ts > index.ts",
-    "prepare:mainnet": "mustache ../../node_modules/@treasure/subgraph-config/src/mainnet.json src/index.template.ts > index.ts",
     "prepare:dev": "exit 0",
     "codegen": "exit 0",
     "test": "exit 0"

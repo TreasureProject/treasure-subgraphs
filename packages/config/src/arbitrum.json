@@ -1,6 +1,5 @@
 {
   "network": "arbitrum-one",
-  "abis": "../../node_modules/@treasure/subgraph-abis/src",
   "burner_address": "0x0000000000000000000000000000000000000000",
 
   "atlas_mine_address": "0xA0A89db1C899c49F98E6326b764BAFcf167fC2CE",
