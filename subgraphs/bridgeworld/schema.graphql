@@ -276,9 +276,6 @@ type Random @entity {
   "Set for crafting"
   craft: Craft
 
-  "Set for advanced questing"
-  advancedQuest: AdvancedQuest
-
   requestId: BigInt!
   seeded: Seeded
 }
@@ -352,7 +349,6 @@ type AdvancedQuest @entity {
   id: ID!
 
   requestId: BigInt!
-  random: Random!
   status: Status!
   zoneName: String!
   part: Int!
