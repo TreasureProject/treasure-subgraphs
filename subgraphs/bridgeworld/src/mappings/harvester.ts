@@ -1,10 +1,9 @@
 import { BigInt, Bytes, log, store } from "@graphprotocol/graph-ts";
 
 import {
-  BEACON_ADDRESS,
   CONSUMABLE_ADDRESS,
-  KOTE_SQUIRES_ADDRESS,
   LEGION_ADDRESS,
+  TREASURE_ADDRESS,
 } from "@treasure/constants";
 
 import { HarvesterDeployed } from "../../generated/Harvester Factory/HarvesterFactory";
@@ -28,7 +27,6 @@ import {
 import {
   ExtractorReplaced,
   ExtractorStaked,
-  ExtractorsStakingRules as ExtractorsStakingRulesContract,
 } from "../../generated/templates/ExtractorsStakingRules/ExtractorsStakingRules";
 import {
   Deposit as DepositEvent,
@@ -47,7 +45,6 @@ import {
   getAddressId,
 } from "../helpers";
 import {
-  calculateHarvesterLegionsBoost,
   calculateHarvesterPartsBoost,
   createStakedExtractorId,
   getHarvester,
@@ -59,7 +56,6 @@ import {
 import { getLegionMetadata } from "../helpers/legion";
 import { weiToEther } from "../helpers/number";
 import { getOrCreateToken } from "../helpers/token";
-import { HARVESTERS_RANK_MATRIX } from "./legion";
 
 export function handleHarvesterDeployed(event: HarvesterDeployed): void {
   const params = event.params;
@@ -80,13 +76,10 @@ export function handleHarvesterDeployed(event: HarvesterDeployed): void {
   harvester.partsStaked = 0;
   harvester.extractorsStaked = 0;
   harvester.extractorsLifetime = ZERO_BI;
-  harvester.legionsStaked = 0;
-  harvester.otherCharactersStaked = ZERO_BI;
+  harvester.charactersStaked = 0;
   harvester.partsBoostFactor = ZERO_BI;
   harvester.partsBoost = ZERO_BI;
   harvester.extractorsBoost = ZERO_BI;
-  harvester.legionsTotalRank = ZERO_BI;
-  harvester.legionsBoost = ZERO_BI;
   harvester.save();
 
   // Start listening for Harvester events at this address
@@ -127,20 +120,6 @@ export function handleNftStaked(event: Staked): void {
   }
 
   const token = getOrCreateToken(nftAddress, tokenId);
-  const isKoteSquire = nftAddress.equals(KOTE_SQUIRES_ADDRESS);
-  if (isKoteSquire) {
-    token.category = "KoteSquire";
-    token.name = "KOTE Squire";
-    token.save();
-  }
-
-  const isBeaconPet = nftAddress.equals(BEACON_ADDRESS);
-  if (isBeaconPet) {
-    token.category = "BeaconPet";
-    token.name = "The Beacon Pet";
-    token.save();
-  }
-
   const userAddress = params.user;
   const stakedTokenId = `${harvester.id}-${userAddress.toHexString()}-${
     token.id
@@ -166,26 +145,15 @@ export function handleNftStaked(event: Staked): void {
   ) {
     harvester.partsStaked += amount;
     harvester.partsBoost = calculateHarvesterPartsBoost(harvester);
-  } else if (nftAddress.equals(LEGION_ADDRESS) || isKoteSquire) {
-    harvester.legionsStaked += amount;
-
-    if (isKoteSquire) {
-      harvester.legionsTotalRank = harvester.legionsTotalRank.plus(
-        HARVESTERS_RANK_MATRIX[1][4]
-      );
-    } else {
+  } else if (
+    !nftAddress.equals(CONSUMABLE_ADDRESS) &&
+    !nftAddress.equals(TREASURE_ADDRESS)
+  ) {
+    harvester.charactersStaked += amount;
+    if (nftAddress.equals(LEGION_ADDRESS)) {
       const metadata = getLegionMetadata(tokenId);
       stakedToken.index = weiToEther(metadata.harvestersRank) as i32;
-      harvester.legionsTotalRank = harvester.legionsTotalRank.plus(
-        metadata.harvestersRank.times(params.amount)
-      );
     }
-
-    harvester.legionsBoost = calculateHarvesterLegionsBoost(harvester);
-  } else if (isBeaconPet) {
-    harvester.otherCharactersStaked = (
-      (harvester.otherCharactersStaked || ZERO_BI) as BigInt
-    ).plus(params.amount);
   }
 
   stakedToken.save();
@@ -221,8 +189,6 @@ export function handleNftUnstaked(event: Unstaked): void {
   }
 
   const amount = params.amount.toI32();
-  const isKoteSquire = nftAddress.equals(KOTE_SQUIRES_ADDRESS);
-  const isBeaconPet = nftAddress.equals(BEACON_ADDRESS);
   const partsAddress = harvester.partsAddress || CONSUMABLE_ADDRESS;
   const partsTokenId = harvester.partsTokenId || HARVESTER_PART_TOKEN_ID;
   if (
@@ -232,25 +198,11 @@ export function handleNftUnstaked(event: Unstaked): void {
     // Extractors cannot be unstaked
     harvester.partsStaked -= amount;
     harvester.partsBoost = calculateHarvesterPartsBoost(harvester);
-  } else if (nftAddress.equals(LEGION_ADDRESS) || isKoteSquire) {
-    harvester.legionsStaked -= amount;
-
-    if (isKoteSquire) {
-      harvester.legionsTotalRank = harvester.legionsTotalRank.minus(
-        HARVESTERS_RANK_MATRIX[1][4]
-      );
-    } else {
-      const metadata = getLegionMetadata(params.tokenId);
-      harvester.legionsTotalRank = harvester.legionsTotalRank.minus(
-        metadata.harvestersRank.times(params.amount)
-      );
-    }
-
-    harvester.legionsBoost = calculateHarvesterLegionsBoost(harvester);
-  } else if (isBeaconPet) {
-    harvester.otherCharactersStaked = (
-      (harvester.otherCharactersStaked || ZERO_BI) as BigInt
-    ).minus(params.amount);
+  } else if (
+    !nftAddress.equals(CONSUMABLE_ADDRESS) &&
+    !nftAddress.equals(TREASURE_ADDRESS)
+  ) {
+    harvester.charactersStaked -= amount;
   }
 
   harvester.save();

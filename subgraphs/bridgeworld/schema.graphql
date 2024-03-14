@@ -4,8 +4,7 @@ enum Category {
   Legion
   Treasure
   TreasureFragment
-  KoteSquire
-  BeaconPet
+  Other
 }
 
 enum Difficulty {
@@ -570,11 +569,8 @@ type Harvester @entity {
   "Time, in seconds, that an extractor is active when staked"
   extractorsLifetime: BigInt!
 
-  "Number of Legions staked to this Harvester"
-  legionsStaked: Int!
-
-  "Number of other characters staked to this Harvester"
-  otherCharactersStaked: BigInt
+  "Number of characters staked to this Harvester"
+  charactersStaked: Int!
 
   "Configurable boost factor for Harvester Parts"
   partsBoostFactor: BigInt!
@@ -584,12 +580,6 @@ type Harvester @entity {
 
   "Boost value of staked Extractors (1 + Boost1 + Boost2 + ... BoostN)"
   extractorsBoost: BigInt!
-
-  "Total rank value of Legions staked to this Harvester"
-  legionsTotalRank: BigInt!
-
-  "Boost value of staked Legions (1 + ((2n - n^2/maxLegions)/maxLegions) * legionsRankBoost)"
-  legionsBoost: BigInt!
 
   "Options for timelocking deposits to this Harvester"
   timelockOptions: [HarvesterTimelock!]! @derivedFrom(field: "harvester")

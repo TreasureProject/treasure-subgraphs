@@ -13,6 +13,7 @@ export const getOrCreateToken = (contract: Address, tokenId: BigInt): Token => {
     token.image = "";
     token.name = "";
     token.rarity = "None";
+    token.category = "Other";
     token.save();
   }
 

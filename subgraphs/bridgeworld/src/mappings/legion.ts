@@ -80,7 +80,7 @@ const HARVESTERS_WEIGHT_MATRIX = [
   [ZERO_BI, ZERO_BI, ZERO_BI, ZERO_BI, ZERO_BI, ZERO_BI],
 ];
 
-export const HARVESTERS_RANK_MATRIX = [
+const HARVESTERS_RANK_MATRIX = [
   // Genesis
   [
     BigInt.fromString("4000000000000000000"), // Legendary = 4
