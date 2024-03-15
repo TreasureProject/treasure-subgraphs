@@ -565,9 +565,6 @@ type Harvester @entity {
   "Time, in seconds, that an extractor is active when staked"
   extractorsLifetime: BigInt!
 
-  "Number of characters staked to this Harvester"
-  charactersStaked: Int!
-
   "Configurable boost factor for Harvester Parts"
   partsBoostFactor: BigInt!
 

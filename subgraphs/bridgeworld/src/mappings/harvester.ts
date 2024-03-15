@@ -76,7 +76,6 @@ export function handleHarvesterDeployed(event: HarvesterDeployed): void {
   harvester.partsStaked = 0;
   harvester.extractorsStaked = 0;
   harvester.extractorsLifetime = ZERO_BI;
-  harvester.charactersStaked = 0;
   harvester.partsBoostFactor = ZERO_BI;
   harvester.partsBoost = ZERO_BI;
   harvester.extractorsBoost = ZERO_BI;
@@ -145,15 +144,9 @@ export function handleNftStaked(event: Staked): void {
   ) {
     harvester.partsStaked += amount;
     harvester.partsBoost = calculateHarvesterPartsBoost(harvester);
-  } else if (
-    !nftAddress.equals(CONSUMABLE_ADDRESS) &&
-    !nftAddress.equals(TREASURE_ADDRESS)
-  ) {
-    harvester.charactersStaked += amount;
-    if (nftAddress.equals(LEGION_ADDRESS)) {
-      const metadata = getLegionMetadata(tokenId);
-      stakedToken.index = weiToEther(metadata.harvestersRank) as i32;
-    }
+  } else if (nftAddress.equals(LEGION_ADDRESS)) {
+    const metadata = getLegionMetadata(tokenId);
+    stakedToken.index = weiToEther(metadata.harvestersRank) as i32;
   }
 
   stakedToken.save();
@@ -198,11 +191,6 @@ export function handleNftUnstaked(event: Unstaked): void {
     // Extractors cannot be unstaked
     harvester.partsStaked -= amount;
     harvester.partsBoost = calculateHarvesterPartsBoost(harvester);
-  } else if (
-    !nftAddress.equals(CONSUMABLE_ADDRESS) &&
-    !nftAddress.equals(TREASURE_ADDRESS)
-  ) {
-    harvester.charactersStaked -= amount;
   }
 
   harvester.save();
