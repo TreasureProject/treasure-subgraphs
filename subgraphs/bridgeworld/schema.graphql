@@ -526,11 +526,11 @@ type Harvester @entity {
   "Maximum amount of MAGIC that can be staked"
   maxMagicDeposited: BigInt!
 
-  "Custom Harvester Parts collection addressed used for this Harvester, if applicable"
-  partsAddress: Bytes
+  "Harvester Parts collection addressed used for this Harvester"
+  partsAddress: Bytes!
 
-  "Custom Harvester Parts token ID used for this Harvester, if applicable"
-  partsTokenId: BigInt
+  "Harvester Parts token ID used for this Harvester"
+  partsTokenId: BigInt!
 
   "Maximum number of Harvester Parts that can be staked"
   maxPartsStaked: Int!

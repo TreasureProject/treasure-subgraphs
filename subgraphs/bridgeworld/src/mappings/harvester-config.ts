@@ -150,17 +150,14 @@ export function handleNftConfigSet(event: NftConfigSet): void {
   const tokenId = params._tokenId;
   // Determine the type of StakingRule and start listening for events at this address
   // Pull initial rules from the contract because we weren't listening for init events
-  const partsAddress = harvester.partsAddress || CONSUMABLE_ADDRESS;
-  const partsTokenId = harvester.partsTokenId || HARVESTER_PART_TOKEN_ID;
-
   const stakingRule = new HarvesterStakingRule(stakingRulesAddress);
   stakingRule.harvester = harvester.id;
   stakingRule.nft = nftAddress;
   stakingRule.type = "Unknown";
 
   if (
-    nftAddress.equals(partsAddress as Bytes) &&
-    tokenId.equals(partsTokenId as BigInt)
+    nftAddress.equals(harvester.partsAddress) &&
+    tokenId.equals(harvester.partsTokenId)
   ) {
     stakingRule.type = "Parts";
     PartsStakingRules.create(stakingRulesAddress);

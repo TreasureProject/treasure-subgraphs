@@ -65,6 +65,8 @@ export function handleHarvesterDeployed(event: HarvesterDeployed): void {
   const harvester = new Harvester(harvesterAddress);
   harvester.deployedBlockNumber = event.block.number;
   harvester.maxMagicDeposited = ZERO_BI;
+  harvester.partsAddress = CONSUMABLE_ADDRESS;
+  harvester.partsTokenId = HARVESTER_PART_TOKEN_ID;
   harvester.maxPartsStaked = 0;
   harvester.maxPartsStakedPerUser = 0;
   harvester.maxExtractorsStaked = 0;
