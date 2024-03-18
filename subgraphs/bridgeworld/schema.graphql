@@ -97,28 +97,6 @@ type ConsumableInfo implements Metadata @entity {
   size: Size
 }
 
-type LegionClass @entity {
-  id: ID!
-
-  "Class (Fighter, Ranger, etc)"
-  role: String!
-
-  "Generation (Genesis, Auxiliary, Recruit)"
-  type: String!
-
-  "Rarity (Common, Rare, etc.)"
-  rarity: String!
-
-  "Full body image"
-  image: String!
-
-  "Full body image without background"
-  imageNoBackground: String!
-
-  "PFP image"
-  imageAlt: String!
-}
-
 type LegionInfo implements Metadata @entity {
   id: ID!
 

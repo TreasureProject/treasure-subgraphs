@@ -1,10 +1,4 @@
-import {
-  Address,
-  BigInt,
-  dataSource,
-  log,
-  store,
-} from "@graphprotocol/graph-ts";
+import { Address, BigInt, dataSource, log } from "@graphprotocol/graph-ts";
 
 import { LEGION_ADDRESS } from "@treasure/constants";
 
@@ -15,13 +9,7 @@ import {
   LegionQuestLevelUp,
 } from "../../generated/Legion Metadata Store/LegionMetadataStore";
 import { Transfer } from "../../generated/Legion/ERC721";
-import {
-  Constellation,
-  LegionClass,
-  LegionInfo,
-  Token,
-  User,
-} from "../../generated/schema";
+import { Constellation, LegionInfo, Token } from "../../generated/schema";
 import {
   LEGION_IPFS,
   LEGION_NO_BACKGROUND_IPFS,
@@ -299,39 +287,6 @@ export function handleLegionCreated(event: LegionCreated): void {
   token.metadata = metadata.id;
   token.generation = generation;
   token.save();
-
-  const legionClassId = `LegionClass-${metadata.type}-${metadata.rarity}-${metadata.role}`;
-  const existingLegionClass = LegionClass.load(legionClassId);
-  if (!existingLegionClass) {
-    const legionClass = new LegionClass(legionClassId);
-    legionClass.type = metadata.type;
-    legionClass.role = metadata.role;
-    legionClass.rarity = metadata.rarity;
-    legionClass.image = getLegionImage(
-      LEGION_IPFS,
-      metadata.type,
-      metadata.rarity,
-      metadata.role,
-      tokenId
-    );
-    legionClass.imageAlt = getLegionImage(
-      LEGION_PFP_IPFS,
-      metadata.type,
-      metadata.rarity,
-      metadata.role,
-      tokenId
-    );
-    legionClass.imageNoBackground = getLegionImage(
-      LEGION_NO_BACKGROUND_IPFS,
-      metadata.type,
-      metadata.rarity,
-      metadata.role,
-      tokenId,
-      null,
-      false
-    );
-    legionClass.save();
-  }
 }
 
 export function handleLegionQuestLevelUp(event: LegionQuestLevelUp): void {
