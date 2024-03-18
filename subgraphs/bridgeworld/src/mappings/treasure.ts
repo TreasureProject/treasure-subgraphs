@@ -1,10 +1,10 @@
-import { Address, BigInt, log, store } from "@graphprotocol/graph-ts";
+import { Address, BigInt, log } from "@graphprotocol/graph-ts";
 
 import {
   TransferBatch,
   TransferSingle,
 } from "../../generated/Treasure/ERC1155";
-import { Token, TreasureInfo, User } from "../../generated/schema";
+import { Token, TreasureInfo } from "../../generated/schema";
 import { getAddressId, isMint } from "../helpers";
 import * as common from "../mapping";
 

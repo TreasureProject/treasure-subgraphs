@@ -1,10 +1,6 @@
-import { BigInt, Bytes, log, store } from "@graphprotocol/graph-ts";
+import { BigInt, log, store } from "@graphprotocol/graph-ts";
 
-import {
-  CONSUMABLE_ADDRESS,
-  LEGION_ADDRESS,
-  TREASURE_ADDRESS,
-} from "@treasure/constants";
+import { CONSUMABLE_ADDRESS, LEGION_ADDRESS } from "@treasure/constants";
 
 import { HarvesterDeployed } from "../../generated/Harvester Factory/HarvesterFactory";
 import {
@@ -13,8 +9,6 @@ import {
   Harvester,
   HarvesterNftHandler,
   HarvesterTimelock,
-  HarvesterTokenBoost,
-  Lifetime,
   StakedToken,
   Withdraw,
 } from "../../generated/schema";
@@ -24,10 +18,7 @@ import {
   NftHandler,
   NftHandlerConfig,
 } from "../../generated/templates";
-import {
-  ExtractorReplaced,
-  ExtractorStaked,
-} from "../../generated/templates/ExtractorsStakingRules/ExtractorsStakingRules";
+import { MaxStakeable as ExtractorMaxStakeableUpdated } from "../../generated/templates/ExtractorsStakingRules/ExtractorsStakingRules";
 import {
   Deposit as DepositEvent,
   Harvest as HarvestEvent,
@@ -40,18 +31,15 @@ import {
 import {
   HARVESTER_EXTRACTOR_TOKEN_IDS,
   HARVESTER_PART_TOKEN_ID,
-  ONE_BI,
   ZERO_BI,
   getAddressId,
 } from "../helpers";
 import {
   calculateHarvesterPartsBoost,
-  createStakedExtractorId,
   getHarvester,
   getHarvesterForNftHandler,
   getHarvesterForStakingRule,
   getOrCreateHarvesterConfig,
-  removeExpiredExtractors,
 } from "../helpers/harvester";
 import { getLegionMetadata } from "../helpers/legion";
 import { weiToEther } from "../helpers/number";
@@ -76,11 +64,8 @@ export function handleHarvesterDeployed(event: HarvesterDeployed): void {
   harvester.magicDepositAllocationPerPart = ZERO_BI;
   harvester.magicDeposited = ZERO_BI;
   harvester.partsStaked = 0;
-  harvester.extractorsStaked = 0;
-  harvester.extractorsLifetime = ZERO_BI;
   harvester.partsBoostFactor = ZERO_BI;
   harvester.partsBoost = ZERO_BI;
-  harvester.extractorsBoost = ZERO_BI;
   harvester.save();
 
   // Start listening for Harvester events at this address
@@ -111,7 +96,7 @@ export function handleNftStaked(event: Staked): void {
     nftAddress.equals(CONSUMABLE_ADDRESS) &&
     HARVESTER_EXTRACTOR_TOKEN_IDS.includes(tokenId)
   ) {
-    // Extractors will be handled separately because they require the spotId param
+    // Extractors won't be handled by the subgraph
     return;
   }
 
@@ -132,17 +117,14 @@ export function handleNftStaked(event: Staked): void {
     stakedToken.token = token.id;
     stakedToken.quantity = ZERO_BI;
     stakedToken.harvester = harvester.id;
-    stakedToken.expirationProcessed = false;
   }
 
   stakedToken.quantity = stakedToken.quantity.plus(params.amount);
 
   const amount = params.amount.toI32();
-  const partsAddress = harvester.partsAddress || CONSUMABLE_ADDRESS;
-  const partsTokenId = harvester.partsTokenId || HARVESTER_PART_TOKEN_ID;
   if (
-    nftAddress.equals(partsAddress as Bytes) &&
-    tokenId.equals(partsTokenId as BigInt)
+    nftAddress.equals(harvester.partsAddress) &&
+    tokenId.equals(harvester.partsTokenId)
   ) {
     harvester.partsStaked += amount;
     harvester.partsBoost = calculateHarvesterPartsBoost(harvester);
@@ -153,8 +135,6 @@ export function handleNftStaked(event: Staked): void {
 
   stakedToken.save();
   harvester.save();
-
-  removeExpiredExtractors(harvester, event.block.timestamp);
 }
 
 export function handleNftUnstaked(event: Unstaked): void {
@@ -184,177 +164,27 @@ export function handleNftUnstaked(event: Unstaked): void {
   }
 
   const amount = params.amount.toI32();
-  const partsAddress = harvester.partsAddress || CONSUMABLE_ADDRESS;
-  const partsTokenId = harvester.partsTokenId || HARVESTER_PART_TOKEN_ID;
   if (
-    nftAddress.equals(partsAddress as Bytes) &&
-    params.tokenId.equals(partsTokenId as BigInt)
+    nftAddress.equals(harvester.partsAddress) &&
+    params.tokenId.equals(harvester.partsTokenId)
   ) {
-    // Extractors cannot be unstaked
     harvester.partsStaked -= amount;
     harvester.partsBoost = calculateHarvesterPartsBoost(harvester);
   }
 
   harvester.save();
-
-  removeExpiredExtractors(harvester, event.block.timestamp);
 }
 
-export function handleExtractorStaked(event: ExtractorStaked): void {
+export function handleExtractorMaxStakeableUpdated(
+  event: ExtractorMaxStakeableUpdated
+): void {
   const harvester = getHarvesterForStakingRule(event.address);
   if (!harvester) {
     return;
   }
 
-  const params = event.params;
-  const tokenId = params.tokenId;
-  const extractorId = getAddressId(CONSUMABLE_ADDRESS, tokenId);
-
-  const lifetime = Lifetime.load(event.address.concatI32(tokenId.toI32()));
-
-  if (!lifetime) {
-    log.error("Unknown Extractor lifetime: {}", [tokenId.toString()]);
-    return;
-  }
-
-  const tokenBoost = HarvesterTokenBoost.load(`${harvester.id}-${extractorId}`);
-  if (!tokenBoost) {
-    log.error("Extractor boost info not found: {}, {}", [
-      harvester.id.toHexString(),
-      tokenId.toString(),
-    ]);
-  }
-
-  const tokenBoostAmount = tokenBoost ? tokenBoost.boost : ZERO_BI;
-
-  const amount = params.amount.toI32();
-  const expirationTime = event.block.timestamp.plus(lifetime.lifetime);
-
-  // Save Extractors as StakedTokens based on spotId instead of tokenId
-  // Only one event is fired for multiple Extractors staked
-  // Determine the starting spotId by subtracting the amount from the event's spotId
-  const endSpotId = params.spotId.toI32();
-  const startSpotId = endSpotId - (amount - 1);
-  for (let spotId = startSpotId; spotId <= endSpotId; spotId++) {
-    const stakedTokenId = createStakedExtractorId(harvester, spotId);
-    let stakedToken = StakedToken.load(stakedTokenId);
-    if (!stakedToken) {
-      stakedToken = new StakedToken(stakedTokenId);
-      stakedToken.harvester = harvester.id;
-      stakedToken.index = spotId;
-    }
-
-    stakedToken.user = params.user.toHexString();
-    stakedToken.token = extractorId;
-    stakedToken.quantity = ONE_BI;
-    stakedToken.expirationTime = expirationTime;
-    stakedToken.expirationProcessed = false;
-    stakedToken.save();
-  }
-
-  // Update staked Extractors count
-  harvester.extractorsStaked += amount;
-
-  // Update staked Extractors boost
-  harvester.extractorsBoost = harvester.extractorsBoost.plus(
-    tokenBoostAmount.times(params.amount)
-  );
-
-  // Update Harvester's next expiration time if this Extractor will expire sooner
-  if (
-    !harvester._nextExpirationTime ||
-    expirationTime.lt(harvester._nextExpirationTime as BigInt)
-  ) {
-    harvester._nextExpirationTime = expirationTime;
-  }
-
+  harvester.maxExtractorsStaked = event.params.maxStakeable.toI32();
   harvester.save();
-
-  removeExpiredExtractors(harvester, event.block.timestamp);
-}
-
-export function handleExtractorReplaced(event: ExtractorReplaced): void {
-  const harvester = getHarvesterForStakingRule(event.address);
-  if (!harvester) {
-    return;
-  }
-
-  const params = event.params;
-  const tokenId = params.tokenId;
-  const stakedToken = StakedToken.load(
-    createStakedExtractorId(harvester, params.replacedSpotId.toI32())
-  );
-  if (!stakedToken) {
-    log.error("Replacing unknown Extractor spot ID: {}, {}", [
-      harvester.id.toHexString(),
-      params.replacedSpotId.toString(),
-    ]);
-    return;
-  }
-
-  const oldTokenBoost = HarvesterTokenBoost.load(
-    `${harvester.id}-${stakedToken.token}`
-  );
-  if (!oldTokenBoost) {
-    log.error("Extractor boost info not found: {}, {}", [
-      harvester.id.toHexString(),
-      stakedToken.token.toString(),
-    ]);
-  }
-
-  const oldTokenBoostAmount = oldTokenBoost ? oldTokenBoost.boost : ZERO_BI;
-
-  const newTokenId = getAddressId(CONSUMABLE_ADDRESS, tokenId);
-  const newTokenBoost = HarvesterTokenBoost.load(
-    `${harvester.id}-${newTokenId}`
-  );
-  if (!newTokenBoost) {
-    log.error("Extractor boost info not found: {}, {}", [
-      harvester.id.toHexString(),
-      tokenId.toString(),
-    ]);
-  }
-
-  const newTokenBoostAmount = newTokenBoost ? newTokenBoost.boost : ZERO_BI;
-
-  const lifetime = Lifetime.load(event.address.concatI32(tokenId.toI32()));
-
-  if (!lifetime) {
-    log.error("Unknown Extractor lifetime: {}", [tokenId.toString()]);
-    return;
-  }
-
-  const timestamp = event.block.timestamp;
-  const oldExpirationTime = stakedToken.expirationTime;
-  const newExpirationTime = timestamp.plus(lifetime.lifetime);
-  stakedToken.user = params.user.toHexString();
-  stakedToken.token = newTokenId;
-  stakedToken.quantity = ONE_BI;
-  stakedToken.expirationTime = newExpirationTime;
-  stakedToken.expirationProcessed = false;
-  stakedToken.save();
-
-  // Update staked Extractors boost
-  let nextExtractorsBoost = harvester.extractorsBoost.plus(newTokenBoostAmount);
-  // Subtract old boost if it wasn't expired yet
-  if (oldExpirationTime && (oldExpirationTime as BigInt).gt(timestamp)) {
-    nextExtractorsBoost = nextExtractorsBoost.minus(oldTokenBoostAmount);
-  }
-  harvester.extractorsBoost = nextExtractorsBoost.lt(ZERO_BI)
-    ? ZERO_BI
-    : nextExtractorsBoost;
-
-  // Update Harvester's next expiration time if this Extractor will expire sooner
-  if (
-    !harvester._nextExpirationTime ||
-    newExpirationTime.lt(harvester._nextExpirationTime as BigInt)
-  ) {
-    harvester._nextExpirationTime = newExpirationTime;
-  }
-
-  harvester.save();
-
-  removeExpiredExtractors(harvester, timestamp);
 }
 
 export function handleMagicDeposited(event: DepositEvent): void {

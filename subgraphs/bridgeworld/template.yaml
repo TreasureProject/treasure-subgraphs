@@ -593,10 +593,8 @@ templates:
         - name: ExtractorsStakingRules
           file: ./abis/ExtractorStakingRules.json
       eventHandlers:
-        - event: ExtractorReplaced(address,uint256,uint256)
-          handler: handleExtractorReplaced
-        - event: ExtractorStaked(address,uint256,uint256,uint256)
-          handler: handleExtractorStaked
+        - event: MaxStakeable(uint256)
+          handler: handleExtractorMaxStakeableUpdated
       file: ./src/mappings/harvester.ts
   - name: HarvesterConfig
     kind: ethereum/contract
@@ -689,14 +687,8 @@ templates:
         - name: ExtractorsStakingRules
           file: ./abis/ExtractorStakingRules.json
       eventHandlers:
-        - event: Lifetime(uint256)
-          handler: handleUpdatedExtractorLifetime
-        - event: ExtractorLifetime(uint256,uint256)
-          handler: handleUpdatedExtractorsLifetime
         - event: MaxStakeable(uint256)
           handler: handleUpdatedExtractorsMaxStakeable
-        - event: ExtractorBoost(uint256,uint256)
-          handler: handleUpdatedExtractorsBoost
       file: ./src/mappings/harvester-config.ts
   - name: LegionsStakingRules
     kind: ethereum/contract
