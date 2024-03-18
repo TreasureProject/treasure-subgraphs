@@ -66,7 +66,7 @@ enum StakingRule {
 }
 
 interface Metadata {
-  id: Bytes!
+  id: ID!
 }
 
 type _BlockConfig @entity {
@@ -91,14 +91,14 @@ type Constellation @entity {
 }
 
 type ConsumableInfo implements Metadata @entity {
-  id: Bytes!
+  id: ID!
 
   type: String!
   size: Size
 }
 
 type LegionInfo implements Metadata @entity {
-  id: Bytes!
+  id: ID!
 
   "Boost value when staked in Atlas Mine"
   boost: String!
@@ -162,7 +162,7 @@ type LegionInfo implements Metadata @entity {
 }
 
 type TreasureInfo implements Metadata @entity {
-  id: Bytes!
+  id: ID!
 
   boost: String!
   category: TreasureCategory!
@@ -170,7 +170,7 @@ type TreasureInfo implements Metadata @entity {
 }
 
 type TreasureFragmentInfo implements Metadata @entity {
-  id: Bytes!
+  id: ID!
 
   categories: [TreasureCategory!]!
   tier: Int!

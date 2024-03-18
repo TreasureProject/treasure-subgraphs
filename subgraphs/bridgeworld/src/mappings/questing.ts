@@ -61,7 +61,7 @@ export function handleQuestRevealed(event: QuestRevealed): void {
 
   // Prefer the QPGained event if it's available at this block
   if (!isQuestingXpGainedEnabled(event.block.number)) {
-    const metadata = LegionInfo.load(quest.token);
+    const metadata = LegionInfo.load(quest.token.toHexString());
     if (metadata && metadata.type != "Recruit" && metadata.questing != 6) {
       metadata.questingXp += getXpPerLevel(metadata.questing);
       metadata.save();
@@ -79,7 +79,7 @@ export function handleQuestFinished(event: QuestFinished): void {
     return;
   }
 
-  const metadata = LegionInfo.load(quest.token);
+  const metadata = LegionInfo.load(quest.token.toHexString());
   if (metadata) {
     metadata.questsCompleted += 1;
     metadata.questsDistanceTravelled +=

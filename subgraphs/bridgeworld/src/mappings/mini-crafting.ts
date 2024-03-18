@@ -31,7 +31,7 @@ export function handleCraftingFinished(event: CraftingFinished): void {
   miniCraft.outcome = outcome.id;
   miniCraft.save();
 
-  const metadata = LegionInfo.load(miniCraft.token);
+  const metadata = LegionInfo.load(miniCraft.token.toHexString());
   if (!metadata) {
     log.error("Legion metadata not found: {}", [miniCraft.token.toHexString()]);
     return;

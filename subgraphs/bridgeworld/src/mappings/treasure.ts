@@ -159,21 +159,17 @@ function setMetadata(contract: Address, tokenId: BigInt): void {
     return;
   }
 
-  let metadata = new TreasureInfo(token.id);
+  let metadata = new TreasureInfo(token.id.toHexString());
   let boostAmount = getBoost(tokenId.toI32());
-
   if (boostAmount > 0) {
     metadata.boost = `${boostAmount / 1e18}`;
   }
-
   metadata.category = getCategory(tokenId.toI32());
   metadata.tier = getTier(tokenId.toI32());
-
   metadata.save();
 
   token.category = "Treasure";
   token.metadata = metadata.id;
-
   token.save();
 }
 

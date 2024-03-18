@@ -115,7 +115,7 @@ function setMetadata(contract: Address, tokenId: BigInt): void {
     return;
   }
 
-  const metadata = new LegionInfo(token.id);
+  const metadata = new LegionInfo(token.id.toHexString());
   metadata.boost = `${BOOST_MATRIX[0][0] / 1e18}`;
   metadata.harvestersRank = HARVESTERS_RANK_MATRIX[0][0];
   metadata.harvestersWeight = HARVESTERS_WEIGHT_MATRIX[0][0];
@@ -208,7 +208,7 @@ export function handleLegionCreated(event: LegionCreated): void {
   const rarity = params._rarity;
   const type = TYPE[generation];
   const isRecruit = type == "Recruit";
-  const metadata = new LegionInfo(token.id);
+  const metadata = new LegionInfo(token.id.toHexString());
   metadata.boost = `${BOOST_MATRIX[generation][rarity] / 1e18}`;
   metadata.harvestersRank = HARVESTERS_RANK_MATRIX[generation][rarity];
   metadata.harvestersWeight = HARVESTERS_WEIGHT_MATRIX[generation][rarity];

@@ -45,7 +45,7 @@ export function handlePilgrimagesFinished(event: PilgrimagesFinished): void {
     let pilgrimage = Pilgrimage.load(getAddressId(user, pilgrimageId));
 
     if (legion && pilgrimage) {
-      let metadata = LegionInfo.load(legion.id);
+      let metadata = LegionInfo.load(legion.id.toHexString());
       let legacyToken = Token.load(pilgrimage.token);
       // Some data from unpilgrimaged Genesis Legion is needed to form new metadata
       if (

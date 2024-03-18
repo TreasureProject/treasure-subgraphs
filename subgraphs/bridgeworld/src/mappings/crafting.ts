@@ -178,7 +178,7 @@ export function handleCraftingFinished(event: CraftingFinished): void {
   }
 
   if (outcome.success) {
-    const metadata = LegionInfo.load(craft.token);
+    const metadata = LegionInfo.load(craft.token.toHexString());
     if (metadata) {
       metadata.majorCraftsCompleted += 1;
       metadata.save();

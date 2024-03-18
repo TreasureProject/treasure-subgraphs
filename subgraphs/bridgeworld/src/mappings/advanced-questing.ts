@@ -183,7 +183,7 @@ export function handleAdvancedQuestEnded(event: AdvancedQuestEnded): void {
 
   quest.save();
 
-  const metadata = LegionInfo.load(quest.token);
+  const metadata = LegionInfo.load(quest.token.toHexString());
   if (!metadata) {
     log.error("[advanced-quest-end] Legion metadata not found: {}", [
       quest.token.toHexString(),

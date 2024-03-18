@@ -99,22 +99,18 @@ function setMetadata(contract: Address, tokenId: BigInt): void {
     log.error("[treasure-fragment-metadata] Unknown token: {}", [
       tokenId.toString(),
     ]);
-
     return;
   }
 
-  let metadata = new TreasureFragmentInfo(token.id);
-
+  let metadata = new TreasureFragmentInfo(token.id.toHexString());
   metadata.categories = getCategories(tokenId.toI32());
   metadata.tier = getTier(tokenId.toI32());
-
   metadata.save();
 
   token.category = "TreasureFragment";
   token.metadata = metadata.id;
   token.name = getName(token.tokenId.toI32());
   token.image = `${TREASURE_FRAGMENT_IPFS}/${token.tokenId}.jpg`;
-
   token.save();
 }
 

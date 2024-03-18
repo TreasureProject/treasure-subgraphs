@@ -49,9 +49,9 @@ export function handleTokenTraitChanged(event: TokenTraitChanged): void {
   const params = event.params;
   const data = params._traitData;
   const token = getOrCreateToken(event.address, params._tokenId);
-  let metadata = ConsumableInfo.load(token.id);
+  let metadata = ConsumableInfo.load(token.id.toHexString());
   if (!metadata) {
-    metadata = new ConsumableInfo(token.id);
+    metadata = new ConsumableInfo(token.id.toHexString());
   }
 
   for (let i = 0; i < data.properties.length; i += 1) {
