@@ -12,13 +12,13 @@ import {
   LEGION_IPFS,
   LEGION_NO_BACKGROUND_IPFS,
   LEGION_PFP_IPFS,
-  getAddressId,
-} from "../helpers";
+} from "../helpers/constants";
 import {
   RARE_CLASS,
   getLegionImage,
   mapGenesisRareClass,
 } from "../helpers/legion";
+import { getAddressId } from "../helpers/utils";
 import * as common from "../mapping";
 
 export function handleNoPilgrimagesToFinish(
@@ -45,7 +45,7 @@ export function handlePilgrimagesFinished(event: PilgrimagesFinished): void {
     let pilgrimage = Pilgrimage.load(getAddressId(user, pilgrimageId));
 
     if (legion && pilgrimage) {
-      let metadata = LegionInfo.load(`${legion.id}-metadata`);
+      let metadata = LegionInfo.load(legion.id);
       let legacyToken = Token.load(pilgrimage.token);
       // Some data from unpilgrimaged Genesis Legion is needed to form new metadata
       if (
@@ -96,7 +96,7 @@ export function handlePilgrimagesFinished(event: PilgrimagesFinished): void {
     }
 
     if (pilgrimage) {
-      store.remove("Pilgrimage", pilgrimage.id);
+      store.remove("Pilgrimage", pilgrimage.id.toHexString());
     }
   }
 }
@@ -132,7 +132,7 @@ export function handlePilgrimagesStarted(event: PilgrimagesStarted): void {
       pilgrimage.pilgrimageId = pilgrimageId;
       pilgrimage.quantity = amount;
       pilgrimage.token = id;
-      pilgrimage.user = user.toHexString();
+      pilgrimage.user = user;
 
       pilgrimage.save();
 

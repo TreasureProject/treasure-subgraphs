@@ -28,12 +28,7 @@ import {
   Staked,
   Unstaked,
 } from "../../generated/templates/NftHandler/NftHandler";
-import {
-  HARVESTER_EXTRACTOR_TOKEN_IDS,
-  HARVESTER_PART_TOKEN_ID,
-  ZERO_BI,
-  getAddressId,
-} from "../helpers";
+import { ZERO_BI } from "../helpers/constants";
 import {
   calculateHarvesterPartsBoost,
   getHarvester,
@@ -44,6 +39,11 @@ import {
 import { getLegionMetadata } from "../helpers/legion";
 import { weiToEther } from "../helpers/number";
 import { getOrCreateToken } from "../helpers/token";
+import {
+  HARVESTER_EXTRACTOR_TOKEN_IDS,
+  HARVESTER_PART_TOKEN_ID,
+} from "../helpers/token-id";
+import { getAddressId } from "../helpers/utils";
 
 export function handleHarvesterDeployed(event: HarvesterDeployed): void {
   const params = event.params;
@@ -107,13 +107,11 @@ export function handleNftStaked(event: Staked): void {
 
   const token = getOrCreateToken(nftAddress, tokenId);
   const userAddress = params.user;
-  const stakedTokenId = `${harvester.id}-${userAddress.toHexString()}-${
-    token.id
-  }`;
+  const stakedTokenId = harvester.id.concat(userAddress).concat(token.id);
   let stakedToken = StakedToken.load(stakedTokenId);
   if (!stakedToken) {
     stakedToken = new StakedToken(stakedTokenId);
-    stakedToken.user = userAddress.toHexString();
+    stakedToken.user = userAddress;
     stakedToken.token = token.id;
     stakedToken.quantity = ZERO_BI;
     stakedToken.harvester = harvester.id;
@@ -147,17 +145,19 @@ export function handleNftUnstaked(event: Unstaked): void {
   const nftAddress = params.nft;
   const userAddress = params.user;
 
-  const stakedTokenId = `${
-    harvester.id
-  }-${userAddress.toHexString()}-${getAddressId(nftAddress, params.tokenId)}`;
+  const stakedTokenId = harvester.id
+    .concat(userAddress)
+    .concat(getAddressId(nftAddress, params.tokenId));
   const stakedToken = StakedToken.load(stakedTokenId);
   if (!stakedToken) {
-    log.error("Unstaking from unknown StakedToken: {}", [stakedTokenId]);
+    log.error("Unstaking from unknown StakedToken: {}", [
+      stakedTokenId.toHexString(),
+    ]);
     return;
   }
 
   if (stakedToken.quantity.equals(params.amount)) {
-    store.remove("StakedToken", stakedTokenId);
+    store.remove("StakedToken", stakedTokenId.toHexString());
   } else {
     stakedToken.quantity = stakedToken.quantity.minus(params.amount);
     stakedToken.save();
@@ -206,7 +206,7 @@ export function handleMagicDeposited(event: DepositEvent): void {
 
   // Save deposit
   const deposit = new Deposit(
-    `${harvester.id}-${getAddressId(userAddress, params.index)}`
+    harvester.id.concat(getAddressId(userAddress, params.index))
   );
   deposit.transactionHash = event.transaction.hash;
   deposit.amount = params.amount;
@@ -217,7 +217,7 @@ export function handleMagicDeposited(event: DepositEvent): void {
     .times(BigInt.fromI32(1000));
   deposit.harvester = harvester.id;
   deposit.harvesterTimelock = timelock.id;
-  deposit.user = userAddress.toHexString();
+  deposit.user = userAddress;
   deposit.save();
 
   // Update Harvester with new deposit
@@ -233,11 +233,11 @@ export function handleMagicWithdrawn(event: WithdrawEvent): void {
 
   const params = event.params;
   const userAddress = params.user;
-  const id = `${harvester.id}-${getAddressId(userAddress, params.index)}`;
+  const id = harvester.id.concat(getAddressId(userAddress, params.index));
 
   const deposit = Deposit.load(id);
   if (!deposit) {
-    log.error("Withdrawing from unknown Deposit: {}", [id]);
+    log.error("Withdrawing from unknown Deposit: {}", [id.toHexString()]);
     return;
   }
 
@@ -247,7 +247,7 @@ export function handleMagicWithdrawn(event: WithdrawEvent): void {
     withdraw = new Withdraw(id);
     withdraw.deposit = deposit.id;
     withdraw.harvester = harvester.id;
-    withdraw.user = userAddress.toHexString();
+    withdraw.user = userAddress;
     withdraw.amount = ZERO_BI;
   }
   withdraw.amount = withdraw.amount.plus(params.amount);
@@ -269,11 +269,9 @@ export function handleMagicHarvested(event: HarvestEvent): void {
   }
 
   const params = event.params;
-  const harvest = new Harvest(
-    `${harvester.id}-${event.transaction.hash.toHexString()}`
-  );
+  const harvest = new Harvest(harvester.id.concat(event.transaction.hash));
   harvest.harvester = harvester.id;
-  harvest.user = params.user.toHexString();
+  harvest.user = params.user;
   harvest.amount = params.amount;
   harvest.save();
 }

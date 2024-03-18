@@ -1,4 +1,4 @@
-import { log } from "@graphprotocol/graph-ts";
+import { Bytes, log } from "@graphprotocol/graph-ts";
 
 import {
   RandomRequest,
@@ -8,31 +8,29 @@ import { Craft, Random, Seeded } from "../../generated/schema";
 
 export function handleRandomRequest(event: RandomRequest): void {
   const params = event.params;
-  const commitId = params._commitId.toHexString();
-  const requestId = params._requestId.toHexString();
 
-  const random = new Random(requestId);
-  random.requestId = params._requestId;
-  random.seeded = commitId;
-  random.save();
-
-  let seeded = Seeded.load(commitId);
+  const seededId = Bytes.fromI32(params._commitId.toI32());
+  let seeded = Seeded.load(seededId);
   if (!seeded) {
-    seeded = new Seeded(commitId);
+    seeded = new Seeded(seededId);
     seeded.randoms = [];
   }
 
-  seeded.randoms = seeded.randoms.concat([requestId]);
+  const random = new Random(Bytes.fromI32(params._requestId.toI32()));
+  random.requestId = params._requestId;
+  random.seeded = seededId;
+  random.save();
+
+  seeded.randoms = seeded.randoms.concat([random.id]);
   seeded.save();
 }
 
 export function handleRandomSeeded(event: RandomSeeded): void {
   const params = event.params;
-  const commitId = params._commitId;
 
-  const seeded = Seeded.load(commitId.toHexString());
+  const seeded = Seeded.load(Bytes.fromI32(params._commitId.toI32()));
   if (!seeded) {
-    log.error("[seeded] Unknown seeded: {}", [commitId.toHexString()]);
+    log.error("[seeded] Unknown seeded: {}", [params._commitId.toHexString()]);
     return;
   }
 
@@ -40,7 +38,7 @@ export function handleRandomSeeded(event: RandomSeeded): void {
     const id = seeded.randoms[index];
     const random = Random.load(id);
     if (!random) {
-      log.error("[seeded] Unknown random: {}", [id]);
+      log.error("[seeded] Unknown random: {}", [id.toHexString()]);
       continue;
     }
 
@@ -51,7 +49,7 @@ export function handleRandomSeeded(event: RandomSeeded): void {
         craft.status = "Revealable";
         craft.save();
       } else {
-        log.error("[randomizer] Craft not found: {}", [craftId]);
+        log.error("[randomizer] Craft not found: {}", [craftId.toHexString()]);
       }
 
       continue;

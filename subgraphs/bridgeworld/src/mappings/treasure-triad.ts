@@ -1,3 +1,5 @@
+import { Bytes } from "@graphprotocol/graph-ts";
+
 import { TREASURE_ADDRESS } from "@treasure/constants";
 
 import { TreasureCardInfoSet } from "../../generated/Treasure Triad/TreasureTriad";
@@ -7,7 +9,9 @@ import { getAddressId } from "../helpers/utils";
 export function handleTreasureCardInfoSet(event: TreasureCardInfoSet): void {
   const params = event.params;
 
-  const cardInfo = new TreasureTriadCardInfo(params._treasureId.toString());
+  const cardInfo = new TreasureTriadCardInfo(
+    Bytes.fromI32(params._treasureId.toI32())
+  );
   cardInfo.token = getAddressId(TREASURE_ADDRESS, params._treasureId);
   cardInfo.north = params._cardInfo.north;
   cardInfo.east = params._cardInfo.east;

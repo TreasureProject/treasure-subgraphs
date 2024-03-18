@@ -5,7 +5,7 @@ import {
   TransferSingle,
 } from "../../generated/Balancer Crystal/ERC1155";
 import { Token } from "../../generated/schema";
-import { getAddressId, isMint } from "../helpers";
+import { getAddressId, isMint } from "../helpers/utils";
 import * as common from "../mapping";
 
 function getName(tokenId: i32): string {

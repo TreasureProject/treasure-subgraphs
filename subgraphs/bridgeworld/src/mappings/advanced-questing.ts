@@ -1,4 +1,4 @@
-import { BigInt, log, store } from "@graphprotocol/graph-ts";
+import { BigInt, Bytes, log, store } from "@graphprotocol/graph-ts";
 
 import {
   CONSUMABLE_ADDRESS,
@@ -21,35 +21,35 @@ import {
   TokenQuantity,
   TreasureTriadResult,
 } from "../../generated/schema";
-import { QUEST_DISTANCE_TRAVELLED_PER_PART } from "../helpers";
 import {
   isQuestingXpGainedEnabled,
   setQuestingXpGainedBlockNumberIfEmpty,
 } from "../helpers/config";
-import { getUser } from "../helpers/user";
+import {
+  QUEST_DISTANCE_TRAVELLED_PER_PART,
+  ZERO_BI,
+} from "../helpers/constants";
+import { getOrCreateUser } from "../helpers/user";
 import { getAddressId } from "../helpers/utils";
 import { getXpPerLevel } from "../helpers/xp";
 
 export function handleAdvancedQuestStarted(event: AdvancedQuestStarted): void {
   const params = event.params;
+  const legionTokenId = params._startQuestParams.legionId;
 
-  const quest = new AdvancedQuest(
-    getAddressId(event.address, params._startQuestParams.legionId)
-  );
-
+  const quest = new AdvancedQuest(Bytes.fromI32(legionTokenId.toI32()));
   quest.requestId = params._requestId;
-  quest.token = getAddressId(LEGION_ADDRESS, params._startQuestParams.legionId);
-  quest.user = params._owner.toHexString();
+  quest.token = getAddressId(LEGION_ADDRESS, legionTokenId);
+  quest.user = params._owner;
   quest.status = "Idle";
   quest.zoneName = params._startQuestParams.zoneName;
   quest.part = params._startQuestParams.advanceToPart;
-  quest.endTimestamp = BigInt.zero();
+  quest.endTimestamp = ZERO_BI;
   quest.stasisHitCount = 0;
   quest.hadStasisPart2 = false;
   quest.hadStasisPart3 = false;
 
-  const treasures: string[] = [];
-
+  const treasures: Bytes[] = [];
   for (let i = 0; i < params._startQuestParams.treasureIds.length; i++) {
     const tokenId = getAddressId(
       TREASURE_ADDRESS,
@@ -57,11 +57,10 @@ export function handleAdvancedQuestStarted(event: AdvancedQuestStarted): void {
     );
 
     const treasure = new TokenQuantity(
-      `${quest.id}-${quest.requestId.toHex()}-${tokenId}`
+      quest.id.concatI32(quest.requestId.toI32()).concat(tokenId)
     );
     treasure.token = tokenId;
     treasure.quantity = params._startQuestParams.treasureAmounts[i].toI32();
-
     treasure.save();
 
     treasures.push(treasure.id);
@@ -75,71 +74,64 @@ export function handleAdvancedQuestContinued(
   event: AdvancedQuestContinued
 ): void {
   const params = event.params;
-  const id = getAddressId(event.address, params._legionId);
-
-  const quest = AdvancedQuest.load(id);
-
+  const quest = AdvancedQuest.load(Bytes.fromI32(params._legionId.toI32()));
   if (!quest) {
-    log.error("[advanced-quest-started] Unknown quest: {}", [id]);
-
+    log.error("[advanced-quest-started] Unknown quest: {}", [
+      params._legionId.toString(),
+    ]);
     return;
   }
 
   quest.requestId = params._requestId;
-  quest.endTimestamp = BigInt.fromI32(0);
+  quest.endTimestamp = ZERO_BI;
   quest.stasisHitCount = 0;
   quest.part = params._toPart;
-
   quest.save();
 }
 
 export function handleTreasureTriadPlayed(event: TreasureTriadPlayed): void {
   const params = event.params;
-
-  const id = getAddressId(event.address, params._legionId);
-  const result = new TreasureTriadResult(id);
+  const id = Bytes.fromI32(params._legionId.toI32());
   const quest = AdvancedQuest.load(id);
-
   if (!quest) {
-    log.error("[advanced-quest-treasure-triad-played] Unknown quest: {}", [id]);
-
+    log.error("[handleTreasureTriadPlayed] Unknown quest: {}", [
+      params._legionId.toString(),
+    ]);
     return;
   }
 
+  const result = new TreasureTriadResult(id);
   result.advancedQuest = quest.id;
   result.playerWon = params._playerWon;
   result.numberOfCardsFlipped = params._numberOfCardsFlipped;
   result.numberOfCorruptedCardsRemaining =
     params._numberOfCorruptedCardsRemaining;
+  result.save();
 
   quest.treasureTriadResult = result.id;
-
-  result.save();
   quest.save();
 }
 
 export function handleAdvancedQuestEnded(event: AdvancedQuestEnded): void {
   const params = event.params;
-
-  const id = getAddressId(event.address, params._legionId);
+  const id = Bytes.fromI32(params._legionId.toI32());
   const quest = AdvancedQuest.load(id);
-  const treasureTriadResult = TreasureTriadResult.load(id);
-
   if (!quest) {
-    log.error("[advanced-quest-ended] Unknown quest: {}", [id]);
-
+    log.error("[advanced-quest-ended] Unknown quest: {}", [
+      params._legionId.toString(),
+    ]);
     return;
   }
 
-  quest.id = `${quest.id}-${quest.requestId.toHex()}`;
+  quest.id = quest.id.concatI32(quest.requestId.toI32());
   quest.status = "Finished";
   quest.endTimestamp = event.block.timestamp.times(BigInt.fromI32(1000));
 
-  const user = getUser(quest.user);
+  const user = getOrCreateUser(quest.user);
   user.finishedAdvancedQuestCount += 1;
   user.save();
 
-  store.remove("AdvancedQuest", id);
+  store.remove("AdvancedQuest", id.toHexString());
 
   const rewards = params._rewards.filter(
     (reward) =>
@@ -148,20 +140,17 @@ export function handleAdvancedQuestEnded(event: AdvancedQuestEnded): void {
       reward.treasureId.toI32() !== 0
   );
   for (let i = 0; i < rewards.length; i++) {
-    const rewardId = `${quest.id}-${BigInt.fromI32(i).toHex()}`;
+    const rewardId = quest.id.concatI32(i);
     const reward = new AdvancedQuestReward(rewardId);
-
     reward.advancedQuest = quest.id;
 
     if (rewards[i].consumableId.toI32() !== 0) {
       const consumable = new TokenQuantity(rewardId);
-
       consumable.token = getAddressId(
         CONSUMABLE_ADDRESS,
         rewards[i].consumableId
       );
       consumable.quantity = rewards[i].consumableAmount.toI32();
-
       consumable.save();
 
       reward.consumable = consumable.id;
@@ -181,22 +170,23 @@ export function handleAdvancedQuestEnded(event: AdvancedQuestEnded): void {
     reward.save();
   }
 
+  const treasureTriadResult = TreasureTriadResult.load(id);
   if (treasureTriadResult) {
-    treasureTriadResult.id = `${id}-${quest.requestId.toHex()}`;
+    treasureTriadResult.id = quest.id;
     treasureTriadResult.advancedQuest = quest.id;
     treasureTriadResult.save();
 
     quest.treasureTriadResult = treasureTriadResult.id;
 
-    store.remove("TreasureTriadResult", id);
+    store.remove("TreasureTriadResult", id.toHexString());
   }
 
   quest.save();
 
-  const metadata = LegionInfo.load(`${quest.token}-metadata`);
+  const metadata = LegionInfo.load(quest.token);
   if (!metadata) {
     log.error("[advanced-quest-end] Legion metadata not found: {}", [
-      quest.token,
+      quest.token.toHexString(),
     ]);
     return;
   }

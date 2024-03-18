@@ -4,7 +4,7 @@ import { LEGION_ADDRESS, TREASURE_ADDRESS } from "@treasure/constants";
 
 import { CraftingFinished } from "../../generated/Mini Crafting/MiniCrafting";
 import { LegionInfo, MiniCraft, Outcome } from "../../generated/schema";
-import { getAddressId } from "../helpers";
+import { getAddressId } from "../helpers/utils";
 
 export function handleCraftingFinished(event: CraftingFinished): void {
   const params = event.params;
@@ -18,7 +18,7 @@ export function handleCraftingFinished(event: CraftingFinished): void {
   miniCraft.timestamp = event.block.timestamp;
   miniCraft.tier = params._tier;
   miniCraft.token = getAddressId(LEGION_ADDRESS, tokenId);
-  miniCraft.user = params._user.toHexString();
+  miniCraft.user = params._user;
 
   // Save outcome
   const outcome = new Outcome(miniCraftId);
@@ -31,9 +31,9 @@ export function handleCraftingFinished(event: CraftingFinished): void {
   miniCraft.outcome = outcome.id;
   miniCraft.save();
 
-  const metadata = LegionInfo.load(`${miniCraft.token}-metadata`);
+  const metadata = LegionInfo.load(miniCraft.token);
   if (!metadata) {
-    log.error("Legion metadata not found: {}", [miniCraft.token]);
+    log.error("Legion metadata not found: {}", [miniCraft.token.toHexString()]);
     return;
   }
 

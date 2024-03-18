@@ -14,7 +14,7 @@ import { getAddressId } from "../helpers/utils";
 export function handleSummoningStarted(event: SummoningStarted): void {
   const params = event.params;
   const summon = new Summon(bigIntToBytes(params.tokenId));
-  summon.user = params.user.toHexString();
+  summon.user = params.user;
   summon.token = getAddressId(LEGION_ADDRESS, params.tokenId);
   summon.status = "Revealable";
   summon.save();

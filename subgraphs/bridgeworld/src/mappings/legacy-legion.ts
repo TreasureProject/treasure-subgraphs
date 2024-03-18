@@ -4,17 +4,15 @@ import {
   TransferBatch,
   TransferSingle,
 } from "../../generated/Legacy Legion/ERC1155";
-import { Token } from "../../generated/schema";
-import { LEGION_IPFS, LEGION_PFP_IPFS } from "../helpers";
+import { LEGION_IPFS, LEGION_PFP_IPFS } from "../helpers/constants";
 import { getLegacyLegionImage } from "../helpers/legion";
+import { getOrCreateToken } from "../helpers/token";
 import * as common from "../mapping";
 
 function setMetadata(contract: Address, tokenId: BigInt): void {
-  let token = Token.load(`${contract.toHexString()}-${tokenId.toHexString()}`);
-
+  const token = getOrCreateToken(contract, tokenId);
   if (!token) {
     log.error("Unknown token: {}", [tokenId.toString()]);
-
     return;
   }
 

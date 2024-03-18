@@ -1,42 +1,9 @@
 import { Address, BigInt, store } from "@graphprotocol/graph-ts";
 
-import { Token, UserToken } from "../generated/schema";
-import {
-  ZERO_BI,
-  getAddressId,
-  getImageHash,
-  getName,
-  getRarity,
-} from "./helpers";
-import { getUser } from "./helpers/user";
-
-class Transfer {
-  constructor(
-    public contract: Address,
-    public to: Address,
-    public tokenId: BigInt
-  ) {}
-}
-
-function getToken(data: Transfer): Token {
-  let id = getAddressId(data.contract, data.tokenId);
-  let token = Token.load(id);
-
-  if (!token) {
-    token = new Token(id);
-
-    let name = getName(data.tokenId);
-
-    token.contract = data.contract;
-    token.image = getImageHash(data.tokenId, name).split(" ").join("%20");
-    token.name = name;
-    token.rarity = getRarity(data.tokenId);
-    token.tokenId = data.tokenId;
-    token.save();
-  }
-
-  return token;
-}
+import { UserToken } from "../generated/schema";
+import { ZERO_BI } from "./helpers/constants";
+import { getOrCreateToken } from "./helpers/token";
+import { getOrCreateUser } from "./helpers/user";
 
 /**
  * This is a generic function that can handle both ERC1155s and ERC721s
@@ -48,29 +15,24 @@ export function handleTransfer(
   tokenId: BigInt,
   quantity: BigInt
 ): void {
-  let data = new Transfer(contract, to, tokenId);
-  let user = getUser(data.to.toHexString());
-  let token = getToken(data);
+  const token = getOrCreateToken(contract, tokenId);
 
-  let fromUserToken = UserToken.load(`${from.toHexString()}-${token.id}`);
-
+  const fromUserToken = UserToken.load(from.concat(token.id));
   if (fromUserToken) {
     fromUserToken.quantity = fromUserToken.quantity.minus(quantity);
     fromUserToken.save();
-
     if (fromUserToken.quantity.equals(ZERO_BI)) {
-      store.remove("UserToken", fromUserToken.id);
+      store.remove("UserToken", fromUserToken.id.toHexString());
     }
   }
 
-  let id = `${user.id}-${token.id}`;
-  let toUserToken = UserToken.load(id);
-
+  const user = getOrCreateUser(to);
+  const toUserTokenId = user.id.concat(token.id);
+  let toUserToken = UserToken.load(toUserTokenId);
   if (!toUserToken) {
-    toUserToken = new UserToken(id);
-
+    toUserToken = new UserToken(toUserTokenId);
     toUserToken.token = token.id;
-    toUserToken.quantity = BigInt.zero();
+    toUserToken.quantity = ZERO_BI;
     toUserToken.user = user.id;
   }
 

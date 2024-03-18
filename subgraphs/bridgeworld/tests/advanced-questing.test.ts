@@ -35,7 +35,10 @@ import { createLegionQuestLevelUpEvent } from "./helpers/legion";
 import { createRandomSeededEvent } from "./helpers/randomizer";
 
 function getQuestId(legionId: i32): string {
-  return getAddressId(ADVANCED_QUESTING_ADDRESS, BigInt.fromI32(legionId));
+  return getAddressId(
+    ADVANCED_QUESTING_ADDRESS,
+    BigInt.fromI32(legionId)
+  ).toHexString();
 }
 
 test("All fields are set as expected on quest start", () => {
@@ -87,14 +90,14 @@ test("All fields are set as expected on quest start", () => {
     "TokenQuantity",
     treasureId1,
     "token",
-    getAddressId(TREASURE_ADDRESS, BigInt.fromI32(2))
+    getAddressId(TREASURE_ADDRESS, BigInt.fromI32(2)).toHexString()
   );
   assert.fieldEquals("TokenQuantity", treasureId1, "quantity", "2");
   assert.fieldEquals(
     "TokenQuantity",
     treasureId2,
     "token",
-    getAddressId(TREASURE_ADDRESS, BigInt.fromI32(3))
+    getAddressId(TREASURE_ADDRESS, BigInt.fromI32(3)).toHexString()
   );
   assert.fieldEquals("TokenQuantity", treasureId2, "quantity", "1");
 });

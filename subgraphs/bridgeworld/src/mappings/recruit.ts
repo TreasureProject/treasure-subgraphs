@@ -11,7 +11,7 @@ import {
   RecruitXPChanged,
 } from "../../generated/Recruit Level/RecruitLevel";
 import { Token } from "../../generated/schema";
-import { LEGION_IPFS, LEGION_PFP_IPFS } from "../helpers";
+import { LEGION_IPFS, LEGION_PFP_IPFS } from "../helpers/constants";
 import {
   RECRUIT_TYPE,
   getLegionMetadata,
@@ -22,6 +22,7 @@ import {
   getOrCreateRecruitConfig,
   getOrCreateRecruitLevelConfig,
 } from "../helpers/recruit";
+import { getAddressId } from "../helpers/utils";
 
 export function handleAscensionInfoSet(event: AscensionInfoSet): void {
   const params = event.params;
@@ -51,9 +52,7 @@ export function handleMaxLevelSet(event: MaxLevelSet): void {
 export function handleRecruitTypeChanged(event: RecruitTypeChanged): void {
   const params = event.params;
   const tokenId = params.tokenId;
-  const token = Token.load(
-    `${LEGION_ADDRESS.toHexString()}-${tokenId.toHexString()}`
-  );
+  const token = Token.load(getAddressId(LEGION_ADDRESS, tokenId));
   if (!token) {
     log.error("Unknown Recruit token: {}", [tokenId.toString()]);
     return;

@@ -479,9 +479,7 @@ export const getLegacyGenesisLegionImage = (
 };
 
 export const getLegionMetadata = (tokenId: BigInt): LegionInfo => {
-  const metadata = LegionInfo.load(
-    `${getAddressId(LEGION_ADDRESS, tokenId)}-metadata`
-  );
+  const metadata = LegionInfo.load(getAddressId(LEGION_ADDRESS, tokenId));
 
   if (!metadata) {
     throw new Error(`Metadata not available: ${tokenId.toString()}`);

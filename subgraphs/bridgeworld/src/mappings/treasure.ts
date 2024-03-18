@@ -5,7 +5,7 @@ import {
   TransferSingle,
 } from "../../generated/Treasure/ERC1155";
 import { Token, TreasureInfo } from "../../generated/schema";
-import { getAddressId, isMint } from "../helpers";
+import { getAddressId, isMint } from "../helpers/utils";
 import * as common from "../mapping";
 
 // @ts-ignore - i32 undefined
@@ -159,7 +159,7 @@ function setMetadata(contract: Address, tokenId: BigInt): void {
     return;
   }
 
-  let metadata = new TreasureInfo(`${token.id}-metadata`);
+  let metadata = new TreasureInfo(token.id);
   let boostAmount = getBoost(tokenId.toI32());
 
   if (boostAmount > 0) {

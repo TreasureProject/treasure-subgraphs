@@ -47,12 +47,12 @@ import {
   PartsStakingRules as PartsStakingRulesContract,
 } from "../../generated/templates/PartsStakingRules/PartsStakingRules";
 import { TreasuresStakingRules as TreasuresStakingRulesContract } from "../../generated/templates/TreasuresStakingRules/TreasuresStakingRules";
-import { HARVESTER_EXTRACTOR_TOKEN_IDS } from "../helpers";
 import {
   getHarvester,
   getHarvesterForNftHandler,
   getHarvesterForStakingRule,
 } from "../helpers/harvester";
+import { HARVESTER_EXTRACTOR_TOKEN_IDS } from "../helpers/token-id";
 
 export function handleUpdatedMagicTotalDepositCap(
   event: TotalDepositCap

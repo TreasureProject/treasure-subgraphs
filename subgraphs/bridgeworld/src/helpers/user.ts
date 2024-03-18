@@ -1,11 +1,11 @@
-import { Address, BigInt, ethereum } from "@graphprotocol/graph-ts";
+import { Address, BigInt, Bytes, ethereum } from "@graphprotocol/graph-ts";
 
 import { User } from "../../generated/schema";
 
-export const getUser = (id: string): User => {
-  let user = User.load(id);
+export const getOrCreateUser = (address: Bytes): User => {
+  let user = User.load(address);
   if (!user) {
-    user = new User(id);
+    user = new User(address);
     user.boost = "0";
     user.boosts = 0;
     user.deposited = BigInt.zero();

@@ -10,14 +10,12 @@ import {
   QuestStarted,
 } from "../../generated/Questing/Questing";
 import { LegionInfo, Quest } from "../../generated/schema";
-import {
-  QUEST_DISTANCE_TRAVELLED_PER_PART,
-  getAddressId,
-  getXpPerLevel,
-} from "../helpers";
 import { isQuestingXpGainedEnabled } from "../helpers/config";
+import { QUEST_DISTANCE_TRAVELLED_PER_PART } from "../helpers/constants";
 import { getLegionMetadata } from "../helpers/legion";
 import { bigIntToBytes } from "../helpers/number";
+import { getAddressId } from "../helpers/utils";
+import { getXpPerLevel } from "../helpers/xp";
 
 function handleQuestStarted(
   user: Address,
@@ -25,7 +23,7 @@ function handleQuestStarted(
   difficulty: i32
 ): void {
   const quest = new Quest(bigIntToBytes(tokenId));
-  quest.user = user.toHexString();
+  quest.user = user;
   quest.token = getAddressId(LEGION_ADDRESS, tokenId);
   quest.difficulty = difficulty;
   quest.status = "Revealable";
@@ -63,7 +61,7 @@ export function handleQuestRevealed(event: QuestRevealed): void {
 
   // Prefer the QPGained event if it's available at this block
   if (!isQuestingXpGainedEnabled(event.block.number)) {
-    const metadata = LegionInfo.load(`${quest.token}-metadata`);
+    const metadata = LegionInfo.load(quest.token);
     if (metadata && metadata.type != "Recruit" && metadata.questing != 6) {
       metadata.questingXp += getXpPerLevel(metadata.questing);
       metadata.save();
@@ -81,14 +79,16 @@ export function handleQuestFinished(event: QuestFinished): void {
     return;
   }
 
-  const metadata = LegionInfo.load(`${quest.token}-metadata`);
+  const metadata = LegionInfo.load(quest.token);
   if (metadata) {
     metadata.questsCompleted += 1;
     metadata.questsDistanceTravelled +=
       (quest.difficulty + 1) * QUEST_DISTANCE_TRAVELLED_PER_PART;
     metadata.save();
   } else {
-    log.warning("[questing] Legion metadata not found: {}", [quest.token]);
+    log.warning("[questing] Legion metadata not found: {}", [
+      quest.token.toHexString(),
+    ]);
   }
 
   store.remove("Quest", quest.id.toHexString());

@@ -27,8 +27,6 @@ dataSources:
           handler: handleStaked
         - event: Unstaked(address,uint256,uint256,uint256)
           handler: handleUnstaked
-        - event: UtilizationRate(uint256)
-          handler: handleUtilizationRate
         - event: Withdraw(indexed address,indexed uint256,uint256)
           handler: handleWithdraw
       file: ./src/mappings/atlas-mine.ts

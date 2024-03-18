@@ -1,4 +1,11 @@
-import { Address, BigInt, ethereum, log, store } from "@graphprotocol/graph-ts";
+import {
+  Address,
+  BigInt,
+  Bytes,
+  ethereum,
+  log,
+  store,
+} from "@graphprotocol/graph-ts";
 
 import {
   CONSUMABLE_ADDRESS,
@@ -20,12 +27,14 @@ import {
   Outcome,
   Random,
 } from "../../generated/schema";
-import { DIFFICULTY, getAddressId, getXpPerLevel } from "../helpers";
 import {
   isCraftingXpGainedEnabled,
   setCraftingXpGainedBlockNumberIfEmpty,
 } from "../helpers/config";
+import { DIFFICULTY } from "../helpers/constants";
 import { getLegionMetadata } from "../helpers/legion";
+import { getAddressId } from "../helpers/utils";
+import { getXpPerLevel } from "../helpers/xp";
 
 function isXpPaused(event: ethereum.Event): boolean {
   return (
@@ -42,7 +51,7 @@ function handleCraftingStarted(
   finishTime: BigInt,
   difficulty: i32
 ): void {
-  const random = Random.load(requestId.toHexString());
+  const random = Random.load(Bytes.fromI32(requestId.toI32()));
   if (!random) {
     log.error("[craft-started] Unknown random: {}", [requestId.toString()]);
     return;
@@ -54,7 +63,7 @@ function handleCraftingStarted(
   craft.token = getAddressId(LEGION_ADDRESS, tokenId);
   craft.random = random.id;
   craft.status = "Idle";
-  craft.user = user.toHexString();
+  craft.user = user;
   craft.save();
 
   random.craft = craft.id;
@@ -99,7 +108,7 @@ export function handleCraftingRevealed(event: CraftingRevealed): void {
   let craft = Craft.load(id);
 
   if (!craft) {
-    log.error("[craft-revealed] Unknown craft: {}", [id]);
+    log.error("[craft-revealed] Unknown craft: {}", [id.toHexString()]);
 
     return;
   }
@@ -158,30 +167,30 @@ export function handleCraftingFinished(event: CraftingFinished): void {
 
   const craft = Craft.load(id);
   if (!craft) {
-    log.error("[craft-finished] Unknown craft: {}", [id]);
+    log.error("[craft-finished] Unknown craft: {}", [id.toHexString()]);
     return;
   }
 
   const outcome = Outcome.load(`${id}-${craft.random}`);
   if (!outcome) {
-    log.error("[craft-finished] Unknown craft outcome: {}", [id]);
+    log.error("[craft-finished] Unknown craft outcome: {}", [id.toHexString()]);
     return;
   }
 
   if (outcome.success) {
-    const metadata = LegionInfo.load(`${craft.token}-metadata`);
+    const metadata = LegionInfo.load(craft.token);
     if (metadata) {
       metadata.majorCraftsCompleted += 1;
       metadata.save();
     }
   }
 
-  craft.id = `${craft.id}-${craft.random}`;
+  craft.id = craft.id.concat(craft.random);
   craft.status = "Finished";
   craft.save();
 
   // Remove old craft
-  store.remove("Craft", id);
+  store.remove("Craft", id.toHexString());
 }
 
 export function handleCraftingXpGained(event: CPGained): void {

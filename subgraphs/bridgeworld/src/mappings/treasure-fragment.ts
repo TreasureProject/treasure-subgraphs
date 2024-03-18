@@ -5,7 +5,8 @@ import {
   TransferSingle,
 } from "../../generated/Treasure Fragment/ERC1155";
 import { Token, TreasureFragmentInfo } from "../../generated/schema";
-import { TREASURE_FRAGMENT_IPFS, getAddressId, isMint } from "../helpers";
+import { TREASURE_FRAGMENT_IPFS } from "../helpers/constants";
+import { getAddressId, isMint } from "../helpers/utils";
 import * as common from "../mapping";
 
 function getRomanNumerals(num: i32): string {
@@ -102,7 +103,7 @@ function setMetadata(contract: Address, tokenId: BigInt): void {
     return;
   }
 
-  let metadata = new TreasureFragmentInfo(`${token.id}-metadata`);
+  let metadata = new TreasureFragmentInfo(token.id);
 
   metadata.categories = getCategories(tokenId.toI32());
   metadata.tier = getTier(tokenId.toI32());

@@ -66,7 +66,7 @@ enum StakingRule {
 }
 
 interface Metadata {
-  id: ID!
+  id: Bytes!
 }
 
 type _BlockConfig @entity {
@@ -80,7 +80,7 @@ type _BlockConfig @entity {
 }
 
 type Constellation @entity {
-  id: ID!
+  id: Bytes!
 
   dark: Int!
   earth: Int!
@@ -91,14 +91,14 @@ type Constellation @entity {
 }
 
 type ConsumableInfo implements Metadata @entity {
-  id: ID!
+  id: Bytes!
 
   type: String!
   size: Size
 }
 
 type LegionInfo implements Metadata @entity {
-  id: ID!
+  id: Bytes!
 
   "Boost value when staked in Atlas Mine"
   boost: String!
@@ -162,7 +162,7 @@ type LegionInfo implements Metadata @entity {
 }
 
 type TreasureInfo implements Metadata @entity {
-  id: ID!
+  id: Bytes!
 
   boost: String!
   category: TreasureCategory!
@@ -170,22 +170,21 @@ type TreasureInfo implements Metadata @entity {
 }
 
 type TreasureFragmentInfo implements Metadata @entity {
-  id: ID!
+  id: Bytes!
 
   categories: [TreasureCategory!]!
   tier: Int!
 }
 
 type AtlasMine @entity {
-  id: ID!
+  id: Bytes!
 
   deposits: [Deposit!]! @derivedFrom(field: "mine")
-  utilization: BigInt!
   withdrawals: [Withdraw!]! @derivedFrom(field: "mine")
 }
 
 type Deposit @entity {
-  id: ID!
+  id: Bytes!
 
   "Hash for the deposit transaction"
   transactionHash: Bytes!
@@ -222,7 +221,7 @@ type Deposit @entity {
 }
 
 type Withdraw @entity {
-  id: ID!
+  id: Bytes!
 
   amount: BigInt!
   deposit: Deposit!
@@ -232,7 +231,7 @@ type Withdraw @entity {
 }
 
 type Harvest @entity {
-  id: ID!
+  id: Bytes!
 
   "Amount claimed"
   amount: BigInt!
@@ -248,7 +247,7 @@ type Harvest @entity {
 }
 
 type Random @entity {
-  id: ID!
+  id: Bytes!
 
   "Set for crafting"
   craft: Craft
@@ -258,7 +257,7 @@ type Random @entity {
 }
 
 type Seeded @entity {
-  id: ID!
+  id: Bytes!
 
   randoms: [Random!]!
 }
@@ -282,7 +281,7 @@ type Outcome @entity {
 }
 
 type Craft @entity {
-  id: ID!
+  id: Bytes!
 
   difficulty: Difficulty!
   endTimestamp: BigInt!
@@ -323,7 +322,7 @@ type Quest @entity {
 }
 
 type AdvancedQuest @entity {
-  id: ID!
+  id: Bytes!
 
   requestId: BigInt!
   status: Status!
@@ -340,8 +339,8 @@ type AdvancedQuest @entity {
   user: User!
 }
 
-type AdvancedQuestReward @entity {
-  id: ID!
+type AdvancedQuestReward @entity(immutable: true) {
+  id: Bytes!
 
   advancedQuest: AdvancedQuest!
   consumable: TokenQuantity
@@ -349,8 +348,8 @@ type AdvancedQuestReward @entity {
   treasure: Token
 }
 
-type TreasureTriadResult @entity {
-  id: ID!
+type TreasureTriadResult @entity(immutable: true) {
+  id: Bytes!
 
   advancedQuest: AdvancedQuest!
   playerWon: Boolean!
@@ -359,7 +358,7 @@ type TreasureTriadResult @entity {
 }
 
 type TreasureTriadCardInfo @entity {
-  id: ID!
+  id: Bytes!
 
   token: Token!
   north: Int!
@@ -369,7 +368,7 @@ type TreasureTriadCardInfo @entity {
 }
 
 type StakedToken @entity {
-  id: ID!
+  id: Bytes!
 
   "User who owns the Token"
   user: User!
@@ -399,7 +398,7 @@ type Summon @entity {
 }
 
 type Token @entity {
-  id: ID!
+  id: Bytes!
 
   category: Category
   contract: Bytes!
@@ -417,7 +416,7 @@ type Token @entity {
 }
 
 type User @entity {
-  id: ID!
+  id: Bytes!
 
   crafts: [Craft!]! @derivedFrom(field: "user")
   miniCrafts: [MiniCraft!]! @derivedFrom(field: "user")
@@ -438,7 +437,7 @@ type User @entity {
 }
 
 type Pilgrimage @entity {
-  id: ID!
+  id: Bytes!
 
   endTimestamp: BigInt!
   pilgrimageId: BigInt!
@@ -448,15 +447,15 @@ type Pilgrimage @entity {
 }
 
 type UserToken @entity {
-  id: ID!
+  id: Bytes!
 
   quantity: BigInt!
   token: Token!
   user: User!
 }
 
-type TokenQuantity @entity {
-  id: ID!
+type TokenQuantity @entity(immutable: true) {
+  id: Bytes!
 
   "The amount of tokens"
   quantity: Int!

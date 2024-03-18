@@ -4,8 +4,8 @@ import {
   TransferSingle,
 } from "../../generated/Consumable/Consumable";
 import { ConsumableInfo } from "../../generated/schema";
-import { isMint } from "../helpers";
 import { getOrCreateToken } from "../helpers/token";
+import { isMint } from "../helpers/utils";
 import { handleTransfer } from "../mapping";
 
 export function handleTransferBatch(event: TransferBatch): void {
@@ -49,10 +49,9 @@ export function handleTokenTraitChanged(event: TokenTraitChanged): void {
   const params = event.params;
   const data = params._traitData;
   const token = getOrCreateToken(event.address, params._tokenId);
-  const metadataId = `${token.id}-metadata`;
-  let metadata = ConsumableInfo.load(metadataId);
+  let metadata = ConsumableInfo.load(token.id);
   if (!metadata) {
-    metadata = new ConsumableInfo(metadataId);
+    metadata = new ConsumableInfo(token.id);
   }
 
   for (let i = 0; i < data.properties.length; i += 1) {
@@ -71,6 +70,6 @@ export function handleTokenTraitChanged(event: TokenTraitChanged): void {
   token.name = data.name;
   token.description = data.description;
   token.image = data.url;
-  token.metadata = metadataId;
+  token.metadata = metadata.id;
   token.save();
 }

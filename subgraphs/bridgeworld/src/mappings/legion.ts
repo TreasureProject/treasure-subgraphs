@@ -11,18 +11,15 @@ import {
 import { Transfer } from "../../generated/Legion/ERC721";
 import { Constellation, LegionInfo, Token } from "../../generated/schema";
 import {
+  isCraftingXpGainedEnabled,
+  isQuestingXpGainedEnabled,
+} from "../helpers/config";
+import {
   LEGION_IPFS,
   LEGION_NO_BACKGROUND_IPFS,
   LEGION_PFP_IPFS,
   ZERO_BI,
-  getAddressId,
-  getImageHash,
-  isMint,
-} from "../helpers";
-import {
-  isCraftingXpGainedEnabled,
-  isQuestingXpGainedEnabled,
-} from "../helpers/config";
+} from "../helpers/constants";
 import {
   CLASS,
   RARITY,
@@ -30,7 +27,10 @@ import {
   getLegionImage,
   getLegionMetadata,
 } from "../helpers/legion";
-import { getUser } from "../helpers/user";
+import { getOrCreateToken } from "../helpers/token";
+import { getImageHash } from "../helpers/token-id";
+import { getOrCreateUser } from "../helpers/user";
+import { getAddressId, isMint } from "../helpers/utils";
 import * as common from "../mapping";
 
 const BOOST_MATRIX = [
@@ -91,23 +91,17 @@ const HARVESTERS_RANK_MATRIX = [
   [ZERO_BI, ZERO_BI, ZERO_BI, ZERO_BI, ZERO_BI, ZERO_BI],
 ];
 
-function getLegionId(tokenId: BigInt): string {
-  return getAddressId(LEGION_ADDRESS, tokenId);
-}
-
-function getConstellation(id: string): Constellation {
+function getConstellation(tokenId: BigInt): Constellation {
+  const id = getAddressId(LEGION_ADDRESS, tokenId);
   let constellation = Constellation.load(id);
-
   if (!constellation) {
     constellation = new Constellation(id);
-
     constellation.dark = 0;
     constellation.earth = 0;
     constellation.fire = 0;
     constellation.light = 0;
     constellation.water = 0;
     constellation.wind = 0;
-
     constellation.save();
   }
 
@@ -115,16 +109,13 @@ function getConstellation(id: string): Constellation {
 }
 
 function setMetadata(contract: Address, tokenId: BigInt): void {
-  let token = Token.load(getAddressId(contract, tokenId));
-
+  const token = getOrCreateToken(contract, tokenId);
   if (!token) {
     log.error("Unknown token: {}", [tokenId.toString()]);
-
     return;
   }
 
-  let metadata = new LegionInfo(`${token.id}-metadata`);
-
+  const metadata = new LegionInfo(token.id);
   metadata.boost = `${BOOST_MATRIX[0][0] / 1e18}`;
   metadata.harvestersRank = HARVESTERS_RANK_MATRIX[0][0];
   metadata.harvestersWeight = HARVESTERS_WEIGHT_MATRIX[0][0];
@@ -144,7 +135,6 @@ function setMetadata(contract: Address, tokenId: BigInt): void {
   metadata.role = "Origin";
   metadata.type = "Genesis";
   metadata.summons = BigInt.zero();
-
   metadata.save();
 
   token.category = "Legion";
@@ -163,7 +153,7 @@ export function handleLegionConstellationRankUp(
   let rank = params._rank;
   let tokenId = params._tokenId;
 
-  let constellation = getConstellation(getLegionId(tokenId));
+  let constellation = getConstellation(tokenId);
 
   switch (params._constellation) {
     case 0:
@@ -213,19 +203,12 @@ export function handleLegionCraftLevelUp(event: LegionCraftLevelUp): void {
 
 export function handleLegionCreated(event: LegionCreated): void {
   const params = event.params;
-
-  const tokenId = params._tokenId;
-  const token = Token.load(getLegionId(tokenId));
-  if (!token) {
-    log.error("Unknown token: {}", [tokenId.toString()]);
-    return;
-  }
-
+  const token = getOrCreateToken(LEGION_ADDRESS, params._tokenId);
   const generation = params._generation;
   const rarity = params._rarity;
   const type = TYPE[generation];
   const isRecruit = type == "Recruit";
-  const metadata = new LegionInfo(`${token.id}-metadata`);
+  const metadata = new LegionInfo(token.id);
   metadata.boost = `${BOOST_MATRIX[generation][rarity] / 1e18}`;
   metadata.harvestersRank = HARVESTERS_RANK_MATRIX[generation][rarity];
   metadata.harvestersWeight = HARVESTERS_WEIGHT_MATRIX[generation][rarity];
@@ -253,27 +236,27 @@ export function handleLegionCreated(event: LegionCreated): void {
     metadata.type,
     metadata.rarity,
     metadata.role,
-    tokenId
+    params._tokenId
   );
   token.imageAlt = getLegionImage(
     LEGION_PFP_IPFS,
     metadata.type,
     metadata.rarity,
     metadata.role,
-    tokenId
+    params._tokenId
   );
   token.imageNoBackground = getLegionImage(
     LEGION_NO_BACKGROUND_IPFS,
     metadata.type,
     metadata.rarity,
     metadata.role,
-    tokenId,
+    params._tokenId,
     null,
     false
   );
 
   if (isRecruit) {
-    const user = getUser(params._owner.toHexString());
+    const user = getOrCreateUser(params._owner);
     user.recruit = token.id;
     user.save();
 
