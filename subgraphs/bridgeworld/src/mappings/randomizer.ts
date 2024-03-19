@@ -1,26 +1,10 @@
-import { BigInt, log } from "@graphprotocol/graph-ts";
-
-import { SUMMONING_ADDRESS } from "@treasure/constants";
+import { log } from "@graphprotocol/graph-ts";
 
 import {
   RandomRequest,
   RandomSeeded,
 } from "../../generated/Randomizer/Randomizer";
-import { Summoning } from "../../generated/Summoning/Summoning";
-import {
-  AdvancedQuest,
-  Craft,
-  Random,
-  Seeded,
-  Summon,
-  Token,
-} from "../../generated/schema";
-import { setQuestEndTime } from "../helpers/advanced-questing";
-import { runScheduledJobs } from "../helpers/cron";
-
-function toI32(value: string): i32 {
-  return parseInt(value, 16) as i32;
-}
+import { Craft, Random, Seeded } from "../../generated/schema";
 
 export function handleRandomRequest(event: RandomRequest): void {
   const params = event.params;
@@ -72,46 +56,5 @@ export function handleRandomSeeded(event: RandomSeeded): void {
 
       continue;
     }
-
-    const advancedQuestId = random.advancedQuest;
-    if (advancedQuestId) {
-      const quest = AdvancedQuest.load(advancedQuestId);
-      if (quest !== null && quest.token !== null) {
-        const token = Token.load(quest.token);
-        if (token !== null) {
-          const success = setQuestEndTime(quest, token.tokenId);
-          if (!success) {
-            log.error("[randomizer] Failed to get endTime for legion: {}", [
-              quest.token,
-            ]);
-          }
-
-          if (quest.stasisHitCount > 0) {
-            if (quest.part === 2) {
-              quest.hadStasisPart2 = true;
-            } else if (quest.part === 3) {
-              quest.hadStasisPart2 =
-                quest.hadStasisPart2 || quest.stasisHitCount >= 2;
-              quest.hadStasisPart3 = true;
-            }
-          }
-
-          quest.save();
-        } else {
-          log.error("[randomizer] Token not found: {}", [quest.token]);
-        }
-      } else {
-        log.error("[randomizer] AdvancedQuest not found: {}", [
-          advancedQuestId,
-        ]);
-      }
-
-      continue;
-    }
-
-    log.error("Unhandled seeded: {}", [commitId.toString()]);
   }
-
-  // Every time a random is seeded (~5 min), check scheduled jobs
-  runScheduledJobs(event.block.timestamp);
 }

@@ -18,14 +18,10 @@ import {
   AdvancedQuest,
   AdvancedQuestReward,
   LegionInfo,
-  Random,
-  Token,
   TokenQuantity,
   TreasureTriadResult,
-  User,
 } from "../../generated/schema";
 import { QUEST_DISTANCE_TRAVELLED_PER_PART } from "../helpers";
-import { setQuestEndTime } from "../helpers/advanced-questing";
 import {
   isQuestingXpGainedEnabled,
   setQuestingXpGainedBlockNumberIfEmpty,
@@ -37,21 +33,11 @@ import { getXpPerLevel } from "../helpers/xp";
 export function handleAdvancedQuestStarted(event: AdvancedQuestStarted): void {
   const params = event.params;
 
-  const random = Random.load(params._requestId.toHexString());
-  if (!random) {
-    log.error("[advanced-quest-started]: Unknown random: {}", [
-      params._requestId.toString(),
-    ]);
-
-    return;
-  }
-
   const quest = new AdvancedQuest(
     getAddressId(event.address, params._startQuestParams.legionId)
   );
 
   quest.requestId = params._requestId;
-  quest.random = random.id;
   quest.token = getAddressId(LEGION_ADDRESS, params._startQuestParams.legionId);
   quest.user = params._owner.toHexString();
   quest.status = "Idle";
@@ -82,11 +68,7 @@ export function handleAdvancedQuestStarted(event: AdvancedQuestStarted): void {
   }
 
   quest.treasures = treasures;
-
   quest.save();
-
-  random.advancedQuest = quest.id;
-  random.save();
 }
 
 export function handleAdvancedQuestContinued(
@@ -94,18 +76,6 @@ export function handleAdvancedQuestContinued(
 ): void {
   const params = event.params;
   const id = getAddressId(event.address, params._legionId);
-  const random = Random.load(params._requestId.toHexString());
-
-  if (!random) {
-    log.error("[advanced-quest-started]: Unknown random: {}", [
-      params._requestId.toString(),
-    ]);
-
-    return;
-  }
-
-  random.advancedQuest = id;
-  random.save();
 
   const quest = AdvancedQuest.load(id);
 
@@ -144,19 +114,6 @@ export function handleTreasureTriadPlayed(event: TreasureTriadPlayed): void {
 
   quest.treasureTriadResult = result.id;
 
-  if (result.numberOfCorruptedCardsRemaining > 0) {
-    const token = Token.load(quest.token);
-    if (token) {
-      const success = setQuestEndTime(quest, token.tokenId);
-      if (!success) {
-        log.error(
-          "[advanced-quest-triad] Failed to get endTime for legion: {}",
-          [quest.token]
-        );
-      }
-    }
-  }
-
   result.save();
   quest.save();
 }
@@ -183,12 +140,6 @@ export function handleAdvancedQuestEnded(event: AdvancedQuestEnded): void {
   user.save();
 
   store.remove("AdvancedQuest", id);
-
-  const random = Random.load(quest.requestId.toHexString());
-  if (random !== null) {
-    random.advancedQuest = quest.id;
-    random.save();
-  }
 
   const rewards = params._rewards.filter(
     (reward) =>

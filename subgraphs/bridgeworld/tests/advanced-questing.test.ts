@@ -28,7 +28,6 @@ import {
   createAdvancedQuestEndedEvent,
   createAdvancedQuestStartedEvent,
   createTreasureTriadPlayedEvent,
-  mockEndTimeForLegion,
   simulateAdvancedQuest,
 } from "./helpers/advanced-questing";
 import { USER_ADDRESS } from "./helpers/constants";
@@ -48,8 +47,6 @@ test("All fields are set as expected on quest start", () => {
   const part: i8 = 0;
   const treasureIds = [2, 3];
   const treasureAmounts = [2, 1];
-  const endTimestamp = new Date(0).getTime();
-  const stasisHitCount = 2;
 
   handleAdvancedQuestStarted(
     createAdvancedQuestStartedEvent(
@@ -63,8 +60,6 @@ test("All fields are set as expected on quest start", () => {
     )
   );
 
-  mockEndTimeForLegion(legionId, endTimestamp, stasisHitCount);
-
   const randomSeededEvent = createRandomSeededEvent(requestId);
   handleRandomSeeded(randomSeededEvent);
 
@@ -72,18 +67,6 @@ test("All fields are set as expected on quest start", () => {
   assert.fieldEquals("AdvancedQuest", id, "status", "Idle");
   assert.fieldEquals("AdvancedQuest", id, "zoneName", zoneName);
   assert.fieldEquals("AdvancedQuest", id, "part", part.toString());
-  assert.fieldEquals(
-    "AdvancedQuest",
-    id,
-    "endTimestamp",
-    endTimestamp.toString()
-  );
-  assert.fieldEquals(
-    "AdvancedQuest",
-    id,
-    "stasisHitCount",
-    stasisHitCount.toString()
-  );
   assert.fieldEquals("AdvancedQuest", id, "token", legionStoreId);
 
   const treasureId1 =
@@ -121,8 +104,6 @@ test("Status transitions between Idle and Finished as expected", () => {
   advancedQuestingSetup(legionId);
   const questId = getQuestId(legionId);
 
-  mockEndTimeForLegion(legionId, new Date(0).getTime(), 0);
-
   handleAdvancedQuestStarted(
     createAdvancedQuestStartedEvent(USER_ADDRESS, legionId, 1)
   );
@@ -149,8 +130,6 @@ test("Part increase as quest continues", () => {
   advancedQuestingSetup(legionId);
   const questId = getQuestId(legionId);
 
-  mockEndTimeForLegion(legionId, new Date(0).getTime(), 0);
-
   handleAdvancedQuestStarted(
     createAdvancedQuestStartedEvent(USER_ADDRESS, legionId)
   );
@@ -171,8 +150,6 @@ test("XP increases based on level when quest ends", () => {
   const legionId = 1;
   const legionStoreId = advancedQuestingSetup(legionId);
   const mdId = `${legionStoreId}-metadata`;
-
-  mockEndTimeForLegion(legionId, new Date(0).getTime(), 0);
 
   for (let level = 1; level < 6; level++) {
     assert.fieldEquals("LegionInfo", mdId, "questing", `${level}`);
@@ -209,8 +186,6 @@ test("XP doesn't increase at level 6", () => {
   const legionStoreId = advancedQuestingSetup(legionId);
   const mdId = `${legionStoreId}-metadata`;
 
-  mockEndTimeForLegion(legionId, new Date(0).getTime(), 0);
-
   handleLegionQuestLevelUp(createLegionQuestLevelUpEvent(legionId, 6));
   assert.fieldEquals("LegionInfo", mdId, "questing", "6");
 
@@ -225,8 +200,6 @@ test("XP doesn't increase after upgrade block", () => {
   const legionId = 1;
   const legionStoreId = advancedQuestingSetup(legionId);
   const mdId = `${legionStoreId}-metadata`;
-
-  mockEndTimeForLegion(legionId, new Date(0).getTime(), 0);
 
   simulateAdvancedQuest(USER_ADDRESS, legionId);
   assert.fieldEquals("LegionInfo", mdId, "questingXp", "10");
@@ -373,7 +346,6 @@ test("Finishing a quest increments user's finishedAdvancedQuestCount", () => {
   const legionId = 1;
 
   advancedQuestingSetup(legionId);
-  mockEndTimeForLegion(legionId, new Date(0).getTime(), 0);
 
   assert.fieldEquals("User", USER_ADDRESS, "finishedAdvancedQuestCount", "0");
 

@@ -7,11 +7,8 @@ import {
   HarvesterConfig,
   HarvesterNftHandler,
   HarvesterStakingRule,
-  HarvesterTokenBoost,
-  StakedToken,
-  Token,
 } from "../../generated/schema";
-import { ONE_BI, TWO_BI } from "./constants";
+import { TWO_BI } from "./constants";
 import { etherToWei } from "./number";
 
 const SINGLETON_ID = Bytes.fromI32(1);
@@ -70,103 +67,8 @@ export const calculateHarvesterPartsBoost = (harvester: Harvester): BigInt => {
     .div(maxStakedAmount);
 };
 
-export const calculateHarvesterLegionsBoost = (
-  harvester: Harvester
-): BigInt => {
-  if (harvester.legionsStaked == 0 || harvester.maxLegionsStaked == 0) {
-    return BigInt.zero();
-  }
-
-  // Constant.ONE + (2 * n - n ** 2 / maxLegions) * legionRankModifier / Constant.ONE * boostFactor / maxLegions
-  const boostFactor = ONE_BI; // hard-coded for Legions
-  const stakedAmount = etherToWei(
-    Math.min(harvester.legionsStaked, harvester.maxLegionsStaked)
-  );
-  const maxStakedAmount = etherToWei(harvester.maxLegionsStaked);
-  const averageRank = harvester.legionsTotalRank.div(
-    BigInt.fromI32(harvester.legionsStaked)
-  );
-  const rankModifier = etherToWei(0.9).plus(
-    averageRank.div(BigInt.fromI32(10))
-  );
-  return stakedAmount
-    .times(TWO_BI)
-    .minus(stakedAmount.pow(2).div(maxStakedAmount))
-    .times(rankModifier)
-    .div(ONE_BI)
-    .times(boostFactor)
-    .div(maxStakedAmount);
-};
-
-export const createOrUpdateHarvesterTokenBoost = (
-  harvester: Harvester,
-  token: Token,
-  boost: BigInt
-): HarvesterTokenBoost => {
-  const tokenBoostId = `${harvester.id}-${token.id}`;
-  let tokenBoost = HarvesterTokenBoost.load(tokenBoostId);
-  if (!tokenBoost) {
-    tokenBoost = new HarvesterTokenBoost(tokenBoostId);
-    tokenBoost.harvester = harvester.id;
-    tokenBoost.token = token.id;
-  }
-
-  tokenBoost.boost = boost;
-  tokenBoost.save();
-
-  return tokenBoost;
-};
-
 export const createStakedExtractorId = (
   harvester: Harvester,
   spotId: i32
 ): string =>
   `${harvester.id}-${CONSUMABLE_ADDRESS.toHexString()}-${spotId.toString()}`;
-
-export const removeExpiredExtractors = (
-  harvester: Harvester,
-  timestamp: BigInt
-): void => {
-  let nextExpirationTime: BigInt | null = null;
-  for (let i = 0; i < harvester.maxExtractorsStaked; i++) {
-    const stakedToken = StakedToken.load(createStakedExtractorId(harvester, i));
-    if (!stakedToken) {
-      log.info("No Extractor found in spot: {}", [i.toString()]);
-      continue;
-    }
-
-    if (stakedToken.expirationTime && !stakedToken.expirationProcessed) {
-      if (timestamp.ge(stakedToken.expirationTime as BigInt)) {
-        const tokenBoost = HarvesterTokenBoost.load(
-          `${harvester.id}-${stakedToken.token}`
-        );
-        if (!tokenBoost) {
-          log.error("Extractor boost info not found: {}, {}", [
-            harvester.id.toHexString(),
-            stakedToken.token.toString(),
-          ]);
-          continue;
-        }
-
-        log.info(
-          "Removing boost value for expired Extractor from Harvester {} in spot {}",
-          [harvester.id.toHexString(), stakedToken.index.toString()]
-        );
-
-        harvester.extractorsBoost = harvester.extractorsBoost.minus(
-          tokenBoost.boost
-        );
-        stakedToken.expirationProcessed = true;
-        stakedToken.save();
-      } else if (
-        !nextExpirationTime ||
-        (stakedToken.expirationTime as BigInt).lt(nextExpirationTime)
-      ) {
-        nextExpirationTime = stakedToken.expirationTime;
-      }
-    }
-  }
-
-  harvester._nextExpirationTime = nextExpirationTime;
-  harvester.save();
-};

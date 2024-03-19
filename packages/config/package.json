@@ -6,10 +6,5 @@
   "description": "Configuration data for the subgraphs",
   "files": [
     "src"
-  ],
-  "scripts": {
-    "prepare:dev": "exit 0",
-    "codegen": "exit 0",
-    "test": "exit 0"
-  }
+  ]
 }

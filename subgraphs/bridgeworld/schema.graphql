@@ -4,7 +4,7 @@ enum Category {
   Legion
   Treasure
   TreasureFragment
-  KoteSquire
+  Other
 }
 
 enum Difficulty {
@@ -56,6 +56,15 @@ enum TreasureCategory {
   Smithing
 }
 
+enum StakingRule {
+  Unknown
+  Parts
+  Extractors
+  Legions
+  Treasures
+  ERC721
+}
+
 interface Metadata {
   id: ID!
 }
@@ -86,29 +95,6 @@ type ConsumableInfo implements Metadata @entity {
 
   type: String!
   size: Size
-  isSoulbound: Boolean
-}
-
-type LegionClass @entity {
-  id: ID!
-
-  "Class (Fighter, Ranger, etc)"
-  role: String!
-
-  "Generation (Genesis, Auxiliary, Recruit)"
-  type: String!
-
-  "Rarity (Common, Rare, etc.)"
-  rarity: String!
-
-  "Full body image"
-  image: String!
-
-  "Full body image without background"
-  imageNoBackground: String!
-
-  "PFP image"
-  imageAlt: String!
 }
 
 type LegionInfo implements Metadata @entity {
@@ -267,9 +253,6 @@ type Random @entity {
   "Set for crafting"
   craft: Craft
 
-  "Set for advanced questing"
-  advancedQuest: AdvancedQuest
-
   requestId: BigInt!
   seeded: Seeded
 }
@@ -343,7 +326,6 @@ type AdvancedQuest @entity {
   id: ID!
 
   requestId: BigInt!
-  random: Random!
   status: Status!
   zoneName: String!
   part: Int!
@@ -406,12 +388,6 @@ type StakedToken @entity {
 
   "Order of the staked token, if applicable"
   index: Int
-
-  "Timestamp, in seconds, when the effects of this staked token expire, if applicable"
-  expirationTime: BigInt
-
-  "Flag is true if `expirationTime` has already been processed by the subgraph"
-  expirationProcessed: Boolean
 }
 
 type Summon @entity {
@@ -438,9 +414,6 @@ type Token @entity {
   owners: [UserToken!]! @derivedFrom(field: "token")
   rarity: Rarity!
   tokenId: BigInt!
-
-  "Boosts for when token is added to a Harvester"
-  harvesterBoosts: [HarvesterTokenBoost!] @derivedFrom(field: "token")
 }
 
 type User @entity {
@@ -510,17 +483,14 @@ type Harvester @entity {
   "Associated staking rules used by the NftHandler and Harvester"
   stakingRules: [HarvesterStakingRule!]! @derivedFrom(field: "harvester")
 
-  "Internal field for tracking the next upcoming Extractor expiration time"
-  _nextExpirationTime: BigInt
-
   "Maximum amount of MAGIC that can be staked"
   maxMagicDeposited: BigInt!
 
-  "Custom Harvester Parts collection addressed used for this Harvester, if applicable"
-  partsAddress: Bytes
+  "Harvester Parts collection addressed used for this Harvester"
+  partsAddress: Bytes!
 
-  "Custom Harvester Parts token ID used for this Harvester, if applicable"
-  partsTokenId: BigInt
+  "Harvester Parts token ID used for this Harvester"
+  partsTokenId: BigInt!
 
   "Maximum number of Harvester Parts that can be staked"
   maxPartsStaked: Int!
@@ -549,35 +519,14 @@ type Harvester @entity {
   "Number of Harvester Parts staked to this Harvester"
   partsStaked: Int!
 
-  "Number of Extractors staked to this Harvester"
-  extractorsStaked: Int!
-
-  "Time, in seconds, that an extractor is active when staked"
-  extractorsLifetime: BigInt!
-
-  "Number of Legions staked to this Harvester"
-  legionsStaked: Int!
-
   "Configurable boost factor for Harvester Parts"
   partsBoostFactor: BigInt!
 
   "Boost value of staked Harvester Parts (1 + ((2n - n^2/maxParts)/maxParts) * partsBoostFactor)"
   partsBoost: BigInt!
 
-  "Boost value of staked Extractors (1 + Boost1 + Boost2 + ... BoostN)"
-  extractorsBoost: BigInt!
-
-  "Total rank value of Legions staked to this Harvester"
-  legionsTotalRank: BigInt!
-
-  "Boost value of staked Legions (1 + ((2n - n^2/maxLegions)/maxLegions) * legionsRankBoost)"
-  legionsBoost: BigInt!
-
   "Options for timelocking deposits to this Harvester"
   timelockOptions: [HarvesterTimelock!]! @derivedFrom(field: "harvester")
-
-  "Boost values for tokens when added to this Harvester"
-  tokenBoosts: [HarvesterTokenBoost!]! @derivedFrom(field: "harvester")
 
   "All tokens staked to this Harvester"
   stakedTokens: [StakedToken!]! @derivedFrom(field: "harvester")
@@ -607,19 +556,9 @@ type HarvesterStakingRule @entity {
 
   "NFT collection associated with this StakingRule"
   nft: Bytes!
-}
 
-type HarvesterTokenBoost @entity {
-  id: ID!
-
-  "Harvester associated with this boost"
-  harvester: Harvester!
-
-  "Token associated with this boost"
-  token: Token!
-
-  "Boost value of the token when added to the associated Harvester"
-  boost: BigInt!
+  "NFT type associated with this StakingRule"
+  type: StakingRule
 }
 
 type HarvesterTimelock @entity {

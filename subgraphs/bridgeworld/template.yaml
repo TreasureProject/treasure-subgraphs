@@ -19,7 +19,7 @@ dataSources:
         - UserToken
       abis:
         - name: AtlasMine
-          file: {{{ abis }}}/AtlasMine.json
+          file: ./abis/AtlasMine.json
       eventHandlers:
         - event: Deposit(indexed address,indexed uint256,uint256,uint8)
           handler: handleDeposit
@@ -37,7 +37,7 @@ dataSources:
     network: {{ network }}
     source:
       address: "{{ consumable_address }}"
-      abi: ERC1155
+      abi: Consumable
       startBlock: {{ consumable_start_block }}
     mapping:
       kind: ethereum/events
@@ -48,13 +48,15 @@ dataSources:
         - User
         - UserToken
       abis:
-        - name: ERC1155
-          file: {{{ abis }}}/1155.json
+        - name: Consumable
+          file: ./abis/Consumable.json
       eventHandlers:
         - event: TransferBatch(indexed address,indexed address,indexed address,uint256[],uint256[])
           handler: handleTransferBatch
         - event: TransferSingle(indexed address,indexed address,indexed address,uint256,uint256)
           handler: handleTransferSingle
+        - event: TokenTraitChanged(uint256,(string,string,string,(string,string,uint8)[]))
+          handler: handleTokenTraitChanged
       file: ./src/mappings/consumable.ts
   - name: Balancer Crystal
     kind: ethereum/contract
@@ -73,7 +75,7 @@ dataSources:
         - UserToken
       abis:
         - name: ERC1155
-          file: {{{ abis }}}/1155.json
+          file: ./abis/ERC1155.json
       eventHandlers:
         - event: TransferBatch(indexed address,indexed address,indexed address,uint256[],uint256[])
           handler: handleTransferBatch
@@ -97,7 +99,7 @@ dataSources:
         - UserToken
       abis:
         - name: Crafting
-          file: {{{ abis }}}/Crafting.json
+          file: ./abis/Crafting.json
       eventHandlers:
         - event: CraftingStarted(indexed address,indexed uint256,indexed uint256,uint256,uint256[],uint8[],uint8)
           handler: handleCraftingStartedWithDifficulty
@@ -125,7 +127,7 @@ dataSources:
         - UserToken
       abis:
         - name: Crafting
-          file: {{{ abis }}}/CraftingLegacy.json
+          file: ./abis/CraftingLegacy.json
       eventHandlers:
         - event: CraftingStarted(indexed address,indexed uint256,indexed uint256,uint256,uint256[],uint8[])
           handler: handleCraftingStartedWithoutDifficulty
@@ -147,7 +149,7 @@ dataSources:
         - UserToken
       abis:
         - name: MiniCrafting
-          file: {{{ abis }}}/MiniCrafting.json
+          file: ./abis/MiniCrafting.json
       eventHandlers:
         - event: CraftingFinished(address,uint256,uint8,uint8,uint256)
           handler: handleCraftingFinished
@@ -169,7 +171,7 @@ dataSources:
         - UserToken
       abis:
         - name: ERC721
-          file: {{{ abis }}}/721.json
+          file: ./abis/ERC721.json
       eventHandlers:
         - event: Transfer(indexed address,indexed address,indexed uint256)
           handler: handleTransfer
@@ -191,7 +193,7 @@ dataSources:
         - UserToken
       abis:
         - name: LegionMetadataStore
-          file: {{{ abis }}}/LegionMetadataStore.json
+          file: ./abis/LegionMetadataStore.json
       eventHandlers:
         - event: LegionConstellationRankUp(indexed uint256,indexed uint8,uint8)
           handler: handleLegionConstellationRankUp
@@ -219,7 +221,7 @@ dataSources:
         - UserToken
       abis:
         - name: ERC1155
-          file: {{{ abis }}}/1155.json
+          file: ./abis/ERC1155.json
       eventHandlers:
         - event: TransferBatch(indexed address,indexed address,indexed address,uint256[],uint256[])
           handler: handleTransferBatch
@@ -243,7 +245,7 @@ dataSources:
         - UserToken
       abis:
         - name: ERC1155
-          file: {{{ abis }}}/1155.json
+          file: ./abis/ERC1155.json
       eventHandlers:
         - event: TransferBatch(indexed address,indexed address,indexed address,uint256[],uint256[])
           handler: handleTransferBatch
@@ -268,9 +270,9 @@ dataSources:
         - UserToken
       abis:
         - name: Pilgrimage
-          file: {{{ abis }}}/Pilgrimage.json
+          file: ./abis/Pilgrimage.json
         - name: ERC1155
-          file: {{{ abis }}}/1155.json
+          file: ./abis/ERC1155.json
       eventHandlers:
         - event: PilgrimagesStarted(indexed address,indexed address,indexed uint256,uint256[],uint256[],uint256[])
           handler: handlePilgrimagesStarted
@@ -296,7 +298,7 @@ dataSources:
         - UserToken
       abis:
         - name: Questing
-          file: {{{ abis }}}/Questing.json
+          file: ./abis/Questing.json
       eventHandlers:
         - event: QuestStarted(indexed address,indexed uint256,indexed uint256,uint256,uint8)
           handler: handleQuestStartedWithDifficulty
@@ -324,7 +326,7 @@ dataSources:
         - UserToken
       abis:
         - name: Questing
-          file: {{{ abis }}}/QuestingLegacy.json
+          file: ./abis/QuestingLegacy.json
       eventHandlers:
         - event: QuestStarted(indexed address,indexed uint256,indexed uint256,uint256)
           handler: handleQuestStartedWithoutDifficulty
@@ -347,11 +349,11 @@ dataSources:
         - UserToken
       abis:
         - name: Randomizer
-          file: {{{ abis }}}/Randomizer.json
+          file: ./abis/Randomizer.json
         - name: Summoning
-          file: {{{ abis }}}/Summoning.json
+          file: ./abis/Summoning.json
         - name: AdvancedQuesting
-          file: {{{ abis }}}/AdvancedQuesting.json
+          file: ./abis/AdvancedQuesting.json
       eventHandlers:
         - event: RandomRequest(indexed uint256,indexed uint256)
           handler: handleRandomRequest
@@ -375,7 +377,7 @@ dataSources:
         - UserToken
       abis:
         - name: Summoning
-          file: {{{ abis }}}/Summoning.json
+          file: ./abis/Summoning.json
       eventHandlers:
         - event: SummoningStarted(indexed address,indexed uint256,indexed uint256,uint256)
           handler: handleSummoningStarted
@@ -399,7 +401,7 @@ dataSources:
         - UserToken
       abis:
         - name: ERC1155
-          file: {{{ abis }}}/1155.json
+          file: ./abis/ERC1155.json
       eventHandlers:
         - event: TransferBatch(indexed address,indexed address,indexed address,uint256[],uint256[])
           handler: handleTransferBatch
@@ -423,7 +425,7 @@ dataSources:
         - UserToken
       abis:
         - name: ERC1155
-          file: {{{ abis }}}/1155.json
+          file: ./abis/ERC1155.json
       eventHandlers:
         - event: TransferBatch(indexed address,indexed address,indexed address,uint256[],uint256[])
           handler: handleTransferBatch
@@ -447,7 +449,7 @@ dataSources:
         - UserToken
       abis:
         - name: AdvancedQuesting
-          file: {{{ abis }}}/AdvancedQuesting.json
+          file: ./abis/AdvancedQuesting.json
       eventHandlers:
         - event: AdvancedQuestStarted(address,uint256,(uint256,string,uint8,uint256[],uint256[]))
           handler: handleAdvancedQuestStarted
@@ -477,7 +479,7 @@ dataSources:
         - UserToken
       abis:
         - name: TreasureTriad
-          file: {{{ abis }}}/TreasureTriad.json
+          file: ./abis/TreasureTriad.json
       eventHandlers:
         - event: TreasureCardInfoSet(uint256,(uint8,uint8,uint8,uint8,uint8))
           handler: handleTreasureCardInfoSet
@@ -498,7 +500,7 @@ dataSources:
         - HarvesterNftHandler
       abis:
         - name: HarvesterFactory
-          file: {{{ abis }}}/HarvesterFactory.json
+          file: ./abis/HarvesterFactory.json
       eventHandlers:
         - event: HarvesterDeployed(address,address)
           handler: handleHarvesterDeployed
@@ -518,7 +520,7 @@ dataSources:
         - Token
       abis:
         - name: RecruitLevel
-          file: {{{ abis }}}/RecruitLevel.json
+          file: ./abis/RecruitLevel.json
       eventHandlers:
         - event: RecruitTypeChanged(indexed uint256,uint8)
           handler: handleRecruitTypeChanged
@@ -547,7 +549,7 @@ templates:
         - Harvester
       abis:
         - name: Harvester
-          file: {{{ abis }}}/Harvester.json
+          file: ./abis/Harvester.json
       eventHandlers:
         - event: Deposit(indexed address,indexed uint256,uint256,uint256)
           handler: handleMagicDeposited
@@ -569,7 +571,7 @@ templates:
         - HarvesterNftHandler
       abis:
         - name: NftHandler
-          file: {{{ abis }}}/NftHandler.json
+          file: ./abis/NftHandler.json
       eventHandlers:
         - event: Staked(indexed address,indexed address,uint256,uint256)
           handler: handleNftStaked
@@ -589,12 +591,10 @@ templates:
         - HarvesterStakingRule
       abis:
         - name: ExtractorsStakingRules
-          file: {{{ abis }}}/ExtractorStakingRules.json
+          file: ./abis/ExtractorStakingRules.json
       eventHandlers:
-        - event: ExtractorReplaced(address,uint256,uint256)
-          handler: handleExtractorReplaced
-        - event: ExtractorStaked(address,uint256,uint256,uint256)
-          handler: handleExtractorStaked
+        - event: MaxStakeable(uint256)
+          handler: handleExtractorMaxStakeableUpdated
       file: ./src/mappings/harvester.ts
   - name: HarvesterConfig
     kind: ethereum/contract
@@ -609,7 +609,7 @@ templates:
         - Harvester
       abis:
         - name: Harvester
-          file: {{{ abis }}}/Harvester.json
+          file: ./abis/Harvester.json
       eventHandlers:
         - event: TotalDepositCap(uint256)
           handler: handleUpdatedMagicTotalDepositCap
@@ -635,17 +635,17 @@ templates:
         - HarvesterNftHandler
       abis:
         - name: NftHandler
-          file: {{{ abis }}}/NftHandler.json
+          file: ./abis/NftHandler.json
         - name: PartsStakingRules
-          file: {{{ abis }}}/PartsStakingRules.json
+          file: ./abis/PartsStakingRules.json
         - name: ExtractorsStakingRules
-          file: {{{ abis }}}/ExtractorStakingRules.json
+          file: ./abis/ExtractorStakingRules.json
         - name: LegionsStakingRules
-          file: {{{ abis }}}/LegionStakingRules.json
+          file: ./abis/LegionStakingRules.json
         - name: TreasuresStakingRules
-          file: {{{ abis }}}/TreasureStakingRules.json
+          file: ./abis/TreasureStakingRules.json
         - name: ERC721StakingRules
-          file: {{{ abis }}}/ERC721StakingRules.json
+          file: ./abis/ERC721StakingRules.json
       eventHandlers:
         - event: NftConfigSet(indexed address,indexed uint256,(uint8,address))
           handler: handleNftConfigSet
@@ -663,7 +663,7 @@ templates:
         - HarvesterStakingRule
       abis:
         - name: PartsStakingRules
-          file: {{{ abis }}}/PartsStakingRules.json
+          file: ./abis/PartsStakingRules.json
       eventHandlers:
         - event: BoostFactor(uint256)
           handler: handleUpdatedPartsBoostFactor
@@ -685,14 +685,10 @@ templates:
         - HarvesterStakingRule
       abis:
         - name: ExtractorsStakingRules
-          file: {{{ abis }}}/ExtractorStakingRules.json
+          file: ./abis/ExtractorStakingRules.json
       eventHandlers:
-        - event: Lifetime(uint256)
-          handler: handleUpdatedExtractorsLifetime
         - event: MaxStakeable(uint256)
           handler: handleUpdatedExtractorsMaxStakeable
-        - event: ExtractorBoost(uint256,uint256)
-          handler: handleUpdatedExtractorsBoost
       file: ./src/mappings/harvester-config.ts
   - name: LegionsStakingRules
     kind: ethereum/contract
@@ -707,7 +703,7 @@ templates:
         - HarvesterStakingRule
       abis:
         - name: LegionsStakingRules
-          file: {{{ abis }}}/LegionStakingRules.json
+          file: ./abis/LegionStakingRules.json
       eventHandlers:
         - event: MaxStakeableTotal(uint256)
           handler: handleUpdatedLegionsMaxStakeableTotal
@@ -727,7 +723,7 @@ templates:
         - HarvesterStakingRule
       abis:
         - name: TreasuresStakingRules
-          file: {{{ abis }}}/TreasureStakingRules.json
+          file: ./abis/TreasureStakingRules.json
       eventHandlers:
         - event: MaxStakeablePerUser(uint256)
           handler: handleUpdatedTreasuresMaxStakeablePerUser
@@ -745,7 +741,7 @@ templates:
         - HarvesterStakingRule
       abis:
         - name: ERC721StakingRules
-          file: {{{ abis }}}/ERC721StakingRules.json
+          file: ./abis/ERC721StakingRules.json
       eventHandlers:
         - event: MaxStakeableTotal(uint256)
           handler: handleUpdatedERC721MaxStakeableTotal

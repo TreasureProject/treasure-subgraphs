@@ -4,7 +4,7 @@ import { ERC20 } from "../../generated/Factory/ERC20";
 import { ERC20NameBytes } from "../../generated/Factory/ERC20NameBytes";
 import { ERC20SymbolBytes } from "../../generated/Factory/ERC20SymbolBytes";
 import { Token } from "../../generated/schema";
-import { NULL_CALL_RESULT_VALUE } from "../helpers/constants";
+import { NULL_CALL_RESULT_VALUE, ZERO_BD, ZERO_BI } from "../helpers/constants";
 import { getFactory } from "./factory";
 
 export function getToken(address: Address): Token | null {
@@ -30,6 +30,12 @@ export function getToken(address: Address): Token | null {
 
     token.whitelistPairs = [];
     token.decimals = decimals;
+    token.volume = ZERO_BD;
+    token.volumeUSD = ZERO_BD;
+    token.untrackedVolumeUSD = ZERO_BD;
+    token.txCount = ZERO_BI;
+    token.liquidity = ZERO_BD;
+    token.derivedETH = ZERO_BD;
 
     token.save();
   }

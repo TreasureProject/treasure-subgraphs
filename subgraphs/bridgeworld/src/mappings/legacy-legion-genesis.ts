@@ -1,10 +1,10 @@
-import { Address, BigInt, log, store } from "@graphprotocol/graph-ts";
+import { Address, BigInt, log } from "@graphprotocol/graph-ts";
 
 import {
   TransferBatch,
   TransferSingle,
 } from "../../generated/Legacy Legion Genesis/ERC1155";
-import { Token, User } from "../../generated/schema";
+import { Token } from "../../generated/schema";
 import { LEGION_IPFS, LEGION_PFP_IPFS } from "../helpers";
 import { getLegacyGenesisLegionImage } from "../helpers/legion";
 import * as common from "../mapping";

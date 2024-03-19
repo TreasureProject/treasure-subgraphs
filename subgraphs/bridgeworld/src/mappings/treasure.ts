@@ -1,10 +1,10 @@
-import { Address, BigInt, log, store } from "@graphprotocol/graph-ts";
+import { Address, BigInt, log } from "@graphprotocol/graph-ts";
 
 import {
   TransferBatch,
   TransferSingle,
 } from "../../generated/Treasure/ERC1155";
-import { Token, TreasureInfo, User } from "../../generated/schema";
+import { Token, TreasureInfo } from "../../generated/schema";
 import { getAddressId, isMint } from "../helpers";
 import * as common from "../mapping";
 
@@ -184,6 +184,11 @@ export function handleTransferBatch(event: TransferBatch): void {
     let id = params.ids[index];
     let value = params.values[index];
 
+    // Ignore bad token ID inputs
+    if (id.gt(BigInt.fromI32(1000))) {
+      return;
+    }
+
     if (getTier(id.toI32()) == 0) {
       continue;
     }
@@ -198,6 +203,11 @@ export function handleTransferBatch(event: TransferBatch): void {
 
 export function handleTransferSingle(event: TransferSingle): void {
   let params = event.params;
+
+  // Ignore bad token ID inputs
+  if (params.id.gt(BigInt.fromI32(1000))) {
+    return;
+  }
 
   if (getTier(params.id.toI32()) == 0) {
     return;

@@ -17,7 +17,7 @@ dataSources:
         - Approval
       abis:
         - name: ERC1155
-          file: {{{ abis }}}/1155.json
+          file: ./abis/ERC1155.json
       eventHandlers:
         - event: ApprovalForAll(indexed address,indexed address,bool)
           handler: handleApprovalERC1155
@@ -37,7 +37,7 @@ dataSources:
         - Approval
       abis:
         - name: ERC1155
-          file: {{{ abis }}}/1155.json
+          file: ./abis/ERC1155.json
       eventHandlers:
         - event: ApprovalForAll(indexed address,indexed address,bool)
           handler: handleApprovalERC1155
@@ -57,7 +57,7 @@ dataSources:
         - Approval
       abis:
         - name: ERC721
-          file: {{{ abis }}}/721.json
+          file: ./abis/ERC721.json
       eventHandlers:
         - event: ApprovalForAll(indexed address,indexed address,bool)
           handler: handleApprovalERC721
@@ -77,7 +77,7 @@ dataSources:
         - Approval
       abis:
         - name: ERC1155
-          file: {{{ abis }}}/1155.json
+          file: ./abis/ERC1155.json
       eventHandlers:
         - event: ApprovalForAll(indexed address,indexed address,bool)
           handler: handleApprovalERC1155
@@ -97,7 +97,7 @@ dataSources:
         - Approval
       abis:
         - name: ERC1155
-          file: {{{ abis }}}/1155.json
+          file: ./abis/ERC1155.json
       eventHandlers:
         - event: ApprovalForAll(indexed address,indexed address,bool)
           handler: handleApprovalERC1155
@@ -117,7 +117,7 @@ dataSources:
         - Approval
       abis:
         - name: ERC20
-          file: {{{ abis }}}/20.json
+          file: ./abis/ERC20.json
       eventHandlers:
         - event: Approval(indexed address,indexed address,uint256)
           handler: handleApprovalERC20
@@ -137,7 +137,7 @@ dataSources:
         - Approval
       abis:
         - name: ERC1155
-          file: {{{ abis }}}/1155.json
+          file: ./abis/ERC1155.json
       eventHandlers:
         - event: ApprovalForAll(indexed address,indexed address,bool)
           handler: handleApprovalERC1155
@@ -157,7 +157,7 @@ dataSources:
         - Approval
       abis:
         - name: ERC1155
-          file: {{{ abis }}}/1155.json
+          file: ./abis/ERC1155.json
       eventHandlers:
         - event: ApprovalForAll(indexed address,indexed address,bool)
           handler: handleApprovalERC1155
@@ -177,7 +177,7 @@ dataSources:
         - Approval
       abis:
         - name: ERC721
-          file: {{{ abis }}}/721.json
+          file: ./abis/ERC721.json
       eventHandlers:
         - event: ApprovalForAll(indexed address,indexed address,bool)
           handler: handleApprovalERC721
@@ -197,7 +197,7 @@ dataSources:
         - Approval
       abis:
         - name: ERC1155
-          file: {{{ abis }}}/1155.json
+          file: ./abis/ERC1155.json
       eventHandlers:
         - event: ApprovalForAll(indexed address,indexed address,bool)
           handler: handleApprovalERC1155
@@ -217,7 +217,27 @@ dataSources:
         - Approval
       abis:
         - name: ERC1155
-          file: {{{ abis }}}/1155.json
+          file: ./abis/ERC1155.json
+      eventHandlers:
+        - event: ApprovalForAll(indexed address,indexed address,bool)
+          handler: handleApprovalERC1155
+      file: ./src/mapping.ts
+  - name: Beacon
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ beacon_address }}"
+      abi: ERC1155
+      startBlock: {{ corruption_crypts_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Approval
+      abis:
+        - name: ERC1155
+          file: ./abis/ERC1155.json
       eventHandlers:
         - event: ApprovalForAll(indexed address,indexed address,bool)
           handler: handleApprovalERC1155

@@ -11,7 +11,6 @@ import {
   AtlasMine,
   Deposit,
   StakedToken,
-  User,
   Withdraw,
 } from "../../generated/schema";
 import { LOCK_PERIOD_IN_SECONDS } from "../helpers";
@@ -62,7 +61,6 @@ export function handleStaked(event: Staked): void {
     stakedToken.quantity = BigInt.zero();
     stakedToken.token = addressId;
     stakedToken.user = user.id;
-    stakedToken.expirationProcessed = false;
   }
 
   stakedToken.quantity = stakedToken.quantity.plus(quantity);

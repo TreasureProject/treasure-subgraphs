@@ -40,11 +40,20 @@ type Config @entity {
   "Current round start time"
   cryptsRoundStartTime: BigInt!
 
+  "Amount of time from round start before a Crypts round can be manually advanced, in seconds"
+  cryptsTimeToAllowManualRoundReset: BigInt
+
+  "Percentage of staked Legions that must reach temples before round advances"
+  cryptsRoundAdvancePercentage: Int!
+
   "Number of seconds per epoch"
   cryptsSecondsInEpoch: BigInt!
 
   "Amount of time before a Legion squad can be unstaked, in seconds"
   cryptsLegionsUnstakeCooldown: BigInt!
+
+  "Number of Legions playing Crypts"
+  cryptsLegionsActive: Int!
 
   "Number of Legions that have reached a temple in the current round"
   cryptsLegionsReachedTemple: Int!
@@ -274,7 +283,7 @@ type CryptsCharacterHandler @entity {
   address: Bytes!
 }
 
-type CryptsSquadCharacter @entity(immutable: true) {
+type CryptsSquadCharacter @entity {
   id: Bytes!
 
   "Character NFT address"
@@ -282,6 +291,9 @@ type CryptsSquadCharacter @entity(immutable: true) {
 
   "Character NFT token ID"
   tokenId: Int!
+
+  "Character position within squad"
+  index: Int!
 }
 
 type CryptsUserMapTile @entity {

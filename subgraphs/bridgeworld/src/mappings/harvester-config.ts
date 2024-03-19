@@ -1,4 +1,4 @@
-import { Address, BigInt, Bytes, log } from "@graphprotocol/graph-ts";
+import { Address, log } from "@graphprotocol/graph-ts";
 
 import {
   CONSUMABLE_ADDRESS,
@@ -10,7 +10,6 @@ import {
   Harvester,
   HarvesterStakingRule,
   HarvesterTimelock,
-  Token,
 } from "../../generated/schema";
 import {
   ERC721StakingRules,
@@ -26,9 +25,7 @@ import {
   ERC721StakingRules as ERC721StakingRulesContract,
 } from "../../generated/templates/ERC721StakingRules/ERC721StakingRules";
 import {
-  ExtractorBoost,
   ExtractorsStakingRules as ExtractorsStakingRulesContract,
-  Lifetime,
   MaxStakeable,
 } from "../../generated/templates/ExtractorsStakingRulesConfig/ExtractorsStakingRules";
 import {
@@ -50,13 +47,8 @@ import {
   PartsStakingRules as PartsStakingRulesContract,
 } from "../../generated/templates/PartsStakingRules/PartsStakingRules";
 import { TreasuresStakingRules as TreasuresStakingRulesContract } from "../../generated/templates/TreasuresStakingRules/TreasuresStakingRules";
+import { HARVESTER_EXTRACTOR_TOKEN_IDS } from "../helpers";
 import {
-  HARVESTER_EXTRACTOR_TOKEN_IDS,
-  HARVESTER_PART_TOKEN_ID,
-  getAddressId,
-} from "../helpers";
-import {
-  createOrUpdateHarvesterTokenBoost,
   getHarvester,
   getHarvesterForNftHandler,
   getHarvesterForStakingRule,
@@ -145,41 +137,45 @@ export function handleNftConfigSet(event: NftConfigSet): void {
 
   // Create StakingRule entity
   const stakingRulesAddress = params._nftConfig.stakingRules;
+  const tokenId = params._tokenId;
+  // Determine the type of StakingRule and start listening for events at this address
+  // Pull initial rules from the contract because we weren't listening for init events
   const stakingRule = new HarvesterStakingRule(stakingRulesAddress);
   stakingRule.harvester = harvester.id;
   stakingRule.nft = nftAddress;
-  stakingRule.save();
+  stakingRule.type = "Unknown";
 
-  const tokenId = params._tokenId;
-
-  // Determine the type of StakingRule and start listening for events at this address
-  // Pull initial rules from the contract because we weren't listening for init events
-  const partsAddress = harvester.partsAddress || CONSUMABLE_ADDRESS;
-  const partsTokenId = harvester.partsTokenId || HARVESTER_PART_TOKEN_ID;
   if (
-    nftAddress.equals(partsAddress as Bytes) &&
-    tokenId.equals(partsTokenId as BigInt)
+    nftAddress.equals(harvester.partsAddress) &&
+    tokenId.equals(harvester.partsTokenId)
   ) {
+    stakingRule.type = "Parts";
     PartsStakingRules.create(stakingRulesAddress);
     processPartsStakingRules(stakingRulesAddress, harvester);
   } else if (
     nftAddress.equals(CONSUMABLE_ADDRESS) &&
     HARVESTER_EXTRACTOR_TOKEN_IDS.includes(tokenId)
   ) {
+    stakingRule.type = "Extractors";
     ExtractorsStakingRulesConfig.create(stakingRulesAddress);
     ExtractorsStakingRules.create(stakingRulesAddress);
     processExtractorsStakingRules(stakingRulesAddress, harvester);
   } else if (nftAddress.equals(LEGION_ADDRESS)) {
+    stakingRule.type = "Legions";
     LegionsStakingRules.create(stakingRulesAddress);
     processLegionsStakingRules(stakingRulesAddress, harvester);
   } else if (nftAddress.equals(TREASURE_ADDRESS)) {
+    stakingRule.type = "Treasures";
     TreasuresStakingRules.create(stakingRulesAddress);
     processTreasuresStakingRules(stakingRulesAddress, harvester);
   } else if (params._nftConfig.supportedInterface == 1) {
     // ERC721
+    stakingRule.type = "ERC721";
     ERC721StakingRules.create(stakingRulesAddress);
     processERC721StakingRules(stakingRulesAddress, harvester);
   }
+
+  stakingRule.save();
 }
 
 const processPartsStakingRules = (
@@ -221,46 +217,15 @@ const processExtractorsStakingRules = (
   harvester: Harvester
 ): void => {
   const contract = ExtractorsStakingRulesContract.bind(address);
-
-  let result = contract.try_lifetime();
-  if (!result.reverted) {
-    harvester.extractorsLifetime = result.value;
-  } else {
-    log.error("Error fetching Extractors lifetime: {}", [
-      address.toHexString(),
-    ]);
-  }
-
-  result = contract.try_maxStakeable();
+  const result = contract.try_maxStakeable();
   if (!result.reverted) {
     harvester.maxExtractorsStaked = result.value.toI32();
+    harvester.save();
   } else {
     log.error("Error fetching Extractors max stakeable: {}", [
       address.toHexString(),
     ]);
   }
-
-  for (let i = 4; i <= 6; i++) {
-    const token = Token.load(
-      getAddressId(CONSUMABLE_ADDRESS, BigInt.fromI32(i))
-    );
-    if (!token) {
-      log.error("Error fetching Extractor token: {}", [i.toString()]);
-      continue;
-    }
-
-    result = contract.try_extractorBoost(BigInt.fromI32(i));
-    if (!result.reverted) {
-      createOrUpdateHarvesterTokenBoost(harvester, token, result.value);
-    } else {
-      log.error("Error fetching Extractor boost: {}, {}", [
-        i.toString(),
-        address.toHexString(),
-      ]);
-    }
-  }
-
-  harvester.save();
 };
 
 const processLegionsStakingRules = (
@@ -365,16 +330,6 @@ export function handleUpdatedPartsStakeableTotal(
   harvester.save();
 }
 
-export function handleUpdatedExtractorsLifetime(event: Lifetime): void {
-  const harvester = getHarvesterForStakingRule(event.address);
-  if (!harvester) {
-    return;
-  }
-
-  harvester.extractorsLifetime = event.params.lifetime;
-  harvester.save();
-}
-
 export function handleUpdatedExtractorsMaxStakeable(event: MaxStakeable): void {
   const harvester = getHarvesterForStakingRule(event.address);
   if (!harvester) {
@@ -383,27 +338,6 @@ export function handleUpdatedExtractorsMaxStakeable(event: MaxStakeable): void {
 
   harvester.maxExtractorsStaked = event.params.maxStakeable.toI32();
   harvester.save();
-}
-
-export function handleUpdatedExtractorsBoost(event: ExtractorBoost): void {
-  const harvester = getHarvesterForStakingRule(event.address);
-  if (!harvester) {
-    return;
-  }
-
-  const params = event.params;
-
-  const token = Token.load(getAddressId(CONSUMABLE_ADDRESS, params.tokenId));
-  if (!token) {
-    log.error("Error fetching Extractor token: {}", [
-      params.tokenId.toString(),
-    ]);
-    return;
-  }
-
-  createOrUpdateHarvesterTokenBoost(harvester, token, params.boost);
-
-  // TODO: Re-calculate Harvester extractors boost?
 }
 
 export function handleUpdatedLegionsMaxStakeableTotal(

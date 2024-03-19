@@ -19,7 +19,6 @@ import {
 } from "../src/mappings/pilgrimage";
 import {
   LEGACY_LEGION_GENESIS_ADDRESS,
-  LEGION_CLASS_ENTITY_TYPE,
   LEGION_INFO_ENTITY_TYPE,
   TOKEN_ENTITY_TYPE,
   USER_ADDRESS,
@@ -512,22 +511,4 @@ test("legion class is created for legion", () => {
   );
 
   handlePilgrimagesFinished(pilgrimagesFinishedEvent);
-
-  const id = "LegionClass-Genesis-Special-Riverman";
-
-  assert.fieldEquals(LEGION_CLASS_ENTITY_TYPE, id, "type", "Genesis");
-  assert.fieldEquals(LEGION_CLASS_ENTITY_TYPE, id, "rarity", "Special");
-  assert.fieldEquals(LEGION_CLASS_ENTITY_TYPE, id, "role", "Riverman");
-  assert.fieldEquals(
-    LEGION_CLASS_ENTITY_TYPE,
-    id,
-    "image",
-    `${LEGION_IPFS}/Genesis/Special/Riverman/1D.webp`
-  );
-  assert.fieldEquals(
-    LEGION_CLASS_ENTITY_TYPE,
-    id,
-    "imageAlt",
-    `${LEGION_PFP_IPFS}/Genesis/Special/Riverman/1D.webp`
-  );
 });

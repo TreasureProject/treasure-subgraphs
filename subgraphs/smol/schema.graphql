@@ -1,0 +1,70 @@
+enum Gender {
+  Unset
+  Male
+  Female
+}
+
+type Trait @entity {
+  id: Bytes!
+
+  traitId: Int!
+  gender: Gender!
+  traitName: String!
+  traitType: String!
+  isDetachable: Boolean!
+
+  dependencyLevels: [TraitDependency!]! @derivedFrom(field: "trait")
+  backgroundRecipes: [Recipe!]! @derivedFrom(field: "background")
+  bodyRecipes: [Recipe!]! @derivedFrom(field: "body")
+  clothesRecipes: [Recipe!]! @derivedFrom(field: "clothes")
+  mouthRecipes: [Recipe!]! @derivedFrom(field: "mouth")
+  glassesRecipes: [Recipe!]! @derivedFrom(field: "glasses")
+  hatRecipes: [Recipe!]! @derivedFrom(field: "hat")
+  hairRecipes: [Recipe!]! @derivedFrom(field: "hair")
+  skinRecipes: [Recipe!]! @derivedFrom(field: "skin")
+}
+
+type TraitDependency @entity {
+  id: Bytes!
+
+  trait: Trait!
+  dependencyLevel: Int!
+  maleImage: String!
+  femaleImage: String!
+}
+
+type Season @entity {
+  id: Bytes!
+
+  seasonId: BigInt!
+  name: String!
+  isActive: Boolean!
+  recipes: [Recipe!]! @derivedFrom(field: "season")
+}
+
+type Recipe @entity {
+  id: Bytes!
+
+  recipeId: BigInt!
+  season: Season!
+
+  # Traits
+  background: Trait
+  body: Trait
+  clothes: Trait
+  mouth: Trait
+  glasses: Trait
+  hat: Trait
+  hair: Trait
+  skin: Trait
+  gender: Int!
+  headSize: Int!
+
+  image: String!
+  minted: Boolean!
+
+  # Cost
+  smolCost: Int!
+  treasureCost: Int!
+  treasureTokenId: Int!
+}

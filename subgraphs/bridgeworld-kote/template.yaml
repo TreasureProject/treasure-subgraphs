@@ -17,7 +17,7 @@ dataSources:
         - Squire
       abis:
         - name: KoteSquires
-          file: {{{ abis }}}/KoteSquires.json
+          file: ./abis/KoteSquires.json
       eventHandlers:
         - event: Transfer(indexed address,indexed address,indexed uint256)
           handler: handleTransfer
@@ -38,7 +38,7 @@ dataSources:
         - UserItem
       abis:
         - name: ERC1155
-          file: {{{ abis }}}/1155.json
+          file: ./abis/ERC1155.json
       eventHandlers:
         - event: TransferSingle(indexed address,indexed address,indexed address,uint256,uint256)
           handler: handleItemTransfer
@@ -59,7 +59,7 @@ dataSources:
         - UserItem
       abis:
         - name: ERC1155
-          file: {{{ abis }}}/1155.json
+          file: ./abis/ERC1155.json
       eventHandlers:
         - event: TransferSingle(indexed address,indexed address,indexed address,uint256,uint256)
           handler: handleItemTransfer

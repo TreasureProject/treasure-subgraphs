@@ -7,8 +7,6 @@ export const DIFFICULTY = [
   "PrismUpgradeSmallToMedium",
   "PrismUpgradeMediumToLarge",
 ];
-export const CONSUMABLE_IPFS =
-  "ipfs://QmcaPZXaxeHuQBFM55HjxnWnGkmVr1Ax5pU52c1evw6h1Q";
 export const LEGION_IPFS =
   "ipfs://QmUAkX9dKHzyUqvxfjqBb8zrGxkU3XdqXBFyrs17qbpFZo";
 export const LEGION_NO_BACKGROUND_IPFS =

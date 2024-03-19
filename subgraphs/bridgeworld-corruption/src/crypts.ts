@@ -21,18 +21,23 @@ import {
 import {
   CharacterHandlerSet,
   LegionSquadStaked as CharacterSquadStaked,
+  CorruptionCryptsV2,
+  RoundAdvancePercentageUpdated,
+  TimeToAllowManualRoundResetUpdated,
+  TreasureTierChanged,
 } from "../generated/CorruptionCryptsV2/CorruptionCryptsV2";
 import {
   CryptsMapTile,
   CryptsSquad,
+  CryptsSquadCharacter,
   CryptsTemple,
   CryptsUserMapTile,
 } from "../generated/schema";
 import {
   bytesFromBigInt,
+  calculateMaxLegionsInTemple,
   getOrCreateBoardTreasureFragment,
   getOrCreateConfig,
-  getOrCreateCryptsSquadCharacter,
   getOrCreateUser,
   updateCharacterHandler,
 } from "./helpers";
@@ -42,8 +47,6 @@ export function handleConfigUpdated(event: ConfigUpdated): void {
   const config = getOrCreateConfig();
   config.cryptsSecondsInEpoch = params.secondsInEpoch;
   config.cryptsLegionsUnstakeCooldown = params.legionUnstakeCooldown;
-  config.maxLegionsInCryptsTemple =
-    params.numLegionsReachedTempleToAdvanceRound.toI32();
   config.maxCryptsSquadsPerUser = params.maximumLegionSquadsOnBoard.toI32();
   config.maxLegionsPerCryptsSquad = params.maximumLegionsInSquad.toI32();
   config.maxCryptsMapTilesInHand = params.maxMapTilesInHand.toI32();
@@ -90,19 +93,11 @@ const handleSquadStaked = (
   characterCollections: Address[],
   characterTokenIds: BigInt[]
 ): void => {
-  const temple = CryptsTemple.load(Bytes.fromI32(targetTemple));
-  if (!temple) {
-    log.error("[crypts] Squad staked targeting unknown temple: {}", [
-      targetTemple.toString(),
-    ]);
-    return;
-  }
-
   const squad = new CryptsSquad(bytesFromBigInt(squadId));
   squad.squadId = squadId;
   squad.user = getOrCreateUser(user).id;
   squad.stakedTimestamp = timestamp;
-  squad.targetTemple = temple.id;
+  squad.targetTemple = Bytes.fromI32(targetTemple);
   squad.name = squadName;
   squad.positionX = -1;
   squad.positionY = -1;
@@ -110,16 +105,28 @@ const handleSquadStaked = (
 
   let characters: Bytes[] = [];
   for (let i = 0; i < characterCollections.length; i += 1) {
-    characters.push(
-      getOrCreateCryptsSquadCharacter(
-        characterCollections[i],
-        characterTokenIds[i]
-      ).id
+    const characterId = characterCollections[i].concat(
+      Bytes.fromI32(characterTokenIds[i].toI32())
     );
+    let character = CryptsSquadCharacter.load(characterId);
+    if (!character) {
+      character = new CryptsSquadCharacter(characterId);
+      character.collection = characterCollections[i];
+      character.tokenId = characterTokenIds[i].toI32();
+    }
+
+    character.index = i;
+    character.save();
+    characters.push(characterId);
   }
 
   squad.characters = characters;
   squad.save();
+
+  const config = getOrCreateConfig();
+  config.cryptsLegionsActive += characters.length;
+  config.maxLegionsInCryptsTemple = calculateMaxLegionsInTemple(config);
+  config.save();
 };
 
 export function handleLegionSquadStaked(event: LegionSquadStaked): void {
@@ -164,10 +171,11 @@ export function handleLegionSquadMoved(event: LegionSquadMoved): void {
 }
 
 export function handleLegionSquadRemoved(event: LegionSquadRemoved): void {
-  const squad = CryptsSquad.load(bytesFromBigInt(event.params._legionSquadId));
+  const params = event.params;
+  const squad = CryptsSquad.load(bytesFromBigInt(params._legionSquadId));
   if (!squad) {
     log.error("[crypts] Removing unknown Legion squad: {}", [
-      event.params._legionSquadId.toString(),
+      params._legionSquadId.toString(),
     ]);
     return;
   }
@@ -186,6 +194,18 @@ export function handleLegionSquadUnstaked(event: LegionSquadUnstaked): void {
     config.cryptsLegionsUnstakeCooldown
   );
   user.save();
+
+  const squad = CryptsSquad.load(bytesFromBigInt(params._legionSquadId));
+  if (!squad) {
+    log.error("[crypts] Unstaking unknown Legion squad: {}", [
+      params._legionSquadId.toString(),
+    ]);
+    return;
+  }
+
+  config.cryptsLegionsActive -= squad.characters.length;
+  config.maxLegionsInCryptsTemple = calculateMaxLegionsInTemple(config);
+  config.save();
 
   store.remove(
     "CryptsSquad",
@@ -277,6 +297,16 @@ export function handleMapTileRemovedFromHand(
   }
 }
 
+export function handleRoundAdvancePercentageUpdated(
+  event: RoundAdvancePercentageUpdated
+): void {
+  const config = getOrCreateConfig();
+  config.cryptsRoundAdvancePercentage =
+    event.params._percentageToReachForRoundAdvancement.toI32();
+  config.maxLegionsInCryptsTemple = calculateMaxLegionsInTemple(config);
+  config.save();
+}
+
 export function handleTempleEntered(event: TempleEntered): void {
   const params = event.params;
   const squad = CryptsSquad.load(bytesFromBigInt(params._legionSquadId));
@@ -295,9 +325,34 @@ export function handleTempleEntered(event: TempleEntered): void {
   config.save();
 }
 
+export function handleTimeToAllowManualRoundResetUpdated(
+  event: TimeToAllowManualRoundResetUpdated
+): void {
+  const config = getOrCreateConfig();
+  config.cryptsTimeToAllowManualRoundReset =
+    event.params._timeToAllowManualRoundReset;
+  config.save();
+}
+
 export function handleTreasureClaimed(event: TreasureClaimed): void {
   const boardTreasureFragment = getOrCreateBoardTreasureFragment();
   boardTreasureFragment.numClaimed +=
     event.params._treasureFragmentsEmitted.toI32();
+  boardTreasureFragment.save();
+}
+
+export function handleTreasureTierChanged(event: TreasureTierChanged): void {
+  const contract = CorruptionCryptsV2.bind(event.address);
+  const boardTreasureData = contract.try_generateBoardTreasure();
+  if (boardTreasureData.reverted) {
+    log.error(
+      "Error reading board Treasure position on tier changed event",
+      []
+    );
+    return;
+  }
+
+  const boardTreasureFragment = getOrCreateBoardTreasureFragment();
+  boardTreasureFragment.tokenId = boardTreasureData.value.correspondingId;
   boardTreasureFragment.save();
 }

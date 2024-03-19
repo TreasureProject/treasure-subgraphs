@@ -1,7 +1,10 @@
 import { BigInt, Bytes, ethereum } from "@graphprotocol/graph-ts";
 
 class Parsed {
-  constructor(public tokenIds: BigInt[], public prismIds: BigInt[]) {}
+  constructor(
+    public tokenIds: BigInt[],
+    public prismIds: BigInt[]
+  ) {}
 }
 
 const OFFSET: i32 = 1 * 32;
