@@ -5,11 +5,6 @@ import {
   RandomSeeded,
 } from "../../generated/Randomizer/Randomizer";
 import { Craft, Random, Seeded } from "../../generated/schema";
-import { runScheduledJobs } from "../helpers/cron";
-
-function toI32(value: string): i32 {
-  return parseInt(value, 16) as i32;
-}
 
 export function handleRandomRequest(event: RandomRequest): void {
   const params = event.params;
@@ -62,7 +57,4 @@ export function handleRandomSeeded(event: RandomSeeded): void {
       continue;
     }
   }
-
-  // Every time a random is seeded (~5 min), check scheduled jobs
-  runScheduledJobs(event.block.timestamp);
 }

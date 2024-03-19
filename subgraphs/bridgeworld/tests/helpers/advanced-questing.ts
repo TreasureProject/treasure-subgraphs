@@ -221,20 +221,3 @@ export function createTreasureTriadPlayedEvent(
 
   return changetype<TreasureTriadPlayed>(newEvent);
 }
-
-export function mockEndTimeForLegion(
-  legionId: i32,
-  endTime: i64,
-  stasisHitCount: i32
-): void {
-  createMockedFunction(
-    ADVANCED_QUESTING_ADDRESS,
-    "endTimeForLegion",
-    "endTimeForLegion(uint256):(uint256,uint8)"
-  )
-    .withArgs([ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(legionId))])
-    .returns([
-      ethereum.Value.fromUnsignedBigInt(BigInt.fromI64(endTime)),
-      ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(stasisHitCount)),
-    ]);
-}
