@@ -19,9 +19,9 @@ dataSources:
         - VaultCollection
       abis:
         - name: NftVaultFactory
-          file: {{{ abis }}}/magicswapv2/NftVaultFactory.json
+          file: ./abis/NftVaultFactory.json
         - name: ERC20
-          file: {{{ abis }}}/20.json
+          file: ./abis/ERC20.json
       eventHandlers:
         - event: VaultCreated(string,string,indexed address,indexed uint256,(address,uint8,bool,uint256[])[],address)
           handler: handleVaultCreated
@@ -41,9 +41,9 @@ dataSources:
         - Pair
       abis:
         - name: UniswapV2Factory
-          file: {{{ abis }}}/magicswapv2/UniswapV2Factory.json
+          file: ./abis/UniswapV2Factory.json
         - name: ERC20
-          file: {{{ abis }}}/20.json
+          file: ./abis/ERC20.json
       eventHandlers:
         - event: DefaultFeesSet((uint256,uint256))
           handler: handleDefaultFeesSet
@@ -73,7 +73,7 @@ dataSources:
         - Factory
       abis:
         - name: ChainlinkAggregator
-          file: {{{ abis }}}/ChainlinkAggregator.json
+          file: ./abis/ChainlinkAggregator.json
       eventHandlers:
         - event: AnswerUpdated(indexed int256,indexed uint256,uint256)
           handler: handleMagicUSDUpdated
@@ -92,7 +92,7 @@ templates:
         - Pair
       abis:
         - name: UniswapV2Pair
-          file: {{{ abis }}}/magicswapv2/UniswapV2Pair.json
+          file: ./abis/UniswapV2Pair.json
       eventHandlers:
         - event: Burn(indexed address,uint256,uint256,indexed address)
           handler: handleBurn
@@ -118,7 +118,7 @@ templates:
         - Token
       abis:
         - name: NftVault
-          file: {{{ abis }}}/magicswapv2/NftVault.json
+          file: ./abis/NftVault.json
       eventHandlers:
         - event: Deposit(indexed address,indexed address,uint256,uint256)
           handler: handleDeposit

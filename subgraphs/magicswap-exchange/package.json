@@ -1,7 +1,7 @@
 {
   "name": "magicswap-exchange",
   "version": "1.0.0",
-  "description": "Subgraph that powers Magicswap exchange functionality",
+  "description": "Subgraph that powers Magicswap",
   "license": "MIT",
   "scripts": {
     "codegen": "graph codegen",
