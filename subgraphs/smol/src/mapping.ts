@@ -15,6 +15,11 @@ import {
   SmolRecipeDeleted,
   SmolTransmolgrified,
 } from "../generated/Transmolgrifier/Transmolgrifier";
+import {
+  SmolRecipeAdded as SmolRecipeAddedV3,
+  SmolRecipeAdjusted as SmolRecipeAdjustedV3,
+  SmolTransmolgrified as SmolTransmolgrifiedV3,
+} from "../generated/TransmolgrifierV3/TransmolgrifierV3";
 import { Recipe, Season, Trait, TraitDependency } from "../generated/schema";
 
 const GENDERS = ["Unset", "Male", "Female"];
@@ -200,6 +205,8 @@ export function handleRecipeAdded(event: SmolRecipeAdded): void {
   );
 }
 
+export function handleRecipeAddedV3(event: SmolRecipeAddedV3): void {}
+
 export function handleRecipeAdjusted(event: SmolRecipeAdjusted): void {
   const params = event.params;
   const data = params.smolData;
@@ -222,6 +229,8 @@ export function handleRecipeAdjusted(event: SmolRecipeAdjusted): void {
     data.treasureId
   );
 }
+
+export function handleRecipeAdjustedV3(event: SmolRecipeAdjustedV3): void {}
 
 export function handleRecipeDeleted(event: SmolRecipeDeleted): void {
   const params = event.params;
@@ -248,6 +257,13 @@ export function handleSeasonTextUpdated(event: SeasonTextUpdated): void {
 }
 
 export function handleTransmolgrified(event: SmolTransmolgrified): void {
+  const params = event.params;
+  const recipe = getOrCreateRecipe(params.seasonId, params.smolRecipeId);
+  recipe.minted = true;
+  recipe.save();
+}
+
+export function handleTransmolgrifiedV3(event: SmolTransmolgrifiedV3): void {
   const params = event.params;
   const recipe = getOrCreateRecipe(params.seasonId, params.smolRecipeId);
   recipe.minted = true;

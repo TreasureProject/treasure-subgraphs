@@ -84,3 +84,38 @@ dataSources:
         - event: SmolRecipeAdjusted(uint256,uint256,((uint24,uint24,uint24,uint24,uint24,uint24,uint24,uint24,uint8,uint8),bool,uint8,uint16,uint16))
           handler: handleRecipeAdjusted
       file: ./src/mapping.ts
+  - name: TransmolgrifierV3
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ transmolgrifier_v3_address }}"
+      abi: TransmolgrifierV3
+      startBlock: {{ transmolgrifier_v3_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Recipe
+        - Season
+        - Trait
+      abis:
+        - name: TransmolgrifierV3
+          file: ./abis/TransmolgrifierV3.json
+        - name: SmolRenderer
+          file: ./abis/SmolRenderer.json
+      eventHandlers:
+        - event: SmolRecipeAdded(uint256,uint256,(bool,(uint24,uint24,uint24,uint24,uint24,uint24,uint24,uint24,uint8,uint8),(uint8,uint16,uint8,address)[]))
+          handler: handleRecipeAddedV3
+        - event: SmolRecipeAdjusted(uint256,uint256,(bool,(uint24,uint24,uint24,uint24,uint24,uint24,uint24,uint24,uint8,uint8),(uint8,uint16,uint8,address)[]))
+          handler: handleRecipeAdjustedV3
+        - event: SmolRecipeDeleted(uint256,uint256)
+          handler: handleRecipeDeleted
+        - event: SeasonStateUpdated(uint256,bool)
+          handler: handleSeasonStateUpdated
+        - event: SeasonTextUpdated(uint256,string)
+          handler: handleSeasonTextUpdated
+        - event: SmolTransmolgrified(uint256,uint256,uint256)
+          handler: handleTransmolgrifiedV3
+      file: ./src/mapping.ts
+
