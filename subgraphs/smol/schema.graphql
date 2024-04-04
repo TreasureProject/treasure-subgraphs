@@ -4,6 +4,11 @@ enum Gender {
   Female
 }
 
+enum RecipeCostType {
+  ERC20
+  ERC1155
+}
+
 type Trait @entity {
   id: Bytes!
 
@@ -42,6 +47,17 @@ type Season @entity {
   recipes: [Recipe!]! @derivedFrom(field: "season")
 }
 
+type RecipeCost @entity {
+  id: Bytes!
+
+  recipe: Recipe!
+
+  type: RecipeCostType!
+  address: Bytes!
+  tokenId: Int!
+  amount: Int!
+}
+
 type Recipe @entity {
   id: Bytes!
 
@@ -64,7 +80,5 @@ type Recipe @entity {
   minted: Boolean!
 
   # Cost
-  smolCost: Int!
-  treasureCost: Int!
-  treasureTokenId: Int!
+  costs: [RecipeCost!]! @derivedFrom(field: "recipe")
 }

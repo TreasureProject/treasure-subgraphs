@@ -62,6 +62,11 @@ export const TREASURE_FRAGMENT_ADDRESS = Address.fromString(
   "{{treasure_fragment_address}}{{^treasure_fragment_address}}{{burner_address}}{{/treasure_fragment_address}}"
 );
 
+// SMOL
+export const SMOL_TREASURES_ADDRESS = Address.fromString(
+  "{{smol_treasures_address}}{{^smol_treasures_address}}{{burner_address}}{{/smol_treasures_address}}"
+);
+
 // MagicSwap
 export const MAGICSWAP_FACTORY_ADDRESS = Address.fromString(
   "{{magicswap_factory_address}}{{^magicswap_factory_address}}{{burner_address}}{{/magicswap_factory_address}}"

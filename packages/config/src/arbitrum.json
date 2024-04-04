@@ -62,6 +62,7 @@
   "kote_trinkets_start_block": 12959211,
   "beacon_address": "0x990eb28e378659b93a29d46ff41f08dc6316dd98",
 
+  "smol_treasures_address": "0xc5295c6a183f29b7c962df076819d44e0076860e",
   "smols_trait_storage_address": "0x764C01513ee52A9D56c189a9E98Fb24F8088A5d6",
   "smols_trait_storage_start_block": 120080197,
   "transmolgrifier_address": "0x34832769bdba8a62b58748071db3de1eb6bbd789",

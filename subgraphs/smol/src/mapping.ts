@@ -1,6 +1,9 @@
 import { BigInt, Bytes, ethereum, log, store } from "@graphprotocol/graph-ts";
 
-import { SMOL_RENDERER_ADDRESS } from "@treasure/constants";
+import {
+  SMOL_RENDERER_ADDRESS,
+  SMOL_TREASURES_ADDRESS,
+} from "@treasure/constants";
 
 import { TraitAdded } from "../generated/Smols Trait Storage/SmolsTraitStorage";
 import {
@@ -20,9 +23,16 @@ import {
   SmolRecipeAdjusted as SmolRecipeAdjustedV3,
   SmolTransmolgrified as SmolTransmolgrifiedV3,
 } from "../generated/TransmolgrifierV3/TransmolgrifierV3";
-import { Recipe, Season, Trait, TraitDependency } from "../generated/schema";
+import {
+  Recipe,
+  RecipeCost,
+  Season,
+  Trait,
+  TraitDependency,
+} from "../generated/schema";
 
 const GENDERS = ["Unset", "Male", "Female"];
+const RECIPE_COST_TYPES = ["Unknown", "ERC20", "ERC1155"];
 
 const getOrCreateSeason = (seasonId: BigInt): Season => {
   const id = Bytes.fromI32(seasonId.toI32());
@@ -36,6 +46,17 @@ const getOrCreateSeason = (seasonId: BigInt): Season => {
   }
 
   return season;
+};
+
+const getOrCreateRecipeCost = (recipe: Recipe, index: i32): RecipeCost => {
+  const id = Bytes.fromI32(recipe.recipeId.toI32()).concatI32(index);
+  let recipeCost = RecipeCost.load(id);
+  if (!recipeCost) {
+    recipeCost = new RecipeCost(id);
+    recipeCost.recipe = recipe.id;
+  }
+
+  return recipeCost;
 };
 
 const getOrCreateRecipe = (seasonId: BigInt, recipeId: BigInt): Recipe => {
@@ -159,11 +180,8 @@ const updateRecipe = (
   hair: i32,
   skin: i32,
   gender: i32,
-  headSize: i32,
-  smolCost: i32,
-  treasureCost: i32,
-  treasureTokenId: i32
-): void => {
+  headSize: i32
+): Recipe => {
   const recipe = getOrCreateRecipe(seasonId, recipeId);
   recipe.background = background > 0 ? Bytes.fromI32(background) : null;
   recipe.body = body > 0 ? Bytes.fromI32(body) : null;
@@ -175,18 +193,17 @@ const updateRecipe = (
   recipe.skin = skin > 0 ? Bytes.fromI32(skin) : null;
   recipe.gender = gender;
   recipe.headSize = headSize;
-  recipe.smolCost = smolCost;
-  recipe.treasureCost = treasureCost;
-  recipe.treasureTokenId = treasureTokenId;
   renderRecipe(recipe);
   recipe.save();
+
+  return recipe;
 };
 
 export function handleRecipeAdded(event: SmolRecipeAdded): void {
   const params = event.params;
   const data = params.smolData;
   const smol = data.smol;
-  updateRecipe(
+  const recipe = updateRecipe(
     params.seasonId,
     params.smolRecipeId,
     smol.background,
@@ -198,20 +215,53 @@ export function handleRecipeAdded(event: SmolRecipeAdded): void {
     smol.hair,
     smol.skin,
     smol.gender,
-    smol.headSize,
-    data.smolInputAmount,
-    data.treasureAmount,
-    data.treasureId
+    smol.headSize
   );
+
+  // Old version of the contracts only had Smol Treasures as a cost
+  const recipeCost = getOrCreateRecipeCost(recipe, 0);
+  recipeCost.type = "ERC1155";
+  recipeCost.address = SMOL_TREASURES_ADDRESS;
+  recipeCost.tokenId = data.treasureId;
+  recipeCost.amount = data.treasureAmount;
+  recipeCost.save();
 }
 
-export function handleRecipeAddedV3(event: SmolRecipeAddedV3): void {}
+export function handleRecipeAddedV3(event: SmolRecipeAddedV3): void {
+  const params = event.params;
+  const data = params.smolData;
+  const smol = data.smol;
+  const recipe = updateRecipe(
+    params.seasonId,
+    params.smolRecipeId,
+    smol.background,
+    smol.body,
+    smol.clothes,
+    smol.mouth,
+    smol.glasses,
+    smol.hat,
+    smol.hair,
+    smol.skin,
+    smol.gender,
+    smol.headSize
+  );
+
+  for (let i = 0; i < data.smolCosts.length; i += 1) {
+    const smolCost = data.smolCosts[i];
+    const recipeCost = getOrCreateRecipeCost(recipe, i);
+    recipeCost.type = RECIPE_COST_TYPES[smolCost.costType];
+    recipeCost.address = smolCost.tokenAddress;
+    recipeCost.tokenId = smolCost.tokenId;
+    recipeCost.amount = smolCost.amount;
+    recipeCost.save();
+  }
+}
 
 export function handleRecipeAdjusted(event: SmolRecipeAdjusted): void {
   const params = event.params;
   const data = params.smolData;
   const smol = data.smol;
-  updateRecipe(
+  const recipe = updateRecipe(
     params.seasonId,
     params.smolRecipeId,
     smol.background,
@@ -223,14 +273,47 @@ export function handleRecipeAdjusted(event: SmolRecipeAdjusted): void {
     smol.hair,
     smol.skin,
     smol.gender,
-    smol.headSize,
-    data.smolInputAmount,
-    data.treasureAmount,
-    data.treasureId
+    smol.headSize
   );
+
+  // Old version of the contracts only had Smol Treasures as a cost
+  const recipeCost = getOrCreateRecipeCost(recipe, 0);
+  recipeCost.type = "ERC1155";
+  recipeCost.address = SMOL_TREASURES_ADDRESS;
+  recipeCost.tokenId = data.treasureId;
+  recipeCost.amount = data.treasureAmount;
+  recipeCost.save();
 }
 
-export function handleRecipeAdjustedV3(event: SmolRecipeAdjustedV3): void {}
+export function handleRecipeAdjustedV3(event: SmolRecipeAdjustedV3): void {
+  const params = event.params;
+  const data = params.smolData;
+  const smol = data.smol;
+  const recipe = updateRecipe(
+    params.seasonId,
+    params.smolRecipeId,
+    smol.background,
+    smol.body,
+    smol.clothes,
+    smol.mouth,
+    smol.glasses,
+    smol.hat,
+    smol.hair,
+    smol.skin,
+    smol.gender,
+    smol.headSize
+  );
+
+  for (let i = 0; i < data.smolCosts.length; i += 1) {
+    const smolCost = data.smolCosts[i];
+    const recipeCost = getOrCreateRecipeCost(recipe, i);
+    recipeCost.type = RECIPE_COST_TYPES[smolCost.costType];
+    recipeCost.address = smolCost.tokenAddress;
+    recipeCost.tokenId = smolCost.tokenId;
+    recipeCost.amount = smolCost.amount;
+    recipeCost.save();
+  }
+}
 
 export function handleRecipeDeleted(event: SmolRecipeDeleted): void {
   const params = event.params;
