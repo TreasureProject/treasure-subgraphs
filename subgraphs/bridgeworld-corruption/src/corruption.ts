@@ -28,6 +28,7 @@ import {
 import {
   ITEM_EFFECTS,
   ITEM_TYPES,
+  bytesFromBigInt,
   decodeERC1155TokenSetHandlerRequirementData,
   decodeTreasureHandlerRequirementData,
   getOrCreateBuilding,
@@ -57,7 +58,7 @@ export function handleCorruptionRemovalRecipeCreated(
   event: CorruptionRemovalRecipeCreated
 ): void {
   const params = event.params;
-  const recipe = new Recipe(Bytes.fromI32(params._recipeId.toI32()));
+  const recipe = new Recipe(bytesFromBigInt(params._recipeId));
   recipe.recipeId = params._recipeId;
   recipe.corruptionRemoved = params._corruptionRemoved;
   recipe.save();
@@ -149,7 +150,7 @@ export function handleCorruptionRemovalRecipeAdded(
   const params = event.params;
   const building = getOrCreateBuilding(params._buildingAddress);
   building.recipes = building.recipes.concat([
-    Bytes.fromI32(params._recipeId.toI32()),
+    bytesFromBigInt(params._recipeId),
   ]);
   building.save();
 }
@@ -166,7 +167,7 @@ export function handleCorruptionRemovalRecipeRemoved(
     return;
   }
 
-  const recipeId = Bytes.fromI32(params._recipeId.toI32());
+  const recipeId = bytesFromBigInt(params._recipeId);
   for (let i = 0; i < building.recipes.length; i++) {
     if (building.recipes[i] == recipeId) {
       building.recipes = building.recipes
@@ -183,12 +184,12 @@ export function handleCorruptionRemovalStarted(
   event: CorruptionRemovalStarted
 ): void {
   const params = event.params;
-  const removal = new Removal(Bytes.fromI32(params._requestId.toI32()));
+  const removal = new Removal(bytesFromBigInt(params._requestId));
   removal.requestId = params._requestId;
   removal.startTimestamp = event.block.timestamp;
   removal.user = getOrCreateUser(params._user).id;
   removal.building = params._buildingAddress;
-  removal.recipe = Bytes.fromI32(params._recipeId.toI32());
+  removal.recipe = bytesFromBigInt(params._recipeId);
   removal.status = "Started";
   removal.corruptionRemoved = BigInt.zero();
   removal.brokenTreasureIds = [];
@@ -200,7 +201,7 @@ export function handleCorruptionRemovalEnded(
   event: CorruptionRemovalEnded
 ): void {
   const params = event.params;
-  const removal = Removal.load(Bytes.fromI32(params._requestId.toI32()));
+  const removal = Removal.load(bytesFromBigInt(params._requestId));
   if (!removal) {
     log.error("Ending unknown Corruption removal: {}", [
       params._requestId.toHexString(),
@@ -219,7 +220,7 @@ export function handleCorruptionRemovalEnded(
 
 export function handleTreasureUnstaked(event: TreasureUnstaked): void {
   const params = event.params;
-  const removal = Removal.load(Bytes.fromI32(params._requestId.toI32()));
+  const removal = Removal.load(bytesFromBigInt(params._requestId));
   if (!removal) {
     log.error("Unstaking Treasures from unknown Corruption removal: {}", [
       params._requestId.toHexString(),

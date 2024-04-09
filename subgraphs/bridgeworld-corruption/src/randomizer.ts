@@ -1,9 +1,6 @@
-import { Address, Bytes, log, store } from "@graphprotocol/graph-ts";
+import { BigInt, Bytes, log, store } from "@graphprotocol/graph-ts";
 
-import {
-  CORRUPTION_CRYPTS_ADDRESS,
-  CORRUPTION_REMOVAL_ADDRESS,
-} from "@treasure/constants";
+import { CORRUPTION_CRYPTS_ADDRESS } from "@treasure/constants";
 
 import {
   CorruptionCrypts,
@@ -11,98 +8,109 @@ import {
   CorruptionCrypts__generateTemplePositionsResultValue0Struct,
 } from "../generated/Randomizer/CorruptionCrypts";
 import {
-  RandomRequest,
+  RandomRequest as RandomRequested,
   RandomSeeded,
 } from "../generated/Randomizer/Randomizer";
-import { CryptsTemple, Removal, Seeded } from "../generated/schema";
-import { getOrCreateBoardTreasureFragment, getOrCreateConfig } from "./helpers";
+import {
+  CryptsTemple,
+  RandomCommit,
+  RandomRequest,
+  Removal,
+} from "../generated/schema";
+import {
+  bytesFromBigInt,
+  getOrCreateBoardTreasureFragment,
+  getOrCreateConfig,
+} from "./helpers";
 
-export function handleRandomRequest(event: RandomRequest): void {
+export function handleRandomRequest(event: RandomRequested): void {
   const params = event.params;
-  const requestId = Bytes.fromI32(params._requestId.toI32());
 
-  if (
-    !event.transaction.to ||
-    ((event.transaction.to as Address).notEqual(CORRUPTION_REMOVAL_ADDRESS) &&
-      (event.transaction.to as Address).notEqual(CORRUPTION_CRYPTS_ADDRESS))
-  ) {
-    log.debug("[randomizer] Skipping request from unrelated contract: {}", [
-      requestId.toHexString(),
-    ]);
-    return;
+  const commitId = bytesFromBigInt(params._commitId);
+  let commit = RandomCommit.load(commitId);
+  if (!commit) {
+    commit = new RandomCommit(commitId);
+    commit.commitId = params._commitId;
+    commit.save();
   }
 
-  const commitId = Bytes.fromI32(params._commitId.toI32());
-  let seeded = Seeded.load(commitId);
-  if (seeded) {
-    seeded.requests = seeded.requests.concat([requestId]);
-  } else {
-    seeded = new Seeded(commitId);
-    seeded.requests = [requestId];
-  }
-
-  seeded.save();
+  const request = new RandomRequest(bytesFromBigInt(params._requestId));
+  request.requestId = params._requestId;
+  request.commit = commit.id;
+  request.save();
 }
 
 export function handleRandomSeeded(event: RandomSeeded): void {
   const params = event.params;
-  const commitId = Bytes.fromI32(params._commitId.toI32());
 
-  const seeded = Seeded.load(commitId);
-  if (!seeded) {
-    log.debug("[randomizer] Skipping random seeded for unknown commit ID: {}", [
-      commitId.toHexString(),
+  // Find the commit for this seeded event
+  const commit = RandomCommit.load(bytesFromBigInt(params._commitId));
+  if (!commit) {
+    log.error("[randomizer] Unknown commit ID: {}", [
+      params._commitId.toString(),
     ]);
     return;
   }
 
-  for (let i = 0; i < seeded.requests.length; i++) {
-    const requestId = seeded.requests[i];
+  // Load the commit's related requests
+  const requests = commit.requests.load();
+
+  // Handle each of the requests
+  for (let i = 0; i < requests.length; i++) {
+    const request = requests[i];
+
+    // Is this the Crypts random request getting seeded?
     const config = getOrCreateConfig();
-    if (
-      config &&
-      config.cryptsRequestId &&
-      (config.cryptsRequestId as Bytes).equals(requestId)
-    ) {
+    if (config.cryptsRequestId.equals(request.requestId)) {
       const contract = CorruptionCrypts.bind(CORRUPTION_CRYPTS_ADDRESS);
+
+      // Read the Crypts temple positions from the contract
       const templePositionsData = contract.try_generateTemplePositions();
       if (templePositionsData.reverted) {
         log.error("[randomizer] Error reading board temple positions: {}", [
-          requestId.toHexString(),
+          request.requestId.toString(),
         ]);
         continue;
       }
-
       processTemplePositions(templePositionsData.value);
 
+      // Read the Treasure Fragment position from the contract
       const boardTreasureData = contract.try_generateBoardTreasure();
       if (boardTreasureData.reverted) {
         log.error("[randomizer] Error reading board Treasure position: {}", [
-          requestId.toHexString(),
+          request.requestId.toString(),
         ]);
         continue;
       }
-
       processBoardTreasure(boardTreasureData.value);
 
+      // Update the Crypts config and move to the next request
       config.cryptsRoundStarting = false;
       config.save();
       continue;
     }
 
-    const removal = Removal.load(requestId);
+    // Is this a Corruption removal request getting seeded?
+    const removal = Removal.load(request.id);
     if (!removal) {
-      log.error("[randomizer] Committing unknown request: {}", [
-        requestId.toHexString(),
+      log.debug("[randomizer] Skipping unknown request: {}", [
+        request.requestId.toString(),
       ]);
       continue;
     }
 
+    // Mark removal request as ready and move to the next request
     removal.status = "Ready";
     removal.save();
   }
 
-  store.remove("Seeded", commitId.toHexString());
+  // Delete random requests now that we're done processing them
+  for (let i = 0; i < requests.length; i++) {
+    store.remove("RandomRequest", requests[i].id.toHexString());
+  }
+
+  // Delete random commit now that we're done processing it
+  store.remove("RandomCommit", commit.id.toHexString());
 }
 
 const processTemplePositions = (
