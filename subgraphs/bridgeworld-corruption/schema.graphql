@@ -29,7 +29,7 @@ type Config @entity {
   id: Bytes!
 
   "Latest global Randomizer request ID"
-  cryptsRequestId: Bytes
+  cryptsRequestId: BigInt!
 
   "Current round in progress"
   cryptsRound: Int!
@@ -165,12 +165,22 @@ type Removal @entity {
   brokenTreasureAmounts: [BigInt!]!
 }
 
-"Tracks related Randomizer commits"
-type Seeded @entity {
+"Tracks Randomizer requests"
+type RandomRequest @entity {
   id: Bytes!
 
+  requestId: BigInt!
+  commit: RandomCommit!
+}
+
+"Tracks Randomizer commits"
+type RandomCommit @entity {
+  id: Bytes!
+
+  commitId: BigInt!
+
   "Requests related to this commit"
-  requests: [Bytes!]!
+  requests: [RandomRequest!]! @derivedFrom(field: "commit")
 }
 
 type User @entity {

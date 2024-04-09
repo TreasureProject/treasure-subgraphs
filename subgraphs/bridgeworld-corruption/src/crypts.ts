@@ -71,7 +71,7 @@ export function handleGlobalRandomnessRequested(
 ): void {
   const params = event.params;
   const config = getOrCreateConfig();
-  config.cryptsRequestId = bytesFromBigInt(params._globalRequestId);
+  config.cryptsRequestId = params._globalRequestId;
   config.cryptsRound = params._roundId.toI32();
   config.cryptsRoundStarting = true;
   config.cryptsRoundStartTime = event.block.timestamp;
