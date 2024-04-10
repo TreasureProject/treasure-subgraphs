@@ -343,6 +343,8 @@ export function handleTransmolgrified(event: SmolTransmolgrified): void {
   const params = event.params;
   const recipe = getOrCreateRecipe(params.seasonId, params.smolRecipeId);
   recipe.minted = true;
+  recipe.mintedBy = event.transaction.from;
+  recipe.mintedTokenId = params.smolIdToTransmolgrify.toI32();
   recipe.save();
 }
 
@@ -350,5 +352,7 @@ export function handleTransmolgrifiedV3(event: SmolTransmolgrifiedV3): void {
   const params = event.params;
   const recipe = getOrCreateRecipe(params.seasonId, params.smolRecipeId);
   recipe.minted = true;
+  recipe.mintedBy = event.transaction.from;
+  recipe.mintedTokenId = params.smolIdToTransmolgrify.toI32();
   recipe.save();
 }

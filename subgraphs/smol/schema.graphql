@@ -78,6 +78,8 @@ type Recipe @entity {
 
   image: String!
   minted: Boolean!
+  mintedBy: Bytes
+  mintedTokenId: Int
 
   # Cost
   costs: [RecipeCost!]! @derivedFrom(field: "recipe")
