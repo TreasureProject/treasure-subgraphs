@@ -54,8 +54,8 @@ type RecipeCost @entity {
 
   type: RecipeCostType!
   address: Bytes!
-  tokenId: Int!
-  amount: Int!
+  tokenId: BigInt!
+  amount: BigInt!
 }
 
 type Recipe @entity {

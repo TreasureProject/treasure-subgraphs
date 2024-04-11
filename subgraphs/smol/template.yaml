@@ -105,9 +105,9 @@ dataSources:
         - name: SmolRenderer
           file: ./abis/SmolRenderer.json
       eventHandlers:
-        - event: SmolRecipeAdded(uint256,uint256,(bool,(uint24,uint24,uint24,uint24,uint24,uint24,uint24,uint24,uint8,uint8),(uint8,uint16,uint8,address)[]))
+        - event: SmolRecipeAdded(uint256,uint256,(bool,(uint24,uint24,uint24,uint24,uint24,uint24,uint24,uint24,uint8,uint8),(uint8,address,uint256,uint256)[]))
           handler: handleRecipeAddedV3
-        - event: SmolRecipeAdjusted(uint256,uint256,(bool,(uint24,uint24,uint24,uint24,uint24,uint24,uint24,uint24,uint8,uint8),(uint8,uint16,uint8,address)[]))
+        - event: SmolRecipeAdjusted(uint256,uint256,(bool,(uint24,uint24,uint24,uint24,uint24,uint24,uint24,uint24,uint8,uint8),(uint8,address,uint256,uint256)[]))
           handler: handleRecipeAdjustedV3
         - event: SmolRecipeDeleted(uint256,uint256)
           handler: handleRecipeDeleted

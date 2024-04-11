@@ -222,8 +222,8 @@ export function handleRecipeAdded(event: SmolRecipeAdded): void {
   const recipeCost = getOrCreateRecipeCost(recipe, 0);
   recipeCost.type = "ERC1155";
   recipeCost.address = SMOL_TREASURES_ADDRESS;
-  recipeCost.tokenId = data.treasureId;
-  recipeCost.amount = data.treasureAmount;
+  recipeCost.tokenId = BigInt.fromI32(data.treasureId);
+  recipeCost.amount = BigInt.fromI32(data.treasureAmount);
   recipeCost.save();
 }
 
@@ -280,8 +280,8 @@ export function handleRecipeAdjusted(event: SmolRecipeAdjusted): void {
   const recipeCost = getOrCreateRecipeCost(recipe, 0);
   recipeCost.type = "ERC1155";
   recipeCost.address = SMOL_TREASURES_ADDRESS;
-  recipeCost.tokenId = data.treasureId;
-  recipeCost.amount = data.treasureAmount;
+  recipeCost.tokenId = BigInt.fromI32(data.treasureId);
+  recipeCost.amount = BigInt.fromI32(data.treasureAmount);
   recipeCost.save();
 }
 
