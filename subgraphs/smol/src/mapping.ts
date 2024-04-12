@@ -49,7 +49,7 @@ const getOrCreateSeason = (seasonId: BigInt): Season => {
 };
 
 const getOrCreateRecipeCost = (recipe: Recipe, index: i32): RecipeCost => {
-  const id = Bytes.fromI32(recipe.recipeId.toI32()).concatI32(index);
+  const id = recipe.id.concatI32(index);
   let recipeCost = RecipeCost.load(id);
   if (!recipeCost) {
     recipeCost = new RecipeCost(id);
@@ -61,7 +61,7 @@ const getOrCreateRecipeCost = (recipe: Recipe, index: i32): RecipeCost => {
 
 const getOrCreateRecipe = (seasonId: BigInt, recipeId: BigInt): Recipe => {
   const season = getOrCreateSeason(seasonId);
-  const id = Bytes.fromI32(seasonId.toI32()).concatI32(recipeId.toI32());
+  const id = season.id.concatI32(recipeId.toI32());
   let recipe = Recipe.load(id);
   if (!recipe) {
     recipe = new Recipe(id);
@@ -108,9 +108,7 @@ export function handleTraitAdded(event: TraitAdded): void {
     renderRecipes(trait.skinRecipes.load());
   }
 
-  const dependencyId = Bytes.fromI32(params._traitId.toI32()).concatI32(
-    params._dependencyLevel.toI32()
-  );
+  const dependencyId = id.concatI32(params._dependencyLevel.toI32());
   let traitDependency = TraitDependency.load(dependencyId);
   if (!traitDependency) {
     traitDependency = new TraitDependency(dependencyId);
