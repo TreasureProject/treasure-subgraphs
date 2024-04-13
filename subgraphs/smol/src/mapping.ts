@@ -47,7 +47,7 @@ const getOrCreateSeason = (seasonId: BigInt): Season => {
     season.seasonId = seasonId;
     season.name = `Season ${seasonId.toString()}`;
     season.isActive = false;
-    season.save();
+    season.whitelistType = WHITELIST_TYPES[0];
   }
 
   return season;
@@ -66,6 +66,8 @@ const getOrCreateRecipeCost = (recipe: Recipe, index: i32): RecipeCost => {
 
 const getOrCreateRecipe = (seasonId: BigInt, recipeId: BigInt): Recipe => {
   const season = getOrCreateSeason(seasonId);
+  season.save();
+
   const id = season.id.concatI32(recipeId.toI32());
   let recipe = Recipe.load(id);
   if (!recipe) {
