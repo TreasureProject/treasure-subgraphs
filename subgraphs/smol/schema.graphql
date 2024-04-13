@@ -9,6 +9,12 @@ enum RecipeCostType {
   ERC1155
 }
 
+enum WhitelistType {
+  None
+  TokenId
+  WalletAddress
+}
+
 type Trait @entity {
   id: Bytes!
 
@@ -44,6 +50,8 @@ type Season @entity {
   seasonId: BigInt!
   name: String!
   isActive: Boolean!
+  whitelistType: WhitelistType!
+  whitelistRoot: Bytes
   recipes: [Recipe!]! @derivedFrom(field: "season")
 }
 

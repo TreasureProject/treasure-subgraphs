@@ -19,9 +19,13 @@ import {
   SmolTransmolgrified,
 } from "../generated/Transmolgrifier/Transmolgrifier";
 import {
+  TransmolgSeasonTextUpdated as SeasonTextUpdatedV3,
   SmolRecipeAdded as SmolRecipeAddedV3,
   SmolRecipeAdjusted as SmolRecipeAdjustedV3,
   SmolTransmolgrified as SmolTransmolgrifiedV3,
+  TransmolgSeasonActiveUpdated,
+  TransmolgSeasonUpdated,
+  TransmolgSeasonWhitelistUpdated,
 } from "../generated/TransmolgrifierV3/TransmolgrifierV3";
 import {
   Recipe,
@@ -33,6 +37,7 @@ import {
 
 const GENDERS = ["Unset", "Male", "Female"];
 const RECIPE_COST_TYPES = ["Unknown", "ERC20", "ERC1155"];
+const WHITELIST_TYPES = ["None", "TokenId", "WalletAddress"];
 
 const getOrCreateSeason = (seasonId: BigInt): Season => {
   const id = Bytes.fromI32(seasonId.toI32());
@@ -334,6 +339,42 @@ export function handleSeasonTextUpdated(event: SeasonTextUpdated): void {
   const params = event.params;
   const season = getOrCreateSeason(params.seasonId);
   season.name = params.seasonText;
+  season.save();
+}
+
+export function handleSeasonTextUpdatedV3(event: SeasonTextUpdatedV3): void {
+  const params = event.params;
+  const season = getOrCreateSeason(params.seasonId);
+  season.name = params.seasonText;
+  season.save();
+}
+
+export function handleSeasonActiveUpdated(
+  event: TransmolgSeasonActiveUpdated
+): void {
+  const params = event.params;
+  const season = getOrCreateSeason(params.seasonId);
+  season.isActive = params.active;
+  season.save();
+}
+
+export function handleSeasonUpdated(event: TransmolgSeasonUpdated): void {
+  const params = event.params;
+  const season = getOrCreateSeason(params.seasonId);
+  season.name = params.seasonText;
+  season.isActive = params.active;
+  season.whitelistType = WHITELIST_TYPES[params.whitelistType];
+  season.whitelistRoot = params.whitelistRoot;
+  season.save();
+}
+
+export function handleSeasonWhitelistUpdated(
+  event: TransmolgSeasonWhitelistUpdated
+): void {
+  const params = event.params;
+  const season = getOrCreateSeason(params._seasonId);
+  season.whitelistType = WHITELIST_TYPES[params._whitelistType];
+  season.whitelistRoot = params._whitelistRoot;
   season.save();
 }
 

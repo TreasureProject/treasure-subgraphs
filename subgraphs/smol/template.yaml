@@ -111,11 +111,15 @@ dataSources:
           handler: handleRecipeAdjustedV3
         - event: SmolRecipeDeleted(uint256,uint256)
           handler: handleRecipeDeleted
-        - event: SeasonStateUpdated(uint256,bool)
-          handler: handleSeasonStateUpdated
-        - event: SeasonTextUpdated(uint256,string)
-          handler: handleSeasonTextUpdated
         - event: SmolTransmolgrified(uint256,uint256,uint256)
           handler: handleTransmolgrifiedV3
+        - event: TransmolgSeasonActiveUpdated(uint256,bool)
+          handler: handleSeasonActiveUpdated
+        - event: TransmolgSeasonTextUpdated(uint256,string)
+          handler: handleSeasonTextUpdatedV3
+        - event: TransmolgSeasonUpdated(uint256,bool,string,bytes32,uint8)
+          handler: handleSeasonUpdated
+        - event: TransmolgSeasonWhitelistUpdated(uint256,bytes32,uint8)
+          handler: handleSeasonWhitelistUpdated
       file: ./src/mapping.ts
 
