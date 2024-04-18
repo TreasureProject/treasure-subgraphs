@@ -107,7 +107,7 @@ export function handleNftStaked(event: Staked): void {
 
   const token = getOrCreateToken(nftAddress, tokenId);
   const userAddress = params.user;
-  const stakedTokenId = `${harvester.id}-${userAddress.toHexString()}-${
+  const stakedTokenId = `${harvester.id.toHexString()}-${userAddress.toHexString()}-${
     token.id
   }`;
   let stakedToken = StakedToken.load(stakedTokenId);
@@ -206,7 +206,7 @@ export function handleMagicDeposited(event: DepositEvent): void {
 
   // Save deposit
   const deposit = new Deposit(
-    `${harvester.id}-${getAddressId(userAddress, params.index)}`
+    `${harvester.id.toHexString()}-${getAddressId(userAddress, params.index)}`
   );
   deposit.transactionHash = event.transaction.hash;
   deposit.amount = params.amount;
@@ -233,7 +233,7 @@ export function handleMagicWithdrawn(event: WithdrawEvent): void {
 
   const params = event.params;
   const userAddress = params.user;
-  const id = `${harvester.id}-${getAddressId(userAddress, params.index)}`;
+  const id = `${harvester.id.toHexString()}-${getAddressId(userAddress, params.index)}`;
 
   const deposit = Deposit.load(id);
   if (!deposit) {
@@ -270,7 +270,7 @@ export function handleMagicHarvested(event: HarvestEvent): void {
 
   const params = event.params;
   const harvest = new Harvest(
-    `${harvester.id}-${event.transaction.hash.toHexString()}`
+    `${harvester.id.toHexString()}-${event.transaction.hash.toHexString()}`
   );
   harvest.harvester = harvester.id;
   harvest.user = params.user.toHexString();
