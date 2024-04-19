@@ -147,9 +147,7 @@ export function handleNftUnstaked(event: Unstaked): void {
   const nftAddress = params.nft;
   const userAddress = params.user;
 
-  const stakedTokenId = `${
-    harvester.id
-  }-${userAddress.toHexString()}-${getAddressId(nftAddress, params.tokenId)}`;
+  const stakedTokenId = `${harvester.id.toHexString()}-${userAddress.toHexString()}-${getAddressId(nftAddress, params.tokenId)}`;
   const stakedToken = StakedToken.load(stakedTokenId);
   if (!stakedToken) {
     log.error("Unstaking from unknown StakedToken: {}", [stakedTokenId]);
