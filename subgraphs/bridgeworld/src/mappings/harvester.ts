@@ -44,6 +44,7 @@ import {
 import { getLegionMetadata } from "../helpers/legion";
 import { weiToEther } from "../helpers/number";
 import { getOrCreateToken } from "../helpers/token";
+import { getUser } from "../helpers/user";
 
 export function handleHarvesterDeployed(event: HarvesterDeployed): void {
   const params = event.params;
@@ -106,14 +107,12 @@ export function handleNftStaked(event: Staked): void {
   }
 
   const token = getOrCreateToken(nftAddress, tokenId);
-  const userAddress = params.user;
-  const stakedTokenId = `${harvester.id.toHexString()}-${userAddress.toHexString()}-${
-    token.id
-  }`;
+  const user = getUser(params.user.toHexString());
+  const stakedTokenId = `${harvester.id.toHexString()}-${user.id}-${token.id}`;
   let stakedToken = StakedToken.load(stakedTokenId);
   if (!stakedToken) {
     stakedToken = new StakedToken(stakedTokenId);
-    stakedToken.user = userAddress.toHexString();
+    stakedToken.user = user.id;
     stakedToken.token = token.id;
     stakedToken.quantity = ZERO_BI;
     stakedToken.harvester = harvester.id;
