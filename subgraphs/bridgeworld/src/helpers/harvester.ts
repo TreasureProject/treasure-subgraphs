@@ -66,9 +66,3 @@ export const calculateHarvesterPartsBoost = (harvester: Harvester): BigInt => {
     .times(harvester.partsBoostFactor)
     .div(maxStakedAmount);
 };
-
-export const createStakedExtractorId = (
-  harvester: Harvester,
-  spotId: i32
-): string =>
-  `${harvester.id}-${CONSUMABLE_ADDRESS.toHexString()}-${spotId.toString()}`;

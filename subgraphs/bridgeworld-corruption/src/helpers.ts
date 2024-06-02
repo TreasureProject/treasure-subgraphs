@@ -21,6 +21,7 @@ export const getOrCreateConfig = (): Config => {
   let config = Config.load(SINGLETON_ID);
   if (!config) {
     config = new Config(SINGLETON_ID);
+    config.cryptsRequestId = BigInt.fromI32(-1);
     config.cryptsRound = -1;
     config.cryptsRoundStarting = false;
     config.cryptsRoundStartTime = ZERO_BI;
