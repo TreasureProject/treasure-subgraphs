@@ -11,14 +11,12 @@ import {
 import { TWO_BD, ZERO_BI } from "../const";
 import { ONE_BI } from "../const";
 import {
-  generateTransactionItems,
   getDerivedMagic,
   getOrCreateFactory,
   getOrCreateLiquidityPosition,
   getOrCreateTransaction,
   getOrCreateUser,
   isMagic,
-  populateTransactionItems,
   updateDayData,
   updatePairDayData,
 } from "../helpers";
@@ -104,7 +102,6 @@ export function handleBurn(event: Burn): void {
   transaction.amount0 = amount0;
   transaction.amount1 = amount1;
   transaction.amountUSD = amountUSD;
-  populateTransactionItems(transaction, pair);
   transaction.save();
 }
 
@@ -180,7 +177,6 @@ export function handleMint(event: Mint): void {
   transaction.amount0 = amount0;
   transaction.amount1 = amount1;
   transaction.amountUSD = amountUSD;
-  populateTransactionItems(transaction, pair);
   transaction.save();
 }
 
@@ -269,32 +265,6 @@ export function handleSwap(event: Swap): void {
   transaction.amount1 = amount1;
   transaction.amountUSD = amountUSD;
   transaction.isAmount1Out = isAmount1Out;
-
-  if (token0.isNFT || token1.isNFT) {
-    const vaultTransaction = getOrCreateTransaction(event);
-
-    // Replace Vault Transaction with this swap
-    if (vaultTransaction._items && !vaultTransaction.pair) {
-      const splitItems = generateTransactionItems(
-        vaultTransaction._items as Bytes[],
-        pair
-      );
-
-      if (splitItems[0].length > 0) {
-        transaction.items0 = splitItems[0];
-      }
-
-      if (splitItems[1].length > 0) {
-        transaction.items1 = splitItems[1];
-      }
-
-      store.remove("Transaction", vaultTransaction.id.toHexString());
-    } else {
-      vaultTransaction.swap = transaction.id;
-      vaultTransaction.save();
-    }
-  }
-
   transaction.save();
 }
 

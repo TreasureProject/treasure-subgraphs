@@ -189,64 +189,6 @@ export const getOrCreateTransaction = (event: ethereum.Event): Transaction => {
   return transaction;
 };
 
-export const generateTransactionItems = (
-  items: Bytes[],
-  pair: Pair
-): Bytes[][] => {
-  let items0 = [] as Bytes[];
-  let items1 = [] as Bytes[];
-  for (let i = 0; i < items.length; i += 1) {
-    const item = TransactionItem.load(items[i]);
-    if (!item) {
-      log.error("Error finding transaction item: {}", [items[i].toHexString()]);
-      continue;
-    }
-
-    if (item.vault.equals(pair.token0)) {
-      items0.push(items[i]);
-    } else if (item.vault.equals(pair.token1)) {
-      items1.push(items[i]);
-    }
-  }
-
-  return [items0, items1];
-};
-
-export const addTransactionItems = (
-  transaction: Transaction,
-  items: Bytes[]
-): void => {
-  transaction._items = ((transaction._items || []) as Bytes[]).concat(items);
-};
-
-export const addTransactionItems0 = (
-  transaction: Transaction,
-  items: Bytes[]
-): void => {
-  transaction.items0 = ((transaction.items0 || []) as Bytes[]).concat(items);
-};
-
-export const addTransactionItems1 = (
-  transaction: Transaction,
-  items: Bytes[]
-): void => {
-  transaction.items1 = ((transaction.items1 || []) as Bytes[]).concat(items);
-};
-
-export const populateTransactionItems = (
-  transaction: Transaction,
-  pair: Pair
-): void => {
-  // Move transaction items to their desginated place in pair
-  const items = transaction._items;
-  if (items && items.length > 0) {
-    const splitItems = generateTransactionItems(items, pair);
-    transaction._items = null;
-    addTransactionItems0(transaction, splitItems[0]);
-    addTransactionItems1(transaction, splitItems[1]);
-  }
-};
-
 export const isMagic = (token: Token): bool => token.id.equals(MAGIC_ADDRESS);
 
 export const getDerivedMagic = (token: Token): BigDecimal => {
