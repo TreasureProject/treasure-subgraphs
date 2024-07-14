@@ -154,7 +154,7 @@ type Transaction @entity {
   hash: Bytes!
   timestamp: BigInt!
   type: TransactionType!
-  user: User!
+  user: User
 
   pair: Pair
   swap: Transaction

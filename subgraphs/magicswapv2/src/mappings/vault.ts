@@ -9,7 +9,6 @@ import {
   VaultCollection,
   VaultReserveItem,
 } from "../../generated/schema";
-import { NftVault } from "../../generated/templates";
 import {
   Deposit as DepositEvent,
   Withdraw,
@@ -21,6 +20,7 @@ import {
   addTransactionItems1,
   getOrCreateCollection,
   getOrCreateTransaction,
+  getOrCreateUser,
   setTokenContractData,
 } from "../helpers";
 
@@ -52,8 +52,6 @@ export function handleVaultCreated(event: VaultCreated): void {
     }
     vaultCollection.save();
   }
-
-  NftVault.create(params.vault);
 }
 
 export function handleDeposit(event: DepositEvent): void {
@@ -86,7 +84,8 @@ export function handleDeposit(event: DepositEvent): void {
   transactionItem.amount = params.amount.toI32();
   transactionItem.save();
 
-  const transaction = getOrCreateTransaction(event, "Deposit");
+  const transaction = getOrCreateTransaction(event);
+  transaction.type = "Deposit";
   addTransactionItems(transaction, [transactionItem.id]);
   transaction.save();
 }
@@ -123,7 +122,9 @@ export function handleWithdraw(event: Withdraw): void {
   transactionItem.amount = params.amount.toI32();
   transactionItem.save();
 
-  const transaction = getOrCreateTransaction(event, "Withdrawal");
+  const transaction = getOrCreateTransaction(event);
+  transaction.type = "Withdrawal";
+  transaction.user = getOrCreateUser(params.to).id;
   let processedItems = false;
 
   if (transaction.swap) {

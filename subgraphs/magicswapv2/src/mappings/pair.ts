@@ -95,8 +95,11 @@ export function handleBurn(event: Burn): void {
   updatePairDayData(pair, event.block.timestamp);
 
   // Update Transaction
-  const transaction = getOrCreateTransaction(event, "Withdrawal");
-  transaction.user = getOrCreateUser(event.transaction.from).id; // TODO: handle case where swap result is sent to someone other than tx sender
+  const transaction = getOrCreateTransaction(event);
+  transaction.type = "Withdrawal";
+  if (!transaction.user) {
+    transaction.user = getOrCreateUser(event.transaction.from).id;
+  }
   transaction.pair = pair.id;
   transaction.amount0 = amount0;
   transaction.amount1 = amount1;
@@ -168,8 +171,11 @@ export function handleMint(event: Mint): void {
   updatePairDayData(pair, event.block.timestamp);
 
   // Update Transaction
-  const transaction = getOrCreateTransaction(event, "Deposit");
-  transaction.user = getOrCreateUser(event.transaction.from).id; // TODO: handle case where swap result is sent to someone other than tx sender
+  const transaction = getOrCreateTransaction(event);
+  transaction.type = "Deposit";
+  if (!transaction.user) {
+    transaction.user = getOrCreateUser(event.transaction.from).id;
+  }
   transaction.pair = pair.id;
   transaction.amount0 = amount0;
   transaction.amount1 = amount1;
@@ -257,7 +263,7 @@ export function handleSwap(event: Swap): void {
   transaction.hash = event.transaction.hash;
   transaction.timestamp = event.block.timestamp;
   transaction.type = "Swap";
-  transaction.user = getOrCreateUser(event.transaction.from).id; // TODO: handle case where swap result is sent to someone other than tx sender
+  transaction.user = getOrCreateUser(params.to).id;
   transaction.pair = pair.id;
   transaction.amount0 = amount0;
   transaction.amount1 = amount1;

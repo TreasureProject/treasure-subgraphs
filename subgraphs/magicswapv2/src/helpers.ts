@@ -24,6 +24,7 @@ import {
   Transaction,
   TransactionItem,
   User,
+  VaultReserveItem,
 } from "../generated/schema";
 import { ONE_BD, ONE_BI, ZERO_BD, ZERO_BI } from "./const";
 import { exponentToBigDecimal } from "./utils";
@@ -156,22 +157,35 @@ export const getOrCreateToken = (address: Address): Token => {
   return token;
 };
 
-export const getOrCreateTransaction = (
-  event: ethereum.Event,
-  type: string = "Other"
-): Transaction => {
+export const getOrCreateReserveItem = (
+  vault: Address,
+  collection: Address,
+  tokenId: BigInt
+): VaultReserveItem => {
+  const reserveItemId = vault.concat(collection).concatI32(tokenId.toI32());
+  let reserveItem = VaultReserveItem.load(reserveItemId);
+  if (!reserveItem) {
+    reserveItem = new VaultReserveItem(reserveItemId);
+    reserveItem.vault = vault;
+    reserveItem.collection = collection;
+    reserveItem.tokenId = tokenId;
+    reserveItem.amount = 0;
+  }
+
+  return reserveItem;
+};
+
+export const getOrCreateTransaction = (event: ethereum.Event): Transaction => {
   let transaction = Transaction.load(event.transaction.hash);
   if (!transaction) {
     transaction = new Transaction(event.transaction.hash);
     transaction.hash = event.transaction.hash;
     transaction.timestamp = event.block.timestamp;
-    transaction.user = getOrCreateUser(event.transaction.from).id;
     transaction.amount0 = ZERO_BD;
     transaction.amount1 = ZERO_BD;
     transaction.amountUSD = ZERO_BD;
   }
 
-  transaction.type = type;
   return transaction;
 };
 
