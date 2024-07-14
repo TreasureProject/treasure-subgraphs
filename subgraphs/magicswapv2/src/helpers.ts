@@ -157,7 +157,7 @@ export const getOrCreateToken = (address: Address): Token => {
   return token;
 };
 
-export const getOrCreateReserveItem = (
+export const getOrCreateVaultReserveItem = (
   vault: Address,
   collection: Address,
   tokenId: BigInt
