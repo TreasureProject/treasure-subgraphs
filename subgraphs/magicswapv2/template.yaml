@@ -1,0 +1,162 @@
+specVersion: 1.2.0
+schema:
+  file: ./schema.graphql
+dataSources:
+  - name: NftVaultFactory
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ magicswapv2_nft_vault_factory_address }}"
+      abi: NftVaultFactory
+      startBlock: {{ magicswapv2_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Token
+        - Collection
+        - VaultCollection
+      abis:
+        - name: NftVaultFactory
+          file: ./abis/NftVaultFactory.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+      eventHandlers:
+        - event: VaultCreated(string,string,indexed address,indexed uint256,(address,uint8,bool,uint256[])[],address)
+          handler: handleVaultCreated
+      file: ./src/mappings/vault.ts
+  - name: UniswapV2Factory
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ magicswapv2_uniswapv2_factory_address }}"
+      abi: UniswapV2Factory
+      startBlock: {{ magicswapv2_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Pair
+      abis:
+        - name: UniswapV2Factory
+          file: ./abis/UniswapV2Factory.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+      eventHandlers:
+        - event: DefaultFeesSet((uint256,uint256))
+          handler: handleDefaultFeesSet
+        - event: LpFeesSet(indexed address,uint256,bool)
+          handler: handleLpFeesSet
+        - event: PairCreated(indexed address,indexed address,address,uint256)
+          handler: handlePairCreated
+          calls:
+            ERC20.name0: ERC20[event.params.token0].name()
+            ERC20.name1: ERC20[event.params.token1].name()
+            ERC20.symbol0: ERC20[event.params.token0].symbol()
+            ERC20.symbol1: ERC20[event.params.token1].symbol()
+            ERC20.totalSupply0: ERC20[event.params.token0].totalSupply()
+            ERC20.totalSupply1: ERC20[event.params.token1].totalSupply()
+            ERC20.decimals0: ERC20[event.params.token0].decimals()
+            ERC20.decimals1: ERC20[event.params.token1].decimals()
+        - event: ProtocolFeeBeneficiarySet(address)
+          handler: handleProtocolFeeBeneficiarySet
+        - event: ProtocolFeesSet(indexed address,uint256,bool)
+          handler: handleProtocolFeesSet
+        - event: RoyaltiesFeesSet(indexed address,address,uint256)
+          handler: handleRoyaltiesFeesSet
+      file: ./src/mappings/factory.ts
+  - name: MagicswapV2Router
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ magicswapv2_router_address }}"
+      abi: MagicswapV2Router
+      startBlock: {{ magicswapv2_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Pair
+      abis:
+        - name: MagicswapV2Router
+          file: ./abis/MagicswapV2Router.json
+      eventHandlers:
+        - event: NFTLiquidityAdded(indexed address,address,(address,address[],uint256[],uint256[]))
+          handler: handleNftLiquidityAdded
+        - event: NFTLiquidityRemoved(indexed address,address,(address,address[],uint256[],uint256[]))
+          handler: handleNftLiquidityRemoved
+        - event: NFTNFTLiquidityAdded(indexed address,address,(address,address[],uint256[],uint256[]),(address,address[],uint256[],uint256[]))
+          handler: handleNftNftLiquidityAdded
+        - event: NFTNFTLiquidityRemoved(indexed address,address,(address,address[],uint256[],uint256[]),(address,address[],uint256[],uint256[]))
+          handler: handleNftNftLiquidityRemoved
+      file: ./src/mappings/router.ts
+  - name: ChainlinkAggregator
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ magic_usd_price_feed_address }}"
+      abi: ChainlinkAggregator
+      startBlock: {{ magicswapv2_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Factory
+      abis:
+        - name: ChainlinkAggregator
+          file: ./abis/ChainlinkAggregator.json
+      eventHandlers:
+        - event: AnswerUpdated(indexed int256,indexed uint256,uint256)
+          handler: handleMagicUSDUpdated
+      file: ./src/mappings/price.ts
+templates:
+  - name: UniswapV2Pair
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      abi: UniswapV2Pair
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Pair
+      abis:
+        - name: UniswapV2Pair
+          file: ./abis/UniswapV2Pair.json
+      eventHandlers:
+        - event: Burn(indexed address,uint256,uint256,indexed address)
+          handler: handleBurn
+        - event: Mint(indexed address,uint256,uint256)
+          handler: handleMint
+        - event: Swap(indexed address,uint256,uint256,uint256,uint256,indexed address)
+          handler: handleSwap
+        - event: Sync(uint112,uint112)
+          handler: handleSync
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransfer
+      file: ./src/mappings/pair.ts
+  - name: NftVault
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      abi: NftVault
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Token
+      abis:
+        - name: NftVault
+          file: ./abis/NftVault.json
+      eventHandlers:
+        - event: Deposit(indexed address,indexed address,uint256,uint256)
+          handler: handleDeposit
+        - event: Withdraw(indexed address,indexed address,uint256,uint256)
+          handler: handleWithdraw
+      file: ./src/mappings/vault.ts

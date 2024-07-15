@@ -81,6 +81,14 @@ export const USDT_WETH_PAIR =
   "{{usdt_weth_pair}}{{^usdt_weth_pair}}{{burner_address}}{{/usdt_weth_pair}}";
 export const MAGICSWAP_TOKEN_WHITELIST = [NATIVE.toHexString()];
 
+// Magicswap v2
+export const MAGICSWAP_V2_FACTORY_ADDRESS = Address.fromString(
+  "{{magicswapv2_uniswapv2_factory_address}}{{^magicswapv2_uniswapv2_factory_address}}{{burner_address}}{{/magicswapv2_uniswapv2_factory_address}}"
+);
+export const MAGICSWAP_V2_ROUTER_ADDRESS = Address.fromString(
+  "{{magicswapv2_router_address}}{{^magicswapv2_router_address}}{{burner_address}}{{/magicswapv2_router_address}}"
+);
+
 // SMOL
 export const SMOL_RENDERER_ADDRESS = Address.fromString(
   "{{smol_renderer_address}}{{^smol_renderer_address}}{{burner_address}}{{/smol_renderer_address}}"

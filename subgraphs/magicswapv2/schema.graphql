@@ -1,0 +1,174 @@
+enum NftType {
+  ERC721
+  ERC1155
+}
+
+enum TransactionType {
+  Swap
+  Deposit
+  Withdrawal
+}
+
+type Factory @entity {
+  id: Bytes!
+
+  pairCount: BigInt!
+  volumeUSD: BigDecimal!
+  reserveNFT: BigDecimal!
+  reserveUSD: BigDecimal!
+  txCount: BigInt!
+  userCount: BigInt!
+
+  magicUSD: BigDecimal!
+
+  lpFee: BigDecimal!
+  protocolFee: BigDecimal!
+  protocolFeeBeneficiary: Bytes
+}
+
+type DayData @entity {
+  id: Bytes!
+
+  date: BigInt!
+
+  reserveUSD: BigDecimal!
+  reserveNFT: BigDecimal!
+  volumeUSD: BigDecimal!
+  txCount: BigInt!
+}
+
+type Collection @entity {
+  id: Bytes!
+
+  type: NftType!
+
+  vaultCollections: [VaultCollection!]! @derivedFrom(field: "collection")
+}
+
+type VaultCollection @entity {
+  id: Bytes!
+
+  vault: Token!
+  collection: Collection!
+  tokenIds: [BigInt!]
+}
+
+type Token @entity {
+  id: Bytes!
+
+  name: String!
+  symbol: String!
+  totalSupply: BigInt!
+  decimals: BigInt!
+  decimalDivisor: BigDecimal!
+  isNFT: Boolean!
+
+  vaultCollections: [VaultCollection!]! @derivedFrom(field: "vault")
+  vaultReserveItems: [VaultReserveItem!]! @derivedFrom(field: "vault")
+
+  magicPairs: [Pair!]!
+  basePairs: [Pair!]! @derivedFrom(field: "token0")
+  quotePairs: [Pair!]! @derivedFrom(field: "token1")
+
+  volume: BigDecimal!
+  volumeUSD: BigDecimal!
+  txCount: BigInt!
+
+  derivedMAGIC: BigDecimal!
+}
+
+type VaultReserveItem @entity {
+  id: Bytes!
+
+  vault: Token!
+  collection: Collection!
+  tokenId: BigInt!
+  amount: Int!
+}
+
+type Pair @entity {
+  id: Bytes!
+
+  token0: Token!
+  token1: Token!
+  reserve0: BigDecimal!
+  reserve1: BigDecimal!
+  reserveUSD: BigDecimal!
+  totalSupply: BigInt!
+
+  volume0: BigDecimal!
+  volume1: BigDecimal!
+  volumeUSD: BigDecimal!
+  txCount: BigInt!
+
+  lpFee: BigDecimal!
+  protocolFee: BigDecimal!
+  royaltiesFee: BigDecimal!
+  royaltiesBeneficiary: Bytes
+  totalFee: BigDecimal!
+
+  transactions: [Transaction!]! @derivedFrom(field: "pair")
+  liquidityPositions: [LiquidityPosition!]! @derivedFrom(field: "pair")
+  dayData: [PairDayData!]! @derivedFrom(field: "pair")
+}
+
+type PairDayData @entity {
+  id: Bytes!
+
+  pair: Pair!
+  date: BigInt!
+
+  reserve0: BigDecimal!
+  reserve1: BigDecimal!
+  reserveUSD: BigDecimal!
+  totalSupply: BigInt!
+
+  volume0: BigDecimal!
+  volume1: BigDecimal!
+  volumeUSD: BigDecimal!
+  txCount: BigInt!
+}
+
+type User @entity {
+  id: Bytes!
+
+  liquidityPositionCount: BigInt!
+
+  transactions: [Transaction!]! @derivedFrom(field: "user")
+  liquidityPositions: [LiquidityPosition!]! @derivedFrom(field: "user")
+}
+
+type LiquidityPosition @entity {
+  id: Bytes!
+
+  pair: Pair!
+  user: User!
+
+  balance: BigInt!
+}
+
+type Transaction @entity {
+  id: Bytes!
+
+  hash: Bytes!
+  timestamp: BigInt!
+  type: TransactionType
+  user: User
+
+  pair: Pair
+  amount0: BigDecimal!
+  amount1: BigDecimal!
+  amountUSD: BigDecimal!
+  isAmount1Out: Boolean
+  items: [TransactionItem!]! @derivedFrom(field: "transaction")
+}
+
+type TransactionItem @entity(immutable: true) {
+  id: Bytes!
+
+  transaction: Transaction!
+  vault: Token!
+  collection: Collection!
+  tokenId: BigInt!
+  amount: Int!
+}

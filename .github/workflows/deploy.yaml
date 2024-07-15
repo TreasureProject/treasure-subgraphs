@@ -15,6 +15,7 @@ on:
           - bridgeworld-kote
           - bridgeworld-recruits
           - magicswap-exchange
+          - magicswapv2
           - smol
       version:
         description: Subgraph version
