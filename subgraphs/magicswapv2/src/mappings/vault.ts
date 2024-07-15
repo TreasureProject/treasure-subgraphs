@@ -14,14 +14,17 @@ import {
   getOrCreateTransaction,
   getOrCreateVaultReserveItem,
 } from "../helpers";
+import { exponentToBigDecimal } from "../utils";
 
 export function handleVaultCreated(event: VaultCreated): void {
   const params = event.params;
 
   const vault = new Token(params.vault);
+  const decimals = BigInt.fromI32(18);
   vault.name = params.name;
   vault.symbol = params.symbol;
-  vault.decimals = BigInt.fromI32(18);
+  vault.decimals = decimals;
+  vault.decimalDivisor = exponentToBigDecimal(decimals);
   vault.totalSupply = ZERO_BI;
   vault.isNFT = true;
   vault.magicPairs = [];
