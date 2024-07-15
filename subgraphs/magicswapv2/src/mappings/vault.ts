@@ -1,7 +1,9 @@
+import { BigInt } from "@graphprotocol/graph-ts";
+
 import { VaultCreated } from "../../generated/NftVaultFactory/NftVaultFactory";
 import { Token, VaultCollection } from "../../generated/schema";
 import { ZERO_BD, ZERO_BI } from "../const";
-import { getOrCreateCollection, setTokenContractData } from "../helpers";
+import { getOrCreateCollection } from "../helpers";
 
 export function handleVaultCreated(event: VaultCreated): void {
   const params = event.params;
@@ -9,7 +11,8 @@ export function handleVaultCreated(event: VaultCreated): void {
   const vault = new Token(params.vault);
   vault.name = params.name;
   vault.symbol = params.symbol;
-  setTokenContractData(vault, true);
+  vault.decimals = BigInt.fromI32(18);
+  vault.totalSupply = ZERO_BI;
   vault.isNFT = true;
   vault.magicPairs = [];
   vault.volume = ZERO_BD;

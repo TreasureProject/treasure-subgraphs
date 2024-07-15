@@ -96,29 +96,24 @@ export const getOrCreateLiquidityPosition = (
   return liquidityPosition;
 };
 
-export const setTokenContractData = (
-  token: Token,
-  skipNameAndSymbol: bool = false
-): void => {
+const setTokenContractData = (token: Token): void => {
   const address = Address.fromBytes(token.id);
   const contract = ERC20.bind(address);
 
-  if (!skipNameAndSymbol) {
-    const nameResult = contract.try_name();
-    if (nameResult.reverted) {
-      log.error("Error reading token name: {}", [address.toHexString()]);
-      token.name = "";
-    } else {
-      token.name = nameResult.value;
-    }
+  const nameResult = contract.try_name();
+  if (nameResult.reverted) {
+    log.error("Error reading token name: {}", [address.toHexString()]);
+    token.name = "";
+  } else {
+    token.name = nameResult.value;
+  }
 
-    const symbolResult = contract.try_symbol();
-    if (symbolResult.reverted) {
-      log.error("Error reading token symbol: {}", [address.toHexString()]);
-      token.symbol = "";
-    } else {
-      token.symbol = symbolResult.value;
-    }
+  const symbolResult = contract.try_symbol();
+  if (symbolResult.reverted) {
+    log.error("Error reading token symbol: {}", [address.toHexString()]);
+    token.symbol = "";
+  } else {
+    token.symbol = symbolResult.value;
   }
 
   const totalSupplyResult = contract.try_totalSupply();
