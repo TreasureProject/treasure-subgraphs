@@ -156,7 +156,6 @@ type Transaction @entity {
   user: User
 
   pair: Pair
-  swap: Transaction
   amount0: BigDecimal!
   amount1: BigDecimal!
   amountUSD: BigDecimal!

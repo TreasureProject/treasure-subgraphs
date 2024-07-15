@@ -12,6 +12,7 @@ import { ZERO_BD, ZERO_BI } from "../const";
 import {
   getOrCreateCollection,
   getOrCreateTransaction,
+  getOrCreateUser,
   getOrCreateVaultReserveItem,
 } from "../helpers";
 import { exponentToBigDecimal } from "../utils";
@@ -95,6 +96,9 @@ export function handleWithdraw(event: Withdraw): void {
   }
 
   const transaction = getOrCreateTransaction(event);
+  transaction.user = getOrCreateUser(params.to).id;
+  transaction.save();
+
   const transactionItem = new TransactionItem(
     transaction.id
       .concat(vault)

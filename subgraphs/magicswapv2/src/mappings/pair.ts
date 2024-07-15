@@ -253,7 +253,9 @@ export function handleSwap(event: Swap): void {
   // Log Transaction
   const transaction = getOrCreateTransaction(event);
   transaction.type = "Swap";
-  transaction.user = getOrCreateUser(params.to).id;
+  if (!transaction.user) {
+    transaction.user = getOrCreateUser(event.transaction.from).id;
+  }
   transaction.pair = pair.id;
   transaction.amount0 = amount0;
   transaction.amount1 = amount1;
