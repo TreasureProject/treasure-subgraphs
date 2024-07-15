@@ -69,5 +69,10 @@
   "smol_renderer_address": "0x2d79de1b69bfdde8708acaef7bf52b6bbc83afd5",
 
   "magicswap_factory_address": "0x015e379Ce0Ff195228b3A9eBDFA13F9afC155Dd7",
-  "magicswap_factory_start_block": 20547275
+  "magicswap_factory_start_block": 20547275,
+  "magicswapv2_nft_vault_factory_address": "0x1638230cce426ad403d6ef1538629a0490f931dd",
+  "magicswapv2_uniswapv2_factory_address": "0x77fa938998e196701c324149f771efd6e980df0a",
+  "magicswapv2_router_address": "0xb740d5804ea2061432469119cfa40cbb4586dd17",
+  "magic_usd_price_feed_address": "0x5ab0b1e2604d4b708721bc3cd1ce962958b4297e",
+  "magicswapv2_start_block": 232580414
 }
