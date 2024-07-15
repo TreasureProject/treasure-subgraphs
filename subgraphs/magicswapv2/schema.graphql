@@ -162,8 +162,6 @@ type Transaction @entity {
   amount1: BigDecimal!
   amountUSD: BigDecimal!
   isAmount1Out: Boolean
-
-  _items: [TransactionItem!]
   items0: [TransactionItem!]
   items1: [TransactionItem!]
 }
