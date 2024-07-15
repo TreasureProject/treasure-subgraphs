@@ -22,7 +22,6 @@ import {
   PairDayData,
   Token,
   Transaction,
-  TransactionItem,
   User,
   VaultReserveItem,
 } from "../generated/schema";

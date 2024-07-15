@@ -1,5 +1,7 @@
 import { Address, log, store } from "@graphprotocol/graph-ts";
 
+import { MAGICSWAP_V2_ROUTER_ADDRESS } from "@treasure/constants";
+
 import { Pair, Token } from "../../generated/schema";
 import {
   Burn,
@@ -254,7 +256,11 @@ export function handleSwap(event: Swap): void {
   const transaction = getOrCreateTransaction(event);
   transaction.type = "Swap";
   if (!transaction.user) {
-    transaction.user = getOrCreateUser(event.transaction.from).id;
+    if (params.to.equals(MAGICSWAP_V2_ROUTER_ADDRESS)) {
+      transaction.user = getOrCreateUser(event.transaction.from).id;
+    } else {
+      transaction.user = getOrCreateUser(params.to).id;
+    }
   }
   transaction.pair = pair.id;
   transaction.amount0 = amount0;
