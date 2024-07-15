@@ -1,9 +1,19 @@
-import { BigInt } from "@graphprotocol/graph-ts";
+import { BigInt, store } from "@graphprotocol/graph-ts";
 
 import { VaultCreated } from "../../generated/NftVaultFactory/NftVaultFactory";
-import { Token, VaultCollection } from "../../generated/schema";
+import {
+  Token,
+  TransactionItem,
+  VaultCollection,
+} from "../../generated/schema";
+import { NftVault } from "../../generated/templates";
+import { Deposit, Withdraw } from "../../generated/templates/NftVault/NftVault";
 import { ZERO_BD, ZERO_BI } from "../const";
-import { getOrCreateCollection } from "../helpers";
+import {
+  getOrCreateCollection,
+  getOrCreateTransaction,
+  getOrCreateVaultReserveItem,
+} from "../helpers";
 
 export function handleVaultCreated(event: VaultCreated): void {
   const params = event.params;
@@ -34,4 +44,64 @@ export function handleVaultCreated(event: VaultCreated): void {
     }
     vaultCollection.save();
   }
+
+  NftVault.create(params.vault);
+}
+
+export function handleDeposit(event: Deposit): void {
+  const params = event.params;
+  const vault = event.address;
+
+  const reserveItem = getOrCreateVaultReserveItem(
+    vault,
+    params.collection,
+    params.tokenId
+  );
+  reserveItem.amount += params.amount.toI32();
+  reserveItem.save();
+
+  const transaction = getOrCreateTransaction(event);
+  const transactionItem = new TransactionItem(
+    transaction.id
+      .concat(vault)
+      .concat(params.collection)
+      .concatI32(params.tokenId.toI32())
+  );
+  transactionItem.transaction = transaction.id;
+  transactionItem.vault = vault;
+  transactionItem.collection = params.collection;
+  transactionItem.tokenId = params.tokenId;
+  transactionItem.amount = params.amount.toI32();
+  transactionItem.save();
+}
+
+export function handleWithdraw(event: Withdraw): void {
+  const params = event.params;
+  const vault = event.address;
+
+  const reserveItem = getOrCreateVaultReserveItem(
+    vault,
+    params.collection,
+    params.tokenId
+  );
+  reserveItem.amount -= params.amount.toI32();
+  if (reserveItem.amount > 0) {
+    reserveItem.save();
+  } else {
+    store.remove("VaultReserveItem", reserveItem.id.toHexString());
+  }
+
+  const transaction = getOrCreateTransaction(event);
+  const transactionItem = new TransactionItem(
+    transaction.id
+      .concat(vault)
+      .concat(params.collection)
+      .concatI32(params.tokenId.toI32())
+  );
+  transactionItem.transaction = transaction.id;
+  transactionItem.vault = vault;
+  transactionItem.collection = params.collection;
+  transactionItem.tokenId = params.tokenId;
+  transactionItem.amount = params.amount.toI32();
+  transactionItem.save();
 }

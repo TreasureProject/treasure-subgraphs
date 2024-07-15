@@ -179,6 +179,7 @@ export const getOrCreateTransaction = (event: ethereum.Event): Transaction => {
     transaction.amount0 = ZERO_BD;
     transaction.amount1 = ZERO_BD;
     transaction.amountUSD = ZERO_BD;
+    transaction.save();
   }
 
   return transaction;

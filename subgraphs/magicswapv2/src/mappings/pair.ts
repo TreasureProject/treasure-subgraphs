@@ -1,6 +1,6 @@
-import { Address, Bytes, log, store } from "@graphprotocol/graph-ts";
+import { Address, log, store } from "@graphprotocol/graph-ts";
 
-import { Pair, Token, Transaction } from "../../generated/schema";
+import { Pair, Token } from "../../generated/schema";
 import {
   Burn,
   Mint,
@@ -89,14 +89,13 @@ export function handleBurn(event: Burn): void {
 
   // Update time interval stats
   updateDayData(event.block.timestamp);
-
   updatePairDayData(pair, event.block.timestamp);
 
   // Update Transaction
   const transaction = getOrCreateTransaction(event);
   transaction.type = "Withdrawal";
   if (!transaction.user) {
-    transaction.user = getOrCreateUser(event.transaction.from).id;
+    transaction.user = getOrCreateUser(params.to).id;
   }
   transaction.pair = pair.id;
   transaction.amount0 = amount0;
@@ -164,14 +163,13 @@ export function handleMint(event: Mint): void {
 
   // Update time interval stats
   updateDayData(event.block.timestamp);
-
   updatePairDayData(pair, event.block.timestamp);
 
   // Update Transaction
   const transaction = getOrCreateTransaction(event);
   transaction.type = "Deposit";
   if (!transaction.user) {
-    transaction.user = getOrCreateUser(event.transaction.from).id;
+    transaction.user = getOrCreateUser(params.sender).id;
   }
   transaction.pair = pair.id;
   transaction.amount0 = amount0;
@@ -253,11 +251,7 @@ export function handleSwap(event: Swap): void {
   pairDayData.save();
 
   // Log Transaction
-  const transaction = new Transaction(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
-  );
-  transaction.hash = event.transaction.hash;
-  transaction.timestamp = event.block.timestamp;
+  const transaction = getOrCreateTransaction(event);
   transaction.type = "Swap";
   transaction.user = getOrCreateUser(params.to).id;
   transaction.pair = pair.id;
