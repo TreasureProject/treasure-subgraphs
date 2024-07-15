@@ -1,6 +1,8 @@
-import { Address, Bytes, log, store } from "@graphprotocol/graph-ts";
+import { Address, log, store } from "@graphprotocol/graph-ts";
 
-import { Pair, Token, Transaction } from "../../generated/schema";
+import { MAGICSWAP_V2_ROUTER_ADDRESS } from "@treasure/constants";
+
+import { Pair, Token } from "../../generated/schema";
 import {
   Burn,
   Mint,
@@ -11,14 +13,12 @@ import {
 import { TWO_BD, ZERO_BI } from "../const";
 import { ONE_BI } from "../const";
 import {
-  generateTransactionItems,
   getDerivedMagic,
   getOrCreateFactory,
   getOrCreateLiquidityPosition,
   getOrCreateTransaction,
   getOrCreateUser,
   isMagic,
-  populateTransactionItems,
   updateDayData,
   updatePairDayData,
 } from "../helpers";
@@ -91,17 +91,18 @@ export function handleBurn(event: Burn): void {
 
   // Update time interval stats
   updateDayData(event.block.timestamp);
-
   updatePairDayData(pair, event.block.timestamp);
 
   // Update Transaction
-  const transaction = getOrCreateTransaction(event, "Withdrawal");
-  transaction.user = getOrCreateUser(event.transaction.from).id; // TODO: handle case where swap result is sent to someone other than tx sender
+  const transaction = getOrCreateTransaction(event);
+  transaction.type = "Withdrawal";
+  if (!transaction.user) {
+    transaction.user = getOrCreateUser(params.to).id;
+  }
   transaction.pair = pair.id;
   transaction.amount0 = amount0;
   transaction.amount1 = amount1;
   transaction.amountUSD = amountUSD;
-  populateTransactionItems(transaction, pair);
   transaction.save();
 }
 
@@ -164,17 +165,18 @@ export function handleMint(event: Mint): void {
 
   // Update time interval stats
   updateDayData(event.block.timestamp);
-
   updatePairDayData(pair, event.block.timestamp);
 
   // Update Transaction
-  const transaction = getOrCreateTransaction(event, "Deposit");
-  transaction.user = getOrCreateUser(event.transaction.from).id; // TODO: handle case where swap result is sent to someone other than tx sender
+  const transaction = getOrCreateTransaction(event);
+  transaction.type = "Deposit";
+  if (!transaction.user) {
+    transaction.user = getOrCreateUser(params.sender).id;
+  }
   transaction.pair = pair.id;
   transaction.amount0 = amount0;
   transaction.amount1 = amount1;
   transaction.amountUSD = amountUSD;
-  populateTransactionItems(transaction, pair);
   transaction.save();
 }
 
@@ -251,44 +253,20 @@ export function handleSwap(event: Swap): void {
   pairDayData.save();
 
   // Log Transaction
-  const transaction = new Transaction(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
-  );
-  transaction.hash = event.transaction.hash;
-  transaction.timestamp = event.block.timestamp;
+  const transaction = getOrCreateTransaction(event);
   transaction.type = "Swap";
-  transaction.user = getOrCreateUser(event.transaction.from).id; // TODO: handle case where swap result is sent to someone other than tx sender
+  if (!transaction.user) {
+    if (params.to.equals(MAGICSWAP_V2_ROUTER_ADDRESS)) {
+      transaction.user = getOrCreateUser(event.transaction.from).id;
+    } else {
+      transaction.user = getOrCreateUser(params.to).id;
+    }
+  }
   transaction.pair = pair.id;
   transaction.amount0 = amount0;
   transaction.amount1 = amount1;
   transaction.amountUSD = amountUSD;
   transaction.isAmount1Out = isAmount1Out;
-
-  if (token0.isNFT || token1.isNFT) {
-    const vaultTransaction = getOrCreateTransaction(event);
-
-    // Replace Vault Transaction with this swap
-    if (vaultTransaction._items && !vaultTransaction.pair) {
-      const splitItems = generateTransactionItems(
-        vaultTransaction._items as Bytes[],
-        pair
-      );
-
-      if (splitItems[0].length > 0) {
-        transaction.items0 = splitItems[0];
-      }
-
-      if (splitItems[1].length > 0) {
-        transaction.items1 = splitItems[1];
-      }
-
-      store.remove("Transaction", vaultTransaction.id.toHexString());
-    } else {
-      vaultTransaction.swap = transaction.id;
-      vaultTransaction.save();
-    }
-  }
-
   transaction.save();
 }
 

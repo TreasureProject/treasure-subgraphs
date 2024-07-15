@@ -1,4 +1,4 @@
-specVersion: 0.0.4
+specVersion: 1.2.0
 schema:
   file: ./schema.graphql
 dataSources:
@@ -51,6 +51,15 @@ dataSources:
           handler: handleLpFeesSet
         - event: PairCreated(indexed address,indexed address,address,uint256)
           handler: handlePairCreated
+          calls:
+            ERC20.name0: ERC20[event.params.token0].name()
+            ERC20.name1: ERC20[event.params.token1].name()
+            ERC20.symbol0: ERC20[event.params.token0].symbol()
+            ERC20.symbol1: ERC20[event.params.token1].symbol()
+            ERC20.totalSupply0: ERC20[event.params.token0].totalSupply()
+            ERC20.totalSupply1: ERC20[event.params.token1].totalSupply()
+            ERC20.decimals0: ERC20[event.params.token0].decimals()
+            ERC20.decimals1: ERC20[event.params.token1].decimals()
         - event: ProtocolFeeBeneficiarySet(address)
           handler: handleProtocolFeeBeneficiarySet
         - event: ProtocolFeesSet(indexed address,uint256,bool)
@@ -58,6 +67,32 @@ dataSources:
         - event: RoyaltiesFeesSet(indexed address,address,uint256)
           handler: handleRoyaltiesFeesSet
       file: ./src/mappings/factory.ts
+  - name: MagicswapV2Router
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ magicswapv2_router_address }}"
+      abi: MagicswapV2Router
+      startBlock: {{ magicswapv2_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Pair
+      abis:
+        - name: MagicswapV2Router
+          file: ./abis/MagicswapV2Router.json
+      eventHandlers:
+        - event: NFTLiquidityAdded(indexed address,address,(address,address[],uint256[],uint256[]))
+          handler: handleNftLiquidityAdded
+        - event: NFTLiquidityRemoved(indexed address,address,(address,address[],uint256[],uint256[]))
+          handler: handleNftLiquidityRemoved
+        - event: NFTNFTLiquidityAdded(indexed address,address,(address,address[],uint256[],uint256[]),(address,address[],uint256[],uint256[]))
+          handler: handleNftNftLiquidityAdded
+        - event: NFTNFTLiquidityRemoved(indexed address,address,(address,address[],uint256[],uint256[]),(address,address[],uint256[],uint256[]))
+          handler: handleNftNftLiquidityRemoved
+      file: ./src/mappings/router.ts
   - name: ChainlinkAggregator
     kind: ethereum/contract
     network: {{ network }}

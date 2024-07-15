@@ -7,7 +7,6 @@ enum TransactionType {
   Swap
   Deposit
   Withdrawal
-  Other
 }
 
 type Factory @entity {
@@ -153,24 +152,21 @@ type Transaction @entity {
 
   hash: Bytes!
   timestamp: BigInt!
-  type: TransactionType!
-  user: User!
+  type: TransactionType
+  user: User
 
   pair: Pair
-  swap: Transaction
   amount0: BigDecimal!
   amount1: BigDecimal!
   amountUSD: BigDecimal!
   isAmount1Out: Boolean
-
-  _items: [TransactionItem!]
-  items0: [TransactionItem!]
-  items1: [TransactionItem!]
+  items: [TransactionItem!]! @derivedFrom(field: "transaction")
 }
 
 type TransactionItem @entity(immutable: true) {
   id: Bytes!
 
+  transaction: Transaction!
   vault: Token!
   collection: Collection!
   tokenId: BigInt!

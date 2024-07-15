@@ -1,36 +1,32 @@
-import { Bytes, log, store } from "@graphprotocol/graph-ts";
+import { BigInt, store } from "@graphprotocol/graph-ts";
 
 import { VaultCreated } from "../../generated/NftVaultFactory/NftVaultFactory";
 import {
-  Pair,
   Token,
-  Transaction,
   TransactionItem,
   VaultCollection,
-  VaultReserveItem,
 } from "../../generated/schema";
 import { NftVault } from "../../generated/templates";
-import {
-  Deposit as DepositEvent,
-  Withdraw,
-} from "../../generated/templates/NftVault/NftVault";
+import { Deposit, Withdraw } from "../../generated/templates/NftVault/NftVault";
 import { ZERO_BD, ZERO_BI } from "../const";
 import {
-  addTransactionItems,
-  addTransactionItems0,
-  addTransactionItems1,
   getOrCreateCollection,
   getOrCreateTransaction,
-  setTokenContractData,
+  getOrCreateUser,
+  getOrCreateVaultReserveItem,
 } from "../helpers";
+import { exponentToBigDecimal } from "../utils";
 
 export function handleVaultCreated(event: VaultCreated): void {
   const params = event.params;
 
   const vault = new Token(params.vault);
+  const decimals = BigInt.fromI32(18);
   vault.name = params.name;
   vault.symbol = params.symbol;
-  setTokenContractData(vault, true);
+  vault.decimals = decimals;
+  vault.decimalDivisor = exponentToBigDecimal(decimals);
+  vault.totalSupply = ZERO_BI;
   vault.isNFT = true;
   vault.magicPairs = [];
   vault.volume = ZERO_BD;
@@ -56,54 +52,42 @@ export function handleVaultCreated(event: VaultCreated): void {
   NftVault.create(params.vault);
 }
 
-export function handleDeposit(event: DepositEvent): void {
+export function handleDeposit(event: Deposit): void {
   const params = event.params;
+  const vault = event.address;
 
-  const reserveItemId = event.address
-    .concat(params.collection)
-    .concatI32(params.tokenId.toI32());
-  let reserveItem = VaultReserveItem.load(reserveItemId);
-  if (!reserveItem) {
-    reserveItem = new VaultReserveItem(reserveItemId);
-    reserveItem.vault = event.address;
-    reserveItem.collection = params.collection;
-    reserveItem.tokenId = params.tokenId;
-    reserveItem.amount = 0;
-  }
-
+  const reserveItem = getOrCreateVaultReserveItem(
+    vault,
+    params.collection,
+    params.tokenId
+  );
   reserveItem.amount += params.amount.toI32();
   reserveItem.save();
 
+  const transaction = getOrCreateTransaction(event);
   const transactionItem = new TransactionItem(
-    event.transaction.hash
-      .concat(event.address)
+    transaction.id
+      .concat(vault)
       .concat(params.collection)
       .concatI32(params.tokenId.toI32())
   );
-  transactionItem.vault = event.address;
+  transactionItem.transaction = transaction.id;
+  transactionItem.vault = vault;
   transactionItem.collection = params.collection;
   transactionItem.tokenId = params.tokenId;
   transactionItem.amount = params.amount.toI32();
   transactionItem.save();
-
-  const transaction = getOrCreateTransaction(event, "Deposit");
-  addTransactionItems(transaction, [transactionItem.id]);
-  transaction.save();
 }
 
 export function handleWithdraw(event: Withdraw): void {
   const params = event.params;
+  const vault = event.address;
 
-  const reserveItem = VaultReserveItem.load(
-    event.address.concat(params.collection).concatI32(params.tokenId.toI32())
+  const reserveItem = getOrCreateVaultReserveItem(
+    vault,
+    params.collection,
+    params.tokenId
   );
-  if (!reserveItem) {
-    log.warning("Withdrawing unknown reserve item: {}", [
-      event.transaction.hash.toHexString(),
-    ]);
-    return;
-  }
-
   reserveItem.amount -= params.amount.toI32();
   if (reserveItem.amount > 0) {
     reserveItem.save();
@@ -111,53 +95,20 @@ export function handleWithdraw(event: Withdraw): void {
     store.remove("VaultReserveItem", reserveItem.id.toHexString());
   }
 
+  const transaction = getOrCreateTransaction(event);
+  transaction.user = getOrCreateUser(params.to).id;
+  transaction.save();
+
   const transactionItem = new TransactionItem(
-    event.transaction.hash
-      .concat(event.address)
+    transaction.id
+      .concat(vault)
       .concat(params.collection)
       .concatI32(params.tokenId.toI32())
   );
-  transactionItem.vault = event.address;
+  transactionItem.transaction = transaction.id;
+  transactionItem.vault = vault;
   transactionItem.collection = params.collection;
   transactionItem.tokenId = params.tokenId;
   transactionItem.amount = params.amount.toI32();
   transactionItem.save();
-
-  const transaction = getOrCreateTransaction(event, "Withdrawal");
-  let processedItems = false;
-
-  if (transaction.swap) {
-    const swapTransaction = Transaction.load(transaction.swap as Bytes);
-    if (swapTransaction && swapTransaction.pair) {
-      const pair = Pair.load(swapTransaction.pair as Bytes);
-      if (pair) {
-        if (pair.token0.equals(event.address)) {
-          addTransactionItems0(swapTransaction, [transactionItem.id]);
-          swapTransaction.save();
-          processedItems = true;
-        } else if (pair.token1.equals(event.address)) {
-          addTransactionItems1(swapTransaction, [transactionItem.id]);
-          swapTransaction.save();
-          processedItems = true;
-        }
-      }
-    }
-  } else if (transaction.pair) {
-    const pair = Pair.load(transaction.pair as Bytes);
-    if (pair) {
-      if (pair.token0.equals(event.address)) {
-        addTransactionItems0(transaction, [transactionItem.id]);
-        processedItems = true;
-      } else if (pair.token1.equals(event.address)) {
-        addTransactionItems1(transaction, [transactionItem.id]);
-        processedItems = true;
-      }
-    }
-  }
-
-  if (!processedItems) {
-    addTransactionItems(transaction, [transactionItem.id]);
-  }
-
-  transaction.save();
 }

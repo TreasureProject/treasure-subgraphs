@@ -22,8 +22,8 @@ import {
   PairDayData,
   Token,
   Transaction,
-  TransactionItem,
   User,
+  VaultReserveItem,
 } from "../generated/schema";
 import { ONE_BD, ONE_BI, ZERO_BD, ZERO_BI } from "./const";
 import { exponentToBigDecimal } from "./utils";
@@ -95,29 +95,24 @@ export const getOrCreateLiquidityPosition = (
   return liquidityPosition;
 };
 
-export const setTokenContractData = (
-  token: Token,
-  skipNameAndSymbol: bool = false
-): void => {
+const setTokenContractData = (token: Token): void => {
   const address = Address.fromBytes(token.id);
   const contract = ERC20.bind(address);
 
-  if (!skipNameAndSymbol) {
-    const nameResult = contract.try_name();
-    if (nameResult.reverted) {
-      log.error("Error reading token name: {}", [address.toHexString()]);
-      token.name = "";
-    } else {
-      token.name = nameResult.value;
-    }
+  const nameResult = contract.try_name();
+  if (nameResult.reverted) {
+    log.error("Error reading token name: {}", [address.toHexString()]);
+    token.name = "";
+  } else {
+    token.name = nameResult.value;
+  }
 
-    const symbolResult = contract.try_symbol();
-    if (symbolResult.reverted) {
-      log.error("Error reading token symbol: {}", [address.toHexString()]);
-      token.symbol = "";
-    } else {
-      token.symbol = symbolResult.value;
-    }
+  const symbolResult = contract.try_symbol();
+  if (symbolResult.reverted) {
+    log.error("Error reading token symbol: {}", [address.toHexString()]);
+    token.symbol = "";
+  } else {
+    token.symbol = symbolResult.value;
   }
 
   const totalSupplyResult = contract.try_totalSupply();
@@ -156,81 +151,37 @@ export const getOrCreateToken = (address: Address): Token => {
   return token;
 };
 
-export const getOrCreateTransaction = (
-  event: ethereum.Event,
-  type: string = "Other"
-): Transaction => {
+export const getOrCreateVaultReserveItem = (
+  vault: Address,
+  collection: Address,
+  tokenId: BigInt
+): VaultReserveItem => {
+  const reserveItemId = vault.concat(collection).concatI32(tokenId.toI32());
+  let reserveItem = VaultReserveItem.load(reserveItemId);
+  if (!reserveItem) {
+    reserveItem = new VaultReserveItem(reserveItemId);
+    reserveItem.vault = vault;
+    reserveItem.collection = collection;
+    reserveItem.tokenId = tokenId;
+    reserveItem.amount = 0;
+  }
+
+  return reserveItem;
+};
+
+export const getOrCreateTransaction = (event: ethereum.Event): Transaction => {
   let transaction = Transaction.load(event.transaction.hash);
   if (!transaction) {
     transaction = new Transaction(event.transaction.hash);
     transaction.hash = event.transaction.hash;
     transaction.timestamp = event.block.timestamp;
-    transaction.user = getOrCreateUser(event.transaction.from).id;
     transaction.amount0 = ZERO_BD;
     transaction.amount1 = ZERO_BD;
     transaction.amountUSD = ZERO_BD;
+    transaction.save();
   }
 
-  transaction.type = type;
   return transaction;
-};
-
-export const generateTransactionItems = (
-  items: Bytes[],
-  pair: Pair
-): Bytes[][] => {
-  let items0 = [] as Bytes[];
-  let items1 = [] as Bytes[];
-  for (let i = 0; i < items.length; i += 1) {
-    const item = TransactionItem.load(items[i]);
-    if (!item) {
-      log.error("Error finding transaction item: {}", [items[i].toHexString()]);
-      continue;
-    }
-
-    if (item.vault.equals(pair.token0)) {
-      items0.push(items[i]);
-    } else if (item.vault.equals(pair.token1)) {
-      items1.push(items[i]);
-    }
-  }
-
-  return [items0, items1];
-};
-
-export const addTransactionItems = (
-  transaction: Transaction,
-  items: Bytes[]
-): void => {
-  transaction._items = ((transaction._items || []) as Bytes[]).concat(items);
-};
-
-export const addTransactionItems0 = (
-  transaction: Transaction,
-  items: Bytes[]
-): void => {
-  transaction.items0 = ((transaction.items0 || []) as Bytes[]).concat(items);
-};
-
-export const addTransactionItems1 = (
-  transaction: Transaction,
-  items: Bytes[]
-): void => {
-  transaction.items1 = ((transaction.items1 || []) as Bytes[]).concat(items);
-};
-
-export const populateTransactionItems = (
-  transaction: Transaction,
-  pair: Pair
-): void => {
-  // Move transaction items to their desginated place in pair
-  const items = transaction._items;
-  if (items && items.length > 0) {
-    const splitItems = generateTransactionItems(items, pair);
-    transaction._items = null;
-    addTransactionItems0(transaction, splitItems[0]);
-    addTransactionItems1(transaction, splitItems[1]);
-  }
 };
 
 export const isMagic = (token: Token): bool => token.id.equals(MAGIC_ADDRESS);
