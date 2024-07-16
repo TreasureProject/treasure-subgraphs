@@ -18,7 +18,6 @@ import {
   getOrCreateLiquidityPosition,
   getOrCreateTransaction,
   getOrCreateUser,
-  isMagic,
   updateDayData,
   updatePairDayData,
 } from "../helpers";
@@ -299,22 +298,20 @@ export function handleSync(event: Sync): void {
   pair.reserve1 = tokenAmountToBigDecimal(token1, params.reserve1);
 
   const factory = getOrCreateFactory();
-  const isToken0Magic = isMagic(token0);
-  const isToken1Magic = isMagic(token1);
 
-  token0.derivedMAGIC = isToken1Magic
+  token0.derivedMAGIC = token0.isMAGIC
     ? pair.reserve1.div(pair.reserve0)
     : getDerivedMagic(token0);
   token0.save();
 
-  token1.derivedMAGIC = isToken0Magic
+  token1.derivedMAGIC = token0.isMAGIC
     ? pair.reserve0.div(pair.reserve1)
     : getDerivedMagic(token1);
   token1.save();
 
-  if (isToken0Magic) {
+  if (token0.isMAGIC) {
     pair.reserveUSD = pair.reserve0.times(factory.magicUSD).times(TWO_BD);
-  } else if (isToken1Magic) {
+  } else if (token1.isMAGIC) {
     pair.reserveUSD = pair.reserve1.times(factory.magicUSD).times(TWO_BD);
   } else {
     pair.reserveUSD = pair.reserve0

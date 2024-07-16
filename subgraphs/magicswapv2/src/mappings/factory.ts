@@ -12,7 +12,7 @@ import { Pair } from "../../generated/schema";
 import { UniswapV2Pair } from "../../generated/templates";
 import { ZERO_BD, ZERO_BI } from "../const";
 import { ONE_BI } from "../const";
-import { getOrCreateFactory, getOrCreateToken, isMagic } from "../helpers";
+import { getOrCreateFactory, getOrCreateToken } from "../helpers";
 import { basisPointToBigDecimal } from "../utils";
 
 const MAX_FEE = BigDecimal.fromString("0.5");
@@ -49,10 +49,10 @@ export function handlePairCreated(event: PairCreated): void {
   factory.pairCount = factory.pairCount.plus(ONE_BI);
   factory.save();
 
-  if (isMagic(token0)) {
+  if (token0.isMAGIC) {
     token1.magicPairs = token1.magicPairs.concat([pair.id]);
     token1.save();
-  } else if (isMagic(token1)) {
+  } else if (token1.isMAGIC) {
     token0.magicPairs = token0.magicPairs.concat([pair.id]);
     token0.save();
   }
