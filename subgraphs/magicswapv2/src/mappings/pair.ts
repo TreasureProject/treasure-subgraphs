@@ -255,10 +255,12 @@ export function handleSwap(event: Swap): void {
   const transaction = getOrCreateTransaction(event);
   transaction.type = "Swap";
   if (!transaction.user) {
-    if (params.to.equals(MAGICSWAP_V2_ROUTER_ADDRESS)) {
-      transaction.user = getOrCreateUser(event.transaction.from).id;
-    } else {
+    if (!params.to.equals(MAGICSWAP_V2_ROUTER_ADDRESS)) {
       transaction.user = getOrCreateUser(params.to).id;
+    } else if (!params.sender.equals(MAGICSWAP_V2_ROUTER_ADDRESS)) {
+      transaction.user = getOrCreateUser(params.sender).id;
+    } else {
+      transaction.user = getOrCreateUser(event.transaction.from).id;
     }
   }
   transaction.pair = pair.id;
@@ -337,6 +339,11 @@ export function handleTransfer(event: Transfer): void {
     // Minted
     pair.totalSupply = pair.totalSupply.plus(params.value);
     pair.save();
+
+    // Confirm deposit user
+    const transaction = getOrCreateTransaction(event);
+    transaction.user = getOrCreateUser(params.to).id;
+    transaction.save();
   } else if (
     params.to.equals(Address.zero()) &&
     params.from.equals(event.address)
@@ -344,6 +351,12 @@ export function handleTransfer(event: Transfer): void {
     // Burned
     pair.totalSupply = pair.totalSupply.minus(params.value);
     pair.save();
+  } else if (params.to.equals(event.address)) {
+    // First stage of a burn event
+    // Confirm withdrawal user
+    const transaction = getOrCreateTransaction(event);
+    transaction.user = getOrCreateUser(params.from).id;
+    transaction.save();
   }
 
   // Update Liquidity Positions
