@@ -26,6 +26,30 @@ dataSources:
         - event: VaultCreated(string,string,indexed address,indexed uint256,(address,uint8,bool,uint256[])[],address)
           handler: handleVaultCreated
       file: ./src/mappings/vault.ts
+  - name: NftVaultFactoryV2
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ magicswapv2_nft_vault_factory_v2_address }}"
+      abi: NftVaultFactory
+      startBlock: {{ magicswapv2_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Token
+        - Collection
+        - VaultCollection
+      abis:
+        - name: NftVaultFactory
+          file: ./abis/NftVaultFactory.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+      eventHandlers:
+        - event: VaultCreated(string,string,indexed address,indexed uint256,(address,uint8,bool,uint256[])[],address)
+          handler: handleVaultCreated
+      file: ./src/mappings/vault.ts
   - name: UniswapV2Factory
     kind: ethereum/contract
     network: {{ network }}
