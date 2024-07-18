@@ -202,7 +202,15 @@ export const getDerivedMagic = (token: Token): BigDecimal => {
   }
 
   if (pair.token0.equals(token.id)) {
+    if (pair.reserve0.equals(ZERO_BD)) {
+      return ZERO_BD;
+    }
+
     return pair.reserve1.div(pair.reserve0);
+  }
+
+  if (pair.reserve1.equals(ZERO_BD)) {
+    return ZERO_BD;
   }
 
   return pair.reserve0.div(pair.reserve1);
