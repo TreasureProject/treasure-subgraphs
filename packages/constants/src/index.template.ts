@@ -88,6 +88,9 @@ export const MAGICSWAP_V2_FACTORY_ADDRESS = Address.fromString(
 export const MAGICSWAP_V2_ROUTER_ADDRESS = Address.fromString(
   "{{magicswapv2_router_address}}{{^magicswapv2_router_address}}{{burner_address}}{{/magicswapv2_router_address}}"
 );
+export const WETH_ADDRESS = Address.fromString(
+  "{{weth_address}}{{^weth_address}}{{burner_address}}{{/weth_address}}"
+);
 
 // SMOL
 export const SMOL_RENDERER_ADDRESS = Address.fromString(

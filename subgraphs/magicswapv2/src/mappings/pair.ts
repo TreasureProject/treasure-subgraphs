@@ -18,7 +18,6 @@ import {
   getOrCreateLiquidityPosition,
   getOrCreateTransaction,
   getOrCreateUser,
-  isMagic,
   updateDayData,
   updatePairDayData,
 } from "../helpers";
@@ -256,10 +255,12 @@ export function handleSwap(event: Swap): void {
   const transaction = getOrCreateTransaction(event);
   transaction.type = "Swap";
   if (!transaction.user) {
-    if (params.to.equals(MAGICSWAP_V2_ROUTER_ADDRESS)) {
-      transaction.user = getOrCreateUser(event.transaction.from).id;
-    } else {
+    if (!params.to.equals(MAGICSWAP_V2_ROUTER_ADDRESS)) {
       transaction.user = getOrCreateUser(params.to).id;
+    } else if (!params.sender.equals(MAGICSWAP_V2_ROUTER_ADDRESS)) {
+      transaction.user = getOrCreateUser(params.sender).id;
+    } else {
+      transaction.user = getOrCreateUser(event.transaction.from).id;
     }
   }
   transaction.pair = pair.id;
@@ -299,22 +300,20 @@ export function handleSync(event: Sync): void {
   pair.reserve1 = tokenAmountToBigDecimal(token1, params.reserve1);
 
   const factory = getOrCreateFactory();
-  const isToken0Magic = isMagic(token0);
-  const isToken1Magic = isMagic(token1);
 
-  token0.derivedMAGIC = isToken1Magic
+  token0.derivedMAGIC = token0.isMAGIC
     ? pair.reserve1.div(pair.reserve0)
     : getDerivedMagic(token0);
   token0.save();
 
-  token1.derivedMAGIC = isToken0Magic
+  token1.derivedMAGIC = token0.isMAGIC
     ? pair.reserve0.div(pair.reserve1)
     : getDerivedMagic(token1);
   token1.save();
 
-  if (isToken0Magic) {
+  if (token0.isMAGIC) {
     pair.reserveUSD = pair.reserve0.times(factory.magicUSD).times(TWO_BD);
-  } else if (isToken1Magic) {
+  } else if (token1.isMAGIC) {
     pair.reserveUSD = pair.reserve1.times(factory.magicUSD).times(TWO_BD);
   } else {
     pair.reserveUSD = pair.reserve0
@@ -340,6 +339,11 @@ export function handleTransfer(event: Transfer): void {
     // Minted
     pair.totalSupply = pair.totalSupply.plus(params.value);
     pair.save();
+
+    // Confirm deposit user
+    const transaction = getOrCreateTransaction(event);
+    transaction.user = getOrCreateUser(params.to).id;
+    transaction.save();
   } else if (
     params.to.equals(Address.zero()) &&
     params.from.equals(event.address)
@@ -347,6 +351,12 @@ export function handleTransfer(event: Transfer): void {
     // Burned
     pair.totalSupply = pair.totalSupply.minus(params.value);
     pair.save();
+  } else if (params.to.equals(event.address)) {
+    // First stage of a burn event
+    // Confirm withdrawal user
+    const transaction = getOrCreateTransaction(event);
+    transaction.user = getOrCreateUser(params.from).id;
+    transaction.save();
   }
 
   // Update Liquidity Positions

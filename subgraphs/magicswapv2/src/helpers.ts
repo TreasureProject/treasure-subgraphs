@@ -10,6 +10,7 @@ import {
 import {
   MAGICSWAP_V2_FACTORY_ADDRESS,
   MAGIC_ADDRESS,
+  WETH_ADDRESS,
 } from "@treasure/constants";
 
 import { ERC20 } from "../generated/UniswapV2Factory/ERC20";
@@ -140,6 +141,8 @@ export const getOrCreateToken = (address: Address): Token => {
     token = new Token(address);
     setTokenContractData(token);
     token.isNFT = false;
+    token.isMAGIC = address.equals(MAGIC_ADDRESS);
+    token.isETH = address.equals(WETH_ADDRESS);
     token.magicPairs = [];
     token.volume = ZERO_BD;
     token.volumeUSD = ZERO_BD;
@@ -184,10 +187,8 @@ export const getOrCreateTransaction = (event: ethereum.Event): Transaction => {
   return transaction;
 };
 
-export const isMagic = (token: Token): bool => token.id.equals(MAGIC_ADDRESS);
-
 export const getDerivedMagic = (token: Token): BigDecimal => {
-  if (isMagic(token)) {
+  if (token.isMAGIC) {
     return ONE_BD;
   }
 
@@ -201,7 +202,15 @@ export const getDerivedMagic = (token: Token): BigDecimal => {
   }
 
   if (pair.token0.equals(token.id)) {
+    if (pair.reserve0.equals(ZERO_BD)) {
+      return ZERO_BD;
+    }
+
     return pair.reserve1.div(pair.reserve0);
+  }
+
+  if (pair.reserve1.equals(ZERO_BD)) {
+    return ZERO_BD;
   }
 
   return pair.reserve0.div(pair.reserve1);

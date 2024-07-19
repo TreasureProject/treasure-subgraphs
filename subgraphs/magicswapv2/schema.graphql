@@ -62,6 +62,8 @@ type Token @entity {
   decimals: BigInt!
   decimalDivisor: BigDecimal!
   isNFT: Boolean!
+  isMAGIC: Boolean!
+  isETH: Boolean!
 
   vaultCollections: [VaultCollection!]! @derivedFrom(field: "vault")
   vaultReserveItems: [VaultReserveItem!]! @derivedFrom(field: "vault")

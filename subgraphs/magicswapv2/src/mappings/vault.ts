@@ -28,6 +28,8 @@ export function handleVaultCreated(event: VaultCreated): void {
   vault.decimalDivisor = exponentToBigDecimal(decimals);
   vault.totalSupply = ZERO_BI;
   vault.isNFT = true;
+  vault.isMAGIC = false;
+  vault.isETH = false;
   vault.magicPairs = [];
   vault.volume = ZERO_BD;
   vault.volumeUSD = ZERO_BD;
