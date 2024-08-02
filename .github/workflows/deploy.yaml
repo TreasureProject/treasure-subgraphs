@@ -14,6 +14,7 @@ on:
           - bridgeworld-corruption
           - bridgeworld-kote
           - bridgeworld-recruits
+          - governance-staking
           - magicswap-exchange
           - magicswapv2
           - smol
