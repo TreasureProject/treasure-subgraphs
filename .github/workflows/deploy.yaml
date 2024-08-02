@@ -14,6 +14,7 @@ on:
           - bridgeworld-corruption
           - bridgeworld-kote
           - bridgeworld-recruits
+          - governance-staking
           - magicswap-exchange
           - magicswapv2
           - smol
@@ -36,14 +37,12 @@ jobs:
           node-version: 20
       - name: Install dependencies
         run: npm ci --prefix ../..
-      - name: Prepare for DEV
+      - name: Generate code for DEV
         if: inputs.environment == 'Development'
-        run: npm run prepare:dev --if-present
-      - name: Prepare for PROD
+        run: npm run generate:dev --if-present
+      - name: Generate code for PROD
         if: inputs.environment == 'Production'
-        run: npm run prepare:prod --if-present
-      - name: Generate code
-        run: npm run codegen --if-present
+        run: npm run generate:prod --if-present
       - name: Test
         run: npm test --if-present
       - name: Build subgraph

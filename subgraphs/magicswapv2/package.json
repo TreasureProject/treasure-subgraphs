@@ -4,8 +4,7 @@
   "description": "Subgraph that powers Magicswap v2",
   "license": "MIT",
   "scripts": {
-    "codegen": "graph codegen",
-    "prepare:dev": "npm run prepare:arbitrum-sepolia --prefix=../../packages/constants && mustache ../../node_modules/@treasure/subgraph-config/src/arbitrum-sepolia.json template.yaml > subgraph.yaml",
-    "prepare:prod": "npm run prepare:arbitrum --prefix=../../packages/constants && mustache ../../node_modules/@treasure/subgraph-config/src/arbitrum.json template.yaml > subgraph.yaml"
+    "generate:dev": "npm run prepare:arbitrum-sepolia --prefix=../../packages/constants && mustache ../../node_modules/@treasure/subgraph-config/src/arbitrum-sepolia.json template.yaml > subgraph.yaml && graph codegen",
+    "generate:prod": "npm run prepare:arbitrum --prefix=../../packages/constants && mustache ../../node_modules/@treasure/subgraph-config/src/arbitrum.json template.yaml > subgraph.yaml && graph codegen"
   }
 }

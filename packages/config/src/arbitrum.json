@@ -76,5 +76,8 @@
   "magicswapv2_router_address": "0xb740d5804ea2061432469119cfa40cbb4586dd17",
   "magic_usd_price_feed_address": "0x5ab0b1e2604d4b708721bc3cd1ce962958b4297e",
   "weth_address": "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
-  "magicswapv2_start_block": 232580414
+  "magicswapv2_start_block": 232580414,
+
+  "governance_staking_address": "0xc0e641c7ea263166a238285556ff61fdf37a4c79",
+  "governance_staking_start_block": 60986774
 }

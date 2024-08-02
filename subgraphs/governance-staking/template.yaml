@@ -1,0 +1,27 @@
+specVersion: 0.0.4
+schema:
+  file: ./schema.graphql
+dataSources:
+  - name: Governance Staking
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ governance_staking_address }}"
+      abi: GovernanceStaking
+      startBlock: {{ governance_staking_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Trait
+      abis:
+        - name: GovernanceStaking
+          file: ./abis/GovernanceStaking.json
+      eventHandlers:
+        - event: Deposit(indexed address,indexed uint256,uint256,uint8)
+          handler: handleDeposit
+        - event: Withdraw(indexed address,indexed uint256,uint256)
+          handler: handleWithdraw
+      file: ./src/mapping.ts
+  

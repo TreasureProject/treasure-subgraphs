@@ -1,0 +1,9 @@
+{
+  "name": "governance-staking",
+  "version": "1.0.0",
+  "description": "Subgraph that powers Treasure DAO governance staking (gMAGIC) tracker",
+  "license": "MIT",
+  "scripts": {
+    "generate:prod": "npm run prepare:arbitrum --prefix=../../packages/constants && mustache ../../node_modules/@treasure/subgraph-config/src/arbitrum.json template.yaml > subgraph.yaml && graph codegen"
+  }
+}

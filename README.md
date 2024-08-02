@@ -8,7 +8,7 @@ Collection of subgraphs used by [Treasure](https://treasure.lol) to power its va
 
 General inventory, metadata, and feature support for [Bridgeworld](https://bridgeworld.treasure.lol)
 
-### bridgeworld-approvals
+### bridgeworld-approvals (deprecated)
 
 Approvals of NFTs and tokens related to [Bridgeworld](https://bridgeworld.treasure.lol)
 
@@ -16,7 +16,7 @@ Approvals of NFTs and tokens related to [Bridgeworld](https://bridgeworld.treasu
 
 Corruption balances and removals for [Bridgeworld](https://bridgeworld.treasure.lol)
 
-### bridgeworld-kote
+### bridgeworld-kote (deprecated)
 
 [Knights of the Ether](https://knightsoftheether.com) metadata for Harvesters in [Bridgeworld](https://bridgeworld.treasure.lol)
 
@@ -24,9 +24,17 @@ Corruption balances and removals for [Bridgeworld](https://bridgeworld.treasure.
 
 [Bridgeworld](https://bridgeworld.treasure.lol) Recruit ascension configuration and attempts
 
+### governance-staking
+
+Tracking MAGIC deposited for [TreasureDAO Governance Staking](https://governance-staking.treasure.lol) (gMAGIC)
+
 ### magicswap-exchange
 
 Fork of [Sushiswap subgraph](https://github.com/sushiswap/subgraphs) for [MagicSwap](https://magicswap.lol)
+
+### magicswapv2
+
+Exchange data for [Magicswap v2](https://v2.magicswap.lol)
 
 ### smol
 
@@ -44,7 +52,7 @@ Navigate to a specific subgraph and run code generation:
 
 ```sh
 cd subgraphs/bridgeworld
-npm run prepare:dev && npm run codegen
+npm run generate:dev
 ```
 
 Run unit tests:
