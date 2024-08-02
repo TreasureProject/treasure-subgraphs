@@ -1,7 +1,7 @@
 type User @entity(immutable: true) {
   id: Bytes!
 
-  balance: UserBalance! @derivedFrom(field: "user")
+  balance: UserBalance @derivedFrom(field: "user")
 }
 
 type UserBalance @entity {
