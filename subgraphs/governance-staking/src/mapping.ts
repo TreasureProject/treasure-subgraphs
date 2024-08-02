@@ -15,10 +15,10 @@ const getOrCreateUser = (id: Address): User => {
   return user;
 };
 
-const getOrCreateBalance = (userId: Address): UserBalance => {
-  let balance = UserBalance.load(userId);
+const getOrCreateUserBalance = (user: User): UserBalance => {
+  let balance = UserBalance.load(user.id);
   if (!balance) {
-    balance = new UserBalance(userId);
+    balance = new UserBalance(user.id);
     balance.balance = BigInt.zero();
   }
 
@@ -27,14 +27,14 @@ const getOrCreateBalance = (userId: Address): UserBalance => {
 
 export function handleDeposit(event: Deposit): void {
   const user = getOrCreateUser(event.params.user);
-  const balance = getOrCreateBalance(user.id);
+  const balance = getOrCreateUserBalance(user);
   balance.balance = balance.balance.plus(event.params.amount);
   balance.save();
 }
 
 export function handleWithdraw(event: Withdraw): void {
   const user = getOrCreateUser(event.params.user);
-  const balance = getOrCreateBalance(user.id);
+  const balance = getOrCreateUserBalance(user);
   balance.balance = balance.balance.minus(event.params.amount);
   balance.save();
 }
