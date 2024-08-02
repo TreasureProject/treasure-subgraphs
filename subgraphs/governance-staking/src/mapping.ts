@@ -12,6 +12,7 @@ const getOrCreateUser = (id: Address): User => {
   let user = User.load(id);
   if (!user) {
     user = new User(id);
+    user.save();
   }
 
   return user;
