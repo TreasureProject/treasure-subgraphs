@@ -7,7 +7,7 @@ import {
   ProtocolFeeBeneficiarySet,
   ProtocolFeesSet,
   RoyaltiesFeesSet,
-} from "../../generated/UniswapV2Factory/UniswapV2Factory";
+} from "../../generated/MagicswapV2UniswapV2Factory/UniswapV2Factory";
 import { Pair } from "../../generated/schema";
 import { UniswapV2Pair } from "../../generated/templates";
 import { ZERO_BD, ZERO_BI } from "../const";

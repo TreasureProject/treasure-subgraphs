@@ -13,7 +13,7 @@ import {
   WETH_ADDRESS,
 } from "@treasure/constants";
 
-import { ERC20 } from "../generated/UniswapV2Factory/ERC20";
+import { ERC20 } from "../generated/MagicswapV2UniswapV2Factory/ERC20";
 import {
   Collection,
   DayData,
