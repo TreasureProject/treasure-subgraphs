@@ -50,7 +50,7 @@ dataSources:
         - event: VaultCreated(string,string,indexed address,indexed uint256,(address,uint8,bool,uint256[])[],address)
           handler: handleVaultCreated
       file: ./src/mappings/vault.ts
-  - name: UniswapV2Factory
+  - name: MagicswapV2UniswapV2Factory
     kind: ethereum/contract
     network: {{ network }}
     source:
@@ -62,7 +62,9 @@ dataSources:
       apiVersion: 0.0.6
       language: wasm/assemblyscript
       entities:
+        - Factory
         - Pair
+        - Token
       abis:
         - name: UniswapV2Factory
           file: ./abis/UniswapV2Factory.json
@@ -91,6 +93,39 @@ dataSources:
         - event: RoyaltiesFeesSet(indexed address,address,uint256)
           handler: handleRoyaltiesFeesSet
       file: ./src/mappings/factory.ts
+  - name: MagicswapV1UniswapV2Factory
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ magicswapv1_uniswapv2_factory_address }}"
+      abi: UniswapV2Factory
+      startBlock: {{ magicswapv1_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Factory
+        - Pair
+        - Token
+      abis:
+        - name: UniswapV2Factory
+          file: ./abis/UniswapV2Factory.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+      eventHandlers:
+        - event: PairCreated(indexed address,indexed address,address,uint256)
+          handler: handlePairCreated
+          calls:
+            ERC20.name0: ERC20[event.params.token0].name()
+            ERC20.name1: ERC20[event.params.token1].name()
+            ERC20.symbol0: ERC20[event.params.token0].symbol()
+            ERC20.symbol1: ERC20[event.params.token1].symbol()
+            ERC20.totalSupply0: ERC20[event.params.token0].totalSupply()
+            ERC20.totalSupply1: ERC20[event.params.token1].totalSupply()
+            ERC20.decimals0: ERC20[event.params.token0].decimals()
+            ERC20.decimals1: ERC20[event.params.token1].decimals()
+      file: ./src/mappings/factory.ts
   - name: MagicswapV2Router
     kind: ethereum/contract
     network: {{ network }}
@@ -103,7 +138,7 @@ dataSources:
       apiVersion: 0.0.6
       language: wasm/assemblyscript
       entities:
-        - Pair
+        - Transaction
       abis:
         - name: MagicswapV2Router
           file: ./abis/MagicswapV2Router.json
@@ -148,7 +183,12 @@ templates:
       apiVersion: 0.0.6
       language: wasm/assemblyscript
       entities:
+        - DayData
+        - Factory
         - Pair
+        - PairDayData
+        - Token
+        - Transaction
       abis:
         - name: UniswapV2Pair
           file: ./abis/UniswapV2Pair.json
@@ -174,7 +214,9 @@ templates:
       apiVersion: 0.0.6
       language: wasm/assemblyscript
       entities:
-        - Token
+        - Transaction
+        - TransactionItem
+        - VaultReserveItem
       abis:
         - name: NftVault
           file: ./abis/NftVault.json

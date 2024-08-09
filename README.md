@@ -28,13 +28,9 @@ Corruption balances and removals for [Bridgeworld](https://bridgeworld.treasure.
 
 Tracking MAGIC deposited for [TreasureDAO Governance Staking](https://governance-staking.treasure.lol) (gMAGIC)
 
-### magicswap-exchange
+### magicswap
 
-Fork of [Sushiswap subgraph](https://github.com/sushiswap/subgraphs) for [MagicSwap](https://magicswap.lol)
-
-### magicswapv2
-
-Exchange data for [Magicswap v2](https://v2.magicswap.lol)
+Exchange data for [Magicswap](https://v2.magicswap.lol)
 
 ### smol
 

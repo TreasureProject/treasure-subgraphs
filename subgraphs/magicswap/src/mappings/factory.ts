@@ -25,11 +25,13 @@ const updateTotalFee = (pair: Pair): void => {
 export function handlePairCreated(event: PairCreated): void {
   const params = event.params;
 
-  const factory = getOrCreateFactory();
+  const factory = getOrCreateFactory(event.address);
   const token0 = getOrCreateToken(params.token0);
   const token1 = getOrCreateToken(params.token1);
 
   const pair = new Pair(params.pair);
+  pair.factory = factory.id;
+  pair.version = factory.version;
   pair.token0 = token0.id;
   pair.token1 = token1.id;
   pair.reserve0 = ZERO_BD;
@@ -62,7 +64,7 @@ export function handlePairCreated(event: PairCreated): void {
 
 export function handleDefaultFeesSet(event: DefaultFeesSet): void {
   const params = event.params;
-  const factory = getOrCreateFactory();
+  const factory = getOrCreateFactory(event.address);
   factory.protocolFee = basisPointToBigDecimal(params.fees.protocolFee);
   factory.lpFee = basisPointToBigDecimal(params.fees.lpFee);
   factory.save();
@@ -71,7 +73,7 @@ export function handleDefaultFeesSet(event: DefaultFeesSet): void {
 export function handleProtocolFeeBeneficiarySet(
   event: ProtocolFeeBeneficiarySet
 ): void {
-  const factory = getOrCreateFactory();
+  const factory = getOrCreateFactory(event.address);
   factory.protocolFeeBeneficiary = event.params.beneficiary;
   factory.save();
 }
@@ -89,7 +91,7 @@ export function handleLpFeesSet(event: LpFeesSet): void {
   if (params.overrideFee) {
     pair.lpFee = basisPointToBigDecimal(params.lpFee);
   } else {
-    const factory = getOrCreateFactory();
+    const factory = getOrCreateFactory(event.address);
     pair.lpFee = factory.lpFee;
   }
 
@@ -110,7 +112,7 @@ export function handleProtocolFeesSet(event: ProtocolFeesSet): void {
   if (params.overrideFee) {
     pair.protocolFee = basisPointToBigDecimal(params.protocolFee);
   } else {
-    const factory = getOrCreateFactory();
+    const factory = getOrCreateFactory(event.address);
     pair.protocolFee = factory.protocolFee;
   }
 

@@ -68,15 +68,15 @@
   "transmolgrifier_start_block": 173093282,
   "smol_renderer_address": "0x2d79de1b69bfdde8708acaef7bf52b6bbc83afd5",
 
-  "magicswap_factory_address": "0x015e379Ce0Ff195228b3A9eBDFA13F9afC155Dd7",
-  "magicswap_factory_start_block": 20547275,
+  "magicswapv1_start_block": 20547275,
+  "magicswapv1_uniswapv2_factory_address": "0x015e379Ce0Ff195228b3A9eBDFA13F9afC155Dd7",
+  "magicswapv2_start_block": 232580414,
   "magicswapv2_nft_vault_factory_address": "0x0000000000000000000000000000000000000000",
   "magicswapv2_nft_vault_factory_v2_address": "0xd67a39241fcdaf57dfbe764fa62d14e9b681f8e2",
   "magicswapv2_uniswapv2_factory_address": "0x77fa938998e196701c324149f771efd6e980df0a",
   "magicswapv2_router_address": "0xb740d5804ea2061432469119cfa40cbb4586dd17",
   "magic_usd_price_feed_address": "0x5ab0b1e2604d4b708721bc3cd1ce962958b4297e",
   "weth_address": "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
-  "magicswapv2_start_block": 232580414,
 
   "governance_staking_address": "0xc0e641c7ea263166a238285556ff61fdf37a4c79",
   "governance_staking_start_block": 60986774

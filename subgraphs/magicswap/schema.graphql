@@ -9,21 +9,34 @@ enum TransactionType {
   Withdrawal
 }
 
+enum Version {
+  V1
+  V2
+}
+
+type Global @entity {
+  id: Bytes!
+
+  userCount: BigInt!
+  magicUSD: BigDecimal!
+}
+
 type Factory @entity {
   id: Bytes!
 
+  address: Bytes!
+  version: Version!
   pairCount: BigInt!
   volumeUSD: BigDecimal!
   reserveNFT: BigDecimal!
   reserveUSD: BigDecimal!
   txCount: BigInt!
-  userCount: BigInt!
-
-  magicUSD: BigDecimal!
 
   lpFee: BigDecimal!
   protocolFee: BigDecimal!
   protocolFeeBeneficiary: Bytes
+
+  pairs: [Pair!]! @derivedFrom(field: "factory")
 }
 
 type DayData @entity {
@@ -91,6 +104,8 @@ type VaultReserveItem @entity {
 type Pair @entity {
   id: Bytes!
 
+  factory: Factory!
+  version: Version!
   token0: Token!
   token1: Token!
   reserve0: BigDecimal!

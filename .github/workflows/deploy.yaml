@@ -15,8 +15,7 @@ on:
           - bridgeworld-kote
           - bridgeworld-recruits
           - governance-staking
-          - magicswap-exchange
-          - magicswapv2
+          - magicswap
           - smol
       version:
         description: Subgraph version
