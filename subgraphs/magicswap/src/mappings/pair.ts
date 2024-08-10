@@ -16,12 +16,13 @@ import {
   getDerivedMagic,
   getMagicUSD,
   getOrCreateFactory,
-  getOrCreateGlobal,
   getOrCreateLiquidityPosition,
   getOrCreateTransaction,
   getOrCreateUser,
   updateDayData,
+  updateHourData,
   updatePairDayData,
+  updatePairHourData,
 } from "../helpers";
 import { tokenAmountToBigDecimal } from "../utils";
 
@@ -90,6 +91,8 @@ export function handleBurn(event: Burn): void {
   factory.save();
 
   // Update time interval stats
+  updateHourData(factory, event.block.timestamp);
+  updatePairHourData(pair, event.block.timestamp);
   updateDayData(factory, event.block.timestamp);
   updatePairDayData(pair, event.block.timestamp);
 
@@ -163,6 +166,8 @@ export function handleMint(event: Mint): void {
   factory.save();
 
   // Update time interval stats
+  updateHourData(factory, event.block.timestamp);
+  updatePairHourData(pair, event.block.timestamp);
   updateDayData(factory, event.block.timestamp);
   updatePairDayData(pair, event.block.timestamp);
 
@@ -241,6 +246,16 @@ export function handleSwap(event: Swap): void {
   factory.save();
 
   // Update time interval stats
+  const hourData = updateHourData(factory, event.block.timestamp);
+  hourData.volumeUSD = hourData.volumeUSD.plus(amountUSD);
+  hourData.save();
+
+  const pairHourData = updatePairHourData(pair, event.block.timestamp);
+  pairHourData.volume0 = pairHourData.volume0.plus(amount0);
+  pairHourData.volume1 = pairHourData.volume1.plus(amount1);
+  pairHourData.volumeUSD = pairHourData.volumeUSD.plus(amountUSD);
+  pairHourData.save();
+
   const dayData = updateDayData(factory, event.block.timestamp);
   dayData.volumeUSD = dayData.volumeUSD.plus(amountUSD);
   dayData.save();
