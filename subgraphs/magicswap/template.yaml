@@ -185,8 +185,10 @@ templates:
       entities:
         - DayData
         - Factory
+        - HourData
         - Pair
         - PairDayData
+        - PairHourData
         - Token
         - Transaction
       abis:

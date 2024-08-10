@@ -39,6 +39,17 @@ type Factory @entity {
   pairs: [Pair!]! @derivedFrom(field: "factory")
 }
 
+type HourData @entity {
+  id: Bytes!
+
+  date: BigInt!
+
+  reserveUSD: BigDecimal!
+  reserveNFT: BigDecimal!
+  volumeUSD: BigDecimal!
+  txCount: BigInt!
+}
+
 type DayData @entity {
   id: Bytes!
 
@@ -126,7 +137,25 @@ type Pair @entity {
 
   transactions: [Transaction!]! @derivedFrom(field: "pair")
   liquidityPositions: [LiquidityPosition!]! @derivedFrom(field: "pair")
+  hourData: [PairHourData!]! @derivedFrom(field: "pair")
   dayData: [PairDayData!]! @derivedFrom(field: "pair")
+}
+
+type PairHourData @entity {
+  id: Bytes!
+
+  pair: Pair!
+  date: BigInt!
+
+  reserve0: BigDecimal!
+  reserve1: BigDecimal!
+  reserveUSD: BigDecimal!
+  totalSupply: BigInt!
+
+  volume0: BigDecimal!
+  volume1: BigDecimal!
+  volumeUSD: BigDecimal!
+  txCount: BigInt!
 }
 
 type PairDayData @entity {

@@ -19,9 +19,11 @@ import {
   DayData,
   Factory,
   Global,
+  HourData,
   LiquidityPosition,
   Pair,
   PairDayData,
+  PairHourData,
   Token,
   Transaction,
   User,
@@ -230,8 +232,32 @@ export const getDerivedMagic = (token: Token): BigDecimal => {
   return pair.reserve0.div(pair.reserve1);
 };
 
+export const timestampToHour = (timestamp: BigInt): BigInt =>
+  BigInt.fromI32((timestamp.toI32() / 3600) * 3600);
+
 export const timestampToDate = (timestamp: BigInt): BigInt =>
   BigInt.fromI32((timestamp.toI32() / 86400) * 86400);
+
+export const updateHourData = (
+  factory: Factory,
+  timestamp: BigInt
+): HourData => {
+  const date = timestampToHour(timestamp);
+  const id = Bytes.fromI32(date.toI32());
+  let hourData = HourData.load(id);
+  if (!hourData) {
+    hourData = new HourData(id);
+    hourData.date = date;
+    hourData.volumeUSD = ZERO_BD;
+  }
+
+  hourData.reserveUSD = factory.reserveUSD;
+  hourData.reserveNFT = factory.reserveNFT;
+  hourData.txCount = factory.txCount;
+  hourData.save();
+
+  return hourData;
+};
 
 export const updateDayData = (factory: Factory, timestamp: BigInt): DayData => {
   const date = timestampToDate(timestamp);
@@ -249,6 +275,33 @@ export const updateDayData = (factory: Factory, timestamp: BigInt): DayData => {
   dayData.save();
 
   return dayData;
+};
+
+export const updatePairHourData = (
+  pair: Pair,
+  timestamp: BigInt
+): PairHourData => {
+  const date = timestampToHour(timestamp);
+  const id = pair.id.concatI32(date.toI32());
+  let pairHourData = PairHourData.load(id);
+  if (!pairHourData) {
+    pairHourData = new PairHourData(id);
+    pairHourData.pair = pair.id;
+    pairHourData.date = date;
+    pairHourData.volume0 = ZERO_BD;
+    pairHourData.volume1 = ZERO_BD;
+    pairHourData.volumeUSD = ZERO_BD;
+    pairHourData.txCount = ZERO_BI;
+  }
+
+  pairHourData.reserve0 = pair.reserve0;
+  pairHourData.reserve1 = pair.reserve1;
+  pairHourData.reserveUSD = pair.reserveUSD;
+  pairHourData.totalSupply = pair.totalSupply;
+  pairHourData.txCount = pairHourData.txCount.plus(ONE_BI);
+  pairHourData.save();
+
+  return pairHourData;
 };
 
 export const updatePairDayData = (
