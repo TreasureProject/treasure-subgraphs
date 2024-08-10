@@ -158,7 +158,7 @@ dataSources:
     source:
       address: "{{ magic_usd_price_feed_address }}"
       abi: ChainlinkAggregator
-      startBlock: {{ magicswapv2_start_block }}
+      startBlock: {{ magicswapv1_start_block }}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
