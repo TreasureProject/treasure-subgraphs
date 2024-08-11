@@ -10,7 +10,7 @@ import {
   Sync,
   Transfer,
 } from "../../generated/templates/UniswapV2Pair/UniswapV2Pair";
-import { TWO_BD, ZERO_BI } from "../const";
+import { TWO_BD, ZERO_BD, ZERO_BI } from "../const";
 import { ONE_BI } from "../const";
 import {
   getDerivedMagic,
@@ -61,10 +61,19 @@ export function handleBurn(event: Burn): void {
     amount1 = amount1.truncate(0);
   }
 
-  const amountUSD = amount0
-    .times(token0.derivedMAGIC)
-    .plus(amount1.times(token1.derivedMAGIC))
-    .times(getMagicUSD());
+  const magicUSD = getMagicUSD();
+  let amountUSD = ZERO_BD;
+  if (token0.derivedMAGIC > ZERO_BD) {
+    amountUSD = amount0
+      .times(token0.derivedMAGIC)
+      .times(TWO_BD)
+      .times(magicUSD);
+  } else if (token1.derivedMAGIC > ZERO_BD) {
+    amountUSD = amount1
+      .times(token1.derivedMAGIC)
+      .times(TWO_BD)
+      .times(magicUSD);
+  }
 
   // Update Token 0
   token0.txCount = token0.txCount.plus(ONE_BI);
@@ -136,10 +145,20 @@ export function handleMint(event: Mint): void {
 
   const amount0 = tokenAmountToBigDecimal(token0, params.amount0);
   const amount1 = tokenAmountToBigDecimal(token1, params.amount1);
-  const amountUSD = amount0
-    .times(token0.derivedMAGIC)
-    .plus(amount1.times(token1.derivedMAGIC))
-    .times(getMagicUSD());
+
+  const magicUSD = getMagicUSD();
+  let amountUSD = ZERO_BD;
+  if (token0.derivedMAGIC > ZERO_BD) {
+    amountUSD = amount0
+      .times(token0.derivedMAGIC)
+      .times(TWO_BD)
+      .times(magicUSD);
+  } else if (token1.derivedMAGIC > ZERO_BD) {
+    amountUSD = amount1
+      .times(token1.derivedMAGIC)
+      .times(TWO_BD)
+      .times(magicUSD);
+  }
 
   // Update Token 0
   token0.txCount = token0.txCount.plus(ONE_BI);
@@ -314,7 +333,7 @@ export function handleSync(event: Sync): void {
   pair.reserve0 = tokenAmountToBigDecimal(token0, params.reserve0);
   pair.reserve1 = tokenAmountToBigDecimal(token1, params.reserve1);
 
-  token0.derivedMAGIC = token0.isMAGIC
+  token0.derivedMAGIC = token1.isMAGIC
     ? pair.reserve1.div(pair.reserve0)
     : getDerivedMagic(token0);
   token0.save();
@@ -325,14 +344,15 @@ export function handleSync(event: Sync): void {
   token1.save();
 
   const magicUSD = getMagicUSD();
-  if (token0.isMAGIC) {
-    pair.reserveUSD = pair.reserve0.times(magicUSD).times(TWO_BD);
-  } else if (token1.isMAGIC) {
-    pair.reserveUSD = pair.reserve1.times(magicUSD).times(TWO_BD);
-  } else {
+  if (token0.derivedMAGIC > ZERO_BD) {
     pair.reserveUSD = pair.reserve0
       .times(token0.derivedMAGIC)
-      .plus(pair.reserve1.times(token1.derivedMAGIC))
+      .times(TWO_BD)
+      .times(magicUSD);
+  } else if (token1.derivedMAGIC > ZERO_BD) {
+    pair.reserveUSD = pair.reserve1
+      .times(token1.derivedMAGIC)
+      .times(TWO_BD)
       .times(magicUSD);
   }
 

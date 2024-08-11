@@ -159,10 +159,10 @@ export const getOrCreateToken = (address: Address): Token => {
     token.isNFT = false;
     token.isMAGIC = address.equals(MAGIC_ADDRESS);
     token.isETH = address.equals(WETH_ADDRESS);
-    token.magicPairs = [];
     token.volume = ZERO_BD;
     token.volumeUSD = ZERO_BD;
     token.txCount = ZERO_BI;
+    token.magicPairs = [];
     token.derivedMAGIC = ZERO_BD;
     token.save();
   }
@@ -218,18 +218,14 @@ export const getDerivedMagic = (token: Token): BigDecimal => {
   }
 
   if (pair.token0.equals(token.id)) {
-    if (pair.reserve0.equals(ZERO_BD)) {
-      return ZERO_BD;
-    }
-
-    return pair.reserve1.div(pair.reserve0);
+    return pair.reserve0.equals(ZERO_BD)
+      ? ZERO_BD
+      : pair.reserve1.div(pair.reserve0);
   }
 
-  if (pair.reserve1.equals(ZERO_BD)) {
-    return ZERO_BD;
-  }
-
-  return pair.reserve0.div(pair.reserve1);
+  return pair.reserve1.equals(ZERO_BD)
+    ? ZERO_BD
+    : pair.reserve0.div(pair.reserve1);
 };
 
 export const timestampToHour = (timestamp: BigInt): BigInt =>

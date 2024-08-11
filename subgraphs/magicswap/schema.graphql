@@ -92,14 +92,11 @@ type Token @entity {
   vaultCollections: [VaultCollection!]! @derivedFrom(field: "vault")
   vaultReserveItems: [VaultReserveItem!]! @derivedFrom(field: "vault")
 
-  magicPairs: [Pair!]!
-  basePairs: [Pair!]! @derivedFrom(field: "token0")
-  quotePairs: [Pair!]! @derivedFrom(field: "token1")
-
   volume: BigDecimal!
   volumeUSD: BigDecimal!
   txCount: BigInt!
 
+  magicPairs: [Pair!]!
   derivedMAGIC: BigDecimal!
 }
 
