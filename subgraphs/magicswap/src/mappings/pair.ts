@@ -235,19 +235,22 @@ export function handleSwap(event: Swap): void {
 
   const magicUSD = getMagicUSD();
   const isAmount1Out = params.amount1Out.gt(ZERO_BI);
-  const amount0Usd = amount0.times(token0.derivedMAGIC).times(magicUSD);
-  const amount1Usd = amount1.times(token1.derivedMAGIC).times(magicUSD);
-  const amountUSD = isAmount1Out ? amount0Usd : amount1Usd;
+  const amount0USD = amount0.times(token0.derivedMAGIC).times(magicUSD);
+  const amount1USD = amount1.times(token1.derivedMAGIC).times(magicUSD);
+  let amountUSD = isAmount1Out ? amount0USD : amount1USD;
+  if (amountUSD.equals(ZERO_BD)) {
+    amountUSD = amount1USD.gt(ZERO_BD) ? amount1USD : amount0USD;
+  }
 
   // Update Token 0
   token0.volume = token0.volume.plus(amount0);
-  token0.volumeUSD = token0.volumeUSD.plus(amount0Usd);
+  token0.volumeUSD = token0.volumeUSD.plus(amount0USD);
   token0.txCount = token0.txCount.plus(ONE_BI);
   token0.save();
 
   // Update Token 1
   token1.volume = token1.volume.plus(amount1);
-  token1.volumeUSD = token1.volumeUSD.plus(amount1Usd);
+  token1.volumeUSD = token1.volumeUSD.plus(amount1USD);
   token1.txCount = token1.txCount.plus(ONE_BI);
   token1.save();
 

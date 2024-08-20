@@ -52,10 +52,14 @@ export function handlePairCreated(event: PairCreated): void {
   factory.save();
 
   if (token0.isMAGIC) {
-    token1.magicPairs = token1.magicPairs.concat([pair.id]);
+    const magicPairs = token1.magicPairs;
+    magicPairs.push(pair.id);
+    token1.magicPairs = magicPairs;
     token1.save();
   } else if (token1.isMAGIC) {
-    token0.magicPairs = token0.magicPairs.concat([pair.id]);
+    const magicPairs = token0.magicPairs;
+    magicPairs.push(pair.id);
+    token0.magicPairs = magicPairs;
     token0.save();
   }
 
