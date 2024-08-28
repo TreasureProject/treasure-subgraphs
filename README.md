@@ -30,7 +30,7 @@ Tracking MAGIC deposited for [TreasureDAO Governance Staking](https://governance
 
 ### magicswap
 
-Exchange data for [Magicswap](https://v2.magicswap.lol)
+Exchange data for [Magicswap](https://magicswap.lol)
 
 ### smol
 
