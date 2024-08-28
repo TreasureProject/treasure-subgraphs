@@ -9,21 +9,45 @@ enum TransactionType {
   Withdrawal
 }
 
+enum Version {
+  V1
+  V2
+}
+
+type Global @entity {
+  id: Bytes!
+
+  userCount: BigInt!
+  magicUSD: BigDecimal!
+}
+
 type Factory @entity {
   id: Bytes!
 
+  address: Bytes!
+  version: Version!
   pairCount: BigInt!
   volumeUSD: BigDecimal!
   reserveNFT: BigDecimal!
   reserveUSD: BigDecimal!
   txCount: BigInt!
-  userCount: BigInt!
-
-  magicUSD: BigDecimal!
 
   lpFee: BigDecimal!
   protocolFee: BigDecimal!
   protocolFeeBeneficiary: Bytes
+
+  pairs: [Pair!]! @derivedFrom(field: "factory")
+}
+
+type HourData @entity {
+  id: Bytes!
+
+  date: BigInt!
+
+  reserveUSD: BigDecimal!
+  reserveNFT: BigDecimal!
+  volumeUSD: BigDecimal!
+  txCount: BigInt!
 }
 
 type DayData @entity {
@@ -68,14 +92,11 @@ type Token @entity {
   vaultCollections: [VaultCollection!]! @derivedFrom(field: "vault")
   vaultReserveItems: [VaultReserveItem!]! @derivedFrom(field: "vault")
 
-  magicPairs: [Pair!]!
-  basePairs: [Pair!]! @derivedFrom(field: "token0")
-  quotePairs: [Pair!]! @derivedFrom(field: "token1")
-
   volume: BigDecimal!
   volumeUSD: BigDecimal!
   txCount: BigInt!
 
+  magicPairs: [Pair!]!
   derivedMAGIC: BigDecimal!
 }
 
@@ -91,6 +112,8 @@ type VaultReserveItem @entity {
 type Pair @entity {
   id: Bytes!
 
+  factory: Factory!
+  version: Version!
   token0: Token!
   token1: Token!
   reserve0: BigDecimal!
@@ -111,7 +134,25 @@ type Pair @entity {
 
   transactions: [Transaction!]! @derivedFrom(field: "pair")
   liquidityPositions: [LiquidityPosition!]! @derivedFrom(field: "pair")
+  hourData: [PairHourData!]! @derivedFrom(field: "pair")
   dayData: [PairDayData!]! @derivedFrom(field: "pair")
+}
+
+type PairHourData @entity {
+  id: Bytes!
+
+  pair: Pair!
+  date: BigInt!
+
+  reserve0: BigDecimal!
+  reserve1: BigDecimal!
+  reserveUSD: BigDecimal!
+  totalSupply: BigInt!
+
+  volume0: BigDecimal!
+  volume1: BigDecimal!
+  volumeUSD: BigDecimal!
+  txCount: BigInt!
 }
 
 type PairDayData @entity {

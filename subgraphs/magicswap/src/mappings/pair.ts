@@ -10,16 +10,19 @@ import {
   Sync,
   Transfer,
 } from "../../generated/templates/UniswapV2Pair/UniswapV2Pair";
-import { TWO_BD, ZERO_BI } from "../const";
+import { TWO_BD, ZERO_BD, ZERO_BI } from "../const";
 import { ONE_BI } from "../const";
 import {
   getDerivedMagic,
+  getMagicUSD,
   getOrCreateFactory,
   getOrCreateLiquidityPosition,
   getOrCreateTransaction,
   getOrCreateUser,
   updateDayData,
+  updateHourData,
   updatePairDayData,
+  updatePairHourData,
 } from "../helpers";
 import { tokenAmountToBigDecimal } from "../utils";
 
@@ -48,8 +51,6 @@ export function handleBurn(event: Burn): void {
     return;
   }
 
-  const factory = getOrCreateFactory();
-
   let amount0 = tokenAmountToBigDecimal(token0, params.amount0);
   if (token0.isNFT) {
     amount0 = amount0.truncate(0);
@@ -60,10 +61,19 @@ export function handleBurn(event: Burn): void {
     amount1 = amount1.truncate(0);
   }
 
-  const amountUSD = amount0
-    .times(token0.derivedMAGIC)
-    .plus(amount1.times(token1.derivedMAGIC))
-    .times(factory.magicUSD);
+  const magicUSD = getMagicUSD();
+  let amountUSD = ZERO_BD;
+  if (token0.derivedMAGIC > ZERO_BD) {
+    amountUSD = amount0
+      .times(token0.derivedMAGIC)
+      .times(TWO_BD)
+      .times(magicUSD);
+  } else if (token1.derivedMAGIC > ZERO_BD) {
+    amountUSD = amount1
+      .times(token1.derivedMAGIC)
+      .times(TWO_BD)
+      .times(magicUSD);
+  }
 
   // Update Token 0
   token0.txCount = token0.txCount.plus(ONE_BI);
@@ -78,6 +88,7 @@ export function handleBurn(event: Burn): void {
   pair.save();
 
   // Update Factory
+  const factory = getOrCreateFactory(pair.factory);
   factory.reserveUSD = factory.reserveUSD.minus(amountUSD);
   if (token0.isNFT) {
     factory.reserveNFT = factory.reserveNFT.minus(amount0);
@@ -89,7 +100,9 @@ export function handleBurn(event: Burn): void {
   factory.save();
 
   // Update time interval stats
-  updateDayData(event.block.timestamp);
+  updateHourData(factory, event.block.timestamp);
+  updatePairHourData(pair, event.block.timestamp);
+  updateDayData(factory, event.block.timestamp);
   updatePairDayData(pair, event.block.timestamp);
 
   // Update Transaction
@@ -130,14 +143,22 @@ export function handleMint(event: Mint): void {
     return;
   }
 
-  const factory = getOrCreateFactory();
-
   const amount0 = tokenAmountToBigDecimal(token0, params.amount0);
   const amount1 = tokenAmountToBigDecimal(token1, params.amount1);
-  const amountUSD = amount0
-    .times(token0.derivedMAGIC)
-    .plus(amount1.times(token1.derivedMAGIC))
-    .times(factory.magicUSD);
+
+  const magicUSD = getMagicUSD();
+  let amountUSD = ZERO_BD;
+  if (token0.derivedMAGIC > ZERO_BD) {
+    amountUSD = amount0
+      .times(token0.derivedMAGIC)
+      .times(TWO_BD)
+      .times(magicUSD);
+  } else if (token1.derivedMAGIC > ZERO_BD) {
+    amountUSD = amount1
+      .times(token1.derivedMAGIC)
+      .times(TWO_BD)
+      .times(magicUSD);
+  }
 
   // Update Token 0
   token0.txCount = token0.txCount.plus(ONE_BI);
@@ -152,6 +173,7 @@ export function handleMint(event: Mint): void {
   pair.save();
 
   // Update Factory
+  const factory = getOrCreateFactory(pair.factory);
   factory.reserveUSD = factory.reserveUSD.plus(amountUSD);
   if (token0.isNFT) {
     factory.reserveNFT = factory.reserveNFT.plus(amount0);
@@ -163,7 +185,9 @@ export function handleMint(event: Mint): void {
   factory.save();
 
   // Update time interval stats
-  updateDayData(event.block.timestamp);
+  updateHourData(factory, event.block.timestamp);
+  updatePairHourData(pair, event.block.timestamp);
+  updateDayData(factory, event.block.timestamp);
   updatePairDayData(pair, event.block.timestamp);
 
   // Update Transaction
@@ -209,22 +233,24 @@ export function handleSwap(event: Swap): void {
     params.amount1In.plus(params.amount1Out)
   );
 
-  const factory = getOrCreateFactory();
-
+  const magicUSD = getMagicUSD();
   const isAmount1Out = params.amount1Out.gt(ZERO_BI);
-  const amount0Usd = amount0.times(token0.derivedMAGIC).times(factory.magicUSD);
-  const amount1Usd = amount1.times(token1.derivedMAGIC).times(factory.magicUSD);
-  const amountUSD = isAmount1Out ? amount0Usd : amount1Usd;
+  const amount0USD = amount0.times(token0.derivedMAGIC).times(magicUSD);
+  const amount1USD = amount1.times(token1.derivedMAGIC).times(magicUSD);
+  let amountUSD = isAmount1Out ? amount0USD : amount1USD;
+  if (amountUSD.equals(ZERO_BD)) {
+    amountUSD = amount1USD.gt(ZERO_BD) ? amount1USD : amount0USD;
+  }
 
   // Update Token 0
   token0.volume = token0.volume.plus(amount0);
-  token0.volumeUSD = token0.volumeUSD.plus(amount0Usd);
+  token0.volumeUSD = token0.volumeUSD.plus(amount0USD);
   token0.txCount = token0.txCount.plus(ONE_BI);
   token0.save();
 
   // Update Token 1
   token1.volume = token1.volume.plus(amount1);
-  token1.volumeUSD = token1.volumeUSD.plus(amount1Usd);
+  token1.volumeUSD = token1.volumeUSD.plus(amount1USD);
   token1.txCount = token1.txCount.plus(ONE_BI);
   token1.save();
 
@@ -236,12 +262,23 @@ export function handleSwap(event: Swap): void {
   pair.save();
 
   // Update Factory
+  const factory = getOrCreateFactory(pair.factory);
   factory.volumeUSD = factory.volumeUSD.plus(amountUSD);
   factory.txCount = factory.txCount.plus(ONE_BI);
   factory.save();
 
   // Update time interval stats
-  const dayData = updateDayData(event.block.timestamp);
+  const hourData = updateHourData(factory, event.block.timestamp);
+  hourData.volumeUSD = hourData.volumeUSD.plus(amountUSD);
+  hourData.save();
+
+  const pairHourData = updatePairHourData(pair, event.block.timestamp);
+  pairHourData.volume0 = pairHourData.volume0.plus(amount0);
+  pairHourData.volume1 = pairHourData.volume1.plus(amount1);
+  pairHourData.volumeUSD = pairHourData.volumeUSD.plus(amountUSD);
+  pairHourData.save();
+
+  const dayData = updateDayData(factory, event.block.timestamp);
   dayData.volumeUSD = dayData.volumeUSD.plus(amountUSD);
   dayData.save();
 
@@ -299,9 +336,7 @@ export function handleSync(event: Sync): void {
   pair.reserve0 = tokenAmountToBigDecimal(token0, params.reserve0);
   pair.reserve1 = tokenAmountToBigDecimal(token1, params.reserve1);
 
-  const factory = getOrCreateFactory();
-
-  token0.derivedMAGIC = token0.isMAGIC
+  token0.derivedMAGIC = token1.isMAGIC
     ? pair.reserve1.div(pair.reserve0)
     : getDerivedMagic(token0);
   token0.save();
@@ -311,15 +346,17 @@ export function handleSync(event: Sync): void {
     : getDerivedMagic(token1);
   token1.save();
 
-  if (token0.isMAGIC) {
-    pair.reserveUSD = pair.reserve0.times(factory.magicUSD).times(TWO_BD);
-  } else if (token1.isMAGIC) {
-    pair.reserveUSD = pair.reserve1.times(factory.magicUSD).times(TWO_BD);
-  } else {
+  const magicUSD = getMagicUSD();
+  if (token0.derivedMAGIC > ZERO_BD) {
     pair.reserveUSD = pair.reserve0
       .times(token0.derivedMAGIC)
-      .plus(pair.reserve1.times(token1.derivedMAGIC))
-      .times(factory.magicUSD);
+      .times(TWO_BD)
+      .times(magicUSD);
+  } else if (token1.derivedMAGIC > ZERO_BD) {
+    pair.reserveUSD = pair.reserve1
+      .times(token1.derivedMAGIC)
+      .times(TWO_BD)
+      .times(magicUSD);
   }
 
   pair.save();

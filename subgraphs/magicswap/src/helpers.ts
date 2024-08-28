@@ -13,14 +13,17 @@ import {
   WETH_ADDRESS,
 } from "@treasure/constants";
 
-import { ERC20 } from "../generated/UniswapV2Factory/ERC20";
+import { ERC20 } from "../generated/MagicswapV2UniswapV2Factory/ERC20";
 import {
   Collection,
   DayData,
   Factory,
+  Global,
+  HourData,
   LiquidityPosition,
   Pair,
   PairDayData,
+  PairHourData,
   Token,
   Transaction,
   User,
@@ -31,19 +34,32 @@ import { exponentToBigDecimal } from "./utils";
 
 export const NFT_TYPES = ["ERC721", "ERC1155"];
 
-export const getOrCreateFactory = (): Factory => {
-  let factory = Factory.load(MAGICSWAP_V2_FACTORY_ADDRESS);
+export const getOrCreateGlobal = (): Global => {
+  const id = Bytes.fromI32(1);
+  let global = Global.load(id);
+  if (!global) {
+    global = new Global(id);
+    global.userCount = ZERO_BI;
+    global.magicUSD = ZERO_BD;
+  }
+
+  return global;
+};
+
+export const getOrCreateFactory = (address: Bytes): Factory => {
+  let factory = Factory.load(address);
   if (!factory) {
-    factory = new Factory(MAGICSWAP_V2_FACTORY_ADDRESS);
+    const isV2 = address.equals(MAGICSWAP_V2_FACTORY_ADDRESS);
+    factory = new Factory(address);
+    factory.address = address;
+    factory.version = isV2 ? "V2" : "V1";
     factory.pairCount = ZERO_BI;
     factory.volumeUSD = ZERO_BD;
     factory.reserveUSD = ZERO_BD;
     factory.reserveNFT = ZERO_BD;
     factory.txCount = ZERO_BI;
-    factory.userCount = ZERO_BI;
-    factory.magicUSD = ZERO_BD;
-    factory.lpFee = ZERO_BD;
-    factory.protocolFee = ZERO_BD;
+    factory.lpFee = isV2 ? ZERO_BD : BigDecimal.fromString("0.00375");
+    factory.protocolFee = isV2 ? ZERO_BD : BigDecimal.fromString("0.00125");
     factory.save();
   }
 
@@ -71,9 +87,9 @@ export const getOrCreateUser = (address: Address): User => {
     user.liquidityPositionCount = ZERO_BI;
     user.save();
 
-    const factory = getOrCreateFactory();
-    factory.userCount = factory.userCount.plus(ONE_BI);
-    factory.save();
+    const global = getOrCreateGlobal();
+    global.userCount = global.userCount.plus(ONE_BI);
+    global.save();
   }
 
   return user;
@@ -143,10 +159,10 @@ export const getOrCreateToken = (address: Address): Token => {
     token.isNFT = false;
     token.isMAGIC = address.equals(MAGIC_ADDRESS);
     token.isETH = address.equals(WETH_ADDRESS);
-    token.magicPairs = [];
     token.volume = ZERO_BD;
     token.volumeUSD = ZERO_BD;
     token.txCount = ZERO_BI;
+    token.magicPairs = [];
     token.derivedMAGIC = ZERO_BD;
     token.save();
   }
@@ -202,24 +218,44 @@ export const getDerivedMagic = (token: Token): BigDecimal => {
   }
 
   if (pair.token0.equals(token.id)) {
-    if (pair.reserve0.equals(ZERO_BD)) {
-      return ZERO_BD;
-    }
-
-    return pair.reserve1.div(pair.reserve0);
+    return pair.reserve0.equals(ZERO_BD)
+      ? ZERO_BD
+      : pair.reserve1.div(pair.reserve0);
   }
 
-  if (pair.reserve1.equals(ZERO_BD)) {
-    return ZERO_BD;
-  }
-
-  return pair.reserve0.div(pair.reserve1);
+  return pair.reserve1.equals(ZERO_BD)
+    ? ZERO_BD
+    : pair.reserve0.div(pair.reserve1);
 };
+
+export const timestampToHour = (timestamp: BigInt): BigInt =>
+  BigInt.fromI32((timestamp.toI32() / 3600) * 3600);
 
 export const timestampToDate = (timestamp: BigInt): BigInt =>
   BigInt.fromI32((timestamp.toI32() / 86400) * 86400);
 
-export const updateDayData = (timestamp: BigInt): DayData => {
+export const updateHourData = (
+  factory: Factory,
+  timestamp: BigInt
+): HourData => {
+  const date = timestampToHour(timestamp);
+  const id = Bytes.fromI32(date.toI32());
+  let hourData = HourData.load(id);
+  if (!hourData) {
+    hourData = new HourData(id);
+    hourData.date = date;
+    hourData.volumeUSD = ZERO_BD;
+  }
+
+  hourData.reserveUSD = factory.reserveUSD;
+  hourData.reserveNFT = factory.reserveNFT;
+  hourData.txCount = factory.txCount;
+  hourData.save();
+
+  return hourData;
+};
+
+export const updateDayData = (factory: Factory, timestamp: BigInt): DayData => {
   const date = timestampToDate(timestamp);
   const id = Bytes.fromI32(date.toI32());
   let dayData = DayData.load(id);
@@ -229,13 +265,39 @@ export const updateDayData = (timestamp: BigInt): DayData => {
     dayData.volumeUSD = ZERO_BD;
   }
 
-  const factory = getOrCreateFactory();
   dayData.reserveUSD = factory.reserveUSD;
   dayData.reserveNFT = factory.reserveNFT;
   dayData.txCount = factory.txCount;
   dayData.save();
 
   return dayData;
+};
+
+export const updatePairHourData = (
+  pair: Pair,
+  timestamp: BigInt
+): PairHourData => {
+  const date = timestampToHour(timestamp);
+  const id = pair.id.concatI32(date.toI32());
+  let pairHourData = PairHourData.load(id);
+  if (!pairHourData) {
+    pairHourData = new PairHourData(id);
+    pairHourData.pair = pair.id;
+    pairHourData.date = date;
+    pairHourData.volume0 = ZERO_BD;
+    pairHourData.volume1 = ZERO_BD;
+    pairHourData.volumeUSD = ZERO_BD;
+    pairHourData.txCount = ZERO_BI;
+  }
+
+  pairHourData.reserve0 = pair.reserve0;
+  pairHourData.reserve1 = pair.reserve1;
+  pairHourData.reserveUSD = pair.reserveUSD;
+  pairHourData.totalSupply = pair.totalSupply;
+  pairHourData.txCount = pairHourData.txCount.plus(ONE_BI);
+  pairHourData.save();
+
+  return pairHourData;
 };
 
 export const updatePairDayData = (
@@ -263,4 +325,9 @@ export const updatePairDayData = (
   pairDayData.save();
 
   return pairDayData;
+};
+
+export const getMagicUSD = (): BigDecimal => {
+  const global = getOrCreateGlobal();
+  return global.magicUSD;
 };

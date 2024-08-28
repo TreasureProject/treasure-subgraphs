@@ -68,13 +68,13 @@
   "transmolgrifier_start_block": 6249003,
   "smol_renderer_address": "0x79973af48c424de5f199a7c0369c5e9cdeb493fc",
 
-  "magicswap_factory_address": "0x9b58fc8c7B224Ae8479DA7E6eD37CA4Ac58099a9",
-  "magicswap_factory_start_block": 654981,
+  "magicswapv1_start_block": 654981,
+  "magicswapv1_uniswapv2_factory_address": "0x9b58fc8c7B224Ae8479DA7E6eD37CA4Ac58099a9",
+  "magicswapv2_start_block": 49484001,
   "magicswapv2_nft_vault_factory_address": "0x040d5778553aa5c465dfdba889e914b12895d423",
   "magicswapv2_nft_vault_factory_v2_address": "0x496f5f13816cdddd6934be1ca6a579b3838889ce",
   "magicswapv2_uniswapv2_factory_address": "0xbdfab57b9446ab3512579b7a901b74fa49fda752",
   "magicswapv2_router_address": "0xc8d7261feb0b648bc489224a18d6cdc905a0c5ab",
   "magic_usd_price_feed_address": "0xe6616a09e029d477183cba6bb6133643b522c15c",
-  "weth_address": "0x980b62da83eff3d4576c647993b0c1d7faf17c73",
-  "magicswapv2_start_block": 49484001
+  "weth_address": "0x980b62da83eff3d4576c647993b0c1d7faf17c73"
 }
