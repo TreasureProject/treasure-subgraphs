@@ -1,0 +1,527 @@
+[
+    {
+        "inputs": [
+            {
+                "internalType": "contract IERC20",
+                "name": "_fakemagic",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "_teamwallet",
+                "type": "address"
+            },
+            {
+                "internalType": "contract INftVaultFactory",
+                "name": "_factory",
+                "type": "address"
+            },
+            {
+                "internalType": "contract IMagicSwapV2Router",
+                "name": "_router",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "components": [
+                    {
+                        "internalType": "uint256",
+                        "name": "targetMagicToRaise",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "presalePrice",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "magicRaised",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "totalsupply",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "bool",
+                        "name": "graduated",
+                        "type": "bool"
+                    },
+                    {
+                        "internalType": "contract IERC1155",
+                        "name": "memecoin",
+                        "type": "address"
+                    }
+                ],
+                "indexed": false,
+                "internalType": "struct PRESALE.PresaleInfo",
+                "name": "presaleinfo",
+                "type": "tuple"
+            }
+        ],
+        "name": "BuySell",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "components": [
+                    {
+                        "internalType": "uint256",
+                        "name": "targetMagicToRaise",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "presalePrice",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "magicRaised",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "totalsupply",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "bool",
+                        "name": "graduated",
+                        "type": "bool"
+                    },
+                    {
+                        "internalType": "contract IERC1155",
+                        "name": "memecoin",
+                        "type": "address"
+                    }
+                ],
+                "indexed": false,
+                "internalType": "struct PRESALE.PresaleInfo",
+                "name": "presaleinfo",
+                "type": "tuple"
+            }
+        ],
+        "name": "Graduation",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "string",
+                "name": "name",
+                "type": "string"
+            },
+            {
+                "indexed": false,
+                "internalType": "string",
+                "name": "symbol",
+                "type": "string"
+            },
+            {
+                "indexed": false,
+                "internalType": "string",
+                "name": "uri",
+                "type": "string"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+            },
+            {
+                "components": [
+                    {
+                        "internalType": "uint256",
+                        "name": "targetMagicToRaise",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "presalePrice",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "magicRaised",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "totalsupply",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "bool",
+                        "name": "graduated",
+                        "type": "bool"
+                    },
+                    {
+                        "internalType": "contract IERC1155",
+                        "name": "memecoin",
+                        "type": "address"
+                    }
+                ],
+                "indexed": false,
+                "internalType": "struct PRESALE.PresaleInfo",
+                "name": "presaleinfo",
+                "type": "tuple"
+            }
+        ],
+        "name": "MemeMade",
+        "type": "event"
+    },
+    {
+        "inputs": [],
+        "name": "TARGETMCAP",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "_memeCoinAddress",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "_spendAmountMagic",
+                "type": "uint256"
+            }
+        ],
+        "name": "buyPresaleMagic",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "_memeCoinAddress",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "_amountNftToBuy",
+                "type": "uint256"
+            }
+        ],
+        "name": "buyPresaleNFT",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "getMagicPriceUSD",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "magicprice",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "_memeCoinAddress",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "_amountOfMagicToSpend",
+                "type": "uint256"
+            }
+        ],
+        "name": "getQuoteMagic",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "totalroundeddown",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "leftovermagic",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "_memeCoinAddress",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "_amountOfNftToBuy",
+                "type": "uint256"
+            }
+        ],
+        "name": "getQuoteNft",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "totalmagic",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "lastdeploy",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256[]",
+                "name": "",
+                "type": "uint256[]"
+            },
+            {
+                "internalType": "uint256[]",
+                "name": "",
+                "type": "uint256[]"
+            },
+            {
+                "internalType": "bytes",
+                "name": "",
+                "type": "bytes"
+            }
+        ],
+        "name": "onERC1155BatchReceived",
+        "outputs": [
+            {
+                "internalType": "bytes4",
+                "name": "",
+                "type": "bytes4"
+            }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            },
+            {
+                "internalType": "bytes",
+                "name": "",
+                "type": "bytes"
+            }
+        ],
+        "name": "onERC1155Received",
+        "outputs": [
+            {
+                "internalType": "bytes4",
+                "name": "",
+                "type": "bytes4"
+            }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "owner",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "name": "presaleinfo",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "targetMagicToRaise",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "presalePrice",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "magicRaised",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "totalsupply",
+                "type": "uint256"
+            },
+            {
+                "internalType": "bool",
+                "name": "graduated",
+                "type": "bool"
+            },
+            {
+                "internalType": "contract IERC1155",
+                "name": "memecoin",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "_memeCoinAddress",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "_desiredAmountMagic",
+                "type": "uint256"
+            }
+        ],
+        "name": "sellPresaleMagic",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "_memeCoinAddress",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "_sellAmountNFT",
+                "type": "uint256"
+            }
+        ],
+        "name": "sellPresaleNFT",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "string",
+                "name": "_name",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "_symbol",
+                "type": "string"
+            },
+            {
+                "internalType": "uint256",
+                "name": "_amount",
+                "type": "uint256"
+            },
+            {
+                "internalType": "string",
+                "name": "_uri",
+                "type": "string"
+            }
+        ],
+        "name": "startPresale",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "teamwallet",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    }
+]

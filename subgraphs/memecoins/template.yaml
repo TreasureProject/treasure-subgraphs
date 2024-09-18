@@ -1,0 +1,24 @@
+specVersion: 0.0.4
+schema:
+  file: ./schema.graphql
+dataSources:
+  - name: Meme Presale
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ meme_presale_address }}"
+      abi: MemePresale
+      startBlock: {{ meme_presale_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Trait
+      abis:
+        - name: MemePresale
+          file: ./abis/MemePresale.json
+      eventHandlers:
+        - event: MemeMade(string,string,string,uint256,(uint256,uint256,uint256,uint256,bool,address))
+          handler: handleMemeMade
+      file: ./src/mapping.ts

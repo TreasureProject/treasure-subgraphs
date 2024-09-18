@@ -1,0 +1,20 @@
+enum Gender {
+  Unset
+  Male
+  Female
+}
+
+type MemePresale @entity {
+  id: Bytes!
+
+  name: String
+  symbol: String
+  uri: String
+  amount: BigInt!
+
+  targetMagicToRaise: BigInt!
+  presalePrice: BigInt!
+  magicRaised: BigInt!
+  totalsupply: BigInt!
+  graduated: Boolean!
+}

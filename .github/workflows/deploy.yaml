@@ -17,6 +17,7 @@ on:
           - governance-staking
           - magicswap
           - smol
+          - memecoins
       version:
         description: Subgraph version
         required: true
