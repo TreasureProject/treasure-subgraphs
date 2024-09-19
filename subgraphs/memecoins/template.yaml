@@ -21,4 +21,8 @@ dataSources:
       eventHandlers:
         - event: MemeMade(string,string,string,uint256,(uint256,uint256,uint256,uint256,bool,address))
           handler: handleMemeMade
+        - event: BuySell((uint256,uint256,uint256,uint256,bool,address))
+          handler: handleBuySell
+        - event: Graduation((uint256,uint256,uint256,uint256,bool,address))
+          handler: handleGraduation
       file: ./src/mapping.ts
