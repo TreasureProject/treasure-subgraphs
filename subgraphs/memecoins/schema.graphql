@@ -11,6 +11,8 @@ type MemePresale @entity {
   symbol: String
   uri: String
   amount: BigInt!
+  createdAtBlock: BigInt!
+  updatedAtBlock: BigInt!
 
   targetMagicToRaise: BigInt!
   presalePrice: BigInt!

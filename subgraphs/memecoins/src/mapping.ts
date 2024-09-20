@@ -24,6 +24,9 @@ export function handleMemeMade(event: MemeMade): void {
   memePresale.symbol = params.symbol;
   memePresale.uri = params.uri;
   memePresale.amount = params.amount;
+  memePresale.createdAtBlock = event.block.number;
+  memePresale.updatedAtBlock = event.block.number;
+
   memePresale.targetMagicToRaise = params.presaleinfo.targetMagicToRaise;
   memePresale.presalePrice = params.presaleinfo.presalePrice;
   memePresale.magicRaised = params.presaleinfo.magicRaised;
@@ -36,6 +39,9 @@ export function handleMemeMade(event: MemeMade): void {
 export function handleBuySell(event: BuySell): void {
   const params = event.params;
   const memePresale = getOrCreateMemePresale(params.presaleinfo.memecoin);
+
+  memePresale.updatedAtBlock = event.block.number;
+
   memePresale.targetMagicToRaise = params.presaleinfo.targetMagicToRaise;
   memePresale.presalePrice = params.presaleinfo.presalePrice;
   memePresale.magicRaised = params.presaleinfo.magicRaised;
@@ -48,6 +54,9 @@ export function handleBuySell(event: BuySell): void {
 export function handleGraduation(event: Graduation): void {
   const params = event.params;
   const memePresale = getOrCreateMemePresale(params.presaleinfo.memecoin);
+
+  memePresale.updatedAtBlock = event.block.number;
+
   memePresale.targetMagicToRaise = params.presaleinfo.targetMagicToRaise;
   memePresale.presalePrice = params.presaleinfo.presalePrice;
   memePresale.magicRaised = params.presaleinfo.magicRaised;
