@@ -32,6 +32,7 @@ export function handleMemeMade(event: MemeMade): void {
   memePresale.magicRaised = params.presaleinfo.magicRaised;
   memePresale.totalsupply = params.presaleinfo.totalsupply;
   memePresale.graduated = params.presaleinfo.graduated;
+  memePresale.pairCoin = params.presaleinfo.paircoin;
 
   memePresale.save();
 }
@@ -47,6 +48,7 @@ export function handleBuySell(event: BuySell): void {
   memePresale.magicRaised = params.presaleinfo.magicRaised;
   memePresale.totalsupply = params.presaleinfo.totalsupply;
   memePresale.graduated = params.presaleinfo.graduated;
+  memePresale.pairCoin = params.presaleinfo.paircoin;
 
   memePresale.save();
 }
@@ -62,6 +64,7 @@ export function handleGraduation(event: Graduation): void {
   memePresale.magicRaised = params.presaleinfo.magicRaised;
   memePresale.totalsupply = params.presaleinfo.totalsupply;
   memePresale.graduated = params.presaleinfo.graduated;
+  memePresale.pairCoin = params.presaleinfo.paircoin;
 
   memePresale.save();
 }
