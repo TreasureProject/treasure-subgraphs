@@ -225,7 +225,7 @@
         "type": "uint256"
       }
     ],
-    "name": "buyPresaleNFT",
+    "name": "buyPresale",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -265,44 +265,20 @@
       },
       {
         "internalType": "uint256",
-        "name": "_amountOfMagicToSpend",
-        "type": "uint256"
-      }
-    ],
-    "name": "getQuoteMagic",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "totalroundeddown",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "leftovermagic",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_memeCoinAddress",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
         "name": "_amountOfNftToBuy",
         "type": "uint256"
       }
     ],
-    "name": "getQuoteNft",
+    "name": "getQuote",
     "outputs": [
       {
         "internalType": "uint256",
         "name": "totalmagic",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "tax",
         "type": "uint256"
       }
     ],
@@ -475,7 +451,7 @@
         "type": "uint256"
       }
     ],
-    "name": "sellPresaleNFT",
+    "name": "sellPresale",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
