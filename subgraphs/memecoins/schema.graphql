@@ -20,4 +20,5 @@ type MemePresale @entity {
   totalsupply: BigInt!
   graduated: Boolean!
   pairCoin: Bytes
+  lpAddress: Bytes
 }

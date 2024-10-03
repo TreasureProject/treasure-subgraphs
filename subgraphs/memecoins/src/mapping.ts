@@ -65,6 +65,7 @@ export function handleGraduation(event: Graduation): void {
   memePresale.totalsupply = params.presaleinfo.totalsupply;
   memePresale.graduated = params.presaleinfo.graduated;
   memePresale.pairCoin = params.presaleinfo.paircoin;
+  memePresale.lpAddress = params.lpaddress;
 
   memePresale.save();
 }

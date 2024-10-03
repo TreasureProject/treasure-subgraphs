@@ -20,6 +20,11 @@
         "internalType": "contract IMagicSwapV2Router",
         "name": "_router",
         "type": "address"
+      },
+      {
+        "internalType": "contract IMagicSwapUniswapV2Factory",
+        "name": "_msufactory",
+        "type": "address"
       }
     ],
     "stateMutability": "nonpayable",
@@ -64,6 +69,16 @@
             "internalType": "address",
             "name": "paircoin",
             "type": "address"
+          },
+          {
+            "internalType": "contract INftVault",
+            "name": "pairvault",
+            "type": "address"
+          },
+          {
+            "internalType": "bool",
+            "name": "is1155",
+            "type": "bool"
           }
         ],
         "indexed": false,
@@ -78,6 +93,12 @@
   {
     "anonymous": false,
     "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "lpaddress",
+        "type": "address"
+      },
       {
         "components": [
           {
@@ -114,6 +135,16 @@
             "internalType": "address",
             "name": "paircoin",
             "type": "address"
+          },
+          {
+            "internalType": "contract INftVault",
+            "name": "pairvault",
+            "type": "address"
+          },
+          {
+            "internalType": "bool",
+            "name": "is1155",
+            "type": "bool"
           }
         ],
         "indexed": false,
@@ -188,6 +219,16 @@
             "internalType": "address",
             "name": "paircoin",
             "type": "address"
+          },
+          {
+            "internalType": "contract INftVault",
+            "name": "pairvault",
+            "type": "address"
+          },
+          {
+            "internalType": "bool",
+            "name": "is1155",
+            "type": "bool"
           }
         ],
         "indexed": false,
@@ -207,6 +248,70 @@
         "internalType": "uint256",
         "name": "",
         "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_ca",
+        "type": "address"
+      },
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "lpaddress",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "vaultaddress",
+            "type": "address"
+          },
+          {
+            "internalType": "bool",
+            "name": "approved",
+            "type": "bool"
+          }
+        ],
+        "internalType": "struct PRESALE.AltPairInfo",
+        "name": "_alp",
+        "type": "tuple"
+      }
+    ],
+    "name": "addAltPair",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "approvedpaircoins",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "lpaddress",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "vaultaddress",
+        "type": "address"
+      },
+      {
+        "internalType": "bool",
+        "name": "approved",
+        "type": "bool"
       }
     ],
     "stateMutability": "view",
@@ -253,7 +358,7 @@
         "type": "uint256"
       }
     ],
-    "stateMutability": "view",
+    "stateMutability": "pure",
     "type": "function"
   },
   {
@@ -279,6 +384,25 @@
       {
         "internalType": "uint256",
         "name": "tax",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_shitcoin",
+        "type": "address"
+      }
+    ],
+    "name": "getShitcoinPriceUSD",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
         "type": "uint256"
       }
     ],
@@ -433,6 +557,16 @@
         "internalType": "address",
         "name": "paircoin",
         "type": "address"
+      },
+      {
+        "internalType": "contract INftVault",
+        "name": "pairvault",
+        "type": "address"
+      },
+      {
+        "internalType": "bool",
+        "name": "is1155",
+        "type": "bool"
       }
     ],
     "stateMutability": "view",
@@ -480,6 +614,39 @@
       }
     ],
     "name": "startPresale",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "_name",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_symbol",
+        "type": "string"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_amount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "string",
+        "name": "_uri",
+        "type": "string"
+      },
+      {
+        "internalType": "address",
+        "name": "_paircoin1155",
+        "type": "address"
+      }
+    ],
+    "name": "startPresale1155",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
