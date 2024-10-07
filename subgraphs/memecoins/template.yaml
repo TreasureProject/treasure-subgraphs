@@ -19,10 +19,10 @@ dataSources:
         - name: MemePresale
           file: ./abis/MemePresale.json
       eventHandlers:
-        - event: MemeMade(string,string,string,uint256,(uint256,uint256,uint256,uint256,bool,address,address,address,bool))
+        - event: MemeMade(string,string,string,uint256,(uint256,uint256,uint256,uint256,uint256,bool,address,address,address,bool))
           handler: handleMemeMade
-        - event: BuySell((uint256,uint256,uint256,uint256,bool,address,address,address,bool))
+        - event: BuySell((uint256,uint256,uint256,uint256,uint256,bool,address,address,address,bool))
           handler: handleBuySell
-        - event: Graduation(indexed address,(uint256,uint256,uint256,uint256,bool,address,address,address,bool))
+        - event: Graduation(indexed address,(uint256,uint256,uint256,uint256,uint256,bool,address,address,address,bool))
           handler: handleGraduation
       file: ./src/mapping.ts

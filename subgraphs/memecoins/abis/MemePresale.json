@@ -47,6 +47,11 @@
           },
           {
             "internalType": "uint256",
+            "name": "returnForOne",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
             "name": "magicRaised",
             "type": "uint256"
           },
@@ -109,6 +114,11 @@
           {
             "internalType": "uint256",
             "name": "presalePrice",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "returnForOne",
             "type": "uint256"
           },
           {
@@ -193,6 +203,11 @@
           {
             "internalType": "uint256",
             "name": "presalePrice",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "returnForOne",
             "type": "uint256"
           },
           {
@@ -349,6 +364,25 @@
     "type": "function"
   },
   {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_altcoin",
+        "type": "address"
+      }
+    ],
+    "name": "getAltPairCoinPriceUSD",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "getMagicPriceUSD",
     "outputs": [
@@ -384,25 +418,6 @@
       {
         "internalType": "uint256",
         "name": "tax",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_shitcoin",
-        "type": "address"
-      }
-    ],
-    "name": "getShitcoinPriceUSD",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
         "type": "uint256"
       }
     ],
@@ -531,6 +546,11 @@
       {
         "internalType": "uint256",
         "name": "presalePrice",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "returnForOne",
         "type": "uint256"
       },
       {
