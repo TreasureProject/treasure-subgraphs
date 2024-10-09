@@ -22,3 +22,12 @@ type MemePresale @entity {
   pairCoin: Bytes
   lpAddress: Bytes
 }
+
+type PairCoin @entity {
+  id: Bytes!
+
+  lpAddress: Bytes
+  symbol: String
+  vaultAddress: Bytes
+  approved: Boolean
+}

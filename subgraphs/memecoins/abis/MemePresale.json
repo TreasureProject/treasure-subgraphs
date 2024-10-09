@@ -3,7 +3,7 @@
     "inputs": [
       {
         "internalType": "contract IERC20",
-        "name": "_fakemagic",
+        "name": "_magic",
         "type": "address"
       },
       {
@@ -256,6 +256,47 @@
     "type": "event"
   },
   {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "_collectionAddress",
+        "type": "address"
+      },
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "lpaddress",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "vaultaddress",
+            "type": "address"
+          },
+          {
+            "internalType": "bool",
+            "name": "approved",
+            "type": "bool"
+          },
+          {
+            "internalType": "string",
+            "name": "symbol",
+            "type": "string"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct PRESALE.AltPairInfo",
+        "name": "alt",
+        "type": "tuple"
+      }
+    ],
+    "name": "PairCoinApproved",
+    "type": "event"
+  },
+  {
     "inputs": [],
     "name": "TARGETMCAP",
     "outputs": [
@@ -291,6 +332,11 @@
             "internalType": "bool",
             "name": "approved",
             "type": "bool"
+          },
+          {
+            "internalType": "string",
+            "name": "symbol",
+            "type": "string"
           }
         ],
         "internalType": "struct PRESALE.AltPairInfo",
@@ -327,6 +373,11 @@
         "internalType": "bool",
         "name": "approved",
         "type": "bool"
+      },
+      {
+        "internalType": "string",
+        "name": "symbol",
+        "type": "string"
       }
     ],
     "stateMutability": "view",

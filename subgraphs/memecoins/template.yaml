@@ -25,4 +25,6 @@ dataSources:
           handler: handleBuySell
         - event: Graduation(indexed address,(uint256,uint256,uint256,uint256,uint256,bool,address,address,address,bool))
           handler: handleGraduation
+        - event: PairCoinApproved(indexed address,(address,address,bool,string))
+          handler: handlePairCoinApproved
       file: ./src/mapping.ts

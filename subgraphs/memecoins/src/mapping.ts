@@ -4,8 +4,9 @@ import {
   BuySell,
   Graduation,
   MemeMade,
+  PairCoinApproved,
 } from "../generated/Meme Presale/MemePresale";
-import { MemePresale } from "../generated/schema";
+import { MemePresale, PairCoin } from "../generated/schema";
 
 const getOrCreateMemePresale = (memecoin: Address): MemePresale => {
   let memePresale = MemePresale.load(memecoin);
@@ -14,6 +15,15 @@ const getOrCreateMemePresale = (memecoin: Address): MemePresale => {
   }
 
   return memePresale;
+};
+
+const getOrCreatePairCoin = (pairCoinAddress: Address): PairCoin => {
+  let pairCoin = PairCoin.load(pairCoinAddress);
+  if (!pairCoin) {
+    pairCoin = new PairCoin(pairCoinAddress);
+  }
+
+  return pairCoin;
 };
 
 export function handleMemeMade(event: MemeMade): void {
@@ -68,4 +78,15 @@ export function handleGraduation(event: Graduation): void {
   memePresale.lpAddress = params.lpaddress;
 
   memePresale.save();
+}
+
+export function handlePairCoinApproved(event: PairCoinApproved): void {
+  const params = event.params;
+  const pairCoin = getOrCreatePairCoin(params._collectionAddress);
+  pairCoin.lpAddress = params.alt.lpaddress;
+  pairCoin.vaultAddress = params.alt.vaultaddress;
+  pairCoin.approved = params.alt.approved;
+  pairCoin.symbol = params.alt.symbol;
+
+  pairCoin.save();
 }
