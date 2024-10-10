@@ -136,6 +136,7 @@ type Pair @entity {
   liquidityPositions: [LiquidityPosition!]! @derivedFrom(field: "pair")
   hourData: [PairHourData!]! @derivedFrom(field: "pair")
   dayData: [PairDayData!]! @derivedFrom(field: "pair")
+  incentives: [Incentive!]! @derivedFrom(field: "pair")
 }
 
 type PairHourData @entity {
@@ -214,4 +215,44 @@ type TransactionItem @entity(immutable: true) {
   collection: Collection!
   tokenId: BigInt!
   amount: Int!
+}
+
+type Incentive @entity {
+  id: Bytes!
+
+  incentiveId: BigInt!
+  pair: Pair!
+  creator: Bytes!
+  rewardTokenAddress: Bytes!
+  rewardToken: Token
+  rewardAmount: BigInt!
+  isRewardRounded: Boolean!
+  startTime: BigInt!
+  endTime: BigInt!
+}
+
+type UserStake @entity {
+  id: Bytes!
+
+  user: User!
+  pair: Pair!
+  amount: BigInt!
+}
+
+type UserIncentive @entity {
+  id: Bytes!
+
+  user: User!
+  incentive: Incentive!
+  isSubscribed: Boolean!
+
+  claims: [UserIncentiveClaim!]! @derivedFrom(field: "userIncentive")
+}
+
+type UserIncentiveClaim @entity(immutable: true) {
+  id: Bytes!
+
+  userIncentive: UserIncentive!
+  timestamp: BigInt!
+  amount: BigInt!
 }
