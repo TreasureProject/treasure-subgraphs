@@ -17,10 +17,13 @@ type MemePresale @entity {
   targetMagicToRaise: BigInt!
   presalePrice: BigInt!
   magicRaised: BigInt!
-  totalsupply: BigInt!
+  totalSupply: BigInt!
   graduated: Boolean!
   pairCoin: Bytes
+  pairVault: Bytes
   lpAddress: Bytes
+  returnForOne: BigInt!
+  isERC1155: Boolean!
 }
 
 type PairCoin @entity {

@@ -40,9 +40,12 @@ export function handleMemeMade(event: MemeMade): void {
   memePresale.targetMagicToRaise = params.presaleinfo.targetMagicToRaise;
   memePresale.presalePrice = params.presaleinfo.presalePrice;
   memePresale.magicRaised = params.presaleinfo.magicRaised;
-  memePresale.totalsupply = params.presaleinfo.totalsupply;
+  memePresale.totalSupply = params.presaleinfo.totalsupply;
   memePresale.graduated = params.presaleinfo.graduated;
   memePresale.pairCoin = params.presaleinfo.paircoin;
+  memePresale.pairVault = params.presaleinfo.pairvault;
+  memePresale.returnForOne = params.presaleinfo.returnForOne;
+  memePresale.isERC1155 = params.presaleinfo.is1155;
 
   memePresale.save();
 }
@@ -56,9 +59,12 @@ export function handleBuySell(event: BuySell): void {
   memePresale.targetMagicToRaise = params.presaleinfo.targetMagicToRaise;
   memePresale.presalePrice = params.presaleinfo.presalePrice;
   memePresale.magicRaised = params.presaleinfo.magicRaised;
-  memePresale.totalsupply = params.presaleinfo.totalsupply;
+  memePresale.totalSupply = params.presaleinfo.totalsupply;
   memePresale.graduated = params.presaleinfo.graduated;
   memePresale.pairCoin = params.presaleinfo.paircoin;
+  memePresale.pairVault = params.presaleinfo.pairvault;
+  memePresale.returnForOne = params.presaleinfo.returnForOne;
+  memePresale.isERC1155 = params.presaleinfo.is1155;
 
   memePresale.save();
 }
@@ -72,9 +78,12 @@ export function handleGraduation(event: Graduation): void {
   memePresale.targetMagicToRaise = params.presaleinfo.targetMagicToRaise;
   memePresale.presalePrice = params.presaleinfo.presalePrice;
   memePresale.magicRaised = params.presaleinfo.magicRaised;
-  memePresale.totalsupply = params.presaleinfo.totalsupply;
+  memePresale.totalSupply = params.presaleinfo.totalsupply;
   memePresale.graduated = params.presaleinfo.graduated;
   memePresale.pairCoin = params.presaleinfo.paircoin;
+  memePresale.pairVault = params.presaleinfo.pairvault;
+  memePresale.returnForOne = params.presaleinfo.returnForOne;
+  memePresale.isERC1155 = params.presaleinfo.is1155;
   memePresale.lpAddress = params.lpaddress;
 
   memePresale.save();
