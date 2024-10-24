@@ -220,6 +220,7 @@ type TransactionItem @entity(immutable: true) {
 type Incentive @entity {
   id: Bytes!
 
+  # Config
   incentiveId: BigInt!
   pair: Pair!
   creator: Bytes!
@@ -229,6 +230,9 @@ type Incentive @entity {
   isRewardRounded: Boolean!
   startTime: BigInt!
   endTime: BigInt!
+
+  # State
+  remainingRewardAmount: BigInt!
 }
 
 type UserStake @entity {

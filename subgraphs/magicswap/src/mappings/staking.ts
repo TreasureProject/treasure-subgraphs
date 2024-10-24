@@ -36,6 +36,7 @@ export function handleIncentiveCreated(event: IncentiveCreated): void {
   incentive.isRewardRounded = false;
   incentive.startTime = params.startTime;
   incentive.endTime = params.endTime;
+  incentive.remainingRewardAmount = params.amount;
 
   const rewardToken = Token.load(params.rewardToken);
   if (rewardToken) {
@@ -136,6 +137,12 @@ export function handleClaim(event: Claim): void {
     return;
   }
 
+  const incentive = Incentive.load(userIncentive.incentive);
+  if (!incentive) {
+    // Ignoring claim for unknown incentive
+    return;
+  }
+
   const claim = new UserIncentiveClaim(
     event.transaction.hash.concatI32(event.transactionLogIndex.toI32())
   );
@@ -143,4 +150,9 @@ export function handleClaim(event: Claim): void {
   claim.timestamp = event.block.timestamp;
   claim.amount = params.amount;
   claim.save();
+
+  incentive.remainingRewardAmount = incentive.remainingRewardAmount.minus(
+    params.amount
+  );
+  incentive.save();
 }
