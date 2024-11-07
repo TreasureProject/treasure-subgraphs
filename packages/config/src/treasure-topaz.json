@@ -1,0 +1,14 @@
+{
+  "network": "treasure-topaz",
+  "burner_address": "0x0000000000000000000000000000000000000000",
+
+  "magicswapv1_start_block": 1641,
+  "magicswapv1_uniswapv2_factory_address": "0x0000000000000000000000000000000000000000",
+  "magicswapv2_start_block": 1641,
+  "magicswapv2_nft_vault_factory_address": "0x0000000000000000000000000000000000000000",
+  "magicswapv2_nft_vault_factory_v2_address": "0x657c165eE78429c71D7D6d7dE6c0dBe39aD30817",
+  "magicswapv2_uniswapv2_factory_address": "0x129A3Fe403c94000A89136ABDffce7C98FbDaB8a",
+  "magicswapv2_router_address": "0xAd781eD13b5966E7c620B896B6340AbB4dd2ca86",
+  "magic_usd_price_feed_address": "0x0000000000000000000000000000000000000000",
+  "weth_address": "0x095ded714d42cBD5fb2E84A0FfbFb140E38dC9E1"
+}
