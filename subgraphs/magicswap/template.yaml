@@ -152,6 +152,41 @@ dataSources:
         - event: NFTNFTLiquidityRemoved(indexed address,address,(address,address[],uint256[],uint256[]),(address,address[],uint256[],uint256[]))
           handler: handleNftNftLiquidityRemoved
       file: ./src/mappings/router.ts
+  - name: StakingContract
+    kind: ethereum/contract
+    network: {{ network }}
+    source:
+      address: "{{ magicswapv2_staking_address }}"
+      abi: StakingContract
+      startBlock: {{ magicswapv2_start_block }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Incentive
+        - UserIncentive
+        - UserIncentiveClaim
+        - UserStake
+      abis:
+        - name: StakingContract
+          file: ./abis/StakingContract.json
+      eventHandlers:
+          - event: IncentiveCreated(indexed address,indexed address,indexed address,uint256,uint256,uint256,uint256)
+            handler: handleIncentiveCreated
+          - event: IncentiveUpdated(indexed uint256,int256,uint256,uint256)
+            handler: handleIncentiveUpdated
+          - event: Stake(indexed address,indexed address,uint256)
+            handler: handleStake
+          - event: Unstake(indexed address,indexed address,uint256)
+            handler: handleUnstake
+          - event: Subscribe(indexed uint256,indexed address)
+            handler: handleSubscribe
+          - event: Unsubscribe(indexed uint256,indexed address)
+            handler: handleUnsubscribe
+          - event: Claim(indexed uint256,indexed address,uint256)
+            handler: handleClaim
+      file: ./src/mappings/staking.ts
   - name: ChainlinkAggregator
     kind: ethereum/contract
     network: {{ network }}
