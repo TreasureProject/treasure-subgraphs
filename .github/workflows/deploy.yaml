@@ -42,6 +42,9 @@ jobs:
       - name: Generate code for DEV (Topaz)
         if: inputs.environment == 'Development (Topaz)'
         run: npm run generate:dev-topaz --if-present
+      - name: Generate code for DEV (Sepolia)
+        if: inputs.environment == 'Development (Sepolia)'
+        run: npm run generate:dev-sepolia --if-present
       - name: Generate code for PROD
         if: inputs.environment == 'Production'
         run: npm run generate:prod --if-present
@@ -55,6 +58,9 @@ jobs:
       - name: Deploy to DEV (Topaz)
         if: inputs.environment == 'Development (Topaz)'
         run: npx goldsky subgraph deploy ${{ inputs.subgraph }}-dev-topaz/${{ inputs.version }} --token ${{ secrets.GOLDSKY_DEPLOY_KEY }}
+      - name: Deploy to DEV (Sepolia)
+        if: inputs.environment == 'Development (Sepolia)'
+        run: npx goldsky subgraph deploy ${{ inputs.subgraph }}-dev-sepolia/${{ inputs.version }} --token ${{ secrets.GOLDSKY_DEPLOY_KEY }}
       - name: Deploy to PROD
         if: inputs.environment == 'Production'
         run: npx goldsky subgraph deploy ${{ inputs.subgraph }}/${{ inputs.version }} --token ${{ secrets.GOLDSKY_DEPLOY_KEY }}
