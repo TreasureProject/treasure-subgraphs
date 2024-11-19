@@ -8,6 +8,7 @@
   "scripts": {
     "prepare:arbitrum": "mustache ../../node_modules/@treasure/subgraph-config/src/arbitrum.json src/index.template.ts > index.ts",
     "prepare:arbitrum-sepolia": "mustache ../../node_modules/@treasure/subgraph-config/src/arbitrum-sepolia.json src/index.template.ts > index.ts",
-    "prepare:treasure-topaz": "mustache ../../node_modules/@treasure/subgraph-config/src/treasure-topaz.json src/index.template.ts > index.ts"
+    "prepare:treasure-topaz": "mustache ../../node_modules/@treasure/subgraph-config/src/treasure-topaz.json src/index.template.ts > index.ts",
+    "prepare:sepolia": "mustache ../../node_modules/@treasure/subgraph-config/src/sepolia.json src/index.template.ts > index.ts"
   }
 }
