@@ -8,8 +8,8 @@
   "magicswapv2_nft_vault_factory_address": "0x0000000000000000000000000000000000000000",
   "magicswapv2_nft_vault_factory_v2_address": "0xD63a8Eb91A5f0Fb6Ab7aba03E2F21BCEF4A11a35",
   "magicswapv2_uniswapv2_factory_address": "0x62c893272AAA6a33dBC44d27fCEb1a9fBd60230D",
-  "magicswapv2_router_address": "0xf3573bf4CA41B039bc596354870973d34fDb618B",
+  "magicswapv2_router_address": "0x500aBF1550852DE787f885c819A7ef32E890Cc2b.",
   "magicswapv2_staking_address": "0x2BC00d733aa5fcDa4afbD8644CA1461C975682Fa",
   "magic_usd_price_feed_address": "0x0000000000000000000000000000000000000000",
-  "weth_address": "0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14"
+  "weth_address": "0x996bAF8F363AaFD24bab4cbB34D0268C16363483"
 }
