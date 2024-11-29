@@ -156,9 +156,20 @@ export const getOrCreateToken = (address: Address): Token => {
   if (!token) {
     token = new Token(address);
     setTokenContractData(token);
+
+    if (address.equals(WETH_ADDRESS)) {
+      token.name = "Ether";
+      token.symbol = "ETH";
+      token.isETH = true;
+    }
+
+    if (address.equals(MAGIC_ADDRESS)) {
+      token.name = "MAGIC";
+      token.symbol = "MAGIC";
+      token.isMAGIC = true;
+    }
+
     token.isNFT = false;
-    token.isMAGIC = address.equals(MAGIC_ADDRESS);
-    token.isETH = address.equals(WETH_ADDRESS);
     token.volume = ZERO_BD;
     token.volumeUSD = ZERO_BD;
     token.txCount = ZERO_BI;
