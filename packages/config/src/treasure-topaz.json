@@ -1,5 +1,5 @@
 {
-  "network": "topaz-testnet",
+  "network": "treasure-topaz",
   "burner_address": "0x0000000000000000000000000000000000000000",
 
   "magic_address": "0x095ded714d42cbd5fb2e84a0ffbfb140e38dc9e1",
