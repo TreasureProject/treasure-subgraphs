@@ -7,7 +7,7 @@
   "magicswapv2_start_block": 6999058,
   "magicswapv2_nft_vault_factory_address": "0x0000000000000000000000000000000000000000",
   "magicswapv2_nft_vault_factory_v2_address": "0xd70C74BA4d5946F0debBecD6998bD96c18b7c84f",
-  "magicswapv2_uniswapv2_factory_address": "0x62c893272AAA6a33dBC44d27fCEb1a9fBd60230D",
+  "magicswapv2_uniswapv2_factory_address": "0xe2fe36e2DFDA5ad028362261FB5A03ece2a55A6b",
   "magicswapv2_router_address": "0x03c782aDF91b5a310133Ec3f267f2A721df89F95",
   "magicswapv2_staking_address": "0x2BC00d733aa5fcDa4afbD8644CA1461C975682Fa",
   "magic_usd_price_feed_address": "0x0000000000000000000000000000000000000000",
