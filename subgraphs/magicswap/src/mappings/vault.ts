@@ -77,7 +77,7 @@ export function handleDeposit(event: Deposit): void {
   transactionItem.vault = vault;
   transactionItem.collection = params.collection;
   transactionItem.tokenId = params.tokenId;
-  transactionItem.amount = transactionItem.amount.plus(params.amount);
+  transactionItem.amount = params.amount;
   transactionItem.save();
 }
 
