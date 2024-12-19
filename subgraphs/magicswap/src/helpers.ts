@@ -195,7 +195,7 @@ export const getOrCreateVaultReserveItem = (
     reserveItem.vault = vault;
     reserveItem.collection = collection;
     reserveItem.tokenId = tokenId;
-    reserveItem.amount = 0;
+    reserveItem.amount = ZERO_BI;
   }
 
   return reserveItem;
