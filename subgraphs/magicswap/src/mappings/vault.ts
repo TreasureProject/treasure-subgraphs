@@ -63,7 +63,7 @@ export function handleDeposit(event: Deposit): void {
     params.collection,
     params.tokenId
   );
-  reserveItem.amount += params.amount.toI32();
+  reserveItem.amount = reserveItem.amount.plus(params.amount);
   reserveItem.save();
 
   const transaction = getOrCreateTransaction(event);
@@ -77,7 +77,7 @@ export function handleDeposit(event: Deposit): void {
   transactionItem.vault = vault;
   transactionItem.collection = params.collection;
   transactionItem.tokenId = params.tokenId;
-  transactionItem.amount = params.amount.toI32();
+  transactionItem.amount = params.amount;
   transactionItem.save();
 }
 
@@ -90,8 +90,8 @@ export function handleWithdraw(event: Withdraw): void {
     params.collection,
     params.tokenId
   );
-  reserveItem.amount -= params.amount.toI32();
-  if (reserveItem.amount > 0) {
+  reserveItem.amount = reserveItem.amount.minus(params.amount);
+  if (reserveItem.amount.gt(ZERO_BI)) {
     reserveItem.save();
   } else {
     store.remove("VaultReserveItem", reserveItem.id.toHexString());
@@ -111,6 +111,6 @@ export function handleWithdraw(event: Withdraw): void {
   transactionItem.vault = vault;
   transactionItem.collection = params.collection;
   transactionItem.tokenId = params.tokenId;
-  transactionItem.amount = params.amount.toI32();
+  transactionItem.amount = params.amount;
   transactionItem.save();
 }
