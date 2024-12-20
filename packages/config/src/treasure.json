@@ -1,0 +1,17 @@
+{
+  "network": "treasure",
+  "burner_address": "0x0000000000000000000000000000000000000000",
+
+  "magic_address": "0x263d8f36bb8d0d9526255e205868c26690b04b88",
+
+  "magicswapv1_start_block": 116036,
+  "magicswapv1_uniswapv2_factory_address": "0x0000000000000000000000000000000000000000",
+  "magicswapv2_start_block": 116036,
+  "magicswapv2_nft_vault_factory_address": "0x0000000000000000000000000000000000000000",
+  "magicswapv2_nft_vault_factory_v2_address": "0xe080f17E0c9D4aB00939f29B816Aa9d9Db03eb43",
+  "magicswapv2_uniswapv2_factory_address": "0x3193b4e0e6c0417682F5916C26138ee86917efA1",
+  "magicswapv2_router_address": "0x95afF54273275F2D9623f12A7E689dFAA5EbA311",
+  "magicswapv2_staking_address": "0xB331C6eE51E1AF84aEae6F363feac3596201eE76",
+  "magic_usd_price_feed_address": "0x0000000000000000000000000000000000000000",
+  "weth_address": "0x263d8f36bb8d0d9526255e205868c26690b04b88"
+}
