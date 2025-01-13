@@ -36,7 +36,7 @@ jobs:
           node-version: 20
       - name: Install dependencies
         run: npm ci --prefix ../..
-      - name: Generate code for DEV
+      - name: Generate code for DEV (Arbitrum Sepolia)
         if: inputs.environment == 'Development'
         run: npm run generate:dev --if-present
       - name: Generate code for DEV (Topaz)
@@ -54,11 +54,14 @@ jobs:
       - name: Generate code for PROD (Treasure)
         if: inputs.environment == 'Production (Treasure)'
         run: npm run generate:prod-treasure --if-present
+      - name: Generate code for PROD (Base)
+        if: inputs.environment == 'Production (Base)'
+        run: npm run generate:prod-base --if-present
       - name: Test
         run: npm test --if-present
       - name: Build subgraph
         run: npx graph build
-      - name: Deploy to DEV
+      - name: Deploy to DEV (Arbitrum Sepolia)
         if: inputs.environment == 'Development'
         run: npx goldsky subgraph deploy ${{ inputs.subgraph }}-dev/${{ inputs.version }} --token ${{ secrets.GOLDSKY_DEPLOY_KEY }}
       - name: Deploy to DEV (Topaz)
@@ -71,8 +74,11 @@ jobs:
         if: inputs.environment == 'Development (Base Sepolia)'
         run: npx goldsky subgraph deploy ${{ inputs.subgraph }}-dev-base-sepolia/${{ inputs.version }} --token ${{ secrets.GOLDSKY_DEPLOY_KEY }}
       - name: Deploy to PROD (Arbitrum)
-        if: inputs.environment == 'Production'
+        if: inputs.environment == 'Production (Arbitrum)'
         run: npx goldsky subgraph deploy ${{ inputs.subgraph }}/${{ inputs.version }} --token ${{ secrets.GOLDSKY_DEPLOY_KEY }}
       - name: Deploy to PROD (Treasure)
         if: inputs.environment == 'Production (Treasure)'
         run: npx goldsky subgraph deploy ${{ inputs.subgraph }}-treasure/${{ inputs.version }} --token ${{ secrets.GOLDSKY_DEPLOY_KEY }}
+      - name: Deploy to PROD (Base)
+        if: inputs.environment == 'Production (Base)'
+        run: npx goldsky subgraph deploy ${{ inputs.subgraph }}-base/${{ inputs.version }} --token ${{ secrets.GOLDSKY_DEPLOY_KEY }}
