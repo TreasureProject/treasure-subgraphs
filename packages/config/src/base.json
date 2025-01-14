@@ -4,13 +4,13 @@
 
   "magic_address": "0x0000000000000000000000000000000000000000",
 
-  "magicswapv1_start_block": 25006557,
+  "magicswapv1_start_block": 25015269,
   "magicswapv1_uniswapv2_factory_address": "0x0000000000000000000000000000000000000000",
-  "magicswapv2_start_block": 25006557,
+  "magicswapv2_start_block": 25015269,
   "magicswapv2_nft_vault_factory_address": "0x0000000000000000000000000000000000000000",
-  "magicswapv2_nft_vault_factory_v2_address": "0x1638230ccE426ad403D6ef1538629a0490f931dd",
-  "magicswapv2_uniswapv2_factory_address": "0x77FA938998E196701c324149f771eFD6e980df0a",
-  "magicswapv2_router_address": "0xb740D5804eA2061432469119cfa40cbb4586dd17",
+  "magicswapv2_nft_vault_factory_v2_address": "0x4419cf10f0b1031b2B237D0447691E545be303Ed",
+  "magicswapv2_uniswapv2_factory_address": "0xD67a39241FcdAF57DFBE764Fa62d14E9B681f8E2",
+  "magicswapv2_router_address": "0x0c76c44A90d16EF36b3658419BeDD36F6D06906c",
   "magicswapv2_staking_address": "0x0000000000000000000000000000000000000000",
   "magic_usd_price_feed_address": "0x0000000000000000000000000000000000000000",
   "weth_address": "0x4200000000000000000000000000000000000006"
