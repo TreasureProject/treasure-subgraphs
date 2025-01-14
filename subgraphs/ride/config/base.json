@@ -1,0 +1,9 @@
+{
+  "network": "base",
+  "presaleAddress": "0x0a11BeaE0B414fC8F559069B5A48C64281c7Bb76",
+  "pepeAddress": "0xBfB245280D60e30Cc033bC79bD1317614ec3016d",
+  "startBlock": 25015900,
+  "magicswapRouter": "0xb740D5804eA2061432469119cfa40cbb4586dd17",
+  "vaultFactoryAddress": "0x1638230ccE426ad403D6ef1538629a0490f931dd",
+  "factoryAddress": "0x77FA938998E196701c324149f771eFD6e980df0a"
+}

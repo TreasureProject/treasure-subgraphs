@@ -1,0 +1,17 @@
+{
+    "ts-node": {
+        "compilerOptions": {
+            "target": "es2018",
+            "module": "commonjs",
+            "jsx": "preserve",
+            "strict": true,
+            "resolveJsonModule": true
+        },
+    },
+    "compilerOptions": {
+        "resolveJsonModule": true
+    },
+    "include": [
+        "tests/*"
+    ]
+}

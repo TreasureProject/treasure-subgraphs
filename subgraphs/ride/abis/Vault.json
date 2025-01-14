@@ -1,0 +1,1033 @@
+[
+    {
+        "type": "constructor",
+        "inputs": [
+            {
+                "name": "_name",
+                "type": "string",
+                "internalType": "string"
+            },
+            {
+                "name": "_symbol",
+                "type": "string",
+                "internalType": "string"
+            }
+        ],
+        "stateMutability": "nonpayable"
+    },
+    {
+        "type": "function",
+        "name": "LAST_NFT_AMOUNT",
+        "inputs": [],
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "ONE",
+        "inputs": [],
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "VAULT_HASH",
+        "inputs": [],
+        "outputs": [
+            {
+                "name": "",
+                "type": "bytes32",
+                "internalType": "bytes32"
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "allowance",
+        "inputs": [
+            {
+                "name": "owner",
+                "type": "address",
+                "internalType": "address"
+            },
+            {
+                "name": "spender",
+                "type": "address",
+                "internalType": "address"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "approve",
+        "inputs": [
+            {
+                "name": "spender",
+                "type": "address",
+                "internalType": "address"
+            },
+            {
+                "name": "amount",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "",
+                "type": "bool",
+                "internalType": "bool"
+            }
+        ],
+        "stateMutability": "nonpayable"
+    },
+    {
+        "type": "function",
+        "name": "balanceOf",
+        "inputs": [
+            {
+                "name": "account",
+                "type": "address",
+                "internalType": "address"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "balances",
+        "inputs": [
+            {
+                "name": "",
+                "type": "address",
+                "internalType": "address"
+            },
+            {
+                "name": "",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "decimals",
+        "inputs": [],
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint8",
+                "internalType": "uint8"
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "decreaseAllowance",
+        "inputs": [
+            {
+                "name": "spender",
+                "type": "address",
+                "internalType": "address"
+            },
+            {
+                "name": "subtractedValue",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "",
+                "type": "bool",
+                "internalType": "bool"
+            }
+        ],
+        "stateMutability": "nonpayable"
+    },
+    {
+        "type": "function",
+        "name": "deposit",
+        "inputs": [
+            {
+                "name": "_to",
+                "type": "address",
+                "internalType": "address"
+            },
+            {
+                "name": "_collection",
+                "type": "address",
+                "internalType": "address"
+            },
+            {
+                "name": "_tokenId",
+                "type": "uint256",
+                "internalType": "uint256"
+            },
+            {
+                "name": "_amount",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "amountMinted",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "stateMutability": "nonpayable"
+    },
+    {
+        "type": "function",
+        "name": "depositBatch",
+        "inputs": [
+            {
+                "name": "_to",
+                "type": "address",
+                "internalType": "address"
+            },
+            {
+                "name": "_collection",
+                "type": "address[]",
+                "internalType": "address[]"
+            },
+            {
+                "name": "_tokenId",
+                "type": "uint256[]",
+                "internalType": "uint256[]"
+            },
+            {
+                "name": "_amount",
+                "type": "uint256[]",
+                "internalType": "uint256[]"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "amountMinted",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "stateMutability": "nonpayable"
+    },
+    {
+        "type": "function",
+        "name": "getAllowedCollectionData",
+        "inputs": [
+            {
+                "name": "_collectionAddr",
+                "type": "address",
+                "internalType": "address"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "",
+                "type": "tuple",
+                "internalType": "struct INftVault.CollectionData",
+                "components": [
+                    {
+                        "name": "addr",
+                        "type": "address",
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "nftType",
+                        "type": "uint8",
+                        "internalType": "enum INftVault.NftType"
+                    },
+                    {
+                        "name": "allowAllIds",
+                        "type": "bool",
+                        "internalType": "bool"
+                    },
+                    {
+                        "name": "tokenIds",
+                        "type": "uint256[]",
+                        "internalType": "uint256[]"
+                    }
+                ]
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "getAllowedCollections",
+        "inputs": [],
+        "outputs": [
+            {
+                "name": "collections",
+                "type": "address[]",
+                "internalType": "address[]"
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "getAllowedCollectionsLength",
+        "inputs": [],
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "getSentTokenBalance",
+        "inputs": [
+            {
+                "name": "_collection",
+                "type": "address",
+                "internalType": "address"
+            },
+            {
+                "name": "_tokenId",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "hashVault",
+        "inputs": [
+            {
+                "name": "_collections",
+                "type": "tuple[]",
+                "internalType": "struct INftVault.CollectionData[]",
+                "components": [
+                    {
+                        "name": "addr",
+                        "type": "address",
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "nftType",
+                        "type": "uint8",
+                        "internalType": "enum INftVault.NftType"
+                    },
+                    {
+                        "name": "allowAllIds",
+                        "type": "bool",
+                        "internalType": "bool"
+                    },
+                    {
+                        "name": "tokenIds",
+                        "type": "uint256[]",
+                        "internalType": "uint256[]"
+                    }
+                ]
+            }
+        ],
+        "outputs": [
+            {
+                "name": "",
+                "type": "bytes32",
+                "internalType": "bytes32"
+            }
+        ],
+        "stateMutability": "pure"
+    },
+    {
+        "type": "function",
+        "name": "increaseAllowance",
+        "inputs": [
+            {
+                "name": "spender",
+                "type": "address",
+                "internalType": "address"
+            },
+            {
+                "name": "addedValue",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "",
+                "type": "bool",
+                "internalType": "bool"
+            }
+        ],
+        "stateMutability": "nonpayable"
+    },
+    {
+        "type": "function",
+        "name": "init",
+        "inputs": [
+            {
+                "name": "_collections",
+                "type": "tuple[]",
+                "internalType": "struct INftVault.CollectionData[]",
+                "components": [
+                    {
+                        "name": "addr",
+                        "type": "address",
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "nftType",
+                        "type": "uint8",
+                        "internalType": "enum INftVault.NftType"
+                    },
+                    {
+                        "name": "allowAllIds",
+                        "type": "bool",
+                        "internalType": "bool"
+                    },
+                    {
+                        "name": "tokenIds",
+                        "type": "uint256[]",
+                        "internalType": "uint256[]"
+                    }
+                ]
+            }
+        ],
+        "outputs": [],
+        "stateMutability": "nonpayable"
+    },
+    {
+        "type": "function",
+        "name": "isTokenAllowed",
+        "inputs": [
+            {
+                "name": "_collection",
+                "type": "address",
+                "internalType": "address"
+            },
+            {
+                "name": "_tokenId",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "",
+                "type": "bool",
+                "internalType": "bool"
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "name",
+        "inputs": [],
+        "outputs": [
+            {
+                "name": "",
+                "type": "string",
+                "internalType": "string"
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "onERC1155BatchReceived",
+        "inputs": [
+            {
+                "name": "",
+                "type": "address",
+                "internalType": "address"
+            },
+            {
+                "name": "",
+                "type": "address",
+                "internalType": "address"
+            },
+            {
+                "name": "",
+                "type": "uint256[]",
+                "internalType": "uint256[]"
+            },
+            {
+                "name": "",
+                "type": "uint256[]",
+                "internalType": "uint256[]"
+            },
+            {
+                "name": "",
+                "type": "bytes",
+                "internalType": "bytes"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "",
+                "type": "bytes4",
+                "internalType": "bytes4"
+            }
+        ],
+        "stateMutability": "nonpayable"
+    },
+    {
+        "type": "function",
+        "name": "onERC1155Received",
+        "inputs": [
+            {
+                "name": "",
+                "type": "address",
+                "internalType": "address"
+            },
+            {
+                "name": "",
+                "type": "address",
+                "internalType": "address"
+            },
+            {
+                "name": "",
+                "type": "uint256",
+                "internalType": "uint256"
+            },
+            {
+                "name": "",
+                "type": "uint256",
+                "internalType": "uint256"
+            },
+            {
+                "name": "",
+                "type": "bytes",
+                "internalType": "bytes"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "",
+                "type": "bytes4",
+                "internalType": "bytes4"
+            }
+        ],
+        "stateMutability": "nonpayable"
+    },
+    {
+        "type": "function",
+        "name": "onERC721Received",
+        "inputs": [
+            {
+                "name": "",
+                "type": "address",
+                "internalType": "address"
+            },
+            {
+                "name": "",
+                "type": "address",
+                "internalType": "address"
+            },
+            {
+                "name": "",
+                "type": "uint256",
+                "internalType": "uint256"
+            },
+            {
+                "name": "",
+                "type": "bytes",
+                "internalType": "bytes"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "",
+                "type": "bytes4",
+                "internalType": "bytes4"
+            }
+        ],
+        "stateMutability": "nonpayable"
+    },
+    {
+        "type": "function",
+        "name": "skim",
+        "inputs": [
+            {
+                "name": "_to",
+                "type": "address",
+                "internalType": "address"
+            },
+            {
+                "name": "nftType",
+                "type": "uint8",
+                "internalType": "enum INftVault.NftType"
+            },
+            {
+                "name": "_collection",
+                "type": "address",
+                "internalType": "address"
+            },
+            {
+                "name": "_tokenId",
+                "type": "uint256",
+                "internalType": "uint256"
+            },
+            {
+                "name": "_amount",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "outputs": [],
+        "stateMutability": "nonpayable"
+    },
+    {
+        "type": "function",
+        "name": "supportsInterface",
+        "inputs": [
+            {
+                "name": "interfaceId",
+                "type": "bytes4",
+                "internalType": "bytes4"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "",
+                "type": "bool",
+                "internalType": "bool"
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "symbol",
+        "inputs": [],
+        "outputs": [
+            {
+                "name": "",
+                "type": "string",
+                "internalType": "string"
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "totalSupply",
+        "inputs": [],
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "transfer",
+        "inputs": [
+            {
+                "name": "to",
+                "type": "address",
+                "internalType": "address"
+            },
+            {
+                "name": "amount",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "",
+                "type": "bool",
+                "internalType": "bool"
+            }
+        ],
+        "stateMutability": "nonpayable"
+    },
+    {
+        "type": "function",
+        "name": "transferFrom",
+        "inputs": [
+            {
+                "name": "from",
+                "type": "address",
+                "internalType": "address"
+            },
+            {
+                "name": "to",
+                "type": "address",
+                "internalType": "address"
+            },
+            {
+                "name": "amount",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "",
+                "type": "bool",
+                "internalType": "bool"
+            }
+        ],
+        "stateMutability": "nonpayable"
+    },
+    {
+        "type": "function",
+        "name": "validateNftType",
+        "inputs": [
+            {
+                "name": "_collectionAddr",
+                "type": "address",
+                "internalType": "address"
+            },
+            {
+                "name": "_nftType",
+                "type": "uint8",
+                "internalType": "enum INftVault.NftType"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "nftType",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "withdraw",
+        "inputs": [
+            {
+                "name": "_to",
+                "type": "address",
+                "internalType": "address"
+            },
+            {
+                "name": "_collection",
+                "type": "address",
+                "internalType": "address"
+            },
+            {
+                "name": "_tokenId",
+                "type": "uint256",
+                "internalType": "uint256"
+            },
+            {
+                "name": "_amount",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "amountBurned",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "stateMutability": "nonpayable"
+    },
+    {
+        "type": "function",
+        "name": "withdrawBatch",
+        "inputs": [
+            {
+                "name": "_to",
+                "type": "address",
+                "internalType": "address"
+            },
+            {
+                "name": "_collection",
+                "type": "address[]",
+                "internalType": "address[]"
+            },
+            {
+                "name": "_tokenId",
+                "type": "uint256[]",
+                "internalType": "uint256[]"
+            },
+            {
+                "name": "_amount",
+                "type": "uint256[]",
+                "internalType": "uint256[]"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "amountBurned",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "stateMutability": "nonpayable"
+    },
+    {
+        "type": "event",
+        "name": "Approval",
+        "inputs": [
+            {
+                "name": "owner",
+                "type": "address",
+                "indexed": true,
+                "internalType": "address"
+            },
+            {
+                "name": "spender",
+                "type": "address",
+                "indexed": true,
+                "internalType": "address"
+            },
+            {
+                "name": "value",
+                "type": "uint256",
+                "indexed": false,
+                "internalType": "uint256"
+            }
+        ],
+        "anonymous": false
+    },
+    {
+        "type": "event",
+        "name": "CollectionAllowed",
+        "inputs": [
+            {
+                "name": "collection",
+                "type": "tuple",
+                "indexed": false,
+                "internalType": "struct INftVault.CollectionData",
+                "components": [
+                    {
+                        "name": "addr",
+                        "type": "address",
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "nftType",
+                        "type": "uint8",
+                        "internalType": "enum INftVault.NftType"
+                    },
+                    {
+                        "name": "allowAllIds",
+                        "type": "bool",
+                        "internalType": "bool"
+                    },
+                    {
+                        "name": "tokenIds",
+                        "type": "uint256[]",
+                        "internalType": "uint256[]"
+                    }
+                ]
+            }
+        ],
+        "anonymous": false
+    },
+    {
+        "type": "event",
+        "name": "Deposit",
+        "inputs": [
+            {
+                "name": "to",
+                "type": "address",
+                "indexed": true,
+                "internalType": "address"
+            },
+            {
+                "name": "collection",
+                "type": "address",
+                "indexed": true,
+                "internalType": "address"
+            },
+            {
+                "name": "tokenId",
+                "type": "uint256",
+                "indexed": false,
+                "internalType": "uint256"
+            },
+            {
+                "name": "amount",
+                "type": "uint256",
+                "indexed": false,
+                "internalType": "uint256"
+            }
+        ],
+        "anonymous": false
+    },
+    {
+        "type": "event",
+        "name": "Transfer",
+        "inputs": [
+            {
+                "name": "from",
+                "type": "address",
+                "indexed": true,
+                "internalType": "address"
+            },
+            {
+                "name": "to",
+                "type": "address",
+                "indexed": true,
+                "internalType": "address"
+            },
+            {
+                "name": "value",
+                "type": "uint256",
+                "indexed": false,
+                "internalType": "uint256"
+            }
+        ],
+        "anonymous": false
+    },
+    {
+        "type": "event",
+        "name": "Withdraw",
+        "inputs": [
+            {
+                "name": "to",
+                "type": "address",
+                "indexed": true,
+                "internalType": "address"
+            },
+            {
+                "name": "collection",
+                "type": "address",
+                "indexed": true,
+                "internalType": "address"
+            },
+            {
+                "name": "tokenId",
+                "type": "uint256",
+                "indexed": false,
+                "internalType": "uint256"
+            },
+            {
+                "name": "amount",
+                "type": "uint256",
+                "indexed": false,
+                "internalType": "uint256"
+            }
+        ],
+        "anonymous": false
+    },
+    {
+        "type": "error",
+        "name": "DisallowedToken",
+        "inputs": []
+    },
+    {
+        "type": "error",
+        "name": "DuplicateCollection",
+        "inputs": []
+    },
+    {
+        "type": "error",
+        "name": "ExpectedERC1155",
+        "inputs": []
+    },
+    {
+        "type": "error",
+        "name": "ExpectedERC721",
+        "inputs": []
+    },
+    {
+        "type": "error",
+        "name": "Initialized",
+        "inputs": []
+    },
+    {
+        "type": "error",
+        "name": "InvalidCollections",
+        "inputs": []
+    },
+    {
+        "type": "error",
+        "name": "MissingTokenIds",
+        "inputs": []
+    },
+    {
+        "type": "error",
+        "name": "MustBeDisallowedToken",
+        "inputs": []
+    },
+    {
+        "type": "error",
+        "name": "TokenIdAlreadySet",
+        "inputs": []
+    },
+    {
+        "type": "error",
+        "name": "TokenIdsMustBeEmpty",
+        "inputs": []
+    },
+    {
+        "type": "error",
+        "name": "TokenIdsMustBeSorted",
+        "inputs": []
+    },
+    {
+        "type": "error",
+        "name": "UnsupportedNft",
+        "inputs": []
+    },
+    {
+        "type": "error",
+        "name": "WrongAmount",
+        "inputs": []
+    },
+    {
+        "type": "error",
+        "name": "WrongERC721Amount",
+        "inputs": []
+    }
+]

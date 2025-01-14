@@ -1,0 +1,7 @@
+{
+  "network": "sepolia",
+  "presaleAddress": "0x8fd81e2bd28ca24488e9d37b3b9ed6a80aa9c584",
+  "startBlock": 7259000,
+  "magicswapRouter": "0x03c782adf91b5a310133ec3f267f2a721df89f95",
+  "vaultFactoryAddress": "0xD63a8Eb91A5f0Fb6Ab7aba03E2F21BCEF4A11a35"
+}

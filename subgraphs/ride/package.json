@@ -1,0 +1,49 @@
+{
+  "name": "ride-nft-subgraph",
+  "version": "1.0.0",
+  "main": "index.js",
+  "private": true,
+  "keywords": [],
+  "author": "bong",
+  "license": "MIT",
+  "description": "",
+  "scripts": {
+    "codegen": "graph codegen",
+    "build": "graph build",
+    "test": "graph test",
+    "deploy:sepolia": "node scripts/deploy.ts sepolia",
+    "deploy:sepolia_base": "node scripts/deploy.ts sepolia_base",
+    "deploy:base": "node scripts/deploy.ts base",
+    "deploy:mainnet": "node scripts/deploy.ts mainnet",
+    "prepare:sepolia_base": "mustache config/sepolia-base.json subgraph.template.yaml > subgraph.yaml",
+    "prepare:base": "mustache config/base.json subgraph.template.yaml > subgraph.yaml",
+    "prepare:sepolia": "mustache config/sepolia.json subgraph.template.yaml > subgraph.yaml",
+    "prepare:mainnet": "mustache config/mainnet.json subgraph.template.yaml > subgraph.yaml",
+    "clean": "rm -rf generated/ build/",
+    "rebuild": "npm run clean && npm run codegen && npm run build",
+    "test:coverage": "graph test -- --coverage",
+    "test:watch": "graph test -- --watch",
+    "validate": "npm run lint && npm run prettier:check && npm run test",
+    "lint": "eslint .",
+    "prettier": "prettier --write '{src,tests}/**/*.{ts,json}'",
+    "prepare": "husky install"
+  },
+  "dependencies": {
+    "@graphprotocol/graph-cli": "^0.88.0",
+    "@graphprotocol/graph-ts": "^0.35.1",
+    "dotenv": "^16.4.5",
+    "matchstick-as": "0.6.0-beta.2",
+    "source-map-support": "^0.5.21"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^8.13.0",
+    "@typescript-eslint/parser": "^8.13.0",
+    "eslint": "^9.14.0",
+    "eslint-config-prettier": "^9.1.0",
+    "husky": "^9.1.6",
+    "lint-staged": "^15.2.10",
+    "mustache": "^4.2.0",
+    "prettier": "^3.3.3",
+    "typescript": "^5.6.3"
+  }
+}

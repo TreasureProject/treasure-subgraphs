@@ -1,0 +1,324 @@
+[
+    {
+        "type": "function",
+        "name": "createVault",
+        "inputs": [
+            {
+                "name": "collections",
+                "type": "tuple[]",
+                "internalType": "struct INftVault.CollectionData[]",
+                "components": [
+                    {
+                        "name": "addr",
+                        "type": "address",
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "nftType",
+                        "type": "uint8",
+                        "internalType": "enum INftVault.NftType"
+                    },
+                    {
+                        "name": "allowAllIds",
+                        "type": "bool",
+                        "internalType": "bool"
+                    },
+                    {
+                        "name": "tokenIds",
+                        "type": "uint256[]",
+                        "internalType": "uint256[]"
+                    }
+                ]
+            }
+        ],
+        "outputs": [
+            {
+                "name": "vault",
+                "type": "address",
+                "internalType": "contract INftVault"
+            }
+        ],
+        "stateMutability": "nonpayable"
+    },
+    {
+        "type": "function",
+        "name": "exists",
+        "inputs": [
+            {
+                "name": "collections",
+                "type": "tuple[]",
+                "internalType": "struct INftVault.CollectionData[]",
+                "components": [
+                    {
+                        "name": "addr",
+                        "type": "address",
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "nftType",
+                        "type": "uint8",
+                        "internalType": "enum INftVault.NftType"
+                    },
+                    {
+                        "name": "allowAllIds",
+                        "type": "bool",
+                        "internalType": "bool"
+                    },
+                    {
+                        "name": "tokenIds",
+                        "type": "uint256[]",
+                        "internalType": "uint256[]"
+                    }
+                ]
+            }
+        ],
+        "outputs": [
+            {
+                "name": "",
+                "type": "bool",
+                "internalType": "bool"
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "getAllVaults",
+        "inputs": [],
+        "outputs": [
+            {
+                "name": "",
+                "type": "address[]",
+                "internalType": "address[]"
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "getVault",
+        "inputs": [
+            {
+                "name": "collections",
+                "type": "tuple[]",
+                "internalType": "struct INftVault.CollectionData[]",
+                "components": [
+                    {
+                        "name": "addr",
+                        "type": "address",
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "nftType",
+                        "type": "uint8",
+                        "internalType": "enum INftVault.NftType"
+                    },
+                    {
+                        "name": "allowAllIds",
+                        "type": "bool",
+                        "internalType": "bool"
+                    },
+                    {
+                        "name": "tokenIds",
+                        "type": "uint256[]",
+                        "internalType": "uint256[]"
+                    }
+                ]
+            }
+        ],
+        "outputs": [
+            {
+                "name": "vault",
+                "type": "address",
+                "internalType": "contract INftVault"
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "getVaultAt",
+        "inputs": [
+            {
+                "name": "index",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "",
+                "type": "address",
+                "internalType": "address"
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "getVaultLength",
+        "inputs": [],
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "hashVault",
+        "inputs": [
+            {
+                "name": "collections",
+                "type": "tuple[]",
+                "internalType": "struct INftVault.CollectionData[]",
+                "components": [
+                    {
+                        "name": "addr",
+                        "type": "address",
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "nftType",
+                        "type": "uint8",
+                        "internalType": "enum INftVault.NftType"
+                    },
+                    {
+                        "name": "allowAllIds",
+                        "type": "bool",
+                        "internalType": "bool"
+                    },
+                    {
+                        "name": "tokenIds",
+                        "type": "uint256[]",
+                        "internalType": "uint256[]"
+                    }
+                ]
+            }
+        ],
+        "outputs": [
+            {
+                "name": "",
+                "type": "bytes32",
+                "internalType": "bytes32"
+            }
+        ],
+        "stateMutability": "pure"
+    },
+    {
+        "type": "function",
+        "name": "isVault",
+        "inputs": [
+            {
+                "name": "vault",
+                "type": "address",
+                "internalType": "address"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "",
+                "type": "bool",
+                "internalType": "bool"
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "vaultHashMap",
+        "inputs": [
+            {
+                "name": "hash",
+                "type": "bytes32",
+                "internalType": "bytes32"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "vault",
+                "type": "address",
+                "internalType": "contract INftVault"
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "event",
+        "name": "VaultCreated",
+        "inputs": [
+            {
+                "name": "name",
+                "type": "string",
+                "indexed": false,
+                "internalType": "string"
+            },
+            {
+                "name": "symbol",
+                "type": "string",
+                "indexed": false,
+                "internalType": "string"
+            },
+            {
+                "name": "vault",
+                "type": "address",
+                "indexed": true,
+                "internalType": "contract INftVault"
+            },
+            {
+                "name": "vaultId",
+                "type": "uint256",
+                "indexed": true,
+                "internalType": "uint256"
+            },
+            {
+                "name": "collections",
+                "type": "tuple[]",
+                "indexed": false,
+                "internalType": "struct INftVault.CollectionData[]",
+                "components": [
+                    {
+                        "name": "addr",
+                        "type": "address",
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "nftType",
+                        "type": "uint8",
+                        "internalType": "enum INftVault.NftType"
+                    },
+                    {
+                        "name": "allowAllIds",
+                        "type": "bool",
+                        "internalType": "bool"
+                    },
+                    {
+                        "name": "tokenIds",
+                        "type": "uint256[]",
+                        "internalType": "uint256[]"
+                    }
+                ]
+            },
+            {
+                "name": "creator",
+                "type": "address",
+                "indexed": false,
+                "internalType": "address"
+            }
+        ],
+        "anonymous": false
+    },
+    {
+        "type": "error",
+        "name": "VaultAlreadyDeployed",
+        "inputs": []
+    },
+    {
+        "type": "error",
+        "name": "VaultDoesNotExist",
+        "inputs": []
+    }
+]
