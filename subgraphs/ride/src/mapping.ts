@@ -237,6 +237,8 @@ export function handleSell(event: Sell): void {
   // Update presale metrics
   presale.totalSellCount = presale.totalSellCount.plus(BIGINT_ONE);
   presale.baseTokenRaised = presale.baseTokenRaised.minus(
+    // for some reason this is needed because
+    // createTransaction does not trigger updating baseTokenAmount until graduated
     event.params.amountBaseToken
   );
 

@@ -114,7 +114,10 @@ export function createTransaction(
 
   // Update account statistics and arrays
   if (type == TX_TYPE_BUY) {
-    presale.baseTokenRaised = presale.baseTokenRaised.plus(baseTokenAmount);
+    // for some reason this is needed because
+    // createTransaction does not trigger updating baseTokenAmount until graduated
+    if (presale.graduated)
+      presale.baseTokenRaised = presale.baseTokenRaised.plus(baseTokenAmount);
     account.totalBuyCount = account.totalBuyCount.plus(BIGINT_ONE);
     account.totalBaseTokenSpent =
       account.totalBaseTokenSpent.plus(baseTokenAmount);
@@ -124,7 +127,8 @@ export function createTransaction(
       account.buyTransactions = buyTransactions;
     }
   } else if (type == TX_TYPE_SELL) {
-    presale.baseTokenRaised = presale.baseTokenRaised.minus(baseTokenAmount);
+    if (presale.graduated)
+      presale.baseTokenRaised = presale.baseTokenRaised.minus(baseTokenAmount);
     account.totalSellCount = account.totalSellCount.plus(BIGINT_ONE);
     account.totalBaseTokenReceived =
       account.totalBaseTokenReceived.plus(baseTokenAmount);
