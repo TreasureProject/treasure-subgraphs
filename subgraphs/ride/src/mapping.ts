@@ -181,7 +181,7 @@ export function handleBuy(event: Buy): void {
   let account = getOrCreateAccount(event.params.buyer);
 
   // Update presale metrics
-  presale.baseTokenRaised = presale.baseTokenRaised.plus(event.params.amountBaseToken);
+  //presale.baseTokenRaised = presale.baseTokenRaised.plus(event.params.amountBaseToken); // ( being updated in createTransaction )
   presale.totalBuyCount = presale.totalBuyCount.plus(BIGINT_ONE);
 
   // Check for unique buyer
@@ -227,7 +227,7 @@ export function handleSell(event: Sell): void {
   let account = getOrCreateAccount(event.params.seller);
 
   // Update presale metrics
-  presale.baseTokenRaised = presale.baseTokenRaised.minus(event.params.amountBaseToken);
+  // presale.baseTokenRaised = presale.baseTokenRaised.minus(event.params.amountBaseToken);
   presale.totalSellCount = presale.totalSellCount.plus(BIGINT_ONE);
 
   // Check for unique seller
