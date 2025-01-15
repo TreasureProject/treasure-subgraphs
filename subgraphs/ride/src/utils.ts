@@ -1,19 +1,8 @@
-import { BigInt, ethereum, log, Address, bigInt } from '@graphprotocol/graph-ts';
-import { Account, Transaction, MemePresale, TokenHolding } from '../generated/schema';
-import {
-  BIGINT_ZERO,
-  BIGINT_ONE,
-  BASE_TOKEN_DECIMALS,
-  PRICE_PRECISION,
-  TX_TYPE_SELL,
-  TX_TYPE_BUY,
-} from './constants';
-import { ERC1155 } from '../generated/PepeUSD/ERC1155';
-import { Presale } from '../generated/Presale/Presale';
+import { Address, BigInt, ethereum, log } from '@graphprotocol/graph-ts';
 
-export function convertToWETH(amount: BigInt): BigInt {
-  return amount.div(BigInt.fromI32(10).pow(u8(BASE_TOKEN_DECIMALS)));
-}
+import { ERC1155 } from '../generated/PepeUSD/ERC1155';
+import { Account, MemePresale, TokenHolding, Transaction } from '../generated/schema';
+import { BIGINT_ONE, BIGINT_ZERO, TX_TYPE_BUY, TX_TYPE_SELL } from './constants';
 
 export function calculateWETHPrice(amount: BigInt, baseTokenAmount: BigInt): BigInt {
   if (amount.equals(BIGINT_ZERO)) {
@@ -58,7 +47,11 @@ export function createTransaction(
     return;
   }
 
-  log.info("saving tx to account: {} type: {} meme: {}", [accountId.toHexString(), type, presale.name]);
+  log.info('saving tx to account: {} type: {} meme: {}', [
+    accountId.toHexString(),
+    type,
+    presale.name,
+  ]);
 
   let account = getOrCreateAccount(accountId);
   let txId = event.transaction.hash.toHexString() + '-' + event.logIndex.toString();
@@ -84,38 +77,35 @@ export function createTransaction(
 
   //update tokens
   let token = TokenHolding.load(presaleId + accountId.toHexString());
-  if(!token){
+  if (!token) {
     token = new TokenHolding(presaleId + accountId.toHexString());
     token.memePresale = presaleId;
     token.account = account.id;
-    token.totalValue = BigInt.fromI32(0);
-    token.balance = BigInt.fromI32(0);
+    token.totalValue = BIGINT_ZERO;
+    token.balance = BIGINT_ZERO;
   }
 
-  let ercBalance: BigInt
-  const erc1155 = ERC1155.bind(Address.fromString(presaleId))
-  const isDenom = Address.fromString(presaleId).equals(Address.fromString(pepe_collection.address))
-  if(isDenom){
-    ercBalance = erc1155.getAtomicBalance(accountId) //denoms use balanceOf
+  let ercBalance: BigInt;
+  const erc1155 = ERC1155.bind(Address.fromString(presaleId));
+  const isDenom = Address.fromString(presaleId).equals(Address.fromString(pepe_collection.address));
+  if (isDenom) {
+    ercBalance = erc1155.getAtomicBalance(accountId); //denoms use balanceOf
   } else {
-    ercBalance = erc1155.totalBalanceOf(accountId) //only on normal erc1155
+    ercBalance = erc1155.totalBalanceOf(accountId); //only on normal erc1155
   }
 
-  const prevBalance = token.balance
+  const prevBalance = token.balance;
 
   // Update account statistics and arrays
-  //update baseTokenRaised
   if (type == TX_TYPE_BUY) {
-    presale.baseTokenRaised = presale.baseTokenRaised.plus(baseTokenAmount);
     account.totalBuyCount = account.totalBuyCount.plus(BIGINT_ONE);
-    account.totalBaseTokenSpent = account.totalBaseTokenSpent.plus(baseTokenAmount);    
+    account.totalBaseTokenSpent = account.totalBaseTokenSpent.plus(baseTokenAmount);
     let buyTransactions = account.buyTransactions;
     if (!buyTransactions.includes(presaleId)) {
       buyTransactions.push(presaleId);
       account.buyTransactions = buyTransactions;
     }
   } else if (type == TX_TYPE_SELL) {
-    presale.baseTokenRaised = presale.baseTokenRaised.minus(baseTokenAmount);
     account.totalSellCount = account.totalSellCount.plus(BIGINT_ONE);
     account.totalBaseTokenReceived = account.totalBaseTokenReceived.plus(baseTokenAmount);
     let sellTransactions = account.sellTransactions;
@@ -125,16 +115,21 @@ export function createTransaction(
     }
   }
 
-  token.balance = ercBalance
+  token.balance = ercBalance;
 
-  log.info("account token: {} prev: {}, balance: {}, type: {}, SAME?: {}", [presale.name, prevBalance.toString(), token.balance.toString(), type, presale.id === token.id ? "YES" : "NO"])
+  log.info('account token: {} prev: {}, balance: {}, type: {}, SAME?: {}', [
+    presale.name,
+    prevBalance.toString(),
+    token.balance.toString(),
+    type,
+    presale.id === token.id ? 'YES' : 'NO',
+  ]);
 
   // Update timestamps
   account.updatedAt = event.block.timestamp;
   if (account.createdAt.equals(BIGINT_ZERO)) {
     account.createdAt = event.block.timestamp;
   }
-  
   // Save entities
   presale.save();
   token.save();
@@ -151,7 +146,13 @@ export function updateMetrics(presale: MemePresale, event: ethereum.Event): void
     presale.marketCap = presale.totalsupply.times(presale.lastPrice);
   }
 
-  log.info("presale {} mcap: {}, lastPrice: {}, supply: {}, calc: {}", [presale.name, presale.marketCap.toString(), presale.lastPrice.toString(), presale.totalsupply.toString(), presale.totalsupply.times(presale.lastPrice).toString()]);
+  log.info('presale {} mcap: {}, lastPrice: {}, supply: {}, calc: {}', [
+    presale.name,
+    presale.marketCap.toString(),
+    presale.lastPrice.toString(),
+    presale.totalsupply.toString(),
+    presale.totalsupply.times(presale.lastPrice).toString(),
+  ]);
 
   presale.updatedAt = event.block.timestamp;
   presale.updatedAtBlock = event.block.number;
@@ -188,17 +189,13 @@ export function updateTransactionArrays(account: Account, presaleId: string, typ
   }
 }
 
-function u8(BASE_TOKEN_DECIMALS: number): number {
-  throw new Error('Function not implemented.');
-}
-
 export class COLLECTION_DATA {
   type: string;
   uri: string;
 }
 
 export class COLLECTION {
-  name: string; 
+  name: string;
   address: string;
   symbol: string;
   supply: string;
@@ -206,14 +203,14 @@ export class COLLECTION {
   data: COLLECTION_DATA;
 }
 
-export const pepe_collection: COLLECTION = { 
+export const pepe_collection: COLLECTION = {
   name: 'PepeUSD',
   symbol: 'PEPEUSD',
   address: '0xBfB245280D60e30Cc033bC79bD1317614ec3016d',
   lpAddress: '0x9c3cf352a83c35d5775c665a403f9bb0a3decd14',
-  supply: '10000000',
+  supply: '1000000000',
   data: {
-    type: 'standard',
-    uri: 'data:application/json;base64,ewogICAgIm5hbWUiOiAiUEVQRVVTRCIsCiAgICAiZGVzY3JpcHRpb24iOiAiUEVQRVVTRCBpcyBhbiB1bmJhY2tlZCBORlQgc3RhYmxlY29pbi4gUEVQRVVTRCB1c2VzIE5GVHMgdG8gcmVwcmVzZW50IGRpZmZlcmVudCBkZW5vbWluYXRpb25zIG9mIHN0YWJsZWNvaW4gYmlsbHMsIHNpbWlsYXIgdG8gaG93IHBoeXNpY2FsIGNhc2ggaGFzIGRpZmZlcmVudCBiaWxsIHNpemVzICgkMSwgJDUsICQxMCwgZXRjLikuIFdoZW4geW91IHNlbmQgbW9uZXkgdG8gc29tZW9uZSBlbHNlLCB0aGUgc21hcnQgY29udHJhY3Qgd2lsbCBhdXRvbWF0aWNhbGx5IGJyZWFrIG91dCB0aGUgYmlsbHMgaW50byBzbWFsbGVyIHVuaXRzIGluIG9yZGVyIHRvIHNlbmQgdGhlIGV4YWN0IGFtb3VudC4gQWZ0ZXIgdHJhbnNhY3Rpb25zLCB0aGUgc3lzdGVtIGF1dG9tYXRpY2FsbHkgY29uc29saWRhdGVzIHlvdXIgcmVtYWluaW5nIGJhbGFuY2UgaW50byB0aGUgbGFyZ2VzdCBwb3NzaWJsZSBiaWxscy4gVGhpcyBrZWVwcyB5b3VyIHdhbGxldCBvcmdhbml6ZWQgd2l0aCB0aGUgbW9zdCBlZmZpY2llbnQgY29tYmluYXRpb24gb2YgYmlsbHMgYXMgeW91ciBzdGFjayBnZXRzIGZhdHRlci4iLAogICAgImltYWdlIjogImh0dHBzOi8vYmFmeWJlaWh6d3J5NGlvZ2FjcncyNzRlY3d2c2w1eGY2ZXRpM29rcTZtZHhzeGlyeWM0NmFhaHBudmkuaXBmcy5kd2ViLmxpbms/ZmlsZW5hbWU9V2FzaGluZ3RvbiUyMCglMjQxKS5wbmciLAogICAgImNvdmVyIjogImh0dHBzOi8vYmFmeWJlaWh6d3J5NGlvZ2FjcncyNzRlY3d2c2w1eGY2ZXRpM29rcTZtZHhzeGlyeWM0NmFhaHBudmkuaXBmcy5kd2ViLmxpbms/ZmlsZW5hbWU9V2FzaGluZ3RvbiUyMCglMjQxKS5wbmciLAogICAgImV4dGVybmFsX3VybCI6ICJodHRwczovL3BlcGV1c2QudGVjaCIsCiAgICAic29jaWFsX2xpbmtzIjogewogICAgICAgICJ3ZWJzaXRlIjogImh0dHBzOi8vcGVwZXVzZC50ZWNoIgogICAgfSwKICAgICJhdHRyaWJ1dGVzIjogWwogICAgICAgIHsKICAgICAgICAgICAgInRyYWl0X3R5cGUiOiAiTlNGVyIsCiAgICAgICAgICAgICJ2YWx1ZSI6IGZhbHNlCiAgICAgICAgfSwKICAgICAgICB7CiAgICAgICAgICAgICJ0cmFpdF90eXBlIjogIlRva2VuIFR5cGUiLAogICAgICAgICAgICAidmFsdWUiOiAiRGVub21pbmF0aW9uYWwiCiAgICAgICAgfSwKICAgICAgICB7CiAgICAgICAgICAgICJ0cmFpdF90eXBlIjogIkNhdGVnb3J5IiwKICAgICAgICAgICAgInZhbHVlIjogIm1lbWUiCiAgICAgICAgfQogICAgXSwKICAgICJkZW5vbWluYXRpb25zIjogWwogICAgICAgIHsKICAgICAgICAgICAgImRlbm9tX2lkIjogMCwKICAgICAgICAgICAgInZhbHVlIjogMSwKICAgICAgICAgICAgIm5hbWUiOiAiJDEgUEVQRVVTRCIsCiAgICAgICAgICAgICJpbWFnZSI6ICJodHRwczovL2JhZnliZWloendyeTRpb2dhY3J3Mjc0ZWN3dnNsNXhmNmV0aTNva3E2bWR4c3hpcnljNDZhYWhwbnZpLmlwZnMuZHdlYi5saW5rP2ZpbGVuYW1lPVdhc2hpbmd0b24lMjAoJTI0MSkucG5nIiwKICAgICAgICAgICAgImF0dHJpYnV0ZXMiOiBbCiAgICAgICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAgICAgInRyYWl0X3R5cGUiOiAiVmFsdWUiLAogICAgICAgICAgICAgICAgICAgICJ2YWx1ZSI6IDEKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgXQogICAgICAgIH0sCiAgICAgICAgewogICAgICAgICAgICAiZGVub21faWQiOiAxLAogICAgICAgICAgICAidmFsdWUiOiA1LAogICAgICAgICAgICAibmFtZSI6ICIkNSBQRVBFVVNEIiwKICAgICAgICAgICAgImltYWdlIjogImh0dHBzOi8vYmFmeWJlaWN0dm9hM3BycWZwZ2dnb3hjbmtwMmNyMjYzZ2Npank2Mm1peTc2MnVhdHB5eWpkY2l6ejQuaXBmcy5kd2ViLmxpbms/ZmlsZW5hbWU9TGluY29sbiUyMCglMjQ1KS5wbmciLAogICAgICAgICAgICAiYXR0cmlidXRlcyI6IFsKICAgICAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgICAgICAidHJhaXRfdHlwZSI6ICJWYWx1ZSIsCiAgICAgICAgICAgICAgICAgICAgInZhbHVlIjogNQogICAgICAgICAgICAgICAgfQogICAgICAgICAgICBdCiAgICAgICAgfSwKICAgICAgICB7CiAgICAgICAgICAgICJkZW5vbV9pZCI6IDIsCiAgICAgICAgICAgICJ2YWx1ZSI6IDEwLAogICAgICAgICAgICAibmFtZSI6ICIkMTAgUEVQRVVTRCIsCiAgICAgICAgICAgICJpbWFnZSI6ICJodHRwczovL2JhZnliZWljaHByYzZsanludnpwb3B0NnBmaGh3emNpNDNvYnllbG1lenM2NGQzd3ljdGc1ZzNqbWp1LmlwZnMuZHdlYi5saW5rP2ZpbGVuYW1lPUhhbWlsdG9uJTIwKCUyNDEwKS5wbmciLAogICAgICAgICAgICAiYXR0cmlidXRlcyI6IFsKICAgICAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgICAgICAidHJhaXRfdHlwZSI6ICJWYWx1ZSIsCiAgICAgICAgICAgICAgICAgICAgInZhbHVlIjogMTAKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgXQogICAgICAgIH0sCiAgICAgICAgewogICAgICAgICAgICAiZGVub21faWQiOiAzLAogICAgICAgICAgICAidmFsdWUiOiAyMCwKICAgICAgICAgICAgIm5hbWUiOiAiJDIwIFBFUEVVU0QiLAogICAgICAgICAgICAiaW1hZ2UiOiAiaHR0cHM6Ly9iYWZ5YmVpYW43aWthZW40cDNpZXByemp0bmJtNWE3MjJvajZ1dWQyamZoZmJ6Z3N0YmJ4b29mNWZtYS5pcGZzLmR3ZWIubGluaz9maWxlbmFtZT1KYWNrc29uJTIwKCUyNDIwKS5wbmciLAogICAgICAgICAgICAiYXR0cmlidXRlcyI6IFsKICAgICAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgICAgICAidHJhaXRfdHlwZSI6ICJWYWx1ZSIsCiAgICAgICAgICAgICAgICAgICAgInZhbHVlIjogMjAKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgXQogICAgICAgIH0sCiAgICAgICAgewogICAgICAgICAgICAiZGVub21faWQiOiA0LAogICAgICAgICAgICAidmFsdWUiOiA1MCwKICAgICAgICAgICAgIm5hbWUiOiAiJDUwIFBFUEVVU0QiLAogICAgICAgICAgICAiaW1hZ2UiOiAiaHR0cHM6Ly9iYWZ5YmVpYmJlYmdtc2p6Y3hnN3JlZTJqaWNra2piNjVuMnE0cm1qYTdoZ3dhdTZjZHJvZ2RpaHRqcS5pcGZzLmR3ZWIubGluaz9maWxlbmFtZT1HcmFudCUyMCglMjQ1MCkucG5nIiwKICAgICAgICAgICAgImF0dHJpYnV0ZXMiOiBbCiAgICAgICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAgICAgInRyYWl0X3R5cGUiOiAiVmFsdWUiLAogICAgICAgICAgICAgICAgICAgICJ2YWx1ZSI6IDUwCiAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgIF0KICAgICAgICB9LAogICAgICAgIHsKICAgICAgICAgICAgImRlbm9tX2lkIjogNSwKICAgICAgICAgICAgInZhbHVlIjogMTAwLAogICAgICAgICAgICAibmFtZSI6ICIkMTAwIFBFUEVVU0QiLAogICAgICAgICAgICAiaW1hZ2UiOiAiaHR0cHM6Ly9iYWZ5YmVpYWU2dzJsc2V2bXoyanB3aWRkbnl4cWY3ZnduZ3B6NXpodnVmd2x2NXNpNTNvZWtranNiZS5pcGZzLmR3ZWIubGluaz9maWxlbmFtZT1GcmFua2xpbiUyMCglMjQxMDApLnBuZyIsCiAgICAgICAgICAgICJhdHRyaWJ1dGVzIjogWwogICAgICAgICAgICAgICAgewogICAgICAgICAgICAgICAgICAgICJ0cmFpdF90eXBlIjogIlZhbHVlIiwKICAgICAgICAgICAgICAgICAgICAidmFsdWUiOiAxMDAKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgXQogICAgICAgIH0sCiAgICAgICAgewogICAgICAgICAgICAiZGVub21faWQiOiA2LAogICAgICAgICAgICAidmFsdWUiOiAxMDAwLAogICAgICAgICAgICAibmFtZSI6ICIkMTAwMCBQRVBFVVNEIiwKICAgICAgICAgICAgImltYWdlIjogImh0dHBzOi8vYmFmeWJlaWRlaHEzb3hzcDZjb2p4aTd6ZHd6N3N2NDJ0djdjbzRib3Z5Z3A3MzRxZHc1Z3A2enlpNGUuaXBmcy5kd2ViLmxpbmsvP2ZpbGVuYW1lPUNsZXZlbGFuZCUyMCglMjQxMDAwKS5wbmciLAogICAgICAgICAgICAiYXR0cmlidXRlcyI6IFsKICAgICAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgICAgICAidHJhaXRfdHlwZSI6ICJWYWx1ZSIsCiAgICAgICAgICAgICAgICAgICAgInZhbHVlIjogMTAwMAogICAgICAgICAgICAgICAgfQogICAgICAgICAgICBdCiAgICAgICAgfQogICAgXQp9'
-  }, 
-}
+    type: 'denominational',
+    uri: 'data:application/json;base64,eyJuYW1lIjoiUEVQRVVTRCIsImRlc2NyaXB0aW9uIjoiUEVQRVVTRCBpcyBhbiB1bmJhY2tlZCBORlQgc3RhYmxlY29pbi4gUEVQRVVTRCB1c2VzIE5GVHMgdG8gcmVwcmVzZW50IGRpZmZlcmVudCBkZW5vbWluYXRpb25zIG9mIHN0YWJsZWNvaW4gYmlsbHMsIHNpbWlsYXIgdG8gaG93IHBoeXNpY2FsIGNhc2ggaGFzIGRpZmZlcmVudCBiaWxsIHNpemVzICgkMSwgJDUsICQxMCwgZXRjLikuIFdoZW4geW91IHNlbmQgbW9uZXkgdG8gc29tZW9uZSBlbHNlLCB0aGUgc21hcnQgY29udHJhY3Qgd2lsbCBhdXRvbWF0aWNhbGx5IGJyZWFrIG91dCB0aGUgYmlsbHMgaW50byBzbWFsbGVyIHVuaXRzIGluIG9yZGVyIHRvIHNlbmQgdGhlIGV4YWN0IGFtb3VudC4gQWZ0ZXIgdHJhbnNhY3Rpb25zLCB0aGUgc3lzdGVtIGF1dG9tYXRpY2FsbHkgY29uc29saWRhdGVzIHlvdXIgcmVtYWluaW5nIGJhbGFuY2UgaW50byB0aGUgbGFyZ2VzdCBwb3NzaWJsZSBiaWxscy4gVGhpcyBrZWVwcyB5b3VyIHdhbGxldCBvcmdhbml6ZWQgd2l0aCB0aGUgbW9zdCBlZmZpY2llbnQgY29tYmluYXRpb24gb2YgYmlsbHMgYXMgeW91ciBzdGFjayBnZXRzIGZhdHRlci4iLCJpbWFnZSI6ImlwZnM6Ly9RbU56QVZycWhORHE3em1zWVE0MUxOQUJpVXV1Z3VyMVU3Zlk0VjFKZnhWRXV6IiwiY292ZXIiOiJpcGZzOi8vUW1jTVZRVjZaVE5GYnp1dEpFWVdmd1lTUWlzRGV6bmNCenRhTVppWlptTUh4RiIsImV4dGVybmFsX3VybCI6Imh0dHBzOi8vcGVwZXVzZC50ZWNoIiwic29jaWFsX2xpbmtzIjp7IndlYnNpdGUiOiJodHRwczovL3BlcGV1c2QudGVjaCJ9LCJhdHRyaWJ1dGVzIjpbeyJ0cmFpdF90eXBlIjoiTlNGVyIsInZhbHVlIjpmYWxzZX0seyJ0cmFpdF90eXBlIjoiVG9rZW4gVHlwZSIsInZhbHVlIjoiRGVub21pbmF0aW9uYWwifSx7InRyYWl0X3R5cGUiOiJDYXRlZ29yeSIsInZhbHVlIjoibWVtZSJ9XSwiZGVub21pbmF0aW9ucyI6W3siZGVub21faWQiOjAsInZhbHVlIjoxLCJuYW1lIjoiJDEgUEVQRVVTRCIsImltYWdlIjoiaHR0cHM6Ly9pcGZzLmZpbGViYXNlLmlvL2lwZnMvUW1jRThzQVlrUXBlbm1Zc1dUUjZwOURSQU5lUzdyQXBzVGptM0o5dHdqM3NxTS8xLnBuZyIsImF0dHJpYnV0ZXMiOlt7InRyYWl0X3R5cGUiOiJWYWx1ZSIsInZhbHVlIjoxfV19LHsiZGVub21faWQiOjEsInZhbHVlIjo1LCJuYW1lIjoiJDUgUEVQRVVTRCIsImltYWdlIjoiaHR0cHM6Ly9pcGZzLmZpbGViYXNlLmlvL2lwZnMvUW1jRThzQVlrUXBlbm1Zc1dUUjZwOURSQU5lUzdyQXBzVGptM0o5dHdqM3NxTS81LnBuZyIsImF0dHJpYnV0ZXMiOlt7InRyYWl0X3R5cGUiOiJWYWx1ZSIsInZhbHVlIjo1fV19LHsiZGVub21faWQiOjIsInZhbHVlIjoxMCwibmFtZSI6IiQxMCBQRVBFVVNEIiwiaW1hZ2UiOiJodHRwczovL2lwZnMuZmlsZWJhc2UuaW8vaXBmcy9RbWNFOHNBWWtRcGVubVlzV1RSNnA5RFJBTmVTN3JBcHNUam0zSjl0d2ozc3FNLzEwLnBuZyIsImF0dHJpYnV0ZXMiOlt7InRyYWl0X3R5cGUiOiJWYWx1ZSIsInZhbHVlIjoxMH1dfSx7ImRlbm9tX2lkIjozLCJ2YWx1ZSI6MjAsIm5hbWUiOiIkMjAgUEVQRVVTRCIsImltYWdlIjoiaHR0cHM6Ly9pcGZzLmZpbGViYXNlLmlvL2lwZnMvUW1jRThzQVlrUXBlbm1Zc1dUUjZwOURSQU5lUzdyQXBzVGptM0o5dHdqM3NxTS8yMC5wbmciLCJhdHRyaWJ1dGVzIjpbeyJ0cmFpdF90eXBlIjoiVmFsdWUiLCJ2YWx1ZSI6MjB9XX0seyJkZW5vbV9pZCI6NCwidmFsdWUiOjUwLCJuYW1lIjoiJDUwIFBFUEVVU0QiLCJpbWFnZSI6Imh0dHBzOi8vaXBmcy5maWxlYmFzZS5pby9pcGZzL1FtY0U4c0FZa1FwZW5tWXNXVFI2cDlEUkFOZVM3ckFwc1RqbTNKOXR3ajNzcU0vNTAucG5nIiwiYXR0cmlidXRlcyI6W3sidHJhaXRfdHlwZSI6IlZhbHVlIiwidmFsdWUiOjUwfV19LHsiZGVub21faWQiOjUsInZhbHVlIjoxMDAsIm5hbWUiOiIkMTAwIFBFUEVVU0QiLCJpbWFnZSI6Imh0dHBzOi8vaXBmcy5maWxlYmFzZS5pby9pcGZzL1FtY0U4c0FZa1FwZW5tWXNXVFI2cDlEUkFOZVM3ckFwc1RqbTNKOXR3ajNzcU0vMTAwLnBuZyIsImF0dHJpYnV0ZXMiOlt7InRyYWl0X3R5cGUiOiJWYWx1ZSIsInZhbHVlIjoxMDB9XX0seyJkZW5vbV9pZCI6NiwidmFsdWUiOjEwMDAsIm5hbWUiOiIkMTAwMCBQRVBFVVNEIiwiaW1hZ2UiOiJodHRwczovL2lwZnMuZmlsZWJhc2UuaW8vaXBmcy9RbWNFOHNBWWtRcGVubVlzV1RSNnA5RFJBTmVTN3JBcHNUam0zSjl0d2ozc3FNLzEwMDAucG5nIiwiYXR0cmlidXRlcyI6W3sidHJhaXRfdHlwZSI6IlZhbHVlIiwidmFsdWUiOjEwMDB9XX1dfQ',
+  },
+};

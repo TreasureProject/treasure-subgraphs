@@ -1,58 +1,50 @@
-import {
-  MemeMade,
-  Buy,
-  Sell,
-  GraduationReady,
-  Graduation,
-  PairCoinApproved,
-} from '../generated/Presale/Presale';
-import { MemePresale, AltPair, Vault, Account, Pair } from '../generated/schema';
 import { Address, BigInt, DataSourceTemplate, log } from '@graphprotocol/graph-ts';
+
+import { MAGICSWAP_V2_ROUTER_ADDRESS, WETH_ADDRESS } from '@treasure/constants';
+
+import { OwnershipTransferred } from '../generated/PepeUSD/ERC1155';
 import {
-  BIGINT_ZERO,
-  BIGINT_ONE,
+  Buy,
+  Graduation,
+  GraduationReady,
+  MemeMade,
+  PairCoinApproved,
+  Sell,
+} from '../generated/Presale/Presale';
+import { AltPair, MemePresale, Pair, Vault } from '../generated/schema';
+import { Swap } from '../generated/templates/Pool/UniswapV2Pair';
+import {
   ADDRESS_ZERO,
-  EVENT_BUY,
-  EVENT_SELL,
-  EVENT_GRADUATE,
   BASE_TOKEN_SYMBOL,
-  WETH_ADDRESS,
-  MAGICSWAP_ROUTER,
-  //EVENT_MEMEMADE,
-  //DEFAULT_TOKEN_ID,
+  BIGINT_ONE,
+  BIGINT_ZERO,
+  EVENT_BUY,
+  EVENT_GRADUATE,
+  EVENT_SELL,
 } from './constants';
 import {
-  getOrCreateAccount,
-  createTransaction,
   COLLECTION,
+  createTransaction,
+  getOrCreateAccount,
   pepe_collection,
-  updateMetrics
-  //updateMetrics,
-  //updateTransactionArrays,
+  updateMetrics,
 } from './utils';
-import { OwnershipTransferred } from '../generated/PepeUSD/ERC1155'
-
-import { Magicswap, Swap } from '../generated/templates/Pool/Magicswap';
 
 export function handleOwnershipTransferred(event: OwnershipTransferred): void {
-  const hardcodedPresales: COLLECTION[] = [
-    pepe_collection,
-  ]
+  const hardcodedPresales: COLLECTION[] = [pepe_collection];
 
-  
   for (let i = 0; i < hardcodedPresales.length; i++) {
     const collection = hardcodedPresales[i];
 
-    let presale = MemePresale.load(collection.address.toLowerCase())
-    if(!presale){
-      presale = new MemePresale(collection.address.toLowerCase())
-  
+    let presale = MemePresale.load(collection.address.toLowerCase());
+    if (!presale) {
+      presale = new MemePresale(collection.address.toLowerCase());
+
       //metadata
       presale.name = collection.name;
       presale.symbol = collection.symbol;
       presale.uri = collection.data.uri;
       presale.creator = ADDRESS_ZERO.toHexString();
-  
       // Token economics
       presale.presalePrice = BIGINT_ZERO;
       presale.baseTokenRaised = BIGINT_ZERO;
@@ -64,9 +56,9 @@ export function handleOwnershipTransferred(event: OwnershipTransferred): void {
       presale.amounttosell = BIGINT_ZERO;
       presale.lastPrice = BigInt.fromI32(10000);
       presale.lpAddress = Address.fromString(collection.lpAddress.toLowerCase());
-  
+
       //setup swap pool
-      const vault = new Vault(collection.lpAddress.toLowerCase())
+      const vault = new Vault(collection.lpAddress.toLowerCase());
       vault.collectionId = Address.fromString(presale.id);
 
       vault.createdAt = event.block.timestamp;
@@ -75,34 +67,33 @@ export function handleOwnershipTransferred(event: OwnershipTransferred): void {
       vault.save();
 
       //create Pool for Swaps | MagicSwap, can be ERC20 / vault?
-      DataSourceTemplate.create('Pool', [vault.id])
+      DataSourceTemplate.create('Pool', [vault.id]);
 
       // Pair info
-      presale.paircoin = Address.fromString(WETH_ADDRESS);
+      presale.paircoin = WETH_ADDRESS;
       presale.pairSymbol = BASE_TOKEN_SYMBOL;
       presale.isPairERC1155 = false;
-  
+
       // Timestamps
       presale.createdAt = event.block.timestamp;
       presale.createdAtBlock = event.block.number;
       presale.updatedAt = event.block.timestamp;
       presale.updatedAtBlock = event.block.number;
       presale.graduatedAt = event.block.timestamp;
-  
       // Metrics
       presale.totalBuyCount = BIGINT_ZERO;
       presale.totalSellCount = BIGINT_ZERO;
       presale.uniqueBuyerCount = BIGINT_ZERO;
       presale.uniqueSellerCount = BIGINT_ZERO;
       presale.marketCap = BIGINT_ZERO;
-  
+
       //make featured
       presale.graduated = true;
       presale.readyToGraduate = false;
-  
+
       presale.save();
 
-      log.info("hardcode saved: {}", [presale.name.toString()]);
+      log.info('hardcode saved: {}', [presale.name.toString()]);
     }
   }
 }
@@ -192,7 +183,7 @@ export function handleBuy(event: Buy): void {
     }
   }
 
-  let accountId = event.params.buyer
+  let accountId = event.params.buyer;
 
   // Create transaction
   createTransaction(
@@ -235,7 +226,7 @@ export function handleSell(event: Sell): void {
   if (!sellTransactions.includes(presaleId)) {
     presale.uniqueSellerCount = presale.uniqueSellerCount.plus(BIGINT_ONE);
   }
-  let accountId = event.params.seller
+  let accountId = event.params.seller;
 
   // Create transaction
   createTransaction(
@@ -272,8 +263,8 @@ export function handleGraduationReady(event: GraduationReady): void {
 }
 
 export function handleGraduation(event: Graduation): void {
-  const presaleId = event.params.presaleinfo.memecoin.toHexString()//event.address.toHexString();
-  
+  const presaleId = event.params.presaleinfo.memecoin.toHexString(); //event.address.toHexString();
+
   let presale = MemePresale.load(presaleId);
   if (!presale) {
     log.error('Presale not found in Graduation event: {}', [presaleId]);
@@ -281,7 +272,7 @@ export function handleGraduation(event: Graduation): void {
   }
 
   //@TODO: create Template on lpAddress
-  const lpAddress = event.params.lpaddress
+  const lpAddress = event.params.lpaddress;
 
   presale.graduated = true;
   presale.lpAddress = lpAddress;
@@ -290,7 +281,7 @@ export function handleGraduation(event: Graduation): void {
   presale.updatedAtBlock = event.block.number;
   presale.graduatedAt = event.block.timestamp;
 
-  const vault = new Vault(lpAddress.toHexString())
+  const vault = new Vault(lpAddress.toHexString());
   vault.collectionId = Address.fromString(presale.id);
 
   vault.createdAt = event.block.timestamp;
@@ -299,9 +290,9 @@ export function handleGraduation(event: Graduation): void {
   vault.save();
 
   //create Pool for Swaps | MagicSwap, can be ERC20 / vault?
-  DataSourceTemplate.create('Pool', [vault.id])
+  DataSourceTemplate.create('Pool', [vault.id]);
 
-  const accountId = event.transaction.from
+  const accountId = event.transaction.from;
   // Create graduation transaction
   createTransaction(
     event,
@@ -344,107 +335,92 @@ export function handlePairCoinApproved(event: PairCoinApproved): void {
 }
 
 export function handleSwap(event: Swap): void {
-  const params = event.params
-  const vaultAddress = event.address
-  
-  log.info("vault: {}, sender: {}, to: {}", [vaultAddress.toHexString(), params.sender.toHexString(), params.to.toHexString()])
+  const params = event.params;
+  const vaultAddress = event.address;
 
+  log.info('vault: {}, sender: {}, to: {}', [
+    vaultAddress.toHexString(),
+    params.sender.toHexString(),
+    params.to.toHexString(),
+  ]);
 
-  const vault = Vault.load(vaultAddress.toHexString())
-  if(!vault){
-    log.error("Failed to find vault connected to transfer. Vault: {}", [vaultAddress.toHexString()])
-    return
-  }
-  const pair = Pair.load(vaultAddress)
-  if (!pair) {
-    log.error("Error swapping unknown Pair: {}", [event.address.toHexString()]);
+  const vault = Vault.load(vaultAddress.toHexString());
+  if (!vault) {
+    log.error('Failed to find vault connected to transfer. Vault: {}', [
+      vaultAddress.toHexString(),
+    ]);
     return;
   }
-  
+  const pair = Pair.load(vaultAddress);
+  if (!pair) {
+    log.error('Error swapping unknown Pair: {}', [event.address.toHexString()]);
+    return;
+  }
+
+  const amount0 = params.amount0In.plus(params.amount0Out);
+  const amount1 = params.amount1In.plus(params.amount1Out);
+
   // Determine if the transaction is a BUY or SELL
   let type: string;
   let tokenAmount: BigInt;
   let baseAmount: BigInt;
 
-  if(pair.token0.equals(Address.fromString(WETH_ADDRESS))){
-    if (params.amount0In.gt(BigInt.fromI32(0))) {
-      type = "BUY";
-      tokenAmount = params.amount1Out
-      baseAmount = params.amount0In
-
-    } else {
-      type = "SELL";
-      tokenAmount = params.amount1In
-      baseAmount = params.amount0Out
-    }
+  if (pair.token0.equals(WETH_ADDRESS)) {
+    tokenAmount = amount1;
+    baseAmount = amount0;
+    type = params.amount0In.gt(BIGINT_ZERO) ? 'BUY' : 'SELL';
   } else {
-    if (params.amount0In.gt(BigInt.fromI32(0))) {
-      type = "SELL";
-      tokenAmount = params.amount0In
-      baseAmount = params.amount1Out
-    } else {
-      type = "BUY";
-      tokenAmount = params.amount1In
-      baseAmount = params.amount0Out
-    }
+    tokenAmount = amount0;
+    baseAmount = amount1;
+    type = params.amount1In.gt(BIGINT_ZERO) ? 'BUY' : 'SELL';
   }
-  
-  let accountId: string 
-  if (!params.to.equals(Address.fromString(MAGICSWAP_ROUTER))) {
-    accountId = getOrCreateAccount(params.to).id;
-  } else if (!params.sender.equals(Address.fromString(MAGICSWAP_ROUTER))) {
-    accountId = getOrCreateAccount(params.sender).id;
+
+  let accountId: Address;
+  if (!params.to.equals(MAGICSWAP_V2_ROUTER_ADDRESS)) {
+    accountId = params.to;
+  } else if (!params.sender.equals(MAGICSWAP_V2_ROUTER_ADDRESS)) {
+    accountId = params.sender;
   } else {
-    accountId = getOrCreateAccount(event.transaction.from).id;
-  }
-
-  let account = Account.load(accountId)
-  if(!account) {
-    log.error("Account {} not found, unable to create tx and token holdings", [accountId])
-    return
-  }
-
-  const memecoin = MemePresale.load(vault.collectionId.toHexString())
-  if(!memecoin) {
-    log.error("failed to find memecoin: {}", [vault.collectionId.toHexString()])
-    return
+    accountId = event.transaction.from;
   }
 
   createTransaction(
-    event, type,
-    type === "BUY"  ? Address.fromString(MAGICSWAP_ROUTER) : Address.fromString(accountId),
-    type === "BUY"  ? Address.fromString(accountId) : Address.fromString(MAGICSWAP_ROUTER),
+    event,
+    type,
+    type === 'BUY' ? MAGICSWAP_V2_ROUTER_ADDRESS : accountId,
+    type === 'BUY' ? accountId : MAGICSWAP_V2_ROUTER_ADDRESS,
     tokenAmount.div(BigInt.fromI32(10).pow(18)), //token amount
     baseAmount, //base token amount
     vault.collectionId.toHexString(),
-    Address.fromString(accountId) // account ID
-  )
-
+    accountId
+  );
 
   log.info('Pool swap inputs/outputs: \n0IN: {} 0OUT: {}\n1IN: {} 1OUT: {}', [
-    event.params.amount0In.toString(), 
-    event.params.amount0Out.toString(), 
-    event.params.amount1In.toString(), 
-    event.params.amount1Out.toString()
-  ])
+    event.params.amount0In.toString(),
+    event.params.amount0Out.toString(),
+    event.params.amount1In.toString(),
+    event.params.amount1Out.toString(),
+  ]);
 
   log.debug('Pool swap event processed. TXID: {} Pool: {} SENDER: {} TO: {}', [
     event.transaction.hash.toHexString(),
     vaultAddress.toHexString(),
     event.params.sender.toHexString(),
-    event.params.to.toHexString()
+    event.params.to.toHexString(),
   ]);
 
-
   const presale = MemePresale.load(vault.collectionId.toHexString());
-  if(!presale) {
-    log.error("Failed to find MemePresale {}", [vault.collectionId.toHexString()])
-    return
+  if (!presale) {
+    log.error('Failed to find MemePresale {}', [vault.collectionId.toHexString()]);
+    return;
   }
 
   // Update metrics
-  log.info("updating metrics for {} - tokens: {} - base token: {}", [presale.name, tokenAmount.toString(), baseAmount.toString()])
+  log.info('updating metrics for {} - tokens: {} - base token: {}', [
+    presale.name,
+    tokenAmount.toString(),
+    baseAmount.toString(),
+  ]);
   updateMetrics(presale, event);
-  log.info("Saved presale with updated marketCap: {}", [presale.marketCap.toString()]);
-
+  log.info('Saved presale with updated marketCap: {}', [presale.marketCap.toString()]);
 }

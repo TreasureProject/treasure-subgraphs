@@ -95,7 +95,6 @@ type Token @entity {
   decimals: BigInt!
   isNFT: Boolean!
   isETH: Boolean!
-
 }
 
 type Pair @entity {
@@ -107,7 +106,6 @@ type Pair @entity {
 
   vault: Vault!
 }
-
 
 type Vault @entity {
   id: ID!
@@ -123,13 +121,6 @@ type _Schema_
     language: en
     algorithm: rank
     include: [
-      {
-        entity: "MemePresale"
-        fields: [
-          { name: "name" }
-          { name: "symbol" }
-          { name: "creator" }
-        ]
-      }
+      { entity: "MemePresale", fields: [{ name: "name" }, { name: "symbol" }, { name: "creator" }] }
     ]
   )

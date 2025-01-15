@@ -11,5 +11,9 @@
   "magicswapv2_router_address": "0x4043b1c99838945555341c0d5e101e75f143a660",
   "magicswapv2_staking_address": "0x0000000000000000000000000000000000000000",
   "magic_usd_price_feed_address": "0x0000000000000000000000000000000000000000",
-  "weth_address": "0x74158ec2ad19Df364430C6404B7dA6E5284645BA"
+  "weth_address": "0x74158ec2ad19Df364430C6404B7dA6E5284645BA",
+
+  "ride_presale_address": "0xFBb1DC026fE49F5EeEc41776127C6Efb8859Ea9b",
+  "ride_pepe_usd_address": "0x14e1149E53e5ECe8AE04a74Ba7F655C778a151d4",
+  "ride_start_block": 19276128
 }
