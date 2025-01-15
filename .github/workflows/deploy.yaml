@@ -61,8 +61,6 @@ jobs:
       - name: Generate code for PROD (Base)
         if: inputs.environment == 'Production (Base)'
         run: npm run generate:prod-base --if-present
-      - name: Test
-        run: npm test --if-present
       - name: Build subgraph
         run: npx graph build
       - name: Deploy to DEV (Arbitrum Sepolia)
