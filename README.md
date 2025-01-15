@@ -32,6 +32,10 @@ Tracking MAGIC deposited for [TreasureDAO Governance Staking](https://governance
 
 Exchange data for [Magicswap](https://magicswap.lol)
 
+### ride
+
+Exchange data for [Ride](https://ride.wtf)
+
 ### smol
 
 Data for SMOL Admin and [Transmolgrifier](https://smolverse.lol/transmolgrify)

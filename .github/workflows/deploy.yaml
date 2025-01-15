@@ -16,7 +16,11 @@ on:
           - bridgeworld-recruits
           - governance-staking
           - magicswap
+          - ride
           - smol
+      name:
+        description: Custom subgraph name
+        required: false
       version:
         description: Subgraph version
         required: true
@@ -63,22 +67,22 @@ jobs:
         run: npx graph build
       - name: Deploy to DEV (Arbitrum Sepolia)
         if: inputs.environment == 'Development'
-        run: npx goldsky subgraph deploy ${{ inputs.subgraph }}-dev/${{ inputs.version }} --token ${{ secrets.GOLDSKY_DEPLOY_KEY }}
+        run: npx goldsky subgraph deploy ${{ inputs.name || format('{0}-dev', inputs.subgraph) }}/${{ inputs.version }} --token ${{ secrets.GOLDSKY_DEPLOY_KEY }}
       - name: Deploy to DEV (Topaz)
         if: inputs.environment == 'Development (Topaz)'
-        run: npx goldsky subgraph deploy ${{ inputs.subgraph }}-dev-topaz/${{ inputs.version }} --token ${{ secrets.GOLDSKY_DEPLOY_KEY }}
+        run: npx goldsky subgraph deploy ${{ inputs.name || format('{0}-dev-topaz', inputs.subgraph) }}/${{ inputs.version }} --token ${{ secrets.GOLDSKY_DEPLOY_KEY }}
       - name: Deploy to DEV (Sepolia)
         if: inputs.environment == 'Development (Sepolia)'
-        run: npx goldsky subgraph deploy ${{ inputs.subgraph }}-dev-sepolia/${{ inputs.version }} --token ${{ secrets.GOLDSKY_DEPLOY_KEY }}
+        run: npx goldsky subgraph deploy ${{ inputs.name || format('{0}-dev-sepolia', inputs.subgraph) }}/${{ inputs.version }} --token ${{ secrets.GOLDSKY_DEPLOY_KEY }}
       - name: Deploy to DEV (Base Sepolia)
         if: inputs.environment == 'Development (Base Sepolia)'
-        run: npx goldsky subgraph deploy ${{ inputs.subgraph }}-dev-base-sepolia/${{ inputs.version }} --token ${{ secrets.GOLDSKY_DEPLOY_KEY }}
+        run: npx goldsky subgraph deploy ${{ inputs.name || format('{0}-dev-base-sepolia', inputs.subgraph) }}/${{ inputs.version }} --token ${{ secrets.GOLDSKY_DEPLOY_KEY }}
       - name: Deploy to PROD (Arbitrum)
         if: inputs.environment == 'Production (Arbitrum)'
-        run: npx goldsky subgraph deploy ${{ inputs.subgraph }}/${{ inputs.version }} --token ${{ secrets.GOLDSKY_DEPLOY_KEY }}
+        run: npx goldsky subgraph deploy ${{ inputs.name || inputs.subgraph }}/${{ inputs.version }} --token ${{ secrets.GOLDSKY_DEPLOY_KEY }}
       - name: Deploy to PROD (Treasure)
         if: inputs.environment == 'Production (Treasure)'
-        run: npx goldsky subgraph deploy ${{ inputs.subgraph }}-treasure/${{ inputs.version }} --token ${{ secrets.GOLDSKY_DEPLOY_KEY }}
+        run: npx goldsky subgraph deploy ${{ inputs.name || format('{0}-treasure', inputs.subgraph) }}/${{ inputs.version }} --token ${{ secrets.GOLDSKY_DEPLOY_KEY }}
       - name: Deploy to PROD (Base)
         if: inputs.environment == 'Production (Base)'
-        run: npx goldsky subgraph deploy ${{ inputs.subgraph }}-base/${{ inputs.version }} --token ${{ secrets.GOLDSKY_DEPLOY_KEY }}
+        run: npx goldsky subgraph deploy ${{ inputs.name || format('{0}-base', inputs.subgraph) }}/${{ inputs.version }} --token ${{ secrets.GOLDSKY_DEPLOY_KEY }}
