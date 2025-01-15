@@ -189,9 +189,6 @@ export function handleBuy(event: Buy): void {
 
   // Update presale metrics
   presale.totalBuyCount = presale.totalBuyCount.plus(BIGINT_ONE);
-  presale.baseTokenRaised = presale.baseTokenRaised.plus(
-    event.params.amountBaseToken
-  );
 
   // Check for unique buyer
   if (!presale.creator.includes(event.params.buyer.toHexString())) {
@@ -217,6 +214,13 @@ export function handleBuy(event: Buy): void {
   );
 
   updateMetrics(presale, event);
+
+  // Update presale metrics
+  presale.baseTokenRaised = presale.baseTokenRaised.plus(
+    event.params.amountBaseToken
+  );
+
+  presale.save();
 }
 
 export function handleSell(event: Sell): void {
@@ -236,11 +240,6 @@ export function handleSell(event: Sell): void {
 
   // Update presale metrics
   presale.totalSellCount = presale.totalSellCount.plus(BIGINT_ONE);
-  presale.baseTokenRaised = presale.baseTokenRaised.minus(
-    // for some reason this is needed because
-    // createTransaction does not trigger updating baseTokenAmount until graduated
-    event.params.amountBaseToken
-  );
 
   // Check for unique seller
   let sellTransactions = account.sellTransactions;
@@ -263,6 +262,13 @@ export function handleSell(event: Sell): void {
   );
 
   updateMetrics(presale, event);
+
+  // Update presale metrics
+  presale.baseTokenRaised = presale.baseTokenRaised.minus(
+    event.params.amountBaseToken
+  );
+
+  presale.save();
 }
 
 export function handleGraduationReady(event: GraduationReady): void {
@@ -405,6 +411,25 @@ export function handleSwap(event: Swap): void {
     accountId = event.transaction.from;
   }
 
+  const presale = MemePresale.load(vault.collectionId.toHexString());
+  if (!presale) {
+    log.error("Failed to find MemePresale {}", [
+      vault.collectionId.toHexString(),
+    ]);
+    return;
+  }
+
+  if (type === "BUY") {
+    // Update presale metrics
+    presale.baseTokenRaised = presale.baseTokenRaised.plus(baseAmount);
+    presale.save();
+  }
+  if (type === "SELL") {
+    // Update presale metrics
+    presale.baseTokenRaised = presale.baseTokenRaised.minus(baseAmount);
+    presale.save();
+  }
+
   createTransaction(
     event,
     type,
@@ -429,14 +454,6 @@ export function handleSwap(event: Swap): void {
     event.params.sender.toHexString(),
     event.params.to.toHexString(),
   ]);
-
-  const presale = MemePresale.load(vault.collectionId.toHexString());
-  if (!presale) {
-    log.error("Failed to find MemePresale {}", [
-      vault.collectionId.toHexString(),
-    ]);
-    return;
-  }
 
   // Update metrics
   log.info("updating metrics for {} - tokens: {} - base token: {}", [
