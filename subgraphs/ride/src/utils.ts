@@ -3,6 +3,7 @@ import { Address, BigInt, ethereum, log } from "@graphprotocol/graph-ts";
 import { ERC1155 } from "../generated/PepeUSD/ERC1155";
 import {
   Account,
+  Global,
   MemePresale,
   TokenHolding,
   Transaction,
@@ -22,6 +23,22 @@ export function calculateWETHPrice(
     return BIGINT_ZERO;
   }
   return baseTokenAmount.div(amount);
+}
+
+export function getOrCreateGlobal(): Global {
+  let global = Global.load("0");
+  if (!global) {
+    global = new Global("0");
+    global.totalPresales = BIGINT_ZERO;
+    global.totalGraduated = BIGINT_ZERO;
+    global.totalTransactions = BIGINT_ZERO;
+    global.totalMarketCap = BIGINT_ZERO;
+
+    global.createdAt = BIGINT_ZERO;
+    global.updatedAt = BIGINT_ZERO;
+  }
+
+  return global;
 }
 
 export function getOrCreateAccount(address: Address): Account {
