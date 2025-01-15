@@ -5,7 +5,6 @@
   "license": "MIT",
   "scripts": {
     "generate:dev": "npm run prepare:arbitrum-sepolia --prefix=../../packages/constants && mustache ../../node_modules/@treasure/subgraph-config/src/arbitrum-sepolia.json template.yaml > subgraph.yaml && graph codegen",
-    "generate:prod": "npm run prepare:arbitrum --prefix=../../packages/constants && mustache ../../node_modules/@treasure/subgraph-config/src/arbitrum.json template.yaml > subgraph.yaml && graph codegen",
-    "test": "graph test . -v 0.5.4"
+    "generate:prod": "npm run prepare:arbitrum --prefix=../../packages/constants && mustache ../../node_modules/@treasure/subgraph-config/src/arbitrum.json template.yaml > subgraph.yaml && graph codegen"
   }
 }
