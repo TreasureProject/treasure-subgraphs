@@ -1,0 +1,10 @@
+{
+  "name": "ride",
+  "version": "1.0.0",
+  "description": "Subgraph that powers Ride DEX",
+  "license": "MIT",
+  "scripts": {
+    "generate:dev-base-sepolia": "npm run prepare:base-sepolia --prefix=../../packages/constants && mustache ../../node_modules/@treasure/subgraph-config/src/base-sepolia.json template.yaml > subgraph.yaml && graph codegen",
+    "generate:prod-base": "npm run prepare:base --prefix=../../packages/constants && mustache ../../node_modules/@treasure/subgraph-config/src/base.json template.yaml > subgraph.yaml && graph codegen"
+  }
+}

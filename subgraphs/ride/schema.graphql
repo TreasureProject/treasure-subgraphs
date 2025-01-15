@@ -1,0 +1,129 @@
+type MemePresale @entity {
+  id: ID! # Memecoin address
+  name: String!
+  symbol: String!
+  uri: String!
+  totalsupply: BigInt!
+  graduated: Boolean!
+  readyToGraduate: Boolean!
+  targetBaseTokenToRaise: BigInt!
+  presalePrice: BigInt!
+  returnForOne: BigInt!
+  baseTokenRaised: BigInt!
+  amounttolp: BigInt!
+  amounttosell: BigInt!
+  paircoin: Bytes!
+  lpAddress: Bytes
+  pairSymbol: String!
+  isPairERC1155: Boolean!
+  creator: String!
+  totalBuyCount: BigInt!
+  totalSellCount: BigInt!
+  uniqueBuyerCount: BigInt!
+  uniqueSellerCount: BigInt!
+  marketCap: BigInt!
+  lastPrice: BigInt!
+  createdAt: BigInt!
+  updatedAt: BigInt!
+  graduatedAt: BigInt
+  createdAtBlock: BigInt!
+  updatedAtBlock: BigInt!
+  transactions: [Transaction!]! @derivedFrom(field: "memePresale")
+  buyers: [Account!]! @derivedFrom(field: "buyTransactions")
+  sellers: [Account!]! @derivedFrom(field: "sellTransactions")
+  altPair: AltPair
+}
+
+type Transaction @entity {
+  id: ID! # tx hash + log index
+  hash: Bytes!
+  type: String! # BUY, SELL, GRADUATE
+  from: Bytes!
+  to: Bytes!
+  amount: BigInt!
+  baseTokenAmount: BigInt!
+  memePresale: MemePresale!
+  account: Account!
+  blockNumber: BigInt!
+  timestamp: BigInt!
+  logIndex: BigInt!
+}
+
+type Account @entity {
+  id: ID!
+  address: Bytes!
+  totalBuyCount: BigInt!
+  totalSellCount: BigInt!
+  totalBaseTokenSpent: BigInt!
+  totalBaseTokenReceived: BigInt!
+  transactions: [Transaction!]! @derivedFrom(field: "account")
+  buyTransactions: [MemePresale!]!
+  sellTransactions: [MemePresale!]!
+  tokens: [TokenHolding!]! @derivedFrom(field: "account")
+  createdAt: BigInt!
+  updatedAt: BigInt!
+}
+
+type TokenHolding @entity {
+  id: ID!
+  memePresale: MemePresale!
+  account: Account!
+  totalValue: BigInt!
+  balance: BigInt!
+}
+
+type AltPair @entity {
+  id: ID!
+  lpAddress: Bytes!
+  vaultAddress: Bytes!
+  tokenId: BigInt!
+  symbol: String!
+  approved: Boolean!
+  isERC1155: Boolean!
+  presales: [MemePresale!]! @derivedFrom(field: "altPair")
+  baseTokenValue: BigInt!
+  createdAt: BigInt!
+  updatedAt: BigInt!
+}
+
+type Token @entity {
+  id: Bytes!
+
+  name: String!
+  symbol: String!
+  totalSupply: BigInt!
+  decimals: BigInt!
+  isNFT: Boolean!
+  isETH: Boolean!
+}
+
+type Pair @entity {
+  id: Bytes!
+
+  token0: Token!
+  token1: Token!
+  totalSupply: BigInt!
+
+  vault: Vault!
+}
+
+type Vault @entity {
+  id: ID!
+  collectionId: Bytes!
+  transactions: [Transaction!]
+  createdAt: BigInt!
+  updatedAt: BigInt!
+}
+
+type _Schema_
+  @fulltext(
+    name: "memePresalesSearch"
+    language: en
+    algorithm: rank
+    include: [
+      {
+        entity: "MemePresale"
+        fields: [{ name: "name" }, { name: "symbol" }, { name: "creator" }]
+      }
+    ]
+  )
