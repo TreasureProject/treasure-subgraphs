@@ -16,13 +16,7 @@ import {
   PairCoinApproved,
   Sell,
 } from "../generated/Presale/Presale";
-import {
-  Account,
-  AltPair,
-  MemePresale,
-  Pair,
-  Vault,
-} from "../generated/schema";
+import { AltPair, MemePresale, Pair, Vault } from "../generated/schema";
 import { Swap } from "../generated/templates/Pool/UniswapV2Pair";
 import {
   ADDRESS_ZERO,
@@ -381,71 +375,42 @@ export function handleSwap(event: Swap): void {
     return;
   }
 
+  const amount0 = params.amount0In.plus(params.amount0Out);
+  const amount1 = params.amount1In.plus(params.amount1Out);
+
   // Determine if the transaction is a BUY or SELL
   let type: string;
   let tokenAmount: BigInt;
   let baseAmount: BigInt;
 
   if (pair.token0.equals(WETH_ADDRESS)) {
-    if (params.amount0In.gt(BIGINT_ZERO)) {
-      type = "BUY";
-      tokenAmount = params.amount1Out;
-      baseAmount = params.amount0In;
-    } else {
-      type = "SELL";
-      tokenAmount = params.amount1In;
-      baseAmount = params.amount0Out;
-    }
+    tokenAmount = amount1;
+    baseAmount = amount0;
+    type = params.amount0In.gt(BIGINT_ZERO) ? "BUY" : "SELL";
   } else {
-    if (params.amount0In.gt(BIGINT_ZERO)) {
-      type = "SELL";
-      tokenAmount = params.amount0In;
-      baseAmount = params.amount1Out;
-    } else {
-      type = "BUY";
-      tokenAmount = params.amount1In;
-      baseAmount = params.amount0Out;
-    }
+    tokenAmount = amount0;
+    baseAmount = amount1;
+    type = params.amount1In.gt(BIGINT_ZERO) ? "BUY" : "SELL";
   }
 
-  let accountId: string;
+  let accountId: Address;
   if (!params.to.equals(MAGICSWAP_V2_ROUTER_ADDRESS)) {
-    accountId = getOrCreateAccount(params.to).id;
+    accountId = params.to;
   } else if (!params.sender.equals(MAGICSWAP_V2_ROUTER_ADDRESS)) {
-    accountId = getOrCreateAccount(params.sender).id;
+    accountId = params.sender;
   } else {
-    accountId = getOrCreateAccount(event.transaction.from).id;
-  }
-
-  let account = Account.load(accountId);
-  if (!account) {
-    log.error("Account {} not found, unable to create tx and token holdings", [
-      accountId,
-    ]);
-    return;
-  }
-
-  const memecoin = MemePresale.load(vault.collectionId.toHexString());
-  if (!memecoin) {
-    log.error("failed to find memecoin: {}", [
-      vault.collectionId.toHexString(),
-    ]);
-    return;
+    accountId = event.transaction.from;
   }
 
   createTransaction(
     event,
     type,
-    type === "BUY"
-      ? MAGICSWAP_V2_ROUTER_ADDRESS
-      : Address.fromString(accountId),
-    type === "BUY"
-      ? Address.fromString(accountId)
-      : MAGICSWAP_V2_ROUTER_ADDRESS,
+    type === "BUY" ? MAGICSWAP_V2_ROUTER_ADDRESS : accountId,
+    type === "BUY" ? accountId : MAGICSWAP_V2_ROUTER_ADDRESS,
     tokenAmount.div(BigInt.fromI32(10).pow(18)), //token amount
     baseAmount, //base token amount
     vault.collectionId.toHexString(),
-    Address.fromString(accountId) // account ID
+    accountId
   );
 
   log.info("Pool swap inputs/outputs: \n0IN: {} 0OUT: {}\n1IN: {} 1OUT: {}", [
