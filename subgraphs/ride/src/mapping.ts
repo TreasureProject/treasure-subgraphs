@@ -26,6 +26,8 @@ import {
   EVENT_BUY,
   EVENT_GRADUATE,
   EVENT_SELL,
+  TX_TYPE_BUY,
+  TX_TYPE_SELL,
 } from "./constants";
 import {
   COLLECTION,
@@ -187,6 +189,9 @@ export function handleBuy(event: Buy): void {
 
   // Update presale metrics
   presale.totalBuyCount = presale.totalBuyCount.plus(BIGINT_ONE);
+  presale.baseTokenRaised = presale.baseTokenRaised.plus(
+    event.params.amountBaseToken
+  );
 
   // Check for unique buyer
   if (!presale.creator.includes(event.params.buyer.toHexString())) {
@@ -197,11 +202,12 @@ export function handleBuy(event: Buy): void {
   }
 
   let accountId = event.params.buyer;
+  presale.save();
 
   // Create transaction
   createTransaction(
     event,
-    EVENT_BUY,
+    TX_TYPE_BUY,
     event.params.buyer,
     event.params.memeCoinAddress,
     event.params.amountNFT,
@@ -209,8 +215,6 @@ export function handleBuy(event: Buy): void {
     presaleId,
     accountId
   );
-
-  presale.save();
 
   updateMetrics(presale, event);
 }
@@ -232,6 +236,9 @@ export function handleSell(event: Sell): void {
 
   // Update presale metrics
   presale.totalSellCount = presale.totalSellCount.plus(BIGINT_ONE);
+  presale.baseTokenRaised = presale.baseTokenRaised.minus(
+    event.params.amountBaseToken
+  );
 
   // Check for unique seller
   let sellTransactions = account.sellTransactions;
@@ -239,11 +246,12 @@ export function handleSell(event: Sell): void {
     presale.uniqueSellerCount = presale.uniqueSellerCount.plus(BIGINT_ONE);
   }
   let accountId = event.params.seller;
+  presale.save();
 
   // Create transaction
   createTransaction(
     event,
-    EVENT_SELL,
+    TX_TYPE_SELL,
     event.params.seller,
     event.address,
     event.params.amountNFT,
@@ -252,7 +260,6 @@ export function handleSell(event: Sell): void {
     accountId
   );
 
-  presale.save();
   updateMetrics(presale, event);
 }
 
