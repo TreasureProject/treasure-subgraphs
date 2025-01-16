@@ -32,7 +32,9 @@ export function getOrCreateGlobal(): Global {
     global.totalPresales = BIGINT_ZERO;
     global.totalGraduated = BIGINT_ZERO;
     global.totalTransactions = BIGINT_ZERO;
-    global.totalMarketCap = BIGINT_ZERO;
+    global.totalBuyTransactions = BIGINT_ZERO;
+    global.totalSellTransactions = BIGINT_ZERO;
+    global.totalBaseTokenRaised = BIGINT_ZERO;
 
     global.createdAt = BIGINT_ZERO;
     global.updatedAt = BIGINT_ZERO;
@@ -128,9 +130,13 @@ export function createTransaction(
   }
 
   const prevBalance = token.balance;
+  const global = getOrCreateGlobal();
 
   // Update account statistics and arrays
   if (type == TX_TYPE_BUY) {
+    global.totalBaseTokenRaised =
+      global.totalBaseTokenRaised.plus(baseTokenAmount);
+    global.totalBuyTransactions = global.totalBuyTransactions.plus(BIGINT_ONE);
     account.totalBuyCount = account.totalBuyCount.plus(BIGINT_ONE);
     account.totalBaseTokenSpent =
       account.totalBaseTokenSpent.plus(baseTokenAmount);
@@ -140,6 +146,11 @@ export function createTransaction(
       account.buyTransactions = buyTransactions;
     }
   } else if (type == TX_TYPE_SELL) {
+    global.totalBaseTokenRaised =
+      global.totalBaseTokenRaised.minus(baseTokenAmount);
+    global.totalSellTransactions =
+      global.totalSellTransactions.plus(BIGINT_ONE);
+
     account.totalSellCount = account.totalSellCount.plus(BIGINT_ONE);
     account.totalBaseTokenReceived =
       account.totalBaseTokenReceived.plus(baseTokenAmount);
@@ -150,6 +161,7 @@ export function createTransaction(
     }
   }
 
+  global.totalTransactions = global.totalTransactions.plus(BIGINT_ONE);
   token.balance = ercBalance;
 
   log.info("account token: {} prev: {}, balance: {}, type: {}, SAME?: {}", [
@@ -167,6 +179,7 @@ export function createTransaction(
   }
 
   // Save entities
+  global.save();
   presale.save();
   token.save();
   tx.save();

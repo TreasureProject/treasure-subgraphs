@@ -3,7 +3,9 @@ type Global @entity {
   totalPresales: BigInt!
   totalGraduated: BigInt!
   totalTransactions: BigInt!
-  totalMarketCap: BigInt!
+  totalSellTransactions: BigInt!
+  totalBuyTransactions: BigInt!
+  totalBaseTokenRaised: BigInt!
 
   createdAt: BigInt!
   updatedAt: BigInt!
