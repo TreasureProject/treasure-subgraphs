@@ -16,7 +16,7 @@ import {
   PairCoinApproved,
   Sell,
 } from "../generated/Presale/Presale";
-import { AltPair, Global, MemePresale, Pair, Vault } from "../generated/schema";
+import { AltPair, MemePresale, Pair, Vault } from "../generated/schema";
 import { Swap } from "../generated/templates/Pool/UniswapV2Pair";
 import {
   ADDRESS_ZERO,
