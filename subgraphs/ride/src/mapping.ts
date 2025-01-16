@@ -229,7 +229,7 @@ export function handleBuy(event: Buy): void {
     accountId
   );
 
-  updateMetrics(presale, event);
+  updateMetrics(presale.id, event);
 
   // Update presale metrics
   presale.baseTokenRaised = presale.baseTokenRaised.plus(
@@ -277,7 +277,7 @@ export function handleSell(event: Sell): void {
     accountId
   );
 
-  updateMetrics(presale, event);
+  updateMetrics(presale.id, event);
 
   // Update presale metrics
   presale.baseTokenRaised = presale.baseTokenRaised.minus(
@@ -483,7 +483,7 @@ export function handleSwap(event: Swap): void {
     tokenAmount.toString(),
     baseAmount.toString(),
   ]);
-  updateMetrics(presale, event);
+  updateMetrics(presale.id, event);
   log.info("Saved presale with updated marketCap: {}", [
     presale.marketCap.toString(),
   ]);

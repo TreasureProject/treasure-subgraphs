@@ -100,6 +100,7 @@ export function createTransaction(
   // Calculate price in WETH
   if (amount.gt(BIGINT_ZERO)) {
     presale.lastPrice = calculateWETHPrice(amount, baseTokenAmount);
+    presale.save();
   }
 
   tx.memePresale = presaleId;
@@ -137,6 +138,8 @@ export function createTransaction(
     global.totalBaseTokenRaised =
       global.totalBaseTokenRaised.plus(baseTokenAmount);
     global.totalBuyTransactions = global.totalBuyTransactions.plus(BIGINT_ONE);
+
+    presale.totalBuyCount = presale.totalBuyCount.plus(BIGINT_ONE);
     account.totalBuyCount = account.totalBuyCount.plus(BIGINT_ONE);
     account.totalBaseTokenSpent =
       account.totalBaseTokenSpent.plus(baseTokenAmount);
@@ -151,6 +154,7 @@ export function createTransaction(
     global.totalSellTransactions =
       global.totalSellTransactions.plus(BIGINT_ONE);
 
+    presale.totalSellCount = presale.totalSellCount.plus(BIGINT_ONE);
     account.totalSellCount = account.totalSellCount.plus(BIGINT_ONE);
     account.totalBaseTokenReceived =
       account.totalBaseTokenReceived.plus(baseTokenAmount);
@@ -186,10 +190,10 @@ export function createTransaction(
   account.save();
 }
 
-export function updateMetrics(
-  presale: MemePresale,
-  event: ethereum.Event
-): void {
+export function updateMetrics(presaleId: string, event: ethereum.Event): void {
+  const presale = MemePresale.load(presaleId);
+  if (!presale) return;
+
   if (!presale.graduated) {
     // For presale phase, use presale price
     presale.marketCap = presale.totalsupply.times(presale.presalePrice);
