@@ -229,14 +229,13 @@ export function handleBuy(event: Buy): void {
     accountId
   );
 
-  updateMetrics(presale.id, event);
-
   // Update presale metrics
   presale.baseTokenRaised = presale.baseTokenRaised.plus(
     event.params.amountBaseToken
   );
 
   presale.save();
+  updateMetrics(presale.id, event);
 }
 
 export function handleSell(event: Sell): void {
@@ -277,14 +276,13 @@ export function handleSell(event: Sell): void {
     accountId
   );
 
-  updateMetrics(presale.id, event);
-
   // Update presale metrics
   presale.baseTokenRaised = presale.baseTokenRaised.minus(
     event.params.amountBaseToken
   );
 
   presale.save();
+  updateMetrics(presale.id, event);
 }
 
 export function handleGraduationReady(event: GraduationReady): void {
@@ -477,14 +475,5 @@ export function handleSwap(event: Swap): void {
     event.params.to.toHexString(),
   ]);
 
-  // Update metrics
-  log.info("updating metrics for {} - tokens: {} - base token: {}", [
-    presale.name,
-    tokenAmount.toString(),
-    baseAmount.toString(),
-  ]);
   updateMetrics(presale.id, event);
-  log.info("Saved presale with updated marketCap: {}", [
-    presale.marketCap.toString(),
-  ]);
 }
