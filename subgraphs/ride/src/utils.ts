@@ -3,6 +3,7 @@ import { Address, BigInt, ethereum, log } from "@graphprotocol/graph-ts";
 import { ERC1155 } from "../generated/PepeUSD/ERC1155";
 import {
   Account,
+  Global,
   MemePresale,
   TokenHolding,
   Transaction,
@@ -22,6 +23,24 @@ export function calculateWETHPrice(
     return BIGINT_ZERO;
   }
   return baseTokenAmount.div(amount);
+}
+
+export function getOrCreateGlobal(): Global {
+  let global = Global.load("0");
+  if (!global) {
+    global = new Global("0");
+    global.totalPresales = BIGINT_ZERO;
+    global.totalGraduated = BIGINT_ZERO;
+    global.totalTransactions = BIGINT_ZERO;
+    global.totalBuyTransactions = BIGINT_ZERO;
+    global.totalSellTransactions = BIGINT_ZERO;
+    global.totalBaseTokenRaised = BIGINT_ZERO;
+
+    global.createdAt = BIGINT_ZERO;
+    global.updatedAt = BIGINT_ZERO;
+  }
+
+  return global;
 }
 
 export function getOrCreateAccount(address: Address): Account {
@@ -81,6 +100,7 @@ export function createTransaction(
   // Calculate price in WETH
   if (amount.gt(BIGINT_ZERO)) {
     presale.lastPrice = calculateWETHPrice(amount, baseTokenAmount);
+    presale.save();
   }
 
   tx.memePresale = presaleId;
@@ -111,10 +131,15 @@ export function createTransaction(
   }
 
   const prevBalance = token.balance;
+  const global = getOrCreateGlobal();
 
   // Update account statistics and arrays
   if (type == TX_TYPE_BUY) {
-    presale.baseTokenRaised = presale.baseTokenRaised.plus(baseTokenAmount);
+    global.totalBaseTokenRaised =
+      global.totalBaseTokenRaised.plus(baseTokenAmount);
+    global.totalBuyTransactions = global.totalBuyTransactions.plus(BIGINT_ONE);
+
+    presale.totalBuyCount = presale.totalBuyCount.plus(BIGINT_ONE);
     account.totalBuyCount = account.totalBuyCount.plus(BIGINT_ONE);
     account.totalBaseTokenSpent =
       account.totalBaseTokenSpent.plus(baseTokenAmount);
@@ -124,7 +149,12 @@ export function createTransaction(
       account.buyTransactions = buyTransactions;
     }
   } else if (type == TX_TYPE_SELL) {
-    presale.baseTokenRaised = presale.baseTokenRaised.minus(baseTokenAmount);
+    global.totalBaseTokenRaised =
+      global.totalBaseTokenRaised.minus(baseTokenAmount);
+    global.totalSellTransactions =
+      global.totalSellTransactions.plus(BIGINT_ONE);
+
+    presale.totalSellCount = presale.totalSellCount.plus(BIGINT_ONE);
     account.totalSellCount = account.totalSellCount.plus(BIGINT_ONE);
     account.totalBaseTokenReceived =
       account.totalBaseTokenReceived.plus(baseTokenAmount);
@@ -135,6 +165,7 @@ export function createTransaction(
     }
   }
 
+  global.totalTransactions = global.totalTransactions.plus(BIGINT_ONE);
   token.balance = ercBalance;
 
   log.info("account token: {} prev: {}, balance: {}, type: {}, SAME?: {}", [
@@ -152,16 +183,17 @@ export function createTransaction(
   }
 
   // Save entities
+  global.save();
   presale.save();
   token.save();
   tx.save();
   account.save();
 }
 
-export function updateMetrics(
-  presale: MemePresale,
-  event: ethereum.Event
-): void {
+export function updateMetrics(presaleId: string, event: ethereum.Event): void {
+  const presale = MemePresale.load(presaleId);
+  if (!presale) return;
+
   if (!presale.graduated) {
     // For presale phase, use presale price
     presale.marketCap = presale.totalsupply.times(presale.presalePrice);

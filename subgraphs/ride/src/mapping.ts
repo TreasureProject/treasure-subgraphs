@@ -26,18 +26,20 @@ import {
   EVENT_BUY,
   EVENT_GRADUATE,
   EVENT_SELL,
+  TX_TYPE_BUY,
+  TX_TYPE_SELL,
 } from "./constants";
 import {
   COLLECTION,
   createTransaction,
   getOrCreateAccount,
+  getOrCreateGlobal,
   pepe_collection,
   updateMetrics,
 } from "./utils";
 
 export function handleOwnershipTransferred(event: OwnershipTransferred): void {
   const hardcodedPresales: COLLECTION[] = [pepe_collection];
-
   for (let i = 0; i < hardcodedPresales.length; i++) {
     const collection = hardcodedPresales[i];
 
@@ -102,6 +104,16 @@ export function handleOwnershipTransferred(event: OwnershipTransferred): void {
 
       presale.save();
 
+      //save statistics
+      const global = getOrCreateGlobal();
+      if (presale.graduated) {
+        global.totalGraduated = global.totalGraduated.plus(BIGINT_ONE);
+      } else {
+        global.totalPresales = global.totalPresales.plus(BIGINT_ONE);
+      }
+      global.updatedAt = event.block.timestamp;
+      global.save();
+
       log.info("hardcode saved: {}", [presale.name.toString()]);
     }
   }
@@ -160,6 +172,12 @@ export function handleMemeMade(event: MemeMade): void {
 
   presale.save();
 
+  //save global statistics
+  const global = getOrCreateGlobal();
+  global.totalPresales = global.totalPresales.plus(BigInt.fromI32(1));
+  global.updatedAt = event.block.timestamp;
+  global.save();
+
   // Create or update creator account
   let creatorAccount = getOrCreateAccount(event.transaction.from);
   creatorAccount.save();
@@ -197,11 +215,12 @@ export function handleBuy(event: Buy): void {
   }
 
   let accountId = event.params.buyer;
+  presale.save();
 
   // Create transaction
   createTransaction(
     event,
-    EVENT_BUY,
+    TX_TYPE_BUY,
     event.params.buyer,
     event.params.memeCoinAddress,
     event.params.amountNFT,
@@ -210,9 +229,13 @@ export function handleBuy(event: Buy): void {
     accountId
   );
 
-  presale.save();
+  // Update presale metrics
+  presale.baseTokenRaised = presale.baseTokenRaised.plus(
+    event.params.amountBaseToken
+  );
 
-  updateMetrics(presale, event);
+  presale.save();
+  updateMetrics(presale.id, event);
 }
 
 export function handleSell(event: Sell): void {
@@ -239,11 +262,12 @@ export function handleSell(event: Sell): void {
     presale.uniqueSellerCount = presale.uniqueSellerCount.plus(BIGINT_ONE);
   }
   let accountId = event.params.seller;
+  presale.save();
 
   // Create transaction
   createTransaction(
     event,
-    EVENT_SELL,
+    TX_TYPE_SELL,
     event.params.seller,
     event.address,
     event.params.amountNFT,
@@ -252,8 +276,13 @@ export function handleSell(event: Sell): void {
     accountId
   );
 
+  // Update presale metrics
+  presale.baseTokenRaised = presale.baseTokenRaised.minus(
+    event.params.amountBaseToken
+  );
+
   presale.save();
-  updateMetrics(presale, event);
+  updateMetrics(presale.id, event);
 }
 
 export function handleGraduationReady(event: GraduationReady): void {
@@ -292,6 +321,13 @@ export function handleGraduation(event: Graduation): void {
   presale.updatedAt = event.block.timestamp;
   presale.updatedAtBlock = event.block.number;
   presale.graduatedAt = event.block.timestamp;
+  presale.save();
+
+  const global = getOrCreateGlobal();
+  global.totalPresales = global.totalPresales.minus(BIGINT_ONE);
+  global.totalGraduated = global.totalGraduated.plus(BIGINT_ONE);
+  global.updatedAt = event.block.timestamp;
+  global.save();
 
   const vault = new Vault(lpAddress.toHexString());
   vault.collectionId = Address.fromString(presale.id);
@@ -317,7 +353,6 @@ export function handleGraduation(event: Graduation): void {
     accountId
   );
 
-  presale.save();
   log.info("Graduation event processed. Account: {} Presale: {}, LP: {}", [
     accountId.toHexString(),
     presaleId,
@@ -396,6 +431,25 @@ export function handleSwap(event: Swap): void {
     accountId = event.transaction.from;
   }
 
+  const presale = MemePresale.load(vault.collectionId.toHexString());
+  if (!presale) {
+    log.error("Failed to find MemePresale {}", [
+      vault.collectionId.toHexString(),
+    ]);
+    return;
+  }
+
+  if (type === "BUY") {
+    // Update presale metrics
+    presale.baseTokenRaised = presale.baseTokenRaised.plus(baseAmount);
+    presale.save();
+  }
+  if (type === "SELL") {
+    // Update presale metrics
+    presale.baseTokenRaised = presale.baseTokenRaised.minus(baseAmount);
+    presale.save();
+  }
+
   createTransaction(
     event,
     type,
@@ -421,22 +475,5 @@ export function handleSwap(event: Swap): void {
     event.params.to.toHexString(),
   ]);
 
-  const presale = MemePresale.load(vault.collectionId.toHexString());
-  if (!presale) {
-    log.error("Failed to find MemePresale {}", [
-      vault.collectionId.toHexString(),
-    ]);
-    return;
-  }
-
-  // Update metrics
-  log.info("updating metrics for {} - tokens: {} - base token: {}", [
-    presale.name,
-    tokenAmount.toString(),
-    baseAmount.toString(),
-  ]);
-  updateMetrics(presale, event);
-  log.info("Saved presale with updated marketCap: {}", [
-    presale.marketCap.toString(),
-  ]);
+  updateMetrics(presale.id, event);
 }
