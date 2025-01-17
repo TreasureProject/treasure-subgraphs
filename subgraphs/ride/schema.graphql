@@ -1,3 +1,16 @@
+type Global @entity {
+  id: ID!
+  totalPresales: BigInt!
+  totalGraduated: BigInt!
+  totalTransactions: BigInt!
+  totalSellTransactions: BigInt!
+  totalBuyTransactions: BigInt!
+  totalBaseTokenRaised: BigInt!
+
+  createdAt: BigInt!
+  updatedAt: BigInt!
+}
+
 type MemePresale @entity {
   id: ID! # Memecoin address
   name: String!
