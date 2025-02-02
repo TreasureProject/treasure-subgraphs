@@ -15,7 +15,7 @@
   "magic_usd_price_feed_address": "0x0000000000000000000000000000000000000000",
   "weth_address": "0xe642f7d1f07af75ed8198f0b4d68f14244baaab5",
 
-  "ride_presale_address": "0x0000000000000000000000000000000000000000",
+  "ride_presale_address": "0xE1aE62885A0AbeB6893d1A082AF7E47905a11e1C",
   "ride_pepe_usd_address": "0x0000000000000000000000000000000000000000",
-  "ride_start_block": 5601529
+  "ride_start_block": 5634531
 }
