@@ -52,6 +52,9 @@ jobs:
       - name: Generate code for DEV (Base Sepolia)
         if: inputs.environment == 'Development (Base Sepolia)'
         run: npm run generate:dev-base-sepolia --if-present
+      - name: Generate code for DEV (Abstract Testnet)
+        if: inputs.environment == 'Development (Abstract Testnet)'
+        run: npm run generate:dev-abstract-testnet --if-present
       - name: Generate code for PROD (Arbitrum)
         if: inputs.environment == 'Production'
         run: npm run generate:prod --if-present
@@ -61,6 +64,9 @@ jobs:
       - name: Generate code for PROD (Base)
         if: inputs.environment == 'Production (Base)'
         run: npm run generate:prod-base --if-present
+      - name: Generate code for PROD (Abstract)
+        if: inputs.environment == 'Production (Abstract)'
+        run: npm run generate:prod-abstract --if-present
       - name: Build subgraph
         run: npx graph build
       - name: Deploy to DEV (Arbitrum Sepolia)
@@ -75,6 +81,9 @@ jobs:
       - name: Deploy to DEV (Base Sepolia)
         if: inputs.environment == 'Development (Base Sepolia)'
         run: npx goldsky subgraph deploy ${{ inputs.name || format('{0}-dev-base-sepolia', inputs.subgraph) }}/${{ inputs.version }} --token ${{ secrets.GOLDSKY_DEPLOY_KEY }}
+      - name: Deploy to DEV (Abstract Testnet)
+        if: inputs.environment == 'Development (Abstract Testnet)'
+        run: npx goldsky subgraph deploy ${{ inputs.name || format('{0}-dev-abstract-testnet', inputs.subgraph) }}/${{ inputs.version }} --token ${{ secrets.GOLDSKY_DEPLOY_KEY }}
       - name: Deploy to PROD (Arbitrum)
         if: inputs.environment == 'Production (Arbitrum)'
         run: npx goldsky subgraph deploy ${{ inputs.name || inputs.subgraph }}/${{ inputs.version }} --token ${{ secrets.GOLDSKY_DEPLOY_KEY }}
@@ -84,3 +93,6 @@ jobs:
       - name: Deploy to PROD (Base)
         if: inputs.environment == 'Production (Base)'
         run: npx goldsky subgraph deploy ${{ inputs.name || format('{0}-base', inputs.subgraph) }}/${{ inputs.version }} --token ${{ secrets.GOLDSKY_DEPLOY_KEY }}
+      - name: Deploy to PROD (Abstract)
+        if: inputs.environment == 'Production (Abstract)'
+        run: npx goldsky subgraph deploy ${{ inputs.name || format('{0}-abstract', inputs.subgraph) }}/${{ inputs.version }} --token ${{ secrets.GOLDSKY_DEPLOY_KEY }}

@@ -13,7 +13,7 @@
     "prepare:sepolia": "mustache ../../node_modules/@treasure/subgraph-config/src/sepolia.json src/index.template.ts > index.ts",
     "prepare:base": "mustache ../../node_modules/@treasure/subgraph-config/src/base.json src/index.template.ts > index.ts",
     "prepare:base-sepolia": "mustache ../../node_modules/@treasure/subgraph-config/src/base-sepolia.json src/index.template.ts > index.ts",
-    "prepare:abstract": "",
-    "prepare:abstract-sepolia": "mustache ../../node_modules/@treasure/subgraph-config/src/base-sepolia.json src/index.template.ts > index.ts"
+    "prepare:abstract": "mustache ../../node_modules/@treasure/subgraph-config/src/abstract.json src/index.template.ts > index.ts",
+    "prepare:abstract-testnet": "mustache ../../node_modules/@treasure/subgraph-config/src/abstract-testnet.json src/index.template.ts > index.ts"
   }
 }
