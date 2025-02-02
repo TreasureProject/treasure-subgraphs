@@ -5,6 +5,8 @@
   "license": "MIT",
   "scripts": {
     "generate:dev-base-sepolia": "npm run prepare:base-sepolia --prefix=../../packages/constants && mustache ../../node_modules/@treasure/subgraph-config/src/base-sepolia.json template.yaml > subgraph.yaml && graph codegen",
+    "generate:dev-abstract-sepolia": "npm run prepare:abstract-sepolia --prefix=../../packages/constants && mustache ../../node_modules/@treasure/subgraph-config/src/abstract-sepolia.json template.yaml > subgraph.yaml && graph codegen",
+    "generate:prod-abstract": "npm run prepare:abstract --prefix=../../packages/constants && mustache ../../node_modules/@treasure/subgraph-config/src/abstract.json template.yaml > subgraph.yaml && graph codegen",
     "generate:prod-base": "npm run prepare:base --prefix=../../packages/constants && mustache ../../node_modules/@treasure/subgraph-config/src/base.json template.yaml > subgraph.yaml && graph codegen"
   }
 }
