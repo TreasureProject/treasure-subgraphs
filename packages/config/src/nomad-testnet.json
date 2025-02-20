@@ -6,15 +6,15 @@
   "magicswapv1_uniswapv2_factory_address": "0x0000000000000000000000000000000000000000",
   "magicswapv2_start_block": 19260859,
   "magicswapv2_nft_vault_factory_address": "0x0000000000000000000000000000000000000000",
-  "magicswapv2_nft_vault_factory_v2_address": "0xa0ca75c44138c7fe07ce5d1405193c9d0a31e91a",
-  "magicswapv2_uniswapv2_factory_address": "0xce649351edee697f28f380345211ea7467af9e02",
-  "magicswapv2_router_address": "0x4043b1c99838945555341c0d5e101e75f143a660",
+  "magicswapv2_nft_vault_factory_v2_address": "0x0a11BeaE0B414fC8F559069B5A48C64281c7Bb76",
+  "magicswapv2_uniswapv2_factory_address": "0x22fC738D3de7863961C858B2E02F1dEde297dAc3",
+  "magicswapv2_router_address": "0x859217Ba65DF5ADAb9736c41b7c8D6dA4b41D3B5",
   "magicswapv2_staking_address": "0x0000000000000000000000000000000000000000",
   "magic_usd_price_feed_address": "0x0000000000000000000000000000000000000000",
   "weth_address": "0xB5a30b0FDc5EA94A52fDc42e3E9760Cb8449Fb37",
 
-  "ride_presale_address": "0xFBb1DC026fE49F5EeEc41776127C6Efb8859Ea9b",
-  "ride_pepe_usd_address": "0x14e1149E53e5ECe8AE04a74Ba7F655C778a151d4",
-  "ride_eth_usd_feed_address": "0x4aDC67696bA383F43DD60A9e78F2C97Fbbfc7cb1",
+  "ride_presale_address": "0x9D2f122860A9Dc322137eA1A610B7a6526570b07",
+  "ride_pepe_usd_address": "0x0000000000000000000000000000000000000000",
+  "ride_eth_usd_feed_address": "0x89E900888aFA7608f02f2b4b2bfa6Ac263D92b09",
   "ride_start_block": 19276128
 }
