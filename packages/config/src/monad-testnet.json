@@ -1,5 +1,5 @@
 {
-  "network": "nomad-testnet",
+  "network": "monad-testnet",
   "burner_address": "0x0000000000000000000000000000000000000000",
 
   "magicswapv1_start_block": 19260859,

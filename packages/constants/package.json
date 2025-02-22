@@ -15,6 +15,6 @@
     "prepare:base-sepolia": "mustache ../../node_modules/@treasure/subgraph-config/src/base-sepolia.json src/index.template.ts > index.ts",
     "prepare:abstract": "mustache ../../node_modules/@treasure/subgraph-config/src/abstract.json src/index.template.ts > index.ts",
     "prepare:abstract-testnet": "mustache ../../node_modules/@treasure/subgraph-config/src/abstract-testnet.json src/index.template.ts > index.ts",
-    "prepare:nomad-testnet": "mustache ../../node_modules/@treasure/subgraph-config/src/nomad-testnet.json src/index.template.ts > index.ts"
+    "prepare:monad-testnet": "mustache ../../node_modules/@treasure/subgraph-config/src/monad-testnet.json src/index.template.ts > index.ts"
   }
 }
