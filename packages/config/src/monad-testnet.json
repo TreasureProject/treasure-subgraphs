@@ -2,9 +2,9 @@
   "network": "monad-testnet",
   "burner_address": "0x0000000000000000000000000000000000000000",
 
-  "magicswapv1_start_block": 19260859,
+  "magicswapv1_start_block": 4183470,
   "magicswapv1_uniswapv2_factory_address": "0x0000000000000000000000000000000000000000",
-  "magicswapv2_start_block": 19260859,
+  "magicswapv2_start_block": 4183470,
   "magicswapv2_nft_vault_factory_address": "0x0000000000000000000000000000000000000000",
   "magicswapv2_nft_vault_factory_v2_address": "0x0a11BeaE0B414fC8F559069B5A48C64281c7Bb76",
   "magicswapv2_uniswapv2_factory_address": "0x22fC738D3de7863961C858B2E02F1dEde297dAc3",
@@ -16,5 +16,5 @@
   "ride_presale_address": "0x9D2f122860A9Dc322137eA1A610B7a6526570b07",
   "ride_pepe_usd_address": "0x0000000000000000000000000000000000000000",
   "ride_eth_usd_feed_address": "0x89E900888aFA7608f02f2b4b2bfa6Ac263D92b09",
-  "ride_start_block": 19276128
+  "ride_start_block": 4183470
 }
