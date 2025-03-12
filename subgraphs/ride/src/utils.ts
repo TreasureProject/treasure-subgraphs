@@ -135,7 +135,7 @@ export function createTransaction(
   if (isDenom) {
     ercBalance = erc1155.getAtomicBalance(accountId); //denoms use balanceOf
   } else if (isReflection) {
-    ercBalance = erc1155.balanceOf(accountId, BIGINT_ONE); //reflection balance of
+    ercBalance = erc1155.balanceOf(accountId, BIGINT_ZERO); //reflection balance of
   } else {
     ercBalance = erc1155.totalBalanceOf(accountId); //only on normal erc1155
   }
