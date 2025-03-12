@@ -121,11 +121,21 @@ export function createTransaction(
 
   let ercBalance: BigInt;
   const erc1155 = ERC1155.bind(Address.fromString(presaleId));
+
+  //custom erc1155 balance methods
   const isDenom = Address.fromString(presaleId).equals(
     Address.fromString(pepe_collection.address)
   );
+
+  const isReflection = Address.fromString(presaleId).equals(
+    Address.fromString(enjoyoor_collection.address)
+  );
+
+  // handle these better eventually
   if (isDenom) {
     ercBalance = erc1155.getAtomicBalance(accountId); //denoms use balanceOf
+  } else if (isReflection) {
+    ercBalance = erc1155.balanceOf(accountId, BIGINT_ZERO); //reflection balance of
   } else {
     ercBalance = erc1155.totalBalanceOf(accountId); //only on normal erc1155
   }
@@ -262,6 +272,18 @@ export class COLLECTION {
   lpAddress: string;
   data: COLLECTION_DATA;
 }
+
+export const enjoyoor_collection: COLLECTION = {
+  name: "Enjoyoor",
+  symbol: "ENJOY",
+  address: "0x35Cc7500D3043B62A09DE680c22B66652465793c",
+  lpAddress: "0x3e701642c7419fb1b186e12875ab536e7967ce01",
+  supply: "1000000000",
+  data: {
+    type: "reflection",
+    uri: "data:application/json;base64,eyJuYW1lIjoiRW5qb3lvb3IiLCJkZXNjcmlwdGlvbiI6IkVuam95b29yIGlzIGEgcmViYXNpbmcgTkZULiBFdmVyeSB0aW1lIGFuIEVuam95b29yIGlzIHRyYW5zZmVycmVkLCBhIHBlcmNlbnQgaXMgZGlzdHJpYnV0ZWQgdG8gdGhlIG90aGVyIGhvbGRlcnMuIFRoZSAkRU5KT1kgc3RhbmRhcmQgY3JlYXRlcyBhIHdheSB0byBhcHBseSBzZWxsIHRheGVzIGRpcmVjdGx5IHRvIE5GVCBjb2xsZWN0aW9ucy4iLCJpbWFnZSI6Imh0dHBzOi8vaXBmcy5maWxlYmFzZS5pby9pcGZzL1FtZEVnQkZtWEF6N3JKNWtIdHBxY1dyUEhmc25iOEZZVW9MNHY3SjJSbWd6eDUiLCJleHRlcm5hbF91cmwiOiJodHRwczovL2Vuam95b29yLnRlY2gvIiwic29jaWFsX2xpbmtzIjp7IndlYnNpdGUiOiJodHRwczovL2Vuam95b29yLnRlY2gvIn0sImF0dHJpYnV0ZXMiOlt7InRyYWl0X3R5cGUiOiJOU0ZXIiwidmFsdWUiOmZhbHNlfSx7InRyYWl0X3R5cGUiOiJUb2tlbiBUeXBlIiwidmFsdWUiOiJSZWZsZWN0aW9uIn0seyJ0cmFpdF90eXBlIjoiQ2F0ZWdvcnkiLCJ2YWx1ZSI6Im1lbWUifSx7InRyYWl0X3R5cGUiOiJEeW5hbWljIiwidmFsdWUiOmZhbHNlfV19",
+  },
+};
 
 export const pepe_collection: COLLECTION = {
   name: "PepeUSD",
