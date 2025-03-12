@@ -32,6 +32,7 @@ import {
 import {
   COLLECTION,
   createTransaction,
+  enjoyoor_collection,
   getOrCreateAccount,
   getOrCreateGlobal,
   pepe_collection,
@@ -39,7 +40,10 @@ import {
 } from "./utils";
 
 export function handleOwnershipTransferred(event: OwnershipTransferred): void {
-  const hardcodedPresales: COLLECTION[] = [pepe_collection];
+  const hardcodedPresales: COLLECTION[] = [
+    pepe_collection,
+    enjoyoor_collection,
+  ];
   for (let i = 0; i < hardcodedPresales.length; i++) {
     const collection = hardcodedPresales[i];
 
