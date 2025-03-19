@@ -59,9 +59,8 @@ export function handleOwnershipTransferred(event: OwnershipTransferred): void {
 
       // Token economics
       presale.presalePrice = BIGINT_ZERO;
-      presale.baseTokenRaised = BIGINT_ZERO;
       presale.targetBaseTokenToRaise = BIGINT_ZERO;
-      presale.baseTokenRaised = BIGINT_ZERO;
+      presale.baseTokenRaised = BigInt.fromString(collection.baseTokenRaised);
       presale.returnForOne = BIGINT_ONE;
       presale.totalsupply = BigInt.fromString(collection.supply);
       presale.amounttolp = BIGINT_ZERO;
