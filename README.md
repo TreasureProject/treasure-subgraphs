@@ -66,7 +66,7 @@ npm test
 ### Development
 
 - Create a PR pointing to the `master` branch
-- Run the [Deploy workflow](https://github.com/TreasureProject/treasure-subgraphs/actions/workflows/deploy.yaml) with the following config options:
+- Run the [Deploy Graph workflow](https://github.com/TreasureProject/treasure-subgraphs/actions/workflows/deploy.yaml) with the following config options:
   - `Environment`: Development
   - `Subgraph`: Name of the subgraph to build, from the list above
   - `Custom subgraph name` (optional): Custom value to override the name of the subgraph deployed to the remote environment. Defaults to `<subgraph>-dev` for Arbitrum Sepolia and `<subgraph>-<chain>-dev` for others.
@@ -76,9 +76,9 @@ npm test
 ### Production
 
 - Merge your PR to the `master` branch
-- Run the [Deploy workflow](https://github.com/TreasureProject/treasure-subgraphs/actions/workflows/deploy.yaml) with the following config options:
+- Run the [Deploy Graph workflow](https://github.com/TreasureProject/treasure-subgraphs/actions/workflows/deploy.yaml) with the following config options:
   - `Environment`: Production
   - `Subgraph`: Name of the subgraph to build, from the list above
-  - `Custom subgraph name` (optional): Custom value to override the name of the subgraph deployed to the remote environment. Defaults to `<subgraph>` for Arbitrum Sepolia and `<subgraph>-<chain>` for others.
+  - `Custom subgraph name` (optional): Custom value to override the name of the subgraph deployed to the remote environment. Defaults to `<subgraph>` for Arbitrum and `<subgraph>-<chain>` for others.
   - `Subgraph version`: Version number in semvar notation (`vX.X.X`) not already used in the remote environment.
 - If deploying to Goldsky, log into the dashboard and create a `live` tag on the new version once it's synced.
