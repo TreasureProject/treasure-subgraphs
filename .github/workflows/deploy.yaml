@@ -85,7 +85,7 @@ jobs:
         if: inputs.environment == 'Development (Abstract Testnet)'
         run: npx goldsky subgraph deploy ${{ inputs.name || format('{0}-dev-abstract-testnet', inputs.subgraph) }}/${{ inputs.version }} --token ${{ secrets.GOLDSKY_DEPLOY_KEY }}
       - name: Deploy to PROD (Arbitrum)
-        if: inputs.environment == 'Production (Arbitrum)'
+        if: inputs.environment == 'Production'
         run: npx goldsky subgraph deploy ${{ inputs.name || inputs.subgraph }}/${{ inputs.version }} --token ${{ secrets.GOLDSKY_DEPLOY_KEY }}
       - name: Deploy to PROD (Treasure)
         if: inputs.environment == 'Production (Treasure)'
